@@ -4,14 +4,18 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "tauri-dev": "npm run tauri dev",
+    "tauri-build": "npm run tauri build"
   },
   "dependencies": {
     "vue": "^3.4.19"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1.5.10",
     "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
