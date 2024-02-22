@@ -1,0 +1,62 @@
+* {
+  scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  transition: all 300ms cubic-bezier(0.390, 0.575, 0.000, 1.005); /* custom */
+  transition-timing-function: cubic-bezier(0.390, 0.575, 0.000, 1.005); /* custom */
+  font-family: Manrop, sans-serif;
+  font-weight: 400;
+
+  scrollbar-color: var(--primary) #ffff;
+  scrollbar-width: thin;
+  color: var(--primary-text);
+}
+
+body {
+  --primary: #0173C7;
+  --secondary-app: rgba(1, 115, 199, 0.65);
+  --primary-text: #FFF;
+  --revert-text: #282828;
+  --secondary-text: #bbb5a7;
+  --primary-text-inverted: #ffff;
+  --secondary-text-inverted: #b3e0fd;
+  --primary-background: #344a53;
+  --primary-border: #E8E8E8;
+  --secondary-background: rgba(0, 0, 0, 0.45);
+  --selected-background: #d9d9d9;
+  --important: #e05050;
+  --information: #74c547;
+}
+
+html, body {
+  background-color: var(--primary-background);
+  height: 100vh;
+  overflow: hidden;
+  width: auto;
+}
+
+#app {
+  background-color: var(--primary-background);
+  height: calc(100%);
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 8px;
+  background-color: var(--primary-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4ba7de;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: 0.1s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
