@@ -1,0 +1,9 @@
+{
+  "appName": "Better Fleet",
+  "loading": {
+    "loading": "Loading...",
+    "targetGame": "Searching game",
+    "targetLoading": "Game detected. Loading ships.",
+    "tips": "This can take a while..."
+  }
+}

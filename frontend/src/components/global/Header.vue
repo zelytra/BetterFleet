@@ -62,7 +62,7 @@ const version = ref(import.meta.env.VITE_VERSION)
     gap: 24px;
     p{
       justify-self: end;
-      font-size: 12px;
+      font-size: 9px;
       margin-bottom: 4px;
       color: var(--secondary-text);
     }

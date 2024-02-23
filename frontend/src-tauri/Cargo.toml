@@ -1,11 +1,11 @@
 [package]
-name = "BetterFleet"
+name = "better_fleet"
 version = "0.1.0"
 description = "To kill FleetCreator"
 authors = ["Zelytra"]
 license = ""
 repository = ""
-default-run = "app"
+default-run = "better_fleet"
 edition = "2021"
 rust-version = "1.60"
 

@@ -9,10 +9,17 @@
       </router-view>
     </section>
   </section>
+  <Loading :is-loading="true">
+    <h1>{{ t('loading.targetGame') }}</h1>
+  </Loading>
 </template>
 
 <script setup lang="ts">
 import Header from "@/components/global/Header.vue";
+import Loading from "@/vue/templates/Loading.vue";
+import {useI18n} from "vue-i18n";
+
+const {t} = useI18n();
 </script>
 
 <style scoped lang="scss">
