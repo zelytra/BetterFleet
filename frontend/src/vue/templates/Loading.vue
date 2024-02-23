@@ -72,12 +72,12 @@ defineEmits<{
     gap: 24px;
 
     img {
-      width: 350px;
+      width: 50%;
     }
 
     :slotted(*) {
       font-family: BrushTip, sans-serif;
-      font-size: 45px;
+      font-size: 40px;
     }
   }
 

@@ -5,5 +5,13 @@
     "targetGame": "Détection du jeu en cours",
     "targetLoading": "Jeu détecté. Préparation des navires.",
     "tips": "Cela peut prendre un certain moment, Merci de véirifer que votre jeu est lancé."
+  },
+  "session": {
+    "choice": {
+      "createComment": "Goûtez à la liberté de régner sur les flots en pirate !",
+      "createSession": "Créer une session",
+      "joinComment": "Hissons les voiles, monte à bord et rejoins l'équipage !",
+      "joinSession": "Rejoindre une session"
+    }
   }
 }

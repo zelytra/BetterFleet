@@ -5,5 +5,13 @@
     "targetGame": "Searching game",
     "targetLoading": "Game detected. Loading ships.",
     "tips": "This can take a while..."
+  },
+  "session": {
+    "choice": {
+      "createComment": "TODO",
+      "createSession": "Create a session",
+      "joinComment": "TODO",
+      "joinSession": "Join a session"
+    }
   }
 }

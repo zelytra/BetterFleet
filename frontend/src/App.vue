@@ -9,7 +9,7 @@
       </router-view>
     </section>
   </section>
-  <Loading :is-loading="true">
+  <Loading :is-loading="false">
     <h1>{{ t('loading.targetGame') }}</h1>
   </Loading>
 </template>

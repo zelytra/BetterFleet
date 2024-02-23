@@ -1,28 +1,19 @@
 <template>
   <section class="choice-wrapper">
-    <div class="choice join">
-      <h1>Join a session</h1>
-      <input
-        v-model="sessionsId"
-        type="text"
-      >
-      <button @click="">
-        Join
-      </button>
-    </div>
-    <div class="choice create">
-      <h1>Create a session</h1>
-      <button @click="">
-        Create
-      </button>
-    </div>
+    <SessionCard :title="t('session.choice.createSession')">
+      <p>{{ t("session.choice.createComment") }}</p>
+    </SessionCard>
+    <SessionCard :title="t('session.choice.joinSession')">
+      <p>{{ t("session.choice.joinComment") }}</p>
+    </SessionCard>
   </section>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import SessionCard from "@/vue/templates/SessionCard.vue";
+import {useI18n} from "vue-i18n";
 
-const sessionsId = ref<string>("")
+const {t} = useI18n();
 
 
 </script>
@@ -30,7 +21,10 @@ const sessionsId = ref<string>("")
 <style scoped lang="scss">
 .choice-wrapper {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 10%;
+  height: 100%;
+  align-items: center;
 
 }
 </style>
