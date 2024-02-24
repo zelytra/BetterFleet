@@ -109,20 +109,10 @@ impl GetPlayerCount {
 
             // println!("Reading crews: {:?}", crews);
 
-            let mut crew_tracker = HashMap::new();
-
             for x in 0..crews.1 {
                 // println!("Reading crew: {:?}", x);
                 // println!("Crew.Size: {:?}", offsets.get_offset("Crew.Size") * x as usize);
                 // println!("Memory address: {:?}", crews.0 as usize + offsets.get_offset("Crew.Size") * x as usize);
-                let crew_guid_raw = rm.read_bytes(crews.0 as usize + offsets.get_offset("Crew.Size") * x as usize, 16).unwrap();
-                let mut cursor = Cursor::new(crew_guid_raw);
-                let crew_guid = (
-                    cursor.read_i32::<LittleEndian>().unwrap(),
-                    cursor.read_i32::<LittleEndian>().unwrap(),
-                    cursor.read_i32::<LittleEndian>().unwrap(),
-                    cursor.read_i32::<LittleEndian>().unwrap(),
-                );
 
                 let crew_raw = rm.read_bytes(
                     crews.0 as usize + offsets.get_offset("Crew.Players") + offsets.get_offset("Crew.Size") * x as usize,
@@ -138,9 +128,6 @@ impl GetPlayerCount {
                 // println!("Reading crew: {:?}", crew);
                 if crew.1 > 0 {
                     player_count += crew.1 as u32;
-                    if !crew_tracker.contains_key(&crew_guid) {
-                        crew_tracker.insert(crew_guid, crew_tracker.len() + 1);
-                    }
                 }
             }
         }
