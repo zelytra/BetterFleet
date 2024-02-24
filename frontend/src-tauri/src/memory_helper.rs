@@ -30,8 +30,7 @@ pub(crate) struct ReadMemory {
     pub(crate) pid: u32,
     pub(crate) base_address: usize,
     pub(crate) g_name_start_address: usize,
-    pub(crate) u_world_base: usize,
-    pub(crate) g_name_base: usize,
+    pub(crate) u_world_base: usize
 }
 
 impl ReadMemory {
@@ -65,8 +64,7 @@ impl ReadMemory {
             pid,
             base_address,
             g_name_start_address: 0,
-            u_world_base: 0,
-            g_name_base: 0,
+            u_world_base: 0
         };
 
         let bulk_scan = match instance.read_memory_segment(base_address, 1_000_000_000) {
@@ -80,14 +78,16 @@ impl ReadMemory {
 
         let patterns = read_patterns_from_file().unwrap();
 
-        let u_world_base = search_data_for_pattern(&bulk_scan, patterns.get("UWORLDPATTERN").unwrap());
+        let u_world_base = search_data_for_pattern(&bulk_scan, patterns.get("UWORLD").unwrap());
         if u_world_base.is_none() {
             return Err("Failed to find uWorld base".into());
         }
         instance.u_world_base = u_world_base.unwrap();
-        let g_object_base = search_data_for_pattern(&bulk_scan, patterns.get("GOBJECTPATTERN").unwrap());
-        let g_name_base = search_data_for_pattern(&bulk_scan, patterns.get("GNAMEPATTERN").unwrap());
-        instance.g_name_base = g_name_base.unwrap();
+
+        let g_object_base = search_data_for_pattern(&bulk_scan, patterns.get("GOBJECT").unwrap());
+
+        let g_name_base = search_data_for_pattern(&bulk_scan, patterns.get("GNAME").unwrap());
+
         drop(bulk_scan); // equivalent to Python's `del`
 
         let g_name_offset = instance.read_ulong(base_address + g_name_base.unwrap() + 3)?;
