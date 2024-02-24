@@ -32,18 +32,11 @@ impl GetPlayerName {
 
         let offsets = Offsets::new().unwrap();
 
-        println!("World Address: 0x{:X}", world_address);
         let owning_game_instance = rm.read_ptr(world_address + offsets.get_offset("World.OwningGameInstance")).unwrap();
-        println!("OwningGameInstance: 0x{:X}", owning_game_instance);
         let local_player = rm.read_ptr(rm.read_ptr(owning_game_instance + offsets.get_offset("GameInstance.LocalPlayers")).unwrap()).unwrap();
-        println!("LocalPlayer: 0x{:X}", local_player);
         let player_controller = rm.read_ptr(local_player + offsets.get_offset("Player.PlayerController")).unwrap(); // Player inherits LocalPlayer
-        println!("Offset: 0x{:X}", offsets.get_offset("Player.PlayerController"));
-        println!("PlayerController: 0x{:X}", player_controller);
         let player_state = rm.read_ptr(player_controller + offsets.get_offset("Controller.PlayerState")).unwrap(); // PlayerState inherits controller
-        println!("PlayerState: 0x{:X}", player_state);
         let name_location = rm.read_ptr(player_state + offsets.get_offset("PlayerState.PlayerName")).unwrap();
-        println!("NameLocation: 0x{:X}", name_location);
         let player_name = rm.read_name_string(name_location, 32).unwrap();
         return Some(player_name);
     }
