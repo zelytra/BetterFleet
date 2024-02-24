@@ -2,17 +2,34 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod process_finder;
-use tauri::command;
+mod get_player_count;
+mod memory_helper;
+mod offsets_getter;
+
+use tauri::{Builder, command};
+use crate::memory_helper::ReadMemory;
+
+
 fn main() {
-  tauri::Builder::default()
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
     Builder::default()
         .invoke_handler(tauri::generate_handler![
       find_pid,
     ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    let rm: ReadMemory = match ReadMemory::new("SoTGame.exe") {
+        Ok(rm) => rm,
+        Err(e) => {
+            eprintln!("Error while creating ReadMemory instance: {}", e);
+            return;
+        }
+    };
+
+    unsafe {
+        let player_count = get_player_count(rm);
+        println!("Player count: {:?}", player_count);
+    }
 }
 
 #[command]
