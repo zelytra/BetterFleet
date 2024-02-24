@@ -12,14 +12,14 @@ pub(crate) struct GetPlayerCount {
 }
 
 impl GetPlayerCount {
-    pub unsafe fn get_player_count(rm: ReadMemory) {
+    pub unsafe fn get_player_count(rm: ReadMemory) -> Option<u32> {
         let base_address = rm.base_address;
 
         let u_world_offset = match rm.read_ulong(base_address + rm.u_world_base + 3) {
             Ok(offset) => offset,
             Err(e) => {
                 eprintln!("Error while reading u_world_offset: {}", e);
-                return;
+                return None;
             }
         };
 
@@ -28,7 +28,7 @@ impl GetPlayerCount {
             Ok(address) => address,
             Err(e) => {
                 eprintln!("Error while reading world_address: {}", e);
-                return;
+                return None;
             }
         };
 
@@ -48,7 +48,7 @@ impl GetPlayerCount {
             }
             Err(e) => {
                 eprintln!("Error while reading actor_raw: {}", e);
-                return;
+                return None;
             }
         };
 
@@ -59,7 +59,7 @@ impl GetPlayerCount {
             Ok(data) => data,
             Err(e) => {
                 eprintln!("Error while reading level_actors_raw: {}", e);
-                return;
+                return None;
             }
         };
 
@@ -97,7 +97,7 @@ impl GetPlayerCount {
                 Ok(data) => data,
                 Err(e) => {
                     eprintln!("Error while reading crew_raw: {}", e);
-                    return;
+                    return None;
                 }
             };
             // println!("Raw bytes: {:?}", crew_raw);
@@ -144,6 +144,7 @@ impl GetPlayerCount {
                 }
             }
         }
-        // println!("Reading player count: {:?}", player_count);
+
+        Some(player_count)
     }
 }

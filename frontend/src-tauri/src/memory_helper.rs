@@ -24,6 +24,7 @@ const MAX_MODULE_NAME32: usize = 255;
 
 // Inspired from https://github.com/DougTheDruid/SoT-ESP-Framework/blob/17972aef36cbcf06ce130417823f6dae0d09adee/memory_helper.py#L167
 
+#[derive(Clone, Copy)]
 pub(crate) struct ReadMemory {
     handle: HANDLE,
     pub(crate) pid: u32,
