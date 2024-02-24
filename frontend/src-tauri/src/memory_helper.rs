@@ -183,12 +183,23 @@ impl ReadMemory {
 
     pub(crate) fn read_name_string(&self, address: usize, bytes: usize) -> Result<String, String> {
         let buffer = self.read_bytes(address, bytes)?;
-        if let Some(end) = buffer.windows(3).position(|window| window == [0, 0, 0]) {
-            let str_slice = &buffer[..end];
-            Ok(String::from_utf16_lossy(unsafe { transmute::<&[u8], &[u16]>(str_slice) }))
-        } else {
-            Err("Name string not found".into())
-        }
+        let i = buffer.windows(3).position(|window| window == [0, 0, 0]).unwrap_or(buffer.len());
+        let shorter = &buffer[..i];
+
+        let shorter_u16: Vec<u16> = shorter
+            .chunks(2)
+            .map(|chunk| {
+                let bytes = [chunk[0], *chunk.get(1).unwrap_or(&0)];
+                u16::from_le_bytes(bytes)
+            })
+            .collect();
+
+        let joined = String::from_utf16(&shorter_u16)
+            .unwrap_or_else(|_| String::from_utf8_lossy(shorter).into_owned())
+            .trim_end_matches('\x00')
+            .trim_end()
+            .to_string();
+        Ok(joined.replace('’', "'"))
     }
 
     pub(crate) unsafe fn read_gname(&self, actor_id: usize) -> Result<String, String> {

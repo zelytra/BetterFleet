@@ -8,16 +8,18 @@ mod offsets_getter;
 mod get_player_name;
 
 use tauri::{Builder, command};
+use crate::get_player_count::GetPlayerCount;
+use crate::get_player_name::GetPlayerName;
 use crate::memory_helper::ReadMemory;
 
 
 fn main() {
-    Builder::default()
+    /*Builder::default()
         .invoke_handler(tauri::generate_handler![
-      find_pid,
+      find_pid
     ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect("error while running tauri application");*/
 
     let rm: ReadMemory = match ReadMemory::new("SoTGame.exe") {
         Ok(rm) => rm,
@@ -27,6 +29,10 @@ fn main() {
         }
     };
 
+    unsafe {
+        let player_name = get_player_name(rm);
+        println!("Player Name: {:?}", player_name);
+    }
     unsafe {
         let player_count = get_player_count(rm);
         println!("Player count: {:?}", player_count);
@@ -49,17 +55,35 @@ fn find_pid(process: String) -> Vec<String> {
  * This function is used to get the player count in the game
  *
  * @param rm: The ReadMemory instance to use to read the memory
- * @return The player count
+ * @return The player count or None
  */
 #[command]
-fn get_player_count(rm: ReadMemory) -> Option<u32> {
-    return match get_player_count(rm) {
+unsafe fn get_player_count(rm: ReadMemory) -> Option<u32> {
+    return match GetPlayerCount::get_player_count(rm) {
         Some(player_count) => {
-            println!("Player count: {:?}", player_count);
             Some(player_count)
         },
         None => {
             eprintln!("An error occurred while getting the player count.");
+            None
+        }
+    }
+}
+
+/**
+ * This function is used to get the player name in the game
+ *
+ * @param rm: The ReadMemory instance to use to read the memory
+ * @return The player name or None
+ */
+#[command]
+unsafe fn get_player_name(rm: ReadMemory) -> Option<String> {
+    return match GetPlayerName::get_player_name(rm) {
+        Some(player_name) => {
+            Some(player_name)
+        },
+        None => {
+            eprintln!("An error occurred while getting the player name.");
             None
         }
     }
