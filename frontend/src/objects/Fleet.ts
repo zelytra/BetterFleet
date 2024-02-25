@@ -1,14 +1,14 @@
 export class Fleet {
 
-    public readonly sessionId: string
+    public sessionId: string
+    public sessionName: string
     public players: Player[]
-    public masters: Player[]
     public servers: SotServer[]
 
     constructor(sessionId: string) {
         this.sessionId = sessionId;
+        this.sessionName = "TODO"
         this.players = [];
-        this.masters = [];
         this.servers = [];
     }
 
@@ -19,12 +19,25 @@ export class Fleet {
     leaveSession(): void {
 
     }
+
+    getReadyPlayers(): Player[] {
+        return this.players.filter(player => player.isReady)
+    }
+
+    public static getFormatedStatus(player: Player) {
+        return player.status.toString().toLowerCase().replace('_', '-')
+    }
+
+    public getMasters(): Player[] {
+        return this.players.filter(player => player.isMaster)
+    }
 }
 
 export interface Player {
     username: string
     status: PlayerStates
     isReady: boolean
+    isMaster: boolean
 }
 
 export interface SotServer {

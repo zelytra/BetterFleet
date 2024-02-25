@@ -23,14 +23,14 @@ const {t} = useI18n();
 </script>
 
 <style scoped lang="scss">
-.app-section{
+.app-section {
   display: flex;
 
-  .content{
+  .content {
     height: 100vh;
     overflow: hidden;
     overflow-y: auto;
-    padding: 8px;
+    padding: 14px 20px;
     width: 100%;
     box-sizing: border-box;
     position: relative;

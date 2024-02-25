@@ -18,7 +18,7 @@ defineProps({
   title: {type: String, required: true},
   background: {
     type: String, required: false, default: () => {
-      return "linear-gradient(270deg, rgba(50, 212, 153, 0.20) 0%, rgba(50, 212, 153, 0.07) 108.45%);"
+      return "linear-gradient(270deg, rgba(50, 212, 153, 0.20) 0%, rgba(50, 212, 153, 0.07) 108.45%)"
     }
   }
 })
@@ -34,7 +34,11 @@ defineProps({
   flex-direction: column;
   gap: 25px;
   box-sizing: border-box;
+  cursor: pointer;
 
+  &:hover {
+    transform: translateY(-15px);
+  }
 
   img {
     width: 100%;

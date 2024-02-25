@@ -12,6 +12,15 @@
       "createSession": "Create a session",
       "joinComment": "TODO",
       "joinSession": "Join a session"
+    },
+    "player": {
+      "notReady": "Not ready",
+      "ready": "Is ready",
+      "status": {
+        "0": "Player offline",
+        "1": "Player online",
+        "2": "In game"
+      }
     }
   }
 }

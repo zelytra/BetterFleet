@@ -3,7 +3,10 @@
     <SessionCard :title="t('session.choice.createSession')">
       <p>{{ t("session.choice.createComment") }}</p>
     </SessionCard>
-    <SessionCard :title="t('session.choice.joinSession')">
+    <SessionCard
+      :title="t('session.choice.joinSession')"
+      :background="'linear-gradient(270deg, rgba(50, 144, 212, 0.20) 0%, rgba(50, 144, 212, 0.07) 108.45%)'"
+    >
       <p>{{ t("session.choice.joinComment") }}</p>
     </SessionCard>
   </section>

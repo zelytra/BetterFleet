@@ -12,6 +12,15 @@
       "createSession": "Créer une session",
       "joinComment": "Hissons les voiles, monte à bord et rejoins l'équipage !",
       "joinSession": "Rejoindre une session"
+    },
+    "player": {
+      "notReady": "Pas prêts",
+      "ready": "Est prêts",
+      "status": {
+        "0": "Joueur hors ligne",
+        "1": "Joueur en ligne",
+        "2": "En jeux"
+      }
     }
   }
 }
