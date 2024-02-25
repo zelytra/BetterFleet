@@ -13,6 +13,10 @@
       "joinComment": "Hissons les voiles, monte à bord et rejoins l'équipage !",
       "joinSession": "Rejoindre une session"
     },
+    "informations": {
+      "title": "Informations",
+      "totalPlayer": "Joueurs Total"
+    },
     "player": {
       "notReady": "Pas prêts",
       "ready": "Est prêts",
@@ -21,6 +25,12 @@
         "1": "Joueur en ligne",
         "2": "En jeux"
       }
+    },
+    "status": {
+      "action": "Action",
+      "countdown": "Lancement dans ",
+      "ready": "Prêt",
+      "waiting": "En attente"
     }
   }
 }

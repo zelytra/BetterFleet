@@ -30,7 +30,7 @@ const {t} = useI18n();
     height: 100vh;
     overflow: hidden;
     overflow-y: auto;
-    padding: 14px 20px;
+    padding: 7px 10px;
     width: 100%;
     box-sizing: border-box;
     position: relative;

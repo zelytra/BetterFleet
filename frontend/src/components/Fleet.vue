@@ -1,7 +1,7 @@
 <template>
   <div class="lobby-wrapper">
     <FleetSessionChoice v-if="false" />
-    <FleetLobby :session="session" />
+    <FleetLobby v-if="true" :session="session" />
   </div>
 </template>
 

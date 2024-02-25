@@ -13,6 +13,10 @@
       "joinComment": "TODO",
       "joinSession": "Join a session"
     },
+    "informations": {
+      "title": "Informations",
+      "totalPlayer": "Total Player"
+    },
     "player": {
       "notReady": "Not ready",
       "ready": "Is ready",
@@ -21,6 +25,12 @@
         "1": "Player online",
         "2": "In game"
       }
+    },
+    "status": {
+      "action": "TODO",
+      "countdown": "Launching in",
+      "ready": "Ready",
+      "waiting": "Waiting"
     }
   }
 }

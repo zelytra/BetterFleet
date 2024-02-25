@@ -4,12 +4,14 @@ export class Fleet {
     public sessionName: string
     public players: Player[]
     public servers: SotServer[]
+    public status:SessionStatus
 
     constructor(sessionId: string) {
         this.sessionId = sessionId;
         this.sessionName = "TODO"
         this.players = [];
         this.servers = [];
+        this.status = SessionStatus.WAITING
     }
 
     joinSession(): void {
@@ -51,4 +53,11 @@ export enum PlayerStates {
     OFFLINE, // Game not detected
     ONLINE, // Game detected and open but not in game
     IN_GAME, // Player in a server
+}
+
+export enum SessionStatus{
+    WAITING, // Waiting for player to be ready
+    READY, // All player ready
+    COUNTDOWN, // Countdown to start the click
+    ACTION, // Clicking in the game
 }
