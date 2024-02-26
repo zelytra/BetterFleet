@@ -18,8 +18,8 @@
       "totalPlayer": "Joueurs Total"
     },
     "player": {
-      "notReady": "Pas prêts",
-      "ready": "Est prêts",
+      "notReady": "Pas prêt",
+      "ready": "Est prêt",
       "status": {
         "0": "Joueur hors ligne",
         "1": "Joueur en ligne",
