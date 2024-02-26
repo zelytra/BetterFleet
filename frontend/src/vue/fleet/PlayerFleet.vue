@@ -1,7 +1,7 @@
 <template>
   <div class="player-fleet-wrapper">
     <div class="content username">
-      <span class="user-icon">{{ player.username.charAt(0) }}</span>
+      <span class="user-icon" :style="{backgroundColor:Utils.generateRandomColor()}">{{ player.username.charAt(0) }}</span>
       <p>{{ player.username }}</p>
       <img v-if="player.isMaster" src="@/assets/icons/key.svg"/>
     </div>
@@ -21,6 +21,7 @@
 import {PropType} from "vue";
 import {Fleet, Player} from "@/objects/Fleet.ts";
 import {useI18n} from "vue-i18n";
+import {Utils} from "@/objects/Utils.ts";
 
 const {t} = useI18n()
 defineProps({
@@ -49,7 +50,6 @@ defineProps({
       width: 200px;
 
       .user-icon {
-        background: #32D499;
         border-radius: 50%;
         width: 24px;
         height: 24px;
