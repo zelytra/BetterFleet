@@ -2,7 +2,7 @@
 name = "better_fleet"
 version = "0.1.0"
 description = "To kill FleetCreator"
-authors = ["Zelytra"]
+authors = ["Zelytra","dadodasyra"]
 license = ""
 repository = ""
 default-run = "better_fleet"
