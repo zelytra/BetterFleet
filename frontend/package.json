@@ -24,7 +24,7 @@
     "sass": "^1.71.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
-    "prettier": "^2.8.4",
+    "prettier": "^3.2.5",
     "vue-router": "^4.2.2",
     "vue-tsc": "^1.8.27"
   }
