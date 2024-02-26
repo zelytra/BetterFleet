@@ -13,9 +13,9 @@ use std::ffi::CStr;
 use std::fs::File;
 use std::io::BufReader;
 use std::mem::size_of;
-use crate::process_finder;
 use std::str;
 use serde_json::Error;
+use crate::api::process_finder;
 
 const MAX_PATH: usize = 260;
 const MAX_MODULE_NAME32: usize = 255;

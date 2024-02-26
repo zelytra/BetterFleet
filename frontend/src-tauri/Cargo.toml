@@ -21,6 +21,9 @@ tauri = { version = "1.6.0", features = [] }
 winapi = { version = "0.3", features = ["processenv", "memoryapi", "processthreadsapi", "handleapi", "tlhelp32"] }
 byteorder = "1.5.0"
 sysinfo = "*"
+regex = "1.10.3"
+pcap = "1.2.0"
+etherparse = "0.14.2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
