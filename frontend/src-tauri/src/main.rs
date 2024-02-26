@@ -14,29 +14,14 @@ use crate::memory_helper::ReadMemory;
 
 
 fn main() {
-    /*Builder::default()
+    Builder::default()
         .invoke_handler(tauri::generate_handler![
-      find_pid
+            find_pid,
+            get_player_count,
+            get_player_name
     ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");*/
-
-    let rm: ReadMemory = match ReadMemory::new("SoTGame.exe") {
-        Ok(rm) => rm,
-        Err(e) => {
-            eprintln!("Error while creating ReadMemory instance: {}", e);
-            return;
-        }
-    };
-
-    unsafe {
-        let player_name = get_player_name(rm);
-        println!("Player Name: {:?}", player_name);
-    }
-    unsafe {
-        let player_count = get_player_count(rm);
-        println!("Player count: {:?}", player_count);
-    }
+        .expect("error while running tauri application");
 }
 
 /**
@@ -58,14 +43,16 @@ fn find_pid(process: String) -> Vec<String> {
  * @return The player count or None
  */
 #[command]
-unsafe fn get_player_count(rm: ReadMemory) -> Option<u32> {
-    return match GetPlayerCount::get_player_count(rm) {
-        Some(player_count) => {
-            Some(player_count)
-        },
-        None => {
-            eprintln!("An error occurred while getting the player count.");
-            None
+fn get_player_count(rm: ReadMemory) -> Option<u32> {
+    unsafe {
+        return match GetPlayerCount::get_player_count(rm) {
+            Some(player_count) => {
+                Some(player_count)
+            },
+            None => {
+                eprintln!("An error occurred while getting the player count.");
+                None
+            }
         }
     }
 }
@@ -74,17 +61,19 @@ unsafe fn get_player_count(rm: ReadMemory) -> Option<u32> {
  * This function is used to get the player name in the game
  *
  * @param rm: The ReadMemory instance to use to read the memory
- * @return The player name or None
+ * @return The player name or None or "Player" if the player didn't join the game yet
  */
 #[command]
-unsafe fn get_player_name(rm: ReadMemory) -> Option<String> {
-    return match GetPlayerName::get_player_name(rm) {
-        Some(player_name) => {
-            Some(player_name)
-        },
-        None => {
-            eprintln!("An error occurred while getting the player name.");
-            None
+fn get_player_name(rm: ReadMemory) -> Option<String> {
+    unsafe {
+        return match GetPlayerName::get_player_name(rm) {
+            Some(player_name) => {
+                Some(player_name)
+            },
+            None => {
+                eprintln!("An error occurred while getting the player name.");
+                None
+            }
         }
     }
 }

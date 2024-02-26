@@ -1,7 +1,7 @@
 use std::str;
 use sysinfo::{System};
 
-pub(crate) struct ProcessFinder;
+pub struct ProcessFinder;
 
 impl ProcessFinder {
     pub fn find_pid_of(process_name: &str) -> Vec<String> {

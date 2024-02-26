@@ -1,12 +1,7 @@
-extern crate winapi;
-
-use winapi::um::winnt::{HANDLE};
 use crate::memory_helper::ReadMemory;
 use crate::offsets_getter::Offsets;
 
-pub(crate) struct GetPlayerName {
-    process_handle: HANDLE,
-}
+pub struct GetPlayerName;
 
 impl GetPlayerName {
     pub unsafe fn get_player_name(rm: ReadMemory) -> Option<String> {

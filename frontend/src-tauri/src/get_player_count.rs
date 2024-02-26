@@ -1,14 +1,9 @@
-extern crate winapi;
-
 use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::Cursor;
-use winapi::um::winnt::{HANDLE};
 use crate::memory_helper::ReadMemory;
 use crate::offsets_getter::Offsets;
 
-pub(crate) struct GetPlayerCount {
-    process_handle: HANDLE,
-}
+pub struct GetPlayerCount;
 
 impl GetPlayerCount {
     pub unsafe fn get_player_count(rm: ReadMemory) -> Option<u32> {
