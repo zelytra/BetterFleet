@@ -23,7 +23,7 @@ onMounted(() => {
   }
 })
 
-function getRandomEnum<T>(anEnum: T): T[keyof T] {
+function getRandomEnum<T>(anEnum: any): T[keyof T] {
   const enumValues = Object.values(anEnum) as T[keyof T][];
   const randomIndex = Math.floor(Math.random() * enumValues.length);
   return enumValues[randomIndex];
