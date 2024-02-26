@@ -21,10 +21,13 @@
         alt="update-button"
       >
       <div
+        v-if="UserStore.user.name"
         class="user-icon"
         :style="{backgroundColor:Utils.generateRandomColor()}"
       >
-        <p>{{ UserStore.user.name.charAt(0) }}</p>
+        <p>
+          {{ UserStore.user.name.charAt(0) }}
+        </p>
       </div>
       <p>v{{ version }}</p>
     </div>

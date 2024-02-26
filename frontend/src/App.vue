@@ -18,8 +18,19 @@
 import Header from "@/components/global/Header.vue";
 import Loading from "@/vue/templates/Loading.vue";
 import {useI18n} from "vue-i18n";
+import {UserStore} from "@/objects/stores/Preferences.ts";
+import {LocalKey} from "@/objects/stores/LocalStore.ts";
+import {onMounted} from "vue";
 
 const {t} = useI18n();
+
+onMounted(() => {
+  UserStore.init()
+})
+
+window.onbeforeunload = () => {
+  window.localStorage.setItem(LocalKey.USER_STORE, JSON.stringify(UserStore.user));
+};
 </script>
 
 <style scoped lang="scss">
