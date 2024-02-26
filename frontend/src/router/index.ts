@@ -1,8 +1,8 @@
 import {createWebHistory, createRouter} from "vue-router";
 import Home from "@/components/Home.vue";
-import fleet from "@/assets/icons/boat.svg"
+import fleet from "@/assets/icons/navigation.svg"
 import config from "@/assets/icons/config.svg"
-import sot from "@/assets/icons/sot.svg"
+import sot from "@/assets/icons/logo.svg"
 import Fleet from "@/components/Fleet.vue";
 import Config from "@/components/Config.vue";
 
