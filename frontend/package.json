@@ -20,7 +20,7 @@
     "@tauri-apps/cli": "^1.5.10",
     "@vitejs/plugin-vue": "^5.0.4",
     "eslint": "^8.57.0",
-    "eslint-plugin-vue": "^9.21.1",
+    "eslint-plugin-vue": "^9.22.0",
     "sass": "^1.71.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
