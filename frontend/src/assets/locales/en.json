@@ -1,0 +1,36 @@
+{
+  "appName": "Better Fleet",
+  "loading": {
+    "loading": "Loading...",
+    "targetGame": "Searching game",
+    "targetLoading": "Game detected. Loading ships.",
+    "tips": "This can take a while..."
+  },
+  "session": {
+    "choice": {
+      "createComment": "TODO",
+      "createSession": "Create a session",
+      "joinComment": "TODO",
+      "joinSession": "Join a session"
+    },
+    "informations": {
+      "title": "Informations",
+      "totalPlayer": "Total Player"
+    },
+    "player": {
+      "notReady": "Not ready",
+      "ready": "Is ready",
+      "status": {
+        "0": "Player offline",
+        "1": "Player online",
+        "2": "In game"
+      }
+    },
+    "status": {
+      "action": "TODO",
+      "countdown": "Launching in",
+      "ready": "Ready",
+      "waiting": "Waiting"
+    }
+  }
+}

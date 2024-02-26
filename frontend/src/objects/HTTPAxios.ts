@@ -22,7 +22,7 @@ export class HTTPAxios {
         });
 
         this.axios.interceptors.request.use(async config => {
-            config.headers = this.header;
+            config.headers.set(this.header)
             return config;
         }, error => {
             return Promise.reject(error);

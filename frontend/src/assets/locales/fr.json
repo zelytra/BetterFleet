@@ -1,0 +1,36 @@
+{
+  "appName": "Better Fleet",
+  "loading": {
+    "loading": "Chargement en cours...",
+    "targetGame": "Détection du jeu en cours",
+    "targetLoading": "Jeu détecté. Préparation des navires.",
+    "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé."
+  },
+  "session": {
+    "choice": {
+      "createComment": "Goûtez à la liberté de régner sur les flots en pirate !",
+      "createSession": "Créer une session",
+      "joinComment": "Hissons les voiles, monte à bord et rejoins l'équipage !",
+      "joinSession": "Rejoindre une session"
+    },
+    "informations": {
+      "title": "Informations",
+      "totalPlayer": "Joueurs Total"
+    },
+    "player": {
+      "notReady": "Pas prêt",
+      "ready": "Est prêt",
+      "status": {
+        "0": "Joueur hors ligne",
+        "1": "Joueur en ligne",
+        "2": "En jeu"
+      }
+    },
+    "status": {
+      "action": "Action",
+      "countdown": "Lancement dans ",
+      "ready": "Prêt",
+      "waiting": "En attente"
+    }
+  }
+}
