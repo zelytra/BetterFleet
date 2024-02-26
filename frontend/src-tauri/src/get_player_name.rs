@@ -1,6 +1,5 @@
 extern crate winapi;
 
-use std::char::decode_utf16;
 use winapi::um::winnt::{HANDLE};
 use crate::memory_helper::ReadMemory;
 use crate::offsets_getter::Offsets;
@@ -11,24 +10,7 @@ pub(crate) struct GetPlayerName {
 
 impl GetPlayerName {
     pub unsafe fn get_player_name(rm: ReadMemory) -> Option<String> {
-        let base_address = rm.base_address;
-
-        let u_world_offset = match rm.read_ulong(base_address + rm.u_world_base + 3) {
-            Ok(offset) => offset,
-            Err(e) => {
-                eprintln!("Error while reading u_world_offset: {}", e);
-                return None
-            }
-        };
-
-        let u_world = base_address + rm.u_world_base + (u_world_offset as usize) + 7;
-        let world_address = match rm.read_ptr(u_world) {
-            Ok(address) => address,
-            Err(e) => {
-                eprintln!("Error while reading world_address: {}", e);
-                return None;
-            }
-        };
+        let world_address = rm.world_address;
 
         let offsets = Offsets::new().unwrap();
 
@@ -38,6 +20,9 @@ impl GetPlayerName {
         let player_state = rm.read_ptr(player_controller + offsets.get_offset("Controller.PlayerState")).unwrap(); // PlayerState inherits controller
         let name_location = rm.read_ptr(player_state + offsets.get_offset("PlayerState.PlayerName")).unwrap();
         let player_name = rm.read_name_string(name_location, 32).unwrap();
+
+        let ping = rm.read_bytes(player_state + offsets.get_offset("PlayerState.Ping"), 1).unwrap();
+        println!("Ping: {:?}", ping[0]);
         return Some(player_name);
     }
 }

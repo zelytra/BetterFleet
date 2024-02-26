@@ -1,6 +1,5 @@
 extern crate winapi;
 
-use std::collections::HashMap;
 use byteorder::{LittleEndian, ReadBytesExt};
 use std::io::Cursor;
 use winapi::um::winnt::{HANDLE};
@@ -13,26 +12,7 @@ pub(crate) struct GetPlayerCount {
 
 impl GetPlayerCount {
     pub unsafe fn get_player_count(rm: ReadMemory) -> Option<u32> {
-        let base_address = rm.base_address;
-
-        let u_world_offset = match rm.read_ulong(base_address + rm.u_world_base + 3) {
-            Ok(offset) => offset,
-            Err(e) => {
-                eprintln!("Error while reading u_world_offset: {}", e);
-                return None;
-            }
-        };
-
-        let u_world = base_address + rm.u_world_base + (u_world_offset as usize) + 7;
-        let world_address = match rm.read_ptr(u_world) {
-            Ok(address) => address,
-            Err(e) => {
-                eprintln!("Error while reading world_address: {}", e);
-                return None;
-            }
-        };
-
-        // println!("u_world: {}", world_address);
+        let world_address = rm.world_address;
 
         let offsets = Offsets::new().unwrap();
 
@@ -107,11 +87,12 @@ impl GetPlayerCount {
             let i_value2 = cursor.read_i32::<LittleEndian>().unwrap();
             let crews = (q_value, i_value1, i_value2);
 
+            println!("Crew number: {:?}", crews.1);
+
             // println!("Reading crews: {:?}", crews);
 
             for x in 0..crews.1 {
                 // println!("Reading crew: {:?}", x);
-                // println!("Crew.Size: {:?}", offsets.get_offset("Crew.Size") * x as usize);
                 // println!("Memory address: {:?}", crews.0 as usize + offsets.get_offset("Crew.Size") * x as usize);
 
                 let crew_raw = rm.read_bytes(
@@ -126,6 +107,7 @@ impl GetPlayerCount {
                 );
 
                 // println!("Reading crew: {:?}", crew);
+                println!("Crew.Size: {:?}", crew.1 as u32);
                 if crew.1 > 0 {
                     player_count += crew.1 as u32;
                 }

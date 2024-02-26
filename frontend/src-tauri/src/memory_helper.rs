@@ -14,7 +14,6 @@ use std::fs::File;
 use std::io::BufReader;
 use std::mem::size_of;
 use crate::process_finder;
-use std::mem::transmute;
 use std::str;
 use serde_json::Error;
 
@@ -30,7 +29,8 @@ pub(crate) struct ReadMemory {
     pub(crate) pid: u32,
     pub(crate) base_address: usize,
     pub(crate) g_name_start_address: usize,
-    pub(crate) u_world_base: usize
+    pub(crate) u_world_base: usize,
+    pub(crate) world_address: usize
 }
 
 impl ReadMemory {
@@ -64,7 +64,8 @@ impl ReadMemory {
             pid,
             base_address,
             g_name_start_address: 0,
-            u_world_base: 0
+            u_world_base: 0,
+            world_address: 0
         };
 
         let bulk_scan = match instance.read_memory_segment(base_address, 1_000_000_000) {
@@ -96,6 +97,25 @@ impl ReadMemory {
             Ok(value) => instance.g_name_start_address = value,
             Err(e) => return Err(format!("Failed to read pointer: {}", e)),
         }
+
+        let u_world_offset = match instance.read_ulong(base_address + instance.u_world_base + 3) {
+            Ok(offset) => offset,
+            Err(e) => {
+                eprintln!("Error while reading u_world_offset: {}", e);
+                return Err(format!("Failed to read u_world_offset: {}", e));
+            }
+        };
+
+        let u_world = base_address + instance.u_world_base + (u_world_offset as usize) + 7;
+        let world_address = match instance.read_ptr(u_world) {
+            Ok(address) => address,
+            Err(e) => {
+                eprintln!("Error while reading world_address: {}", e);
+                return Err(format!("Failed to read world_address: {}", e));
+            }
+        };
+
+        instance.world_address = world_address;
 
         println!("gObject offset: {:x}", g_object_base.unwrap());
         println!("uWorld offset: {:x}", u_world_base.unwrap());

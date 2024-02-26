@@ -6,6 +6,7 @@
   "CrewService.Crews": 1184,
   "GameInstance.LocalPlayers": 56,
   "Player.PlayerController": 48,
+  "PlayerState.Ping": 972,
   "PlayerState.PlayerName": 976,
   "SceneComponent.ActorCoordinates": 300,
   "World.GameState": 88,
