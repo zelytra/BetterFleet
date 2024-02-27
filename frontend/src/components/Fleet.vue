@@ -1,7 +1,7 @@
 <template>
   <div class="lobby-wrapper">
-    <FleetSessionChoice v-if="false" />
-    <FleetLobby v-if="true" :session="session" />
+    <FleetLobby v-if="session.isConnected()" :session="session" />
+    <FleetSessionChoice v-else :session="session" />
   </div>
 </template>
 
