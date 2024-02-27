@@ -131,7 +131,8 @@ pub fn get_capture_result(device: Device) -> (Option<String>, Option<Capture<Act
 
 pub fn parse_packets(
     current_capture_id: &Arc<Mutex<usize>>,
-    mut cap: Capture<Active>
+    mut cap: Capture<Active>,
+    local_destination_port: u16
 ) {
     let capture_id = *current_capture_id.lock().unwrap();
 
@@ -164,8 +165,17 @@ pub fn parse_packets(
                         continue;
                     }
 
+                    //The content is already filtered by the pcap filter but we want to get the IP
                     let key = key_option.unwrap();
-                    println!("Key: {:?}", key);
+                    if !key.port1.is_none() && key.port1.unwrap() == local_destination_port {
+                        println!("Port 1 Packet from {}:{} ",
+                                 key.address2,
+                                 key.port2.unwrap());
+                    } else if !key.port2.is_none() && key.port2.unwrap() == local_destination_port {
+                        println!("Port 2 Packet from {}:{}",
+                                 key.address1,
+                                 key.port1.unwrap());
+                    }
                 }
             }
         }
