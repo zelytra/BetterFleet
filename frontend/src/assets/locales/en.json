@@ -1,5 +1,14 @@
 {
   "appName": "Better Fleet",
+  "firstLogin": {
+    "button": {
+      "description": "TODO",
+      "title": "TODO"
+    },
+    "description": "TODO",
+    "tips": "TODO",
+    "title": "TODO"
+  },
   "loading": {
     "loading": "Loading...",
     "targetGame": "Searching game",
