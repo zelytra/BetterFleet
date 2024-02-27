@@ -20,7 +20,12 @@
       "createComment": "Goûtez à la liberté de régner sur les flots en pirate !",
       "createSession": "Créer une session",
       "joinComment": "Hissons les voiles, monte à bord et rejoins l'équipage !",
-      "joinSession": "Rejoindre une session"
+      "joinSession": "Rejoindre une session",
+      "modal": {
+        "button": "Rejoindre la session",
+        "comment": "Vous devez saisir ci-dessous l'identifiant que le Maître de jeu vous a envoyé pour pouvoir rejoindre la session.",
+        "title": "Insérer votre identifiant de session."
+      }
     },
     "informations": {
       "title": "Informations",

@@ -1,11 +1,6 @@
 <template>
-  <div
-    class="card"
-    :style="{background:background}"
-  >
-    <img
-      src="@/assets/banners/session.svg"
-    >
+  <div class="card" :style="{ background: background }">
+    <img src="@/assets/banners/session.svg" />
     <div class="title-content">
       <h2>{{ title }}</h2>
       <slot />
@@ -15,13 +10,15 @@
 
 <script setup lang="ts">
 defineProps({
-  title: {type: String, required: true},
+  title: { type: String, required: true },
   background: {
-    type: String, required: false, default: () => {
-      return "linear-gradient(270deg, rgba(50, 212, 153, 0.20) 0%, rgba(50, 212, 153, 0.07) 108.45%)"
-    }
-  }
-})
+    type: String,
+    required: false,
+    default: () => {
+      return "linear-gradient(270deg, rgba(50, 212, 153, 0.20) 0%, rgba(50, 212, 153, 0.07) 108.45%)";
+    },
+  },
+});
 </script>
 
 <style scoped lang="scss">
@@ -35,6 +32,7 @@ defineProps({
   gap: 25px;
   box-sizing: border-box;
   cursor: pointer;
+  transition: all 300ms cubic-bezier(0.39, 0.575, 0, 1.005); /* custom */
 
   &:hover {
     transform: translateY(-15px);
