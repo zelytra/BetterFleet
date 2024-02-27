@@ -20,7 +20,12 @@
       "createComment": "TODO",
       "createSession": "Create a session",
       "joinComment": "TODO",
-      "joinSession": "Join a session"
+      "joinSession": "Join a session",
+      "modal": {
+        "button": "Join the session",
+        "comment": "TODO",
+        "title": "TODO"
+      }
     },
     "informations": {
       "title": "Informations",

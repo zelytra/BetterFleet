@@ -9,6 +9,7 @@
           emits('update:isModalOpen', false);
         }
       "
+      @keydown.esc="emits('update:isModalOpen', false)"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -57,12 +58,8 @@ const emits = defineEmits<{
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 12px;
   display: flex;
   justify-content: center;
-  max-width: 90%;
-  min-width: 40%;
-  height: 80%;
   background: var(--secondary-background);
   border-radius: 5px;
 

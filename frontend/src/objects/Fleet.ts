@@ -5,15 +5,17 @@ export class Fleet {
   public servers: SotServer[];
   public status: SessionStatus;
 
-  constructor(sessionId: string) {
-    this.sessionId = sessionId;
+  constructor() {
+    this.sessionId = "";
     this.sessionName = "TODO";
     this.players = [];
     this.servers = [];
     this.status = SessionStatus.WAITING;
   }
 
-  joinSession(): void {}
+  joinSession(sessionId: string): void {
+    this.sessionId = sessionId;
+  }
 
   leaveSession(): void {}
 
@@ -30,13 +32,6 @@ export class Fleet {
    */
   public getMasters(): Player[] {
     return this.players.filter((player) => player.isMaster);
-  }
-
-  /**
-   * @return boolean If the user is connected to the session or not
-   */
-  public isConnected() {
-    return false;
   }
 }
 

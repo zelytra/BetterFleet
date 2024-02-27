@@ -1,6 +1,6 @@
 <template>
   <div class="lobby-wrapper">
-    <FleetLobby v-if="session.isConnected()" :session="session" />
+    <FleetLobby v-if="session.sessionId" :session="session" />
     <FleetSessionChoice v-else :session="session" />
   </div>
 </template>
@@ -11,7 +11,7 @@ import FleetLobby from "@/components/fleet/FleetLobby.vue";
 import { Fleet, PlayerStates } from "@/objects/Fleet.ts";
 import { onMounted, ref } from "vue";
 
-const session = ref<Fleet>(new Fleet("xxx"));
+const session = ref<Fleet>(new Fleet());
 onMounted(() => {
   for (let x = 0; x < 100; x++) {
     session.value.players.push({
