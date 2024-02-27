@@ -1,5 +1,14 @@
 {
   "appName": "Better Fleet",
+  "firstLogin": {
+    "button": {
+      "description": "Hissons les voiles, monte à bord et rejoins l'équipage !",
+      "title": "Commencer l’aventure !"
+    },
+    "description": "Veuillez saisir le même nom d'utilisateur que celui utilisé dans votre jeu afin d'assurer une meilleure cohérence.",
+    "tips": "Vous pourrez modifier votre pseudo dans le menu de l’application dans la section “Préférences”.",
+    "title": "Indiquez votre pseudo  Sea Of Thieves"
+  },
   "loading": {
     "loading": "Chargement en cours...",
     "targetGame": "Détection du jeu en cours",
