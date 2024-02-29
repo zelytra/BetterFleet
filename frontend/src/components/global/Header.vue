@@ -7,26 +7,18 @@
         class="router-link"
         :to="route.path"
       >
-        <img
-          v-if="route.meta"
-          :src="route.meta.icon"
-          alt="nax-icon"
-        >
+        <img v-if="route.meta" :src="route.meta.icon" alt="nax-icon" />
       </router-link>
     </nav>
     <div class="bottom-header">
-      <img
-        class="update"
-        src="@/assets/icons/update.svg"
-        alt="update-button"
-      >
+      <img class="update" src="@/assets/icons/update.svg" alt="update-button" />
       <div
-        v-if="UserStore.user.name"
+        v-if="UserStore.player.username"
         class="user-icon"
-        :style="{backgroundColor:Utils.generateRandomColor()}"
+        :style="{ backgroundColor: Utils.generateRandomColor() }"
       >
         <p>
-          {{ UserStore.user.name.charAt(0) }}
+          {{ UserStore.player.username.charAt(0) }}
         </p>
       </div>
       <p>v{{ version }}</p>
@@ -35,14 +27,12 @@
 </template>
 
 <script setup lang="ts">
+import { routes } from "@/router";
+import { ref } from "vue";
+import { UserStore } from "../../objects/stores/UserStore.ts";
+import { Utils } from "@/objects/Utils.ts";
 
-import {routes} from "@/router";
-import {ref} from "vue";
-import {UserStore} from "../../objects/stores/Preferences.ts";
-import {Utils} from "@/objects/Utils.ts";
-
-const version = ref(import.meta.env.VITE_VERSION)
-
+const version = ref(import.meta.env.VITE_VERSION);
 </script>
 
 <style scoped lang="scss">
@@ -55,7 +45,6 @@ const version = ref(import.meta.env.VITE_VERSION)
   justify-content: space-between;
   box-sizing: border-box;
 
-
   nav {
     display: flex;
     flex-direction: column;
@@ -63,13 +52,12 @@ const version = ref(import.meta.env.VITE_VERSION)
     align-items: center;
     gap: 24px;
 
-
     .router-link-active {
       img {
-        filter: invert(48%) sepia(70%) saturate(408%) hue-rotate(110deg) brightness(92%) contrast(98%);
+        filter: invert(48%) sepia(70%) saturate(408%) hue-rotate(110deg)
+          brightness(92%) contrast(98%);
       }
     }
-
 
     img {
       width: 32px;
@@ -98,10 +86,11 @@ const version = ref(import.meta.env.VITE_VERSION)
       width: 24px;
       height: 24px;
       border-radius: 50%;
-      display: flex;justify-content: center;
+      display: flex;
+      justify-content: center;
       align-items: center;
       padding: 6px;
-      p{
+      p {
         user-select: none;
         text-align: center;
         margin-top: 4px;
@@ -110,7 +99,5 @@ const version = ref(import.meta.env.VITE_VERSION)
       }
     }
   }
-
-
 }
 </style>

@@ -32,7 +32,7 @@
 import { useI18n } from "vue-i18n";
 import InputText from "@/vue/form/InputText.vue";
 import { ref } from "vue";
-import { UserStore } from "@/objects/stores/Preferences.ts";
+import { UserStore } from "@/objects/stores/UserStore.ts";
 
 const { t } = useI18n();
 const usernameInput = ref<string>("");
@@ -46,7 +46,7 @@ defineEmits<{
 }>();
 
 function updateUsername() {
-  UserStore.user.name = usernameInput.value;
+  UserStore.player.username = usernameInput.value;
 }
 </script>
 

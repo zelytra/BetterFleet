@@ -1,25 +1,26 @@
 <template>
-  <div class="lobby-wrapper">
-    <FleetLobby v-if="session.sessionId" :session="session" />
-    <FleetSessionChoice v-else :session="session" />
+  <div v-if="UserStore.player.fleet" class="lobby-wrapper">
+    <FleetLobby
+      v-if="UserStore.player.fleet.sessionId"
+      :session="UserStore.player.fleet"
+    />
+    <FleetSessionChoice v-else :session="UserStore.player.fleet" />
   </div>
 </template>
 
 <script setup lang="ts">
 import FleetSessionChoice from "@/components/fleet/FleetSessionChoice.vue";
 import FleetLobby from "@/components/fleet/FleetLobby.vue";
-import { Fleet, PlayerStates } from "@/objects/Fleet.ts";
-import { onMounted, ref } from "vue";
+import { Fleet } from "@/objects/Fleet.ts";
+import { onMounted, onUnmounted } from "vue";
+import { UserStore } from "@/objects/stores/UserStore.ts";
 
-const session = ref<Fleet>(new Fleet());
-onMounted(() => {
-  for (let x = 0; x < 100; x++) {
-    session.value.players.push({
-      username: "Oskour",
-      status: PlayerStates.IN_GAME,
-      isReady: x % 2 == 0,
-      isMaster: x % 2 == 0,
-    });
+UserStore.player.fleet = new Fleet();
+onMounted(() => {});
+
+onUnmounted(() => {
+  if (UserStore.player.fleet) {
+    UserStore.player.fleet.leaveSession();
   }
 });
 </script>

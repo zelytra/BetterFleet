@@ -13,7 +13,9 @@
     <h1>{{ t("loading.targetGame") }}</h1>
   </Loading>
   <FirstLogin
-    :is-display="!UserStore.user.name || UserStore.user.name.length === 0"
+    :is-display="
+      !UserStore.player.username || UserStore.player.username.length === 0
+    "
   />
 </template>
 
@@ -21,7 +23,7 @@
 import Header from "@/components/global/Header.vue";
 import Loading from "@/vue/templates/Loading.vue";
 import { useI18n } from "vue-i18n";
-import { UserStore } from "@/objects/stores/Preferences.ts";
+import { UserStore } from "@/objects/stores/UserStore.ts";
 import { LocalKey } from "@/objects/stores/LocalStore.ts";
 import { onMounted } from "vue";
 import FirstLogin from "@/vue/templates/FirstLogin.vue";
@@ -35,7 +37,7 @@ onMounted(() => {
 window.onbeforeunload = () => {
   window.localStorage.setItem(
     LocalKey.USER_STORE,
-    JSON.stringify(UserStore.user),
+    JSON.stringify(UserStore.player),
   );
 };
 </script>
