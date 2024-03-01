@@ -1,6 +1,7 @@
 package fr.zelytra.session;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.fleet.Player;
 import io.quarkus.logging.Log;
@@ -97,14 +98,16 @@ public class SessionSocket {
     }
 
     private void broadcastSessionUpdate(String sessionId) {
+        Log.info("broadcast");
         SessionManager manager = SessionManager.getInstance();
 
         if (!manager.isSessionExist(sessionId)) return;
-
+        Log.info("manager exist");
         Fleet fleet = manager.getFleetFromId(sessionId);
         assert fleet != null;
 
         // Send to all players the Fleet data
+        Gson gson = new Gson();
         for (Player player : fleet.getPlayers()) {
             player.getSocket().getAsyncRemote().sendObject(fleet);
         }
