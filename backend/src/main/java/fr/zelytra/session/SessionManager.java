@@ -2,9 +2,11 @@ package fr.zelytra.session;
 
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.fleet.Player;
+import io.quarkus.logging.Log;
 import jakarta.annotation.Nullable;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -37,10 +39,14 @@ public class SessionManager {
 
     /**
      * Creates a new session with a unique ID and adds it to the sessions map.
+     *
+     * @return UUID of the created session
      */
-    public void createSession() {
+    public String createSession() {
         String uuid = UUID.randomUUID().toString().substring(0, 7);
         sessions.put(uuid, new Fleet(uuid));
+        Log.info("[" + uuid + "] Session created !");
+        return uuid;
     }
 
     /**
@@ -63,13 +69,17 @@ public class SessionManager {
      */
     public boolean joinSession(String sessionId, Player player) {
         // First, leave any session the player might currently be in
-        leaveSession(player);
+        if (getPlayerFromSessionId(player.getSocket().getId()) != null) {
+            leaveSession(player);
+        }
 
         Fleet fleet = getFleetFromId(sessionId);
         if (fleet == null) {
+            Log.error("[" + sessionId + "] Session doesnt exist for player : " + player.getUsername());
             return false;
         }
         fleet.getPlayers().add(player);
+        Log.info("[" + sessionId + "] " + player.getUsername() + " Join the session !");
         return true;
     }
 
@@ -80,9 +90,13 @@ public class SessionManager {
      */
     public void leaveSession(Player player) {
         for (Fleet fleet : sessions.values()) {
-            if (fleet.getPlayers().remove(player)) {
-                // Assuming a player can only be in one session at a time.
-                break;
+            fleet.getPlayers().remove(player);
+            Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
+
+            // Clean empty session
+            if (fleet.getPlayers().isEmpty()) {
+                sessions.remove(fleet.getSessionId());
+                Log.info("[" + fleet.getSessionId() + "] Has been disbanded");
             }
         }
     }
@@ -97,4 +111,24 @@ public class SessionManager {
     public Fleet getFleetFromId(String sessionId) {
         return sessions.getOrDefault(sessionId, null);
     }
+
+    /**
+     * Retrieves a Player from any session by their WebSocket session ID.
+     *
+     * @param sessionId The WebSocket session ID of the player.
+     * @return The Player with the matching WebSocket session ID, or null if not found.
+     */
+    public Player getPlayerFromSessionId(String sessionId) {
+        for (Map.Entry<String, Fleet> sessionEntry : sessions.entrySet()) {
+            Fleet fleet = sessionEntry.getValue();
+            for (Player player : fleet.getPlayers()) {
+                // Assuming the Player class has a method to get the WebSocket Session ID
+                if (player.getSocket().getId().equals(sessionId)) {
+                    return player;
+                }
+            }
+        }
+        return null; // Player not found in any session
+    }
+
 }

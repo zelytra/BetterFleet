@@ -1,86 +1,86 @@
-import { UserStore } from "@/objects/stores/UserStore.ts";
+import {UserStore} from "@/objects/stores/UserStore.ts";
 
 export class Fleet {
-  public sessionId: string;
-  public sessionName: string;
-  public players: Player[];
-  public servers: SotServer[];
-  public status: SessionStatus;
-  public socket?: WebSocket;
+    public sessionId: string;
+    public sessionName: string;
+    public players: Player[];
+    public servers: SotServer[];
+    public status: SessionStatus;
+    public socket?: WebSocket;
 
-  constructor() {
-    this.sessionId = "";
-    this.sessionName = "TODO";
-    this.players = [];
-    this.servers = [];
-    this.status = SessionStatus.WAITING;
-  }
-
-  joinSession(sessionId: string): void {
-    if (this.socket) {
-      this.socket.close();
+    constructor() {
+        this.sessionId = "";
+        this.sessionName = "";
+        this.players = [];
+        this.servers = [];
+        this.status = SessionStatus.WAITING;
     }
 
-    this.socket = new WebSocket(
-      import.meta.env.VITE_SOCKET_HOST + "/" + sessionId,
-    );
-    this.socket.onopen = () => {
-      if (!this.socket) return;
-      this.socket.send(JSON.stringify(UserStore.player));
-    };
-  }
+    joinSession(sessionId: string): void {
+        if (this.socket) {
+            this.socket.close();
+        }
 
-  leaveSession(): void {
-    if (!this.socket) {
-      return;
+        this.socket = new WebSocket(
+            import.meta.env.VITE_SOCKET_HOST + "/" + sessionId,
+        );
+        this.socket.onopen = () => {
+            if (!this.socket) return;
+            this.socket.send(JSON.stringify(UserStore.player));
+        };
     }
-    this.socket.close();
-  }
 
-  getReadyPlayers(): Player[] {
-    return this.players.filter((player) => player.isReady);
-  }
+    leaveSession(): void {
+        if (!this.socket) {
+            return;
+        }
+        this.socket.close();
+    }
 
-  public static getFormatedStatus(player: Player) {
-    return player.status.toString().toLowerCase().replace("_", "-");
-  }
+    getReadyPlayers(): Player[] {
+        return this.players.filter((player) => player.isReady);
+    }
 
-  /**
-   * @return List of the players with the right master
-   */
-  public getMasters(): Player[] {
-    return this.players.filter((player) => player.isMaster);
-  }
+    public static getFormatedStatus(player: Player) {
+        return player.status.toString().toLowerCase().replace("_", "-");
+    }
+
+    /**
+     * @return List of the players with the right master
+     */
+    public getMasters(): Player[] {
+        return this.players.filter((player) => player.isMaster);
+    }
 }
 
 export interface Player extends Preferences {
-  username: string;
-  status: PlayerStates;
-  isReady: boolean;
-  isMaster: boolean;
-  fleet?: Fleet;
+    username: string;
+    status: PlayerStates;
+    isReady: boolean;
+    isMaster: boolean;
+    fleet?: Fleet;
 }
 
 export interface Preferences {
-  lang?: string;
+    lang?: string;
 }
 
 export interface SotServer {
-  ip: string;
-  port: number;
-  location: string;
-  connectedPlayers: Player[];
+    ip: string;
+    port: number;
+    location: string;
+    connectedPlayers: Player[];
 }
 
 export enum PlayerStates {
-  OFFLINE, // Game not detected
-  ONLINE, // Game detected and open but not in game
-  IN_GAME, // Player in a server
+    OFFLINE="OFFLINE", // Game not detected
+    ONLINE="ONLINE", // Game detected and open but not in game
+    IN_GAME = "IN_GAME", // Player in a server
 }
 
 export enum SessionStatus {
-  WAITING, // Waiting for player to be ready
-  READY, // All player ready
-  COUNTDOWN, // Countdown to start the click
-  ACTION, // Clicking in the game
+    WAITING = "WAITING", // Waiting for player to be ready
+    READY = "READY", // All player ready
+    COUNTDOWN = "COUNTDOWN", // Countdown to start the click
+    ACTION = "ACTION", // Clicking in the game
 }
