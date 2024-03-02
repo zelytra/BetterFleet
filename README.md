@@ -30,6 +30,19 @@ To start using BetterFleet, follow these simple steps:
 3. Launch the app and enter your username.
 4. Begin organizing or joining game sessions!
 
+## What We Have That FleetCreator Doesn't Have (or We Do Better)
+
+- **IPv6 Support:** Our application is future-proof, supporting both IPv4 and IPv6 to ensure connectivity for all users.
+- **Less Performance Usage:** BetterFleet is optimized for efficiency, ensuring that your gaming and application experience is smooth without overburdening your system's resources.
+- **No Ads:** Enjoy a clean, uninterrupted experience without the annoyance of ads.
+- **No Paid Tiers:** Access all features of BetterFleet without any cost. We believe in providing a full experience without locking features behind a paywall.
+- **UX Friendly:** Designed with the user in mind, our interface is intuitive and easy to navigate, making your experience as seamless as possible.
+- **Open Source = Safer = Transparent:** Being open-source means anyone can inspect the code, contributing to a safer and more transparent application.
+- **Automatic Click Between the Same Crew:** Streamline your gameplay with automatic interactions within your crew, enhancing coordination and efficiency.
+- **No Memory Leak:** Unlike FleetCreator, which may consume up to 8GB of RAM after 10 hours, BetterFleet is optimized to prevent memory leaks, ensuring stable performance throughout your gaming sessions.
+- **Faster?:** We aim to be quicker in performance. (Benchmarking in progress to provide concrete data.)
+- **Size of File?:** We are working to keep the application light. (Exact file size to be determined and will be updated.)
+
 ## Credits 👥
 
 - **Development:** Zelytra & Dadodasyara
