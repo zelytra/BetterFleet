@@ -1,4 +1,5 @@
 use std::time::Instant;
+use serde::Serialize;
 
 // Assuming these are your global variables in the `api` module
 #[derive(Clone)]
@@ -9,7 +10,7 @@ pub struct Api {
     pub last_updated_server_ip: Instant
 }
 
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Serialize)]
 pub enum GameStatus {
     Closed,
     Started,
@@ -34,7 +35,6 @@ impl Api {
     * It's updated AT LEAST every 5 seconds. (1-5 secs)
     * This information is prioritized over the others.
     */
-    #[tauri::command]
     pub async fn get_game_status(&self) -> GameStatus {
         self.game_status.clone()
     }
@@ -42,18 +42,15 @@ impl Api {
     /**
     * Server IP, may be updated
     */
-    #[tauri::command]
     pub async fn get_server_ip(&self) -> String {
         self.server_ip.clone()
     }
 
-    #[tauri::command]
 
     pub async fn get_server_port(&self) -> u16 {
         self.server_port
     }
 
-    #[tauri::command]
 
     pub async fn get_last_updated_server_ip(&self) -> Instant {
         self.last_updated_server_ip
