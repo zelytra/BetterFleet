@@ -4,7 +4,10 @@
       <template #content>
         <div class="header-content">
           <img src="@/assets/icons/sot.svg">
-          <p>{{ session.sessionName }}</p>
+          <div class="title-content">
+            <p>{{ session.sessionName }}</p>
+            <p class="id">{{ t('session.id') + ": " }} <span>{{ session.sessionId.toUpperCase() }}</span></p>
+          </div>
         </div>
       </template>
       <template #left-content>
@@ -14,27 +17,33 @@
     <div class="lobby-content">
       <div class="player-table">
         <PlayerFleet
-            v-for="player in session.players.sort((a,b)=>{return (a.isMaster === b.isMaster)? 0 : a.isMaster? -1 : 1;})"
+            v-for="player in computedsession.players.sort((a,b)=>{return (a.isMaster === b.isMaster)? 0 : a.isMaster? -1 : 1;})"
             :player="player"/>
       </div>
       <div class="lobby-details">
-        <div class="top-content">
-          <div class="header-information">
-            <h2>{{ t('session.informations.title') }}</h2>
-          </div>
+        <button :class="{'ready-button':true,'not':!UserStore.player.isReady}" @click="updateStatus">
+          <p v-if="UserStore.player.isReady">{{ t('session.player.ready') }}</p>
+          <p v-else>{{ t('session.player.notReady') }}</p>
+        </button>
+        <div class="details-content">
+          <div class="top-content">
+            <div class="header-information">
+              <h2>{{ t('session.informations.title') }}</h2>
+            </div>
 
-          <div class="information-data">
-            <h3>{{ t('session.informations.totalPlayer') }}</h3>
-            <p>{{ session.players.length }}</p>
-          </div>
+            <div class="information-data">
+              <h3>{{ t('session.informations.totalPlayer') }}</h3>
+              <p>{{ session.players.length }}</p>
+            </div>
 
-          <div class="information-data important">
-            <h3>{{ t('session.informations.totalPlayer') }}</h3>
-            <p>{{ session.players.filter(x => x.isReady).length }} / <span>{{ session.players.length }}</span></p>
+            <div class="information-data important">
+              <h3>{{ t('session.informations.totalPlayer') }}</h3>
+              <p>{{ session.players.filter(x => x.isReady).length }} / <span>{{ session.players.length }}</span></p>
+            </div>
           </div>
-        </div>
-        <div class="session-status">
-          <p>{{ t('session.status.' + SessionStatus[session.status].toString().toLowerCase()) }}</p>
+          <button class="session-status" @click="session.leaveSession()">
+            <p>{{ t('session.leave') }}</p>
+          </button>
         </div>
       </div>
     </div>
@@ -43,19 +52,32 @@
 
 <script setup lang="ts">
 
-import {PropType} from "vue";
-import {Fleet, SessionStatus} from "@/objects/Fleet.ts";
+import {computed, PropType} from "vue";
+import {Fleet} from "@/objects/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
+import {UserStore} from "@/objects/stores/UserStore.ts";
 
 const {t} = useI18n()
-defineProps({
+const props = defineProps({
   session: {
     type: Object as PropType<Fleet>,
     required: true
   }
 })
+
+function updateStatus() {
+  UserStore.player.isReady = !UserStore.player.isReady;
+  props.session.updateToSession()
+}
+
+const emits = defineEmits(["update:selected-value"]);
+const computedsession = computed({
+  get: (): Fleet => props.session,
+  set: (): void => {
+  },
+});
 
 </script>
 
@@ -81,8 +103,17 @@ defineProps({
 
     p {
       font-family: BrushTip, sans-serif;
-      margin-top: 18px;
       font-size: 31px;
+
+      &.id {
+        font-family: Windlass, sans-serif;
+        font-weight: 400;
+        font-size: 16px;
+
+        span {
+          color: var(--primary);
+        }
+      }
     }
   }
 
@@ -117,65 +148,90 @@ defineProps({
     .lobby-details {
       width: 10%;
       min-width: 150px;
-      background: var(--secondary-background);
       border-radius: 5px;
       align-items: center;
       box-sizing: border-box;
-      gap: 20px;
       overflow: hidden;
       height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
 
-      .top-content {
+      .ready-button {
+        all: unset;
+        border-radius: 5px;
+        background: linear-gradient(0deg, rgba(50, 212, 153, 0.20) -14.61%, rgba(50, 212, 153, 0.07) 167.42%);
         width: 100%;
+        height: 80px;
+        margin-bottom: 8px;
+        text-align: center;
+        cursor: pointer;
 
-        .header-information {
-          background: rgba(23, 26, 33, 0.50);
-          padding: 20px 0;
-          width: 100%;
-
-          h2 {
-            font-size: 16px;
-            font-weight: 500;
-            text-align: center;
-          }
+        &.not {
+          background: linear-gradient(0deg, rgba(212, 50, 50, 0.20) -14.61%, rgba(212, 50, 50, 0.07) 167.42%);
         }
+      }
+
+      .details-content {
+        background: var(--secondary-background);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        .top-content {
 
 
-        .information-data {
-          display: flex;
-          flex-direction: column;
-          width: 100%;
-          align-items: center;
-          padding: 20px 0;
-          gap: 12px;
+          .header-information {
+            background: rgba(23, 26, 33, 0.50);
+            padding: 20px 0;
+            width: 100%;
 
-          h3 {
-            height: 14px;
-            color: var(--primary);
-            white-space: nowrap;
+            h2 {
+              font-size: 16px;
+              font-weight: 500;
+              text-align: center;
+            }
           }
 
-          &.important {
-            background: rgba(50, 212, 153, 0.10);;
-          }
 
-          p {
-            span {
+          .information-data {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            align-items: center;
+            padding: 20px 0;
+            gap: 12px;
+
+            h3 {
+              height: 14px;
               color: var(--primary);
+              white-space: nowrap;
+            }
+
+            &.important {
+              background: rgba(50, 212, 153, 0.10);;
+            }
+
+            p {
+              span {
+                color: var(--primary);
+              }
             }
           }
         }
-      }
-    }
 
-    .session-status {
-      padding: 20px 0;
-      background: rgba(212, 147, 50, 0.50);
-      width: 100%;
-      text-align: center;
+        .session-status {
+          all: unset;
+          cursor: pointer;
+          padding: 20px 0;
+          width: 100%;
+          text-align: center;
+          background: linear-gradient(0deg, rgba(212, 50, 50, 0.20) 0%, rgba(212, 50, 50, 0.00) 97.89%);
+        }
+
+      }
     }
 
   }

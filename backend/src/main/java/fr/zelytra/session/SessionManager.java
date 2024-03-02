@@ -1,13 +1,13 @@
 package fr.zelytra.session;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.fleet.Player;
 import io.quarkus.logging.Log;
 import jakarta.annotation.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Manages sessions for a multiplayer game, allowing players to create, join, and leave sessions.
@@ -43,7 +43,7 @@ public class SessionManager {
      * @return UUID of the created session
      */
     public String createSession() {
-        String uuid = UUID.randomUUID().toString().substring(0, 7);
+        String uuid = UUID.randomUUID().toString().substring(0, 7).toUpperCase();
         sessions.put(uuid, new Fleet(uuid));
         Log.info("[" + uuid + "] Session created !");
         return uuid;
@@ -110,6 +110,7 @@ public class SessionManager {
      */
     @Nullable
     public Fleet getFleetFromId(String sessionId) {
+        if (sessionId == null) return null;
         return sessions.getOrDefault(sessionId, null);
     }
 
@@ -123,7 +124,6 @@ public class SessionManager {
         for (Map.Entry<String, Fleet> sessionEntry : sessions.entrySet()) {
             Fleet fleet = sessionEntry.getValue();
             for (Player player : fleet.getPlayers()) {
-                // Assuming the Player class has a method to get the WebSocket Session ID
                 if (player.getSocket().getId().equals(sessionId)) {
                     return player;
                 }
@@ -135,20 +135,39 @@ public class SessionManager {
     /**
      * Retrieves the Fleet containing a Player by their WebSocket session ID.
      *
-     * @param sessionId The WebSocket session ID of the player.
+     * @param username The WebSocket session ID of the player.
      * @return The Fleet containing the Player with the matching WebSocket session ID, or null if not found.
      */
-    public Fleet getFleetByPlayerSessionId(String sessionId) {
+    public Fleet getFleetByPlayerName(String username) {
         for (Map.Entry<String, Fleet> sessionEntry : sessions.entrySet()) {
             Fleet fleet = sessionEntry.getValue();
             for (Player player : fleet.getPlayers()) {
-                // Assuming the Player class has a method to get the WebSocket Session ID
-                if (player.getSocket().getId().equals(sessionId)) {
+                if (player.getUsername().equals(username)) {
                     return fleet; // Return the Fleet containing the player
                 }
             }
         }
         return null; // Fleet not found because the player is not in any session
+    }
+
+    /**
+     * Checks if a specific player is in a specific session by the session ID.
+     *
+     * @param player    The player to check for in the session.
+     * @param sessionId The ID of the session to check.
+     * @return true if the specified player is in the session with the given ID, false otherwise.
+     */
+    public boolean isPlayerInSession(Player player, String sessionId) {
+        Fleet fleet = sessions.get(sessionId);
+        if (fleet != null) {
+            // Iterate through the players in the fleet to check if the specified player is present
+            for (Player fleetPlayer : fleet.getPlayers()) {
+                if (fleetPlayer.getUsername().equalsIgnoreCase(player.getUsername())) {
+                    return true; // The specified player is found in the session
+                }
+            }
+        }
+        return false; // The specified player is not found in the session
     }
 
 

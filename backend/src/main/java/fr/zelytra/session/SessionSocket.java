@@ -54,17 +54,34 @@ public class SessionSocket {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
-        Player player = objectMapper.readValue(message, Player.class);
 
+        Player player = objectMapper.readValue(message, Player.class);
         player.setSocket(session);
-        Log.info("[" + player.getUsername() + "] Connected !");
 
         SessionManager manager = SessionManager.getInstance();
-        //TODO Handle states change
+
+        //Check if it's an update player request
+        if (manager.isPlayerInSession(player, player.getSessionId())) {
+
+            Fleet fleet = manager.getFleetFromId(player.getSessionId());
+            assert fleet != null;
+            Player foundedplayer = fleet.getPlayerFromUsername(player.getUsername());
+
+            foundedplayer.setReady(player.isReady());
+            foundedplayer.setStatus(player.getStatus());
+
+            broadcastSessionUpdate(player.getSessionId().toUpperCase());
+
+            Log.info("[" + player.getUsername() + "] Data updated for session !");
+            return;
+        }
+
+        Log.info("[" + player.getUsername() + "] Connected !");
         //Create session if no id provided
         if (sessionId == null || sessionId.isEmpty()) {
             String newSessionId = manager.createSession();
             manager.joinSession(newSessionId, player);
+            player.setMaster(true);
             broadcastSessionUpdate(newSessionId);
         } else {
             manager.joinSession(sessionId, player);
@@ -92,7 +109,7 @@ public class SessionSocket {
 
     @OnError
     public void onError(Session session, Throwable throwable) throws IOException {
-        Log.error("WebSocket error for session " + session.getId() + ": " + throwable.getMessage());
+        Log.error("WebSocket error for session " + session.getId() + ": " + throwable);
 
         SessionManager manager = SessionManager.getInstance();
         Player player = manager.getPlayerFromSessionId(session.getId());
@@ -104,18 +121,21 @@ public class SessionSocket {
     }
 
     /**
-     * @param sessionId Flee session id
+     * @param sessionId Fleet session id
      */
     public static void broadcastSessionUpdate(String sessionId) {
         SessionManager manager = SessionManager.getInstance();
 
-        if (!manager.isSessionExist(sessionId)) return;
+        if (!manager.isSessionExist(sessionId)) {
+            Log.info("[" + sessionId + "] Failed to broadcast, session not found");
+            return;
+        }
         Fleet fleet = manager.getFleetFromId(sessionId);
         assert fleet != null;
 
         // Send to all players the Fleet data
         ObjectMapper objectMapper = new ObjectMapper();
-        String json = null;
+        String json;
         try {
             json = objectMapper.writeValueAsString(fleet);
         } catch (JsonProcessingException e) {
