@@ -35,9 +35,9 @@
       "notReady": "Pas prêt",
       "ready": "Est prêt",
       "status": {
-        "0": "Joueur hors ligne",
-        "1": "Joueur en ligne",
-        "2": "En jeu"
+        "in_game": "En jeu",
+        "offline": "Joueur hors ligne",
+        "online": "Joueur en ligne"
       }
     },
     "status": {

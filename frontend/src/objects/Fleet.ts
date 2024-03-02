@@ -1,5 +1,14 @@
 import { UserStore } from "@/objects/stores/UserStore.ts";
 
+export interface FleetInterface {
+    sessionId: string;
+    sessionName: string;
+    players: Player[];
+    servers: SotServer[];
+    status: SessionStatus;
+    socket?: WebSocket;
+}
+
 export class Fleet {
   public sessionId: string;
   public sessionName: string;
@@ -30,7 +39,16 @@ export class Fleet {
       if (!this.socket) return;
       this.socket.send(JSON.stringify(UserStore.player));
     };
-  }
+
+    this.socket.onmessage = (ev: MessageEvent<string>) => {
+      const receivedFleet: FleetInterface = JSON.parse(ev.data)
+      this.sessionId = receivedFleet.sessionId;
+      this.sessionName = receivedFleet.sessionName;
+      this.players = receivedFleet.players;
+      this.servers = receivedFleet.servers;
+            this.status = receivedFleet.status;
+        };
+    }
 
   leaveSession(): void {
     if (!this.socket) {

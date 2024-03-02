@@ -49,10 +49,6 @@ const props = defineProps({
 
 onMounted(() => {});
 
-props.session.socket!.onmessage = (ev: MessageEvent<Fleet>) => {
-  console.log(ev.data);
-};
-
 function joinSession() {
   props.session.joinSession(sessionId.value);
   isModalOpen.value = false;

@@ -35,9 +35,9 @@
       "notReady": "Not ready",
       "ready": "Is ready",
       "status": {
-        "0": "Player offline",
-        "1": "Player online",
-        "2": "In game"
+        "in_game": "In game",
+        "offline": "Player offline",
+        "online": "Player online"
       }
     },
     "status": {
