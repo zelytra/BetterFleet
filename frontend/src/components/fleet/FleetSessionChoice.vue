@@ -36,7 +36,7 @@
 import SessionCard from "@/vue/templates/SessionCard.vue";
 import { useI18n } from "vue-i18n";
 import { Fleet } from "@/objects/Fleet.ts";
-import { PropType, ref, watch } from "vue";
+import { onMounted, PropType, ref, watch } from "vue";
 import ModaleTemplate from "@/vue/templates/ModaleTemplate.vue";
 import InputText from "@/vue/form/InputText.vue";
 
@@ -47,14 +47,21 @@ const props = defineProps({
   session: { type: Object as PropType<Fleet>, required: true },
 });
 
+onMounted(() => {});
+
+props.session.socket!.onmessage = (ev: MessageEvent<Fleet>) => {
+  console.log(ev.data);
+};
+
 function joinSession() {
   props.session.joinSession(sessionId.value);
   isModalOpen.value = false;
 }
 
 function createSession() {
-  props.session.joinSession("TODO");
+  props.session.joinSession("");
 }
+
 watch(isModalOpen, (previous) => {
   if (previous) {
     sessionId.value = "";
