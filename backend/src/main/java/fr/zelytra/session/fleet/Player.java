@@ -1,14 +1,21 @@
 package fr.zelytra.session.fleet;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.websocket.Session;
 
 public class Player {
 
     private String username;
     private PlayerStates status;
+
+    @JsonProperty(value="isReady")
     private boolean isReady;
+
+    @JsonProperty(value="isMaster")
     private boolean isMaster;
+
+    private String sessionId; // Not always the same as the fleet
     @JsonIgnore
     private Session socket;
 
@@ -56,6 +63,14 @@ public class Player {
 
     public void setMaster(boolean master) {
         isMaster = master;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     @Override

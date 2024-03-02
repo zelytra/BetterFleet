@@ -2,16 +2,38 @@
   <div class="nav-wrapper">
     <nav>
       <router-link
-        v-for="route in routes"
+        v-for="(route,index) in routes"
         :key="route.name"
         class="router-link"
         :to="route.path"
       >
-        <img v-if="route.meta" :src="route.meta.icon" alt="nax-icon" />
+        <img
+          v-if="route.meta"
+          :src="route.meta.icon"
+          alt="nax-icon"
+        >
+        <svg
+          v-if="index == 0"
+          xmlns="http://www.w3.org/2000/svg"
+          width="58"
+          height="7"
+          viewBox="0 0 58 7"
+          fill="none"
+        >
+          <path
+            d="M14.1599 0.00696579C16.0228 0.0619114 24.764 1.50535 25.8488 1.20185C28.6323 0.422001 31.8348 0.852195 35.2637 1.74432C38.4362 2.56963 41.3292 2.72352 43.9192 2.12912C46.426 1.55399 49.3567 1.72128 52.3575 2.02595C53.2429 2.11599 54.1208 2.20335 55.0092 2.3091C56.7043 2.51113 57.6788 3.44938 57.0284 4.29859C56.4559 5.04836 55.4138 5.49419 54.0674 5.57755C52.2264 5.6903 50.3075 5.68737 48.3844 5.6487C42.6242 5.53103 36.843 5.37659 31.0679 5.22917L17.636 5.82963C14.5993 5.88865 11.6073 6.03692 8.64524 6.2203C6.62867 6.34885 4.89647 5.84514 3.37772 4.47862C2.65665 3.83098 1.90541 3.17261 1.32215 2.49577C0.590509 1.63902 0.732958 0.97585 1.75116 0.69264C2.64663 0.444003 3.65948 0.271353 4.72269 0.243729C7.16363 0.187905 9.66728 0.242391 12.1516 0.255768C12.3043 0.256309 12.493 0.298987 12.6293 0.274119C13.15 0.195326 13.6527 0.0954642 14.1599 0.00696579Z"
+            fill="#32D499"
+            fill-opacity="0.5"
+          />
+        </svg>
       </router-link>
     </nav>
     <div class="bottom-header">
-      <img class="update" src="@/assets/icons/update.svg" alt="update-button" />
+      <img
+        class="update"
+        src="@/assets/icons/update.svg"
+        alt="update-button"
+      >
       <div
         v-if="UserStore.player.username"
         class="user-icon"
@@ -27,10 +49,10 @@
 </template>
 
 <script setup lang="ts">
-import { routes } from "@/router";
-import { ref } from "vue";
-import { UserStore } from "../../objects/stores/UserStore.ts";
-import { Utils } from "@/objects/Utils.ts";
+import {routes} from "@/router";
+import {ref} from "vue";
+import {UserStore} from "../../objects/stores/UserStore.ts";
+import {Utils} from "@/objects/Utils.ts";
 
 const version = ref(import.meta.env.VITE_VERSION);
 </script>
@@ -52,10 +74,21 @@ const version = ref(import.meta.env.VITE_VERSION);
     align-items: center;
     gap: 24px;
 
+    .router-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+
+      svg {
+        width: 40px;
+      }
+    }
+
     .router-link-active {
       img {
-        filter: invert(48%) sepia(70%) saturate(408%) hue-rotate(110deg)
-          brightness(92%) contrast(98%);
+        filter: invert(48%) sepia(70%) saturate(408%) hue-rotate(110deg) brightness(92%) contrast(98%);
       }
     }
 
@@ -90,6 +123,7 @@ const version = ref(import.meta.env.VITE_VERSION);
       justify-content: center;
       align-items: center;
       padding: 6px;
+
       p {
         user-select: none;
         text-align: center;

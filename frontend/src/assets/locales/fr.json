@@ -27,10 +27,12 @@
         "title": "Insérer votre identifiant de session."
       }
     },
+    "id": "Identifiant de la session",
     "informations": {
       "title": "Informations",
       "totalPlayer": "Joueurs Total"
     },
+    "leave": "Quitter la session",
     "player": {
       "notReady": "Pas prêt",
       "ready": "Est prêt",

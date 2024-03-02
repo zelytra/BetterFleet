@@ -27,10 +27,12 @@
         "title": "TODO"
       }
     },
+    "id": "Session identifier",
     "informations": {
       "title": "Informations",
       "totalPlayer": "Total Player"
     },
+    "leave": "Leave session",
     "player": {
       "notReady": "Not ready",
       "ready": "Is ready",

@@ -36,7 +36,7 @@
 import SessionCard from "@/vue/templates/SessionCard.vue";
 import { useI18n } from "vue-i18n";
 import { Fleet } from "@/objects/Fleet.ts";
-import { onMounted, PropType, ref, watch } from "vue";
+import { PropType, ref, watch } from "vue";
 import ModaleTemplate from "@/vue/templates/ModaleTemplate.vue";
 import InputText from "@/vue/form/InputText.vue";
 
@@ -46,8 +46,6 @@ const sessionId = ref<string>("");
 const props = defineProps({
   session: { type: Object as PropType<Fleet>, required: true },
 });
-
-onMounted(() => {});
 
 function joinSession() {
   props.session.joinSession(sessionId.value);
