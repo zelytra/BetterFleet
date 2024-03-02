@@ -91,6 +91,7 @@ public class SessionManager {
     public void leaveSession(Player player) {
         for (Fleet fleet : sessions.values()) {
             fleet.getPlayers().remove(player);
+            SessionSocket.broadcastSessionUpdate(fleet.getSessionId());
             Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
 
             // Clean empty session
@@ -130,5 +131,25 @@ public class SessionManager {
         }
         return null; // Player not found in any session
     }
+
+    /**
+     * Retrieves the Fleet containing a Player by their WebSocket session ID.
+     *
+     * @param sessionId The WebSocket session ID of the player.
+     * @return The Fleet containing the Player with the matching WebSocket session ID, or null if not found.
+     */
+    public Fleet getFleetByPlayerSessionId(String sessionId) {
+        for (Map.Entry<String, Fleet> sessionEntry : sessions.entrySet()) {
+            Fleet fleet = sessionEntry.getValue();
+            for (Player player : fleet.getPlayers()) {
+                // Assuming the Player class has a method to get the WebSocket Session ID
+                if (player.getSocket().getId().equals(sessionId)) {
+                    return fleet; // Return the Fleet containing the player
+                }
+            }
+        }
+        return null; // Fleet not found because the player is not in any session
+    }
+
 
 }

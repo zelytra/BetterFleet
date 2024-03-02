@@ -1,7 +1,9 @@
 package fr.zelytra.session;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.fleet.Player;
 import io.quarkus.logging.Log;
@@ -41,7 +43,7 @@ public class SessionSocket {
     }
 
     @OnMessage
-    public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId) {
+    public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId) throws JsonProcessingException {
 
         // Cancel the timeout task since we've received the message
         Future<?> timeoutTask = sessionTimeoutTasks.remove(session.getId());
@@ -49,29 +51,31 @@ public class SessionSocket {
             timeoutTask.cancel(true);
         }
 
-        Gson gson = new Gson();
-        Player player = gson.fromJson(message, Player.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
+        Player player = objectMapper.readValue(message, Player.class);
+
         player.setSocket(session);
         Log.info("[" + player.getUsername() + "] Connected !");
 
         SessionManager manager = SessionManager.getInstance();
-
+        //TODO Handle states change
         //Create session if no id provided
-        if (sessionId != null && sessionId.isEmpty()) {
+        if (sessionId == null || sessionId.isEmpty()) {
             String newSessionId = manager.createSession();
             manager.joinSession(newSessionId, player);
-            //broadcastSessionUpdate(newSessionId);
+            broadcastSessionUpdate(newSessionId);
         } else {
             manager.joinSession(sessionId, player);
+            broadcastSessionUpdate(sessionId);
         }
-
-        // Broadcast update
-        broadcastSessionUpdate(sessionId);
 
     }
 
     @OnClose
     public void onClose(Session session) {
+
         // Clean up resources related to the session
         sessionTimeoutTasks.remove(session.getId());
 
@@ -80,13 +84,16 @@ public class SessionSocket {
 
         if (player != null) {
             manager.leaveSession(player);
+            Log.info("[" + player.getUsername() + "] Disconnected");
+            return;
         }
-
-        Log.info("[" + player.getUsername() + "] Disconnected");
+        Log.warn("[UNDEFINED PLAYER] Disconnected");
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) throws IOException {
+        Log.error("WebSocket error for session " + session.getId() + ": " + throwable.getMessage());
+
         SessionManager manager = SessionManager.getInstance();
         Player player = manager.getPlayerFromSessionId(session.getId());
         if (player != null) {
@@ -94,22 +101,33 @@ public class SessionSocket {
         }
 
         session.close();
-        Log.error("WebSocket error for session " + session.getId() + ": " + throwable.getMessage() + "  " + player.getUsername());
     }
 
-    private void broadcastSessionUpdate(String sessionId) {
-        Log.info("broadcast");
+    /**
+     * @param sessionId Flee session id
+     */
+    public static void broadcastSessionUpdate(String sessionId) {
         SessionManager manager = SessionManager.getInstance();
 
         if (!manager.isSessionExist(sessionId)) return;
-        Log.info("manager exist");
         Fleet fleet = manager.getFleetFromId(sessionId);
         assert fleet != null;
 
         // Send to all players the Fleet data
-        Gson gson = new Gson();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json = null;
+        try {
+            json = objectMapper.writeValueAsString(fleet);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
         for (Player player : fleet.getPlayers()) {
-            player.getSocket().getAsyncRemote().sendObject(fleet);
+            player.getSocket().getAsyncRemote().sendText(json, result -> {
+                if (result.getException() != null) {
+                    System.out.println("Unable to send message: " + result.getException());
+                }
+            });
         }
     }
 }

@@ -1,5 +1,6 @@
 package fr.zelytra.session.fleet;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.websocket.Session;
 
 public class Player {
@@ -8,6 +9,7 @@ public class Player {
     private PlayerStates status;
     private boolean isReady;
     private boolean isMaster;
+    @JsonIgnore
     private Session socket;
 
     // Constructor
@@ -15,7 +17,6 @@ public class Player {
     }
 
     // Getters and Setters
-
 
     public Session getSocket() {
         return socket;
