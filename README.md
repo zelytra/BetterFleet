@@ -52,7 +52,6 @@ usage, suggesting a potential memory leak.
 | Windows 10       | ✅          |
 | macOS            | ❌          |
 | Linux            | ❌          |
-| Android          | ❌          |
 
 ---
 
