@@ -57,7 +57,7 @@ usage, suggesting a potential memory leak.
 
 ## Credits 👥
 
-- **Development:** [Zelytra](https://zelytra.fr) & [dadodasyra]()
+- **Development:** [Zelytra](https://zelytra.fr) & [dadodasyra](https://github.com/dadodasyra)
 - **Design/Graphics:** [ZeTro](https://zetro.fr)
 
 We thank everyone who contributes to making BetterFleet better every day. If you would like to contribute to the
