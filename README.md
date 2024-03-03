@@ -16,6 +16,14 @@ players looking to improve their gaming experience.
 
 ## Features
 
+- **Session Management:** The application allows users to create sessions capable of handling multiple players. It offers functionality to manage players and enhance the probability of finding a server. Additionally, it includes a synchronization mechanism that aligns all player clicks to increase the chances of landing on the same server.
+
+- **Self-Hosted Backend:** Users have the possibility to host the backend themselves, thanks to the app being open source. This feature ensures greater control over the application's deployment and maintenance.
+
+- **Statistics Tracking:** The application provides users with the ability to track statistics, offering insights into the potential percentage chance of finding a server. This feature helps users to assess their success rate and make informed decisions.
+
+---
+
 ## Comparison of Fleet Management Applications: BetterFleet vs. FleetCreator
 
 | Feature                               | BetterFleet                    | FleetCreator                   |
@@ -34,27 +42,35 @@ players looking to improve their gaming experience.
 **Note:** The :warning: symbol indicates there was a reported issue with FleetCreator using 8GB of RAM after 10 hours of
 usage, suggesting a potential memory leak.
 
+---
+
 ## OS Compatibility
 
 | Operating System | Compatible |
 |------------------|------------|
-| Windows          | ✅          |
-| macOS            | ✅          |
-| Linux            | ✅          |
+| Windows 11       | ✅          |
+| Windows 10       | ✅          |
+| macOS            | ❌          |
+| Linux            | ❌          |
 | Android          | ❌          |
-| iOS              | ❌          |
+
+---
 
 ## Credits 👥
 
-- **Development:** [Zelytra](https://zelytra.fr) & [Dadodasyara]()
+- **Development:** [Zelytra](https://zelytra.fr) & [dadodasyra]()
 - **Design/Graphics:** [ZeTro](https://zetro.fr)
 
 We thank everyone who contributes to making BetterFleet better every day. If you would like to contribute to the
 project, feel free to fork the repository and submit your pull requests.
 
+---
+
 ## License 📄
 
 BetterFleet is distributed under the MIT license. See the [LICENSE](/LICENSE) file for more information.
+
+---
 
 ## Support 🆘
 
