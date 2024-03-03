@@ -9,7 +9,7 @@ on:
 jobs:
   backend-build:
     runs-on: ubuntu-latest
-    name: Quarkus build
+    name: Quarkus build test
     defaults:
       run:
         working-directory: 'backend'
@@ -23,7 +23,7 @@ jobs:
       - name: Build with Maven
         run: mvn quarkus:build package
   frontend-build:
-    name: Vite build
+    name: Vite build test
     runs-on: ubuntu-latest
 
     strategy:
