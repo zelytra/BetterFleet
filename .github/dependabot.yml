@@ -4,3 +4,8 @@ updates:
     directory: "/frontend" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "maven" # See documentation for possible values
+    directory: "/backend" # Location of package manifests
+    schedule:
+      interval: "weekly"
+
