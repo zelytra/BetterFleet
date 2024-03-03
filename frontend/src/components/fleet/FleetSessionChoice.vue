@@ -53,8 +53,9 @@ function joinSession() {
 }
 
 function createSession() {
-  props.session.joinSession("TODO");
+  props.session.joinSession("");
 }
+
 watch(isModalOpen, (previous) => {
   if (previous) {
     sessionId.value = "";
