@@ -21,9 +21,6 @@ use sysinfo::{System};
 
 const SIO_RCVALL: DWORD = 0x98000001;
 
-pub struct FetchInformations {
-    api: Arc<RwLock<Api>>, // Use RwLock for potential read-write access
-}
 
 pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
     let api_base = Arc::new(RwLock::new(Api::new()));
@@ -46,7 +43,6 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     api.write().await.game_status = match udp_connections.len() { //TODO Optimization: Cache game_status and only update when it changes
                         0 => GameStatus::Started,
                         1 => GameStatus::MainMenu,
-                        //2 => GameStatus::InGameNotLoaded,
                         _ => GameStatus::Unknown
                     };
                 }
@@ -108,10 +104,13 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
 
                                     // When no result since > 20 seconds reset server_ip
                                     // This should never happen since when the player is not connected to a server, the game_status is MainMenu
+                                    api_clone.write().await.game_status = GameStatus::InGameNotLoaded;
+
                                     if last_updated_server_ip.elapsed() > Duration::from_secs(20) {
                                         println!("Resetting server_ip, no result");
                                         let mut api_lock = api_clone.write().await;
 
+                                        api_lock.game_status = GameStatus::Unknown;
                                         api_lock.server_ip = String::new();
                                         api_lock.server_port = 0;
                                         api_lock.last_updated_server_ip = Instant::now();
@@ -205,9 +204,8 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
                         //println!("{:?}", recv_result);
                         return match recv_result {
                             Ok(len) => {
-                                let mut packet = PacketHeaders::from_ip_slice(&buf[0..len]).ok()?;
+                                let packet = PacketHeaders::from_ip_slice(&buf[0..len]).ok()?;
                                 //println!("{:?}", packet.transport);
-                                let ip = packet.clone();
 
                                 let net = packet.net.unwrap();
                                 let transport = packet.transport.unwrap();
