@@ -28,15 +28,15 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
 
     tokio::spawn(async move {
         loop {
+            // Fetch pid game
             let pid = find_pid_of("SoTGame.exe");
-            //println!("PID: {:?}", pid);
 
             if pid.is_empty() {
                 api.write().await.game_status = GameStatus::Closed;
             } else {
                 let pid = pid[0].parse().unwrap();
+                // List of udp sockets used by the game
                 let udp_connections = get_udp_connections(pid);
-                //println!("UDP connections: {:?}", udp_connections);
 
                 // Update game_status
                 if udp_connections.len() != 2 {
@@ -47,11 +47,12 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     };
                 }
 
+                // 2 sockets = connected to a server
                 if udp_connections.len() == 2 {
                     // Get UDP Listen port
-                    let listen_port = udp_connections[1]; // The first one is for MainMenu
+                    let listen_port = udp_connections[1]; // The first one is for MainMenu socket, second one is game server
 
-                    // Get IPs associated to hostname
+                    // Get hostname
                     let hostname = match get_local_hostname() {
                         Ok(hn) => hn,
                         Err(e) => {
@@ -60,9 +61,9 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                         }
                     };
 
+                    // We need to add the port to the hostname to get the IP
                     let hostname = format!("{}:0", hostname);
-
-                    let ip_addresses = match hostname.to_socket_addrs() { //TODO Optimization: Cache IP ADDRESSES
+                    let ip_addresses = match hostname.to_socket_addrs() { //TODO Optimization: Cache ip_addresses
                         Ok(addrs) => addrs.map(|socket_addr| socket_addr.ip()).collect::<Vec<IpAddr>>(),
                         Err(e) => {
                             eprintln!("Error getting IP addresses: {}", e);
@@ -70,14 +71,14 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                         }
                     };
 
-                    println!("IP addresses: {:?}", ip_addresses);
-
+                    // Object for each "local" IP used by every network interface (ipv4 and ipv6)
                     let socket_addresses: Vec<SocketAddr> = ip_addresses.into_iter().map(|ip| SocketAddr::new(ip, 0)).collect();
-
                     for socket_addr in socket_addresses {
-                        // One thread / ip
                         let api_clone = Arc::clone(&api);
+
+                        // One thread / IP
                         tokio::spawn(async move {
+                            // Init RAW listen socket
                             let socket = match create_raw_socket(socket_addr).await {
                                 Ok(socket) => socket,
                                 Err(e) => {
@@ -86,9 +87,10 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                                 }
                             };
 
+                            // Capture the IP by filtering headers
                             match capture_ip(socket, listen_port).await {
                                 Some((ip, port)) => {
-                                    // Acquire the lock for modifying shared data
+                                    // Got an IP, lock api and update every information
                                     let mut api_lock = api_clone.write().await;
                                     api_lock.game_status = GameStatus::InGame;
                                     api_lock.server_ip = ip;
@@ -100,17 +102,13 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                                 }
 
                                 None => {
+                                    // Got no result, get the last update time and check if it's too old
+                                    // This is not a typical timeout and should never happen, it's a security
                                     let last_updated_server_ip = api_clone.read().await.last_updated_server_ip;
-
-                                    // When no result since > 20 seconds reset server_ip
-                                    // This should never happen since when the player is not connected to a server, the game_status is MainMenu
-                                    api_clone.write().await.game_status = GameStatus::InGameNotLoaded;
-
                                     if last_updated_server_ip.elapsed() > Duration::from_secs(20) {
                                         println!("Resetting server_ip, no result");
                                         let mut api_lock = api_clone.write().await;
 
-                                        api_lock.game_status = GameStatus::Unknown;
                                         api_lock.server_ip = String::new();
                                         api_lock.server_port = 0;
                                         api_lock.last_updated_server_ip = Instant::now();
@@ -128,13 +126,11 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             let dynamic_time = match game_status {
                 GameStatus::Closed => 5000,
                 GameStatus::Started => 3000,
-                GameStatus::MainMenu => 1000,
-                GameStatus::InGameNotLoaded => 1000,
+                GameStatus::MainMenu => 500,
                 GameStatus::InGame => 3000,
                 GameStatus::Unknown => 2000,
             };
-            println!("Game status: {:?}", game_status);
-            println!("Dynamic time: {}", dynamic_time);
+
             tokio::time::sleep(Duration::from_millis(dynamic_time)).await;
         }
     });
@@ -142,6 +138,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
     Ok(api_base)
 }
 
+// Fetch game UDP connections
 fn get_udp_connections(pid: usize) -> Vec<u16> {
     let ps_script = format!(
         "Get-NetUDPEndpoint -OwningProcess {} | Select-Object -ExpandProperty LocalPort",
@@ -167,10 +164,12 @@ fn get_udp_connections(pid: usize) -> Vec<u16> {
     ports
 }
 
+// Get local hostname
 fn get_local_hostname() -> std::io::Result<String> {
     Ok(hostname::get()?.into_string().unwrap_or_else(|_| "localhost".into()))
 }
 
+// Get game PID
 pub fn find_pid_of(process_name: &str) -> Vec<String> {
     let mut system = System::new_all();
     let mut pids = Vec::new();
@@ -185,9 +184,10 @@ pub fn find_pid_of(process_name: &str) -> Vec<String> {
     pids
 }
 
+// Receive & filter packets to get the server IP
 async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)> {
     let mut buf = [0u8; (256 * 256) - 1];
-    let timeout = Duration::from_millis(3000);
+    let timeout = Duration::from_millis(2000);
     let start_time = Instant::now();
 
     loop {
@@ -196,20 +196,21 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
             return None;
         }
 
+        // select! macro is used to wait for the first of two futures to complete, returning the result of that future.
         tokio::select! {
             recv_result = socket.recv(&mut buf) => {
                 match recv_result {
                     Ok(len) if len > 0 => {
+                        // We got a packet, let's parse it
                         let recv_result = socket.recv(&mut buf).await;
-                        //println!("{:?}", recv_result);
                         return match recv_result {
                             Ok(len) => {
                                 let packet = PacketHeaders::from_ip_slice(&buf[0..len]).ok()?;
-                                //println!("{:?}", packet.transport);
 
                                 let net = packet.net.unwrap();
                                 let transport = packet.transport.unwrap();
 
+                                // Parse source_ip and destination_ip
                                 let (source_ip, destination_ip) = match net {
                                     etherparse::NetHeaders::Ipv4(header, _) => {
                                         let source = std::net::Ipv4Addr::new(header.source[0], header.source[1], header.source[2], header.source[3]);
@@ -226,36 +227,30 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
                                 let source_port;
                                 let destination_port;
 
+                                // Parse ports, we don't need to support anything else than UDP
                                 match transport {
-                                    etherparse::TransportHeader::Tcp(header) => {
-                                        source_port = header.source_port;
-                                        destination_port = header.destination_port;
-                                    },
                                     etherparse::TransportHeader::Udp(header) => {
                                         source_port = header.source_port;
                                         destination_port = header.destination_port;
                                     },
-                                    _ => {
-                                        eprintln!("Unsupported transport protocol");
-                                        return None;
-                                    }
+                                    _ => return None
                                 }
 
                                 let mut remote_ip = String::new();
                                 let mut remote_port = 0;
 
                                 if source_port == listen_port {
+                                    // We are the source
                                     remote_ip = destination_ip;
                                     remote_port = destination_port;
                                 } else if destination_port == listen_port {
+                                    // We are the destination
                                     remote_ip = source_ip;
                                     remote_port = source_port;
                                 }
 
                                 if remote_port > 30000 && remote_port < 40000 {
-                                    println!("---------------------------------");
-                                    println!("Remote IP: {} Remote Port: {}", remote_ip, remote_port);
-                                    println!("---------------------------------");
+                                    // Got a plausible result
                                     Some((remote_ip, remote_port))
                                 } else {
                                     // Result make no sense for SoT
@@ -269,7 +264,7 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
                         }
                     },
 
-                    Ok(_) => println!("No data received."),
+                    Ok(_) => (),
                     Err(e) => eprintln!("Error receiving packet: {}", e),
                 }
             }
@@ -282,7 +277,7 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
 }
 
 
-/// Puts a socket into promiscuous mode so that it can receive all packets.
+// Puts a socket into promiscuous mode so that it can receive all packets.
 async fn enter_promiscuous(socket: &mut StdSocket) -> Result<()> {
     let rc = unsafe {
         let in_value: DWORD = 1;
@@ -307,10 +302,9 @@ async fn enter_promiscuous(socket: &mut StdSocket) -> Result<()> {
     }
 }
 
-/// Creates a raw socket used to capture packets (disguised as a UdpSocket)
+// Creates a raw socket used to capture packets (disguised as a UdpSocket)
 pub async fn create_raw_socket(socket_addr: SocketAddr) -> Result<UdpSocket> {
-
-    // Specify IPPROTO_IP explicitly by using Protocol::from_raw(0)
+    // Specify protocol
     let protocol = Protocol::UDP; // IPPROTO_IP is typically 0
 
     // Check if IPv4 or IPv6
@@ -329,6 +323,7 @@ pub async fn create_raw_socket(socket_addr: SocketAddr) -> Result<UdpSocket> {
     // Bind the socket using a reference to the parsed address
     socket.bind(&sock_addr)?;
 
+    // Raw socket
     let raw_socket = socket.into_raw_socket();
     let mut socket = unsafe { StdSocket::from_raw_socket(raw_socket) };
     enter_promiscuous(&mut socket).await?;
@@ -337,6 +332,5 @@ pub async fn create_raw_socket(socket_addr: SocketAddr) -> Result<UdpSocket> {
     socket.set_read_timeout(Some(Duration::from_millis(500)))?;
 
     let socket = UdpSocket::from_std(socket)?;
-
     Ok(socket)
 }

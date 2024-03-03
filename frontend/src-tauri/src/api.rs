@@ -1,7 +1,7 @@
 use std::time::Instant;
 use serde::Serialize;
 
-// Assuming these are your global variables in the `api` module
+// This whole file is used to cache data from thread and expose it to the frontend.
 #[derive(Clone)]
 pub struct Api {
     pub game_status: GameStatus,
@@ -12,12 +12,11 @@ pub struct Api {
 
 #[derive(PartialEq, Debug, Clone, Serialize)]
 pub enum GameStatus {
-    Closed,
-    Started,
-    MainMenu,
-    InGameNotLoaded,
-    InGame,
-    Unknown
+    Closed, // Game is closed
+    Started, // Game is in first menu after launch / launching / stopping
+    MainMenu, // In menu to select game mode
+    InGame, // Status when the remote IP and port was found and player is in game
+    Unknown // Default / errored status, this should not be used
 }
 
 impl Api {
@@ -40,18 +39,24 @@ impl Api {
     }
 
     /**
-    * Server IP, may be updated
+    * Server IP, should only be used when GameStatus is InGame.
     */
     pub async fn get_server_ip(&self) -> String {
         self.server_ip.clone()
     }
 
 
+    /**
+    * Server port, should only be used when GameStatus is InGame.
+    */
     pub async fn get_server_port(&self) -> u16 {
         self.server_port
     }
 
-
+    /**
+    * This corresponds to a timestamp of the last time the server IP was updated.
+    * This may be used to check if the thread crashed / if something gones wrong.
+    */
     pub async fn get_last_updated_server_ip(&self) -> Instant {
         self.last_updated_server_ip
     }

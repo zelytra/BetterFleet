@@ -9,6 +9,8 @@ use crate::api::{Api, GameStatus};
 mod fetch_informations;
 mod api;
 
+// Here's how to call Rust functions from frontend : https://tauri.app/v1/guides/features/command/
+
 #[tokio::main]
 async fn main() {
     let api_arc = fetch_informations::init().await.expect("Failed to initialize API");
@@ -28,7 +30,6 @@ async fn main() {
 #[tauri::command]
 async fn get_game_status(api: State<'_, Arc<RwLock<Api>>>) -> Result<GameStatus, String> {
     let api_lock = api.inner().read().await;
-    println!("{:?}", api_lock.get_game_status().await);
     Ok(api_lock.get_game_status().await)
 }
 
