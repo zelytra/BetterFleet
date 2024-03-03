@@ -49,7 +49,6 @@ jobs:
           prerelease: false
   publish-backend:
     name: Backend app
-    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
