@@ -25,6 +25,7 @@ winapi = { version = "0.3.9", features = ["winsock2"] }
 etherparse = "0.14.2"
 hostname = "0.3"
 sysinfo = "0.30.6"
+netstat2 = "0.9.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

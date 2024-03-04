@@ -1,5 +1,4 @@
 use std::string::String;
-use std::io::{BufRead, BufReader};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use crate::api::Api;
@@ -12,8 +11,8 @@ use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
 use std::net::UdpSocket as StdSocket;
 use tokio::net::UdpSocket;
 use std::os::windows::io::{AsRawSocket, FromRawSocket, IntoRawSocket};
-use std::process::{Command, Stdio};
 use std::ptr::null_mut;
+use netstat2::{get_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo};
 use winapi::shared::minwindef::DWORD;
 use winapi::um::winsock2;
 use crate::api::GameStatus;
@@ -139,29 +138,30 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
 }
 
 // Fetch game UDP connections
-fn get_udp_connections(pid: usize) -> Vec<u16> {
-    let ps_script = format!(
-        "Get-NetUDPEndpoint -OwningProcess {} | Select-Object -ExpandProperty LocalPort",
-        pid
-    );
-    let output = Command::new("powershell")
-        .args(&["-Command", &ps_script])
-        .stdout(Stdio::piped())
-        .spawn()
-        .expect("Failed to start PowerShell command")
-        .stdout
-        .expect("Failed to open stdout");
-
-    let reader = BufReader::new(output);
-    let mut ports = Vec::new();
-
-    for line in reader.lines().filter_map(|l| l.ok()) {
-        if let Ok(port) = line.parse::<u16>() {
-            ports.push(port);
+fn get_udp_connections(target_pid: usize) -> Vec<u16> {
+    let af_flags = AddressFamilyFlags::IPV4 | AddressFamilyFlags::IPV6;
+    let proto_flags = ProtocolFlags::UDP;
+    let sockets_info = match get_sockets_info(af_flags, proto_flags) {
+        Ok(sockets_info) => sockets_info,
+        Err(e) => {
+            eprintln!("Failed to get socket information: {}", e);
+            return Vec::new();
         }
-    }
+    };
 
-    ports
+    let ports: Vec<u16> = sockets_info.iter().filter_map(|si| {
+        if let ProtocolSocketInfo::Udp(udp_si) = &si.protocol_socket_info {
+            // Check if any of the associated PIDs match the target PID
+            if si.associated_pids.iter().any(|&pid| pid == (target_pid as u32)) {
+                Some(udp_si.local_port)
+            } else { None }
+        } else {
+            None // This line is technically unnecessary due to the UDP filter applied earlier
+        }
+    }).collect();
+
+    //Filter out duplicates
+    return ports.into_iter().collect::<std::collections::HashSet<u16>>().into_iter().collect();
 }
 
 // Get local hostname
