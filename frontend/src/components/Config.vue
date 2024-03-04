@@ -52,8 +52,14 @@
         </p>
         <div class="social-wrapper">
           <p>{{ t('credits.socials') }}</p>
-          <a href="https://discord.gg/sHPp5CPxf2"><img src="@/assets/icons/discord.svg"></a>
-          <a href="https://github.com/zelytra/BetterFleet"><img src="@/assets/icons/github.svg"></a>
+          <a
+            href="https://discord.gg/sHPp5CPxf2"
+            target="_blank"
+          ><img src="@/assets/icons/discord.svg"></a>
+          <a
+            href="https://github.com/zelytra/BetterFleet"
+            target="_blank"
+          ><img src="@/assets/icons/github.svg"></a>
         </div>
         <p class="light">
           {{ t('credits.details') }}
