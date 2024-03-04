@@ -22,6 +22,9 @@
     }
   },
   "appName": "Better Fleet",
+  "config": {
+    "title": "Preferences"
+  },
   "firstLogin": {
     "button": {
       "description": "TODO",

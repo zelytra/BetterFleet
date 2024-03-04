@@ -7,9 +7,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-
-</script>
+<script setup lang="ts"></script>
 
 <style scoped lang="scss">
 .header-wrapper {
@@ -18,7 +16,7 @@
   height: 120px;
   width: 100%;
   display: flex;
-
+  justify-content: center;
   .header {
     background: var(--secondary-background) url("@/assets/banners/lobby.png");
     background-size: cover;

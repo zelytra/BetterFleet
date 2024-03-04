@@ -22,6 +22,9 @@
     }
   },
   "appName": "Better Fleet",
+  "config": {
+    "title": "Préférances"
+  },
   "firstLogin": {
     "button": {
       "description": "Hissons les voiles, monte à bord et rejoins l'équipage !",
