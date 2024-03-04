@@ -16,7 +16,8 @@ export const i18n = createI18n({
 });
 
 const app = createApp(App);
-app.provide("alertProvider", reactive(new AlertProvider()));
+const alertProvider = reactive(new AlertProvider());
+app.provide("alertProvider", alertProvider);
 app.directive("click-outside", {
   mounted(el, binding) {
     el.clickOutsideEvent = function (event: any) {
@@ -35,3 +36,5 @@ app.directive("click-outside", {
 app.use(router);
 app.use(i18n);
 app.mount("#app");
+
+export { alertProvider };

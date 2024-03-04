@@ -1,4 +1,10 @@
 {
+  "alert": {
+    "socket": {
+      "connectionFailed": "Failed to connect to server",
+      "title": "Websocket error"
+    }
+  },
   "appName": "Better Fleet",
   "firstLogin": {
     "button": {

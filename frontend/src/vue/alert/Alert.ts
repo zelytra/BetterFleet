@@ -8,7 +8,7 @@ export class AlertType {
 
   // private to disallow creating other instances of this type
   private constructor(
-    private readonly key: string,
+    public readonly key: string,
     public readonly value: any,
   ) {}
 
