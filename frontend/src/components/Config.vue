@@ -11,8 +11,32 @@
       <div class="side-content">
         <p>test</p>
       </div>
-      <div class="side-content">
-        <p>test</p>
+      <div class="side-content credits">
+        <h2>{{ t('credits.title') }}</h2>
+        <p>{{ t('credits.description') }}</p>
+        <p>
+          {{ t('credits.developed') }} <a
+            href="https://zelytra.fr"
+            target="_blank"
+          >Zelytra</a> {{ t('credits.and') }} <a
+            href="https://github.com/dadodasyra"
+            target="_blank"
+          >dadodasyra</a>
+        </p>
+        <p>
+          {{ t('credits.designed') }} <a
+            href="https://zetro.fr"
+            target="_blank"
+          >Zetro</a>
+        </p>
+        <div class="social-wrapper">
+          <p>{{ t('credits.socials') }}</p>
+          <a href="https://discord.gg/sHPp5CPxf2"><img src="@/assets/icons/discord.svg"></a>
+          <a href="https://github.com/zelytra/BetterFleet"><img src="@/assets/icons/github.svg"></a>
+        </div>
+        <p class="light">
+          {{ t('credits.details') }}
+        </p>
       </div>
     </div>
   </div>
@@ -20,9 +44,9 @@
 
 <script setup lang="ts">
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
-import { useI18n } from "vue-i18n";
+import {useI18n} from "vue-i18n";
 
-const { t } = useI18n();
+const {t} = useI18n();
 </script>
 
 <style scoped lang="scss">
@@ -57,6 +81,45 @@ const { t } = useI18n();
       gap: 20px;
       border-radius: 5px;
       padding: 16px 8px;
+      overflow: hidden;
+
+      &.credits {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 500px;
+
+        h2 {
+          font-family: BrushTip, sans-serif;
+          color: var(--primary);
+          font-size: 25px;
+        }
+
+        p {
+          font-size: 16px;
+          text-align: center;
+
+          a {
+            color: var(--primary);
+            cursor: pointer;
+
+            &:hover {
+              text-decoration: underline var(--primary);
+            }
+          }
+
+          &.light {
+            color: var(--secondary-text);
+          }
+        }
+
+        .social-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+      }
     }
   }
 }

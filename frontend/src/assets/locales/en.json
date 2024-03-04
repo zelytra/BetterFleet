@@ -25,6 +25,15 @@
   "config": {
     "title": "Preferences"
   },
+  "credits": {
+    "and": "and",
+    "description": "todo",
+    "designed": "todo",
+    "details": "todo",
+    "developed": "",
+    "socials": "todo",
+    "title": "todo"
+  },
   "firstLogin": {
     "button": {
       "description": "TODO",
