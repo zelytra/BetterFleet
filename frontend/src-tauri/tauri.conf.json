@@ -56,7 +56,7 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 700,
         "resizable": true,
         "title": "betterfleet",
         "width": 1000
