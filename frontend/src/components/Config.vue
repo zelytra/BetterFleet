@@ -8,8 +8,29 @@
       </template>
     </BannerTemplate>
     <div class="config-content">
-      <div class="side-content">
-        <p>test</p>
+      <div class="side-content inputs">
+        <h2>{{ t('credits.title') }}</h2>
+        <div class="content-wrapper">
+          <div class="side-content">
+            <InputText
+              input-value=""
+              placeholder="oskour"
+              :label="'Pseudonyme'"
+            />
+            <InputText
+              input-value=""
+              placeholder="oskour"
+              :label="'Pseudonyme'"
+            />
+          </div>
+          <div class="side-content">
+            <InputText
+              input-value=""
+              placeholder="oskour"
+              :label="'Pseudonyme'"
+            />
+          </div>
+        </div>
       </div>
       <div class="side-content credits">
         <h2>{{ t('credits.title') }}</h2>
@@ -45,6 +66,7 @@
 <script setup lang="ts">
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import {useI18n} from "vue-i18n";
+import InputText from "@/vue/form/InputText.vue";
 
 const {t} = useI18n();
 </script>
@@ -71,6 +93,7 @@ const {t} = useI18n();
   .config-content {
     display: flex;
     height: calc(100% - 170px); // Minus header height
+    max-height: 400px;
     box-sizing: border-box;
     gap: 14px;
 
@@ -83,18 +106,37 @@ const {t} = useI18n();
       padding: 16px 8px;
       overflow: hidden;
 
+      h2 {
+        font-family: BrushTip, sans-serif;
+        color: var(--primary);
+        font-size: 25px;
+        text-align: center;
+      }
+
+      &.inputs {
+        .content-wrapper{
+          display: flex;
+          gap: 12px;
+          width: 100%;
+          box-sizing: border-box;
+
+          .side-content{
+            box-sizing: border-box;
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+
+          }
+        }
+      }
+
       &.credits {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         align-items: center;
-        max-width: 500px;
-
-        h2 {
-          font-family: BrushTip, sans-serif;
-          color: var(--primary);
-          font-size: 25px;
-        }
+        max-width: 400px;
 
         p {
           font-size: 16px;

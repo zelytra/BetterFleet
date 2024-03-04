@@ -4,7 +4,7 @@
     <div :class="{'input-wrapper':true,disabled:lock}">
       <input
           v-model="computedInput"
-          type="text"
+          type="range"
           :disabled="lock"
           :placeholder="placeholder"
           @keydown.enter="emits('validate')"
@@ -14,19 +14,14 @@
     </span>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
 import {computed} from "vue";
+import {SingleSelectInterface} from "@/vue/form/Inputs.ts";
 
 const props = defineProps({
-  inputValue: {
-    type: String,
-    required: true,
-    default: "",
-  },
-  placeholder: {type: String, required: false, default: ""},
+  data: {type: SingleSelectInterface, required: true},
   label: {type: String, required: false},
   lock: {type: Boolean, required: false, default: () => false}
 });
