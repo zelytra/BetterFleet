@@ -33,7 +33,6 @@ import AlertComponent from "@/vue/alert/AlertComponent.vue";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 
 const { t } = useI18n();
-const alertProvider = inject("alertProvider") as AlertProvider;
 
 onMounted(() => {
   UserStore.init({
