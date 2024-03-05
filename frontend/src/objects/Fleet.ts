@@ -31,7 +31,7 @@ export class Fleet {
         this.status = SessionStatus.WAITING;
     }
 
-    joinSession(sessionId: string): boolean {
+    joinSession(sessionId: string) {
         if (this.socket && this.socket.readyState >= 2) {
             this.socket.close();
         }
