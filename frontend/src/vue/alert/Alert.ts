@@ -1,5 +1,5 @@
 import flame from "@/assets/icons/alert-flame.svg";
-import { AlertUtils } from "@/vue/alert/AlertUtils.ts";
+import {AlertUtils} from "@/vue/alert/AlertUtils.ts";
 
 export class AlertType {
   static readonly VALID = new AlertType("VALID", flame);
@@ -10,7 +10,8 @@ export class AlertType {
   private constructor(
     public readonly key: string,
     public readonly value: any,
-  ) {}
+  ) {
+  }
 
   toString() {
     return this.value;
@@ -27,7 +28,8 @@ export interface Alert {
 export class AlertProvider {
   private alerts: Alert[] = [];
 
-  constructor() {}
+  constructor() {
+  }
 
   public get getAlerts() {
     return this.alerts;
@@ -46,20 +48,24 @@ export class AlertProvider {
   }
 
   public handleError(status: number) {
-    if (status == 403) {
-      this.sendAlert(AlertUtils.getForbiddenAccessAlert());
-    }
+    switch (status) {
+      case 403: {
+        this.sendAlert(AlertUtils.getForbiddenAccessAlert());
+        break;
+      }
+      case 500: {
+        this.sendAlert(AlertUtils.getErrorAlert());
+        break;
+      }
+      case 400: {
+        this.sendAlert(AlertUtils.getBadRequest());
+        break;
+      }
+      case 415: {
+        this.sendAlert(AlertUtils.getUnsupportedMediaType());
+        break;
+      }
 
-    if (status == 500) {
-      this.sendAlert(AlertUtils.getErrorAlert());
-    }
-
-    if (status == 400) {
-      this.sendAlert(AlertUtils.getBadRequest());
-    }
-
-    if (status == 415) {
-      this.sendAlert(AlertUtils.getUnsupportedMediaType());
     }
   }
 }
