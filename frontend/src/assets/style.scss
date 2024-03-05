@@ -11,6 +11,7 @@
   scrollbar-color: var(--primary)  rgba(50, 212, 153, 0.10);
   scrollbar-width: thin;
   color: var(--primary-text);
+  user-select: none;
 }
 
 body {

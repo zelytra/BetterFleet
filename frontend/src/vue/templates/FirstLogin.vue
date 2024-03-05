@@ -72,9 +72,10 @@ function updateUsername() {
     justify-content: center;
     align-items: center;
     gap: 15px;
+    margin-bottom: 50px;
 
     .main-content {
-      padding: 50px 14px;
+      padding: 30px 14px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -105,7 +106,7 @@ function updateUsername() {
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 40px 40px;
+      padding: 20px 40px;
       background: linear-gradient(
         0deg,
         rgba(50, 144, 212, 0.2) 0%,
@@ -155,7 +156,7 @@ function updateUsername() {
     display: flex;
     align-items: center;
     max-width: 350px;
-    padding: 26px 18px;
+    padding: 18px 16px;
     gap: 18px;
     border-radius: 5px;
 

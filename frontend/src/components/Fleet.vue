@@ -12,11 +12,10 @@
 import FleetSessionChoice from "@/components/fleet/FleetSessionChoice.vue";
 import FleetLobby from "@/components/fleet/FleetLobby.vue";
 import { Fleet } from "@/objects/Fleet.ts";
-import { onMounted, onUnmounted } from "vue";
+import { onUnmounted } from "vue";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 
 UserStore.player.fleet = new Fleet();
-onMounted(() => {});
 
 onUnmounted(() => {
   if (UserStore.player.fleet) {

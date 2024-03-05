@@ -1,4 +1,26 @@
 {
+  "alert": {
+    "badRequest": {
+      "content": "La requête est corrompue ou incorrect.",
+      "title": "Mauvais requette"
+    },
+    "error": {
+      "content": "Une erreur est survenu",
+      "title": "Erreur"
+    },
+    "forbidden": {
+      "content": "Vous ne disposez pas des autorisations nécessaire pour acceder a cette page.",
+      "title": "Acces refusé"
+    },
+    "socket": {
+      "connectionFailed": "Echec de la connexion au serveur",
+      "title": "Erreur websocket"
+    },
+    "unsupportedMedia": {
+      "content": "Le media que vous tenté d'envoyer n'est pas supporter par l'application.",
+      "title": "Media non supportée"
+    }
+  },
   "appName": "Better Fleet",
   "firstLogin": {
     "button": {

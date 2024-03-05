@@ -1,4 +1,26 @@
 {
+  "alert": {
+    "badRequest": {
+      "content": "todo",
+      "title": "Bad request"
+    },
+    "error": {
+      "content": "An error as occured",
+      "title": "Error"
+    },
+    "forbidden": {
+      "content": "todo",
+      "title": "Access refused"
+    },
+    "socket": {
+      "connectionFailed": "Failed to connect to server",
+      "title": "Websocket error"
+    },
+    "unsupportedMedia": {
+      "content": "todo",
+      "title": "Unsupporte media type"
+    }
+  },
   "appName": "Better Fleet",
   "firstLogin": {
     "button": {
