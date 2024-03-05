@@ -13,9 +13,11 @@ export const UserStore = reactive({
         this.player = defaultPlayerValue;
         this.player.username = readedPlayer.username;
         this.player.lang = readedPlayer.lang;
+        this.player.serverHostName = readedPlayer.serverHostName;
 
         if (!this.player.lang) this.player.lang = browserLang;
         if (!this.player.username) this.player.username = "";
+        if (!this.player.serverHostName) this.player.serverHostName = import.meta.env.VITE_SOCKET_HOST;
 
         //@ts-ignore I18N typescript implementation
         i18n.global.locale.value = this.player.lang;
@@ -24,4 +26,10 @@ export const UserStore = reactive({
     setUser(user: Player) {
         this.player = user;
     },
+
+    setLang(lang: string) {
+        //@ts-ignore I18N typescript implementation
+        this.player.lang = lang;
+        i18n.global.locale.value = this.player.lang;
+    }
 });

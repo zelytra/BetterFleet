@@ -66,6 +66,7 @@ function resetInput() {
     &.disabled {
       cursor: no-drop;
       background: rgba(23, 26, 33, 0.40);
+      color: var(--secondary-text);
     }
 
     input[type="text"] {

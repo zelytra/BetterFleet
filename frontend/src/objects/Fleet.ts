@@ -124,12 +124,13 @@ export class Fleet {
 }
 
 export interface Player extends Preferences {
-    username: string;
-    status: PlayerStates;
-    isReady: boolean;
-    isMaster: boolean;
-    fleet?: Fleet;
-    sessionId?: string;
+  username: string;
+  status: PlayerStates;
+  isReady: boolean;
+  isMaster: boolean;
+  fleet?: Fleet;
+  sessionId?: string;
+  serverHostName?:string
 }
 
 export interface Preferences {

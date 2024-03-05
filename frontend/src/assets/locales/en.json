@@ -23,6 +23,7 @@
   },
   "appName": "Better Fleet",
   "config": {
+    "devmode": "Activate developer mod",
     "lang": {
       "label": "Lang"
     },
