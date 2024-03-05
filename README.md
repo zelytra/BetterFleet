@@ -28,7 +28,7 @@ players looking to improve their gaming experience.
 | Feature                               | BetterFleet                    | FleetCreator                   |
 |---------------------------------------|--------------------------------|--------------------------------|
 | IPv6 support                          | :white_check_mark:             | :x:                            |
-| Less performance usage?               | :white_check_mark:             | :x:                            |
+| Less performance usage                | :white_check_mark:             | :x:                            |
 | No ads                                | :white_check_mark:             | :x:                            |
 | No paid tiers                         | :white_check_mark:             | :x:                            |
 | UX friendly                           | :white_check_mark:             | :x:                            |
