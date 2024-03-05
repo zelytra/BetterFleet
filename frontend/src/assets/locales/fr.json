@@ -87,9 +87,10 @@
       "notReady": "Pas prêt",
       "ready": "Est prêt",
       "status": {
-        "in_game": "En jeu",
-        "offline": "Joueur hors ligne",
-        "online": "Joueur en ligne"
+        "closed": "Hors ligne",
+        "in-game": "En jeu",
+        "main-menu": "Dans les menus du jeu",
+        "started": "Jeux lancé"
       }
     },
     "status": {
