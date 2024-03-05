@@ -2,7 +2,6 @@
 
 # BetterFleet
 
-----
 
 ## About BetterFleet
 
