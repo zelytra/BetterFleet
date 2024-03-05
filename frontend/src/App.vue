@@ -17,36 +17,37 @@
       !UserStore.player.username || UserStore.player.username.length === 0
     "
   />
+  <AlertComponent />
 </template>
 
 <script setup lang="ts">
 import Header from "@/components/global/Header.vue";
 import Loading from "@/vue/templates/Loading.vue";
-import {useI18n} from "vue-i18n";
-import {UserStore} from "@/objects/stores/UserStore.ts";
-import {LocalKey} from "@/objects/stores/LocalStore.ts";
-import {onMounted} from "vue";
+import { useI18n } from "vue-i18n";
+import { UserStore } from "@/objects/stores/UserStore.ts";
+import { LocalKey } from "@/objects/stores/LocalStore.ts";
+import {onMounted } from "vue";
 import FirstLogin from "@/vue/templates/FirstLogin.vue";
-import {PlayerStates} from "@/objects/Fleet.ts";
+import { PlayerStates } from "@/objects/Fleet.ts";
+import AlertComponent from "@/vue/alert/AlertComponent.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 onMounted(() => {
   UserStore.init({
     lang: "en",
     isMaster: false,
     isReady: false,
-    status: PlayerStates.OFFLINE,
+    status: PlayerStates.CLOSED,
     username: "",
   });
 });
 window.onbeforeunload = () => {
   window.localStorage.setItem(
-      LocalKey.USER_STORE,
-      JSON.stringify(UserStore.player),
+    LocalKey.USER_STORE,
+    JSON.stringify(UserStore.player),
   );
 };
-
 </script>
 
 <style scoped lang="scss">

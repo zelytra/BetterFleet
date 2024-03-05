@@ -1,7 +1,7 @@
 {
   "name": "betterfleet",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -12,6 +12,7 @@
     "tauri-build": "npm run tauri build"
   },
   "dependencies": {
+    "@tauri-apps/api": "^1.5.3",
     "axios": "^1.6.7",
     "vue": "^3.4.21",
     "vue-i18n": "^9.10.1"
@@ -19,12 +20,9 @@
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.10",
     "@vitejs/plugin-vue": "^5.0.4",
-    "eslint": "^8.57.0",
-    "eslint-plugin-vue": "^9.22.0",
     "sass": "^1.71.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
-    "prettier": "^3.2.5",
     "vue-router": "^4.2.2",
     "vue-tsc": "^2.0.3"
   }

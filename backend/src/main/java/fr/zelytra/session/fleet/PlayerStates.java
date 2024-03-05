@@ -1,8 +1,9 @@
 package fr.zelytra.session.fleet;
 
 public enum PlayerStates {
-    OFFLINE, // Game not detected
-    ONLINE,  // Game detected and open but not in game
-    IN_GAME  // Player in a server
+    CLOSED, // Game is closed
+    STARTED, // Game detected an // Game is in first menu after launch / launching / stopping
+    MAIN_MENU, // In menu to select game mode
+    IN_GAME, // Status when the remote IP and port was found and player is in game
 }
 

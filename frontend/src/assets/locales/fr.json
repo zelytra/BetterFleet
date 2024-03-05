@@ -1,5 +1,51 @@
 {
+  "alert": {
+    "badRequest": {
+      "content": "La requête est corrompue ou incorrect.",
+      "title": "Mauvais requette"
+    },
+    "error": {
+      "content": "Une erreur est survenu",
+      "title": "Erreur"
+    },
+    "forbidden": {
+      "content": "Vous ne disposez pas des autorisations nécessaire pour acceder a cette page.",
+      "title": "Acces refusé"
+    },
+    "socket": {
+      "connectionFailed": "Echec de la connexion au serveur",
+      "title": "Erreur websocket"
+    },
+    "unsupportedMedia": {
+      "content": "Le media que vous tenté d'envoyer n'est pas supporter par l'application.",
+      "title": "Media non supportée"
+    }
+  },
   "appName": "Better Fleet",
+  "config": {
+    "devmode": "Activer le mode développeur",
+    "lang": {
+      "label": "Langue"
+    },
+    "name": {
+      "label": "Pseudonyme",
+      "placeholder": "Bob"
+    },
+    "server": {
+      "label": "Adresse du serveur",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "title": "Préférances"
+  },
+  "credits": {
+    "and": "et",
+    "description": "Better Fleet a été crée pour proposer une application pour faires des alliances sur le jeu Sea Of Thieves",
+    "designed": "Designer par",
+    "details": "Ce n'est pas l'application officielle de Sea of Thieves, mais simplement une application sur le thème du jeu qui propose une aide pour la création d'alliances.",
+    "developed": "Développée par",
+    "socials": "Retrouvez nous ici:",
+    "title": "Crédits / Informations"
+  },
   "firstLogin": {
     "button": {
       "description": "Hissons les voiles, monte à bord et rejoins l'équipage !",
@@ -14,6 +60,10 @@
     "targetGame": "Détection du jeu en cours",
     "targetLoading": "Jeu détecté. Préparation des navires.",
     "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé."
+  },
+  "locales": {
+    "en": "Anglais",
+    "fr": "Francais"
   },
   "session": {
     "choice": {
@@ -37,9 +87,10 @@
       "notReady": "Pas prêt",
       "ready": "Est prêt",
       "status": {
-        "in_game": "En jeu",
-        "offline": "Joueur hors ligne",
-        "online": "Joueur en ligne"
+        "closed": "Hors ligne",
+        "in-game": "En jeu",
+        "main-menu": "Dans les menus du jeu",
+        "started": "Jeux lancé"
       }
     },
     "status": {
