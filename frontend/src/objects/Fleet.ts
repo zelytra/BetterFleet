@@ -87,11 +87,7 @@ export class Fleet {
     }
 
     leaveSession(): void {
-        if (
-            !this.socket ||
-            this.socket.readyState == this.socket.CLOSING ||
-            this.socket.readyState != this.socket.CLOSED
-        ) {
+        if (!this.socket) {
             return;
         }
         this.socket.close();
@@ -124,13 +120,13 @@ export class Fleet {
 }
 
 export interface Player extends Preferences {
-  username: string;
-  status: PlayerStates;
-  isReady: boolean;
-  isMaster: boolean;
-  fleet?: Fleet;
-  sessionId?: string;
-  serverHostName?:string
+    username: string;
+    status: PlayerStates;
+    isReady: boolean;
+    isMaster: boolean;
+    fleet?: Fleet;
+    sessionId?: string;
+    serverHostName?: string
 }
 
 export interface Preferences {
