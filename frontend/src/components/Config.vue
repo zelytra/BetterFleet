@@ -13,25 +13,26 @@
         <div class="content-wrapper">
           <div class="side-content">
             <InputText
-                v-model:input-value="username"
-                :placeholder="t('config.name.placeholder')"
-                :label="t('config.name.label')"
+              v-model:input-value="username"
+              :placeholder="t('config.name.placeholder')"
+              :label="t('config.name.label')"
             />
             <div class="dev-mode-wrapper">
-              <input type="checkbox"
-                     v-model="devMode"
-              />
-              <p>{{ t('config.devmode') }}</p>
+              <input type="checkbox" v-model="devMode" />
+              <p>{{ t("config.devmode") }}</p>
             </div>
             <InputText
-                v-model:input-value="UserStore.player.serverHostName"
-                :placeholder="t('config.server.placeholder')"
-                :label="t('config.server.label')"
-                :lock="!devMode"
+              v-model:input-value="UserStore.player.serverHostName"
+              :placeholder="t('config.server.placeholder')"
+              :label="t('config.server.label')"
+              :lock="!devMode"
             />
           </div>
           <div class="side-content">
-            <SingleSelect :label="t('config.lang.label')" v-model:data="langOptions"/>
+            <SingleSelect
+              :label="t('config.lang.label')"
+              v-model:data="langOptions"
+            />
           </div>
         </div>
       </div>
@@ -51,10 +52,10 @@
         <div class="social-wrapper">
           <p>{{ t("credits.socials") }}</p>
           <a href="https://discord.gg/sHPp5CPxf2" target="_blank"
-          ><img src="@/assets/icons/discord.svg"
+            ><img src="@/assets/icons/discord.svg"
           /></a>
           <a href="https://github.com/zelytra/BetterFleet" target="_blank"
-          ><img src="@/assets/icons/github.svg"
+            ><img src="@/assets/icons/github.svg"
           /></a>
         </div>
         <p class="light">
@@ -67,53 +68,59 @@
 
 <script setup lang="ts">
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import InputText from "@/vue/form/InputText.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
-import {SingleSelectInterface} from "@/vue/form/Inputs.ts";
-import {onMounted, ref, watch} from "vue";
+import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
+import { onMounted, ref, watch } from "vue";
 
-import fr from "@/assets/icons/locales/fr.svg"
-import en from "@/assets/icons/locales/en.svg"
-import {UserStore} from "@/objects/stores/UserStore.ts";
-import {onBeforeRouteLeave} from "vue-router";
+import fr from "@/assets/icons/locales/fr.svg";
+import en from "@/assets/icons/locales/en.svg";
+import { UserStore } from "@/objects/stores/UserStore.ts";
+import { onBeforeRouteLeave } from "vue-router";
 
-const {t, availableLocales} = useI18n();
-const langOptions = ref<SingleSelectInterface>({data: []});
-const devMode = ref<boolean>(false)
-const username = ref<string>(UserStore.player.username)
+const { t, availableLocales } = useI18n();
+const langOptions = ref<SingleSelectInterface>({ data: [] });
+const devMode = ref<boolean>(false);
+const username = ref<string>(UserStore.player.username);
 
 onMounted(() => {
   for (const locale of availableLocales) {
-    langOptions.value.data.push({display: t('locales.' + locale), id: locale, image: getImgUrl(locale)})
+    langOptions.value.data.push({
+      display: t("locales." + locale),
+      id: locale,
+      image: getImgUrl(locale),
+    });
   }
 
   if (UserStore.player.lang) {
-    langOptions.value.selectedValue = langOptions.value.data.filter(x => x.id == UserStore.player.lang)[0]
+    langOptions.value.selectedValue = langOptions.value.data.filter(
+      (x) => x.id == UserStore.player.lang,
+    )[0];
   } else {
-    langOptions.value.selectedValue = langOptions.value.data[0]
+    langOptions.value.selectedValue = langOptions.value.data[0];
   }
 });
 
 watch(langOptions.value, () => {
-  UserStore.setLang(langOptions.value.selectedValue!.id)
-})
+  UserStore.setLang(langOptions.value.selectedValue!.id);
+});
 
-onBeforeRouteLeave((to, from, next) => {
+onBeforeRouteLeave((_to, _from, next) => {
   if (username.value.length == 0) {
-    next(false)
+    next(false);
   } else {
     UserStore.player.username = username.value;
-    next()
+    next();
   }
-})
+});
 
 function getImgUrl(iconName: string): string {
   switch (iconName) {
     case "fr":
       return fr;
     default:
-      return en
+      return en;
   }
 }
 </script>
@@ -195,12 +202,19 @@ function getImgUrl(iconName: string): string {
           justify-content: center;
 
           &:before {
-            content: '';
+            content: "";
             width: 10px;
             transform: scale(0);
             height: 10px;
             background: var(--primary-text);
-            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+            clip-path: polygon(
+              14% 44%,
+              0 65%,
+              50% 100%,
+              100% 16%,
+              80% 0%,
+              43% 62%
+            );
             transform-origin: bottom left;
           }
 
