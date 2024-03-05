@@ -23,7 +23,7 @@ const SIO_RCVALL: DWORD = 0x98000001;
 
 pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
     let api_base = Arc::new(RwLock::new(Api::new()));
-    let api  = Arc::clone(&api_base);
+    let api = Arc::clone(&api_base);
 
     tokio::spawn(async move {
         loop {
@@ -38,18 +38,26 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                 let udp_connections = get_udp_connections(pid);
 
                 // Update game_status
-                if udp_connections.len() != 2 {
-                    api.write().await.game_status = match udp_connections.len() { //TODO Optimization: Cache game_status and only update when it changes
-                        0 => GameStatus::Started,
-                        1 => GameStatus::MainMenu,
-                        _ => GameStatus::Unknown
-                    };
-                }
+                if udp_connections.len() == 0 { // 0 = First menu/launching
+                    api.write().await.game_status = GameStatus::Started;
+                } else if udp_connections.len() == 1 { // Main menu
+                    api.write().await.game_status = GameStatus::MainMenu;
+                    api.write().await.main_menu_port = udp_connections[0];
+                } else if udp_connections.len() == 2 { // 2 sockets = connected to a server
+                    // Get UDP Listen port, that the other one that is not main_menu_port
+                    let mut listen_ports: Vec<u16> = Vec::new();
 
-                // 2 sockets = connected to a server
-                if udp_connections.len() == 2 {
-                    // Get UDP Listen port
-                    let listen_port = udp_connections[1]; // The first one is for MainMenu socket, second one is game server
+                    let main_menu_ports = api.read().await.main_menu_port;
+                    if main_menu_ports == 0 {
+                        // This may happen when BetterFleet was launched after the connection to the server
+                        // Maybe we shouldn't do that, it may return the wrong server
+                        listen_ports.push(udp_connections[0]);
+                        listen_ports.push(udp_connections[1]);
+                    } else if udp_connections[0] == main_menu_ports {
+                        listen_ports.push(udp_connections[1]);
+                    } else {
+                        listen_ports.push(udp_connections[0]);
+                    }
 
                     // Get hostname
                     let hostname = match get_local_hostname() {
@@ -74,6 +82,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     let socket_addresses: Vec<SocketAddr> = ip_addresses.into_iter().map(|ip| SocketAddr::new(ip, 0)).collect();
                     for socket_addr in socket_addresses {
                         let api_clone = Arc::clone(&api);
+                        let listen_ports_clone = listen_ports.clone();
 
                         // One thread / IP
                         tokio::spawn(async move {
@@ -87,7 +96,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                             };
 
                             // Capture the IP by filtering headers
-                            match capture_ip(socket, listen_port).await {
+                            match capture_ip(socket, listen_ports_clone).await {
                                 Some((ip, port)) => {
                                     // Got an IP, lock api and update every information
                                     let mut api_lock = api_clone.write().await;
@@ -104,10 +113,12 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                                     // Got no result, get the last update time and check if it's too old
                                     // This is not a typical timeout and should never happen, it's a security
                                     let last_updated_server_ip = api_clone.read().await.last_updated_server_ip;
-                                    if last_updated_server_ip.elapsed() > Duration::from_secs(20) {
+                                    let last_server_ip = api_clone.read().await.server_ip.clone();
+                                    if last_updated_server_ip.elapsed() > Duration::from_secs(20) && last_server_ip != ""{
                                         println!("Resetting server_ip, no result");
                                         let mut api_lock = api_clone.write().await;
 
+                                        api_lock.game_status = GameStatus::Unknown;
                                         api_lock.server_ip = String::new();
                                         api_lock.server_port = 0;
                                         api_lock.last_updated_server_ip = Instant::now();
@@ -185,7 +196,7 @@ pub fn find_pid_of(process_name: &str) -> Vec<String> {
 }
 
 // Receive & filter packets to get the server IP
-async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)> {
+async fn capture_ip(socket: UdpSocket, listen_ports: Vec<u16>) -> Option<(String, u16)> {
     let mut buf = [0u8; (256 * 256) - 1];
     let timeout = Duration::from_millis(2000);
     let start_time = Instant::now();
@@ -239,11 +250,11 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
                                 let mut remote_ip = String::new();
                                 let mut remote_port = 0;
 
-                                if source_port == listen_port {
+                                if listen_ports.contains(&source_port) {
                                     // We are the source
                                     remote_ip = destination_ip;
                                     remote_port = destination_port;
-                                } else if destination_port == listen_port {
+                                } else if listen_ports.contains(&destination_port) {
                                     // We are the destination
                                     remote_ip = source_ip;
                                     remote_port = source_port;
