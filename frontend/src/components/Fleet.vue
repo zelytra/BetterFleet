@@ -2,9 +2,9 @@
   <div v-if="UserStore.player.fleet" class="lobby-wrapper">
     <FleetLobby
       v-if="UserStore.player.fleet.sessionId"
-      :session="UserStore.player.fleet"
+      :session="UserStore.player.fleet as Fleet"
     />
-    <FleetSessionChoice v-else :session="UserStore.player.fleet" />
+    <FleetSessionChoice v-else :session="UserStore.player.fleet as Fleet" />
   </div>
 </template>
 
