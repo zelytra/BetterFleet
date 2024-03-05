@@ -23,6 +23,17 @@
   },
   "appName": "Better Fleet",
   "config": {
+    "lang": {
+      "label": "Lang"
+    },
+    "name": {
+      "label": "Username",
+      "placeholder": "Ichabodt"
+    },
+    "server": {
+      "label": "Server hostname",
+      "placeholder": "https://betterfleet.com/api"
+    },
     "title": "Preferences"
   },
   "credits": {
@@ -48,6 +59,10 @@
     "targetGame": "Searching game",
     "targetLoading": "Game detected. Loading ships.",
     "tips": "This can take a while..."
+  },
+  "locales": {
+    "en": "English",
+    "fr": "French"
   },
   "session": {
     "choice": {

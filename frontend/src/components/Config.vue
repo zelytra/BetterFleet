@@ -9,60 +9,49 @@
     </BannerTemplate>
     <div class="config-content">
       <div class="side-content inputs">
-        <h2>{{ t('credits.title') }}</h2>
+        <h2>{{ t("credits.title") }}</h2>
         <div class="content-wrapper">
           <div class="side-content">
             <InputText
-              input-value=""
-              placeholder="oskour"
-              :label="'Pseudonyme'"
+                input-value=""
+                :placeholder="t('config.name.placeholder')"
+                :label="t('config.name.label')"
             />
             <InputText
-              input-value=""
-              placeholder="oskour"
-              :label="'Pseudonyme'"
+                input-value=""
+                :placeholder="t('config.server.placeholder')"
+                :label="t('config.server.label')"
             />
           </div>
           <div class="side-content">
-            <InputText
-              input-value=""
-              placeholder="oskour"
-              :label="'Pseudonyme'"
-            />
+            <SingleSelect :label="t('config.lang.label')" :data="langOptions"/>
           </div>
         </div>
       </div>
       <div class="side-content credits">
-        <h2>{{ t('credits.title') }}</h2>
-        <p>{{ t('credits.description') }}</p>
+        <h2>{{ t("credits.title") }}</h2>
+        <p>{{ t("credits.description") }}</p>
         <p>
-          {{ t('credits.developed') }} <a
-            href="https://zelytra.fr"
-            target="_blank"
-          >Zelytra</a> {{ t('credits.and') }} <a
-            href="https://github.com/dadodasyra"
-            target="_blank"
-          >dadodasyra</a>
+          {{ t("credits.developed") }}
+          <a href="https://zelytra.fr" target="_blank">Zelytra</a>
+          {{ t("credits.and") }}
+          <a href="https://github.com/dadodasyra" target="_blank">dadodasyra</a>
         </p>
         <p>
-          {{ t('credits.designed') }} <a
-            href="https://zetro.fr"
-            target="_blank"
-          >Zetro</a>
+          {{ t("credits.designed") }}
+          <a href="https://zetro.fr" target="_blank">Zetro</a>
         </p>
         <div class="social-wrapper">
-          <p>{{ t('credits.socials') }}</p>
-          <a
-            href="https://discord.gg/sHPp5CPxf2"
-            target="_blank"
-          ><img src="@/assets/icons/discord.svg"></a>
-          <a
-            href="https://github.com/zelytra/BetterFleet"
-            target="_blank"
-          ><img src="@/assets/icons/github.svg"></a>
+          <p>{{ t("credits.socials") }}</p>
+          <a href="https://discord.gg/sHPp5CPxf2" target="_blank"
+          ><img src="@/assets/icons/discord.svg"
+          /></a>
+          <a href="https://github.com/zelytra/BetterFleet" target="_blank"
+          ><img src="@/assets/icons/github.svg"
+          /></a>
         </div>
         <p class="light">
-          {{ t('credits.details') }}
+          {{ t("credits.details") }}
         </p>
       </div>
     </div>
@@ -73,8 +62,31 @@
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import {useI18n} from "vue-i18n";
 import InputText from "@/vue/form/InputText.vue";
+import SingleSelect from "@/vue/form/SingleSelect.vue";
+import {SingleSelectInterface} from "@/vue/form/Inputs.ts";
+import {onMounted, ref} from "vue";
 
-const {t} = useI18n();
+import fr from "@/assets/icons/locales/fr.svg"
+import en from "@/assets/icons/locales/en.svg"
+
+const {t, availableLocales} = useI18n();
+const langOptions = ref<SingleSelectInterface>({data: []});
+
+onMounted(() => {
+  for (const locale of availableLocales) {
+    langOptions.value.data.push({display: t('locales.' + locale), id: locale, image: getImgUrl(locale)})
+  }
+  langOptions.value.selectedValue = langOptions.value.data[0]
+});
+
+function getImgUrl(iconName: string): string {
+  switch (iconName) {
+    case "fr":
+      return fr;
+    default:
+      return en
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -110,7 +122,7 @@ const {t} = useI18n();
       gap: 20px;
       border-radius: 5px;
       padding: 16px 8px;
-      overflow: hidden;
+      //overflow: hidden;
 
       h2 {
         font-family: BrushTip, sans-serif;
@@ -120,19 +132,20 @@ const {t} = useI18n();
       }
 
       &.inputs {
-        .content-wrapper{
+        overflow: visible;
+
+        .content-wrapper {
           display: flex;
           gap: 12px;
           width: 100%;
           box-sizing: border-box;
 
-          .side-content{
+          .side-content {
             box-sizing: border-box;
             width: 50%;
             display: flex;
             flex-direction: column;
             gap: 24px;
-
           }
         }
       }

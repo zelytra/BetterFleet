@@ -1,4 +1,10 @@
 export interface SingleSelectInterface {
-    selectedValue: string
-    data: { image: string, display: string }[]
+    selectedValue?: InputData;
+    data:InputData[];
+}
+
+export interface InputData {
+    image: any;
+    display: string;
+    id: string
 }
