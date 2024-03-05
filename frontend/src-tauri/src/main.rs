@@ -69,8 +69,9 @@ fn drop_anchor() -> bool {
         // Maybe we shouldn't hardcode a sleep duration, but I don't see any other way to do it
         sleep(Duration::from_millis(10));
 
-        // TODO: Currently left key (which focus last focused button)
-        // But we may want to click on the button by using % of the screen size
+        // 2x Left arrow key to focus the button
+        send_key(0x25);
+        sleep(Duration::from_millis(1));
         send_key(0x25);
 
         sleep(Duration::from_millis(1));
