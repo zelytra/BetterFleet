@@ -38,7 +38,7 @@ onMounted(() => {
     lang: "en",
     isMaster: false,
     isReady: false,
-    status: PlayerStates.OFFLINE,
+    status: PlayerStates.CLOSED,
     username: "",
   });
 });
