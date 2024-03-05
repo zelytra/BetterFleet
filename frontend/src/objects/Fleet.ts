@@ -31,7 +31,7 @@ export class Fleet {
         this.status = SessionStatus.WAITING;
     }
 
-    joinSession(sessionId: string): boolean {
+    joinSession(sessionId: string) {
         if (this.socket && this.socket.readyState >= 2) {
             this.socket.close();
         }
@@ -87,11 +87,7 @@ export class Fleet {
     }
 
     leaveSession(): void {
-        if (
-            !this.socket ||
-            this.socket.readyState == this.socket.CLOSING ||
-            this.socket.readyState != this.socket.CLOSED
-        ) {
+        if (!this.socket) {
             return;
         }
         this.socket.close();
@@ -130,6 +126,7 @@ export interface Player extends Preferences {
     isMaster: boolean;
     fleet?: Fleet;
     sessionId?: string;
+    serverHostName?: string
 }
 
 export interface Preferences {

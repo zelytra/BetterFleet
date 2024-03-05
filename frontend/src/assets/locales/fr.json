@@ -22,6 +22,30 @@
     }
   },
   "appName": "Better Fleet",
+  "config": {
+    "devmode": "Activer le mode développeur",
+    "lang": {
+      "label": "Langue"
+    },
+    "name": {
+      "label": "Pseudonyme",
+      "placeholder": "Bob"
+    },
+    "server": {
+      "label": "Adresse du serveur",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "title": "Préférances"
+  },
+  "credits": {
+    "and": "et",
+    "description": "Better Fleet a été crée pour proposer une application pour faires des alliances sur le jeu Sea Of Thieves",
+    "designed": "Designer par",
+    "details": "Ce n'est pas l'application officielle de Sea of Thieves, mais simplement une application sur le thème du jeu qui propose une aide pour la création d'alliances.",
+    "developed": "Développée par",
+    "socials": "Retrouvez nous ici:",
+    "title": "Crédits / Informations"
+  },
   "firstLogin": {
     "button": {
       "description": "Hissons les voiles, monte à bord et rejoins l'équipage !",
@@ -36,6 +60,10 @@
     "targetGame": "Détection du jeu en cours",
     "targetLoading": "Jeu détecté. Préparation des navires.",
     "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé."
+  },
+  "locales": {
+    "en": "Anglais",
+    "fr": "Francais"
   },
   "session": {
     "choice": {

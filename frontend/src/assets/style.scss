@@ -18,7 +18,8 @@ body {
   --primary: #32D499;
   --primary-text: #FFF;
   --secondary-text: #B3B3B3;
-  --primary-background: #171A21;
+  --primary-background: radial-gradient(205.44% 98.15% at 50% 50%, #171A21 0%, #0A0C10 100%), #171A21;
+  --primary-background-static: #171A21;
   --primary-border: #E8E8E8;
   --secondary-background: #222631;
   --important: #D43232;
@@ -27,21 +28,21 @@ body {
 }
 
 html, body {
-  background-color: var(--primary-background);
+  background: var(--primary-background);
   height: 100vh;
   overflow: hidden;
   width: auto;
 }
 
 #app {
-  background-color: var(--primary-background);
+  background: var(--primary-background);
   height: calc(100%);
 }
 
 ::-webkit-scrollbar {
   width: 5px;
   height: 8px;
-  background-color: var(--primary-background);
+  background: var(--primary-background);
 }
 
 ::-webkit-scrollbar-thumb {

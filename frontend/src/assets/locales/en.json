@@ -22,6 +22,30 @@
     }
   },
   "appName": "Better Fleet",
+  "config": {
+    "devmode": "Activate developer mod",
+    "lang": {
+      "label": "Lang"
+    },
+    "name": {
+      "label": "Username",
+      "placeholder": "Ichabodt"
+    },
+    "server": {
+      "label": "Server hostname",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "title": "Preferences"
+  },
+  "credits": {
+    "and": "and",
+    "description": "todo",
+    "designed": "todo",
+    "details": "todo",
+    "developed": "",
+    "socials": "todo",
+    "title": "todo"
+  },
   "firstLogin": {
     "button": {
       "description": "TODO",
@@ -36,6 +60,10 @@
     "targetGame": "Searching game",
     "targetLoading": "Game detected. Loading ships.",
     "tips": "This can take a while..."
+  },
+  "locales": {
+    "en": "English",
+    "fr": "French"
   },
   "session": {
     "choice": {

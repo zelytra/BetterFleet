@@ -12,7 +12,13 @@
   },
   "tauri": {
     "allowlist": {
-      "all": false
+      "all": false,
+      "shell": {
+        "all": true,
+        "execute": true,
+        "sidecar": true,
+        "open": true
+      }
     },
     "bundle": {
       "active": true,
@@ -59,7 +65,7 @@
         "height": 700,
         "resizable": true,
         "title": "betterfleet",
-        "width": 1000
+        "width": 1250
       }
     ]
   }

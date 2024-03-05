@@ -26,7 +26,7 @@ import Loading from "@/vue/templates/Loading.vue";
 import { useI18n } from "vue-i18n";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import { LocalKey } from "@/objects/stores/LocalStore.ts";
-import { onMounted } from "vue";
+import {onMounted } from "vue";
 import FirstLogin from "@/vue/templates/FirstLogin.vue";
 import { PlayerStates } from "@/objects/Fleet.ts";
 import AlertComponent from "@/vue/alert/AlertComponent.vue";
