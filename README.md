@@ -47,10 +47,10 @@ usage, suggesting a potential memory leak.
 
 | Operating System | Compatible |
 |------------------|------------|
-| Windows 11       | ✅          |
-| Windows 10       | ✅          |
-| macOS            | ❌          |
-| Linux            | ❌          |
+| Windows 11       | ✅         |
+| Windows 10       | ✅         |
+| macOS            | ❌         |
+| Linux            | ❌         |
 
 ---
 
