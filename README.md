@@ -8,7 +8,7 @@
 
 BetterFleet is a free open source application designed to enhance the gaming experience in Sea Of Thieves by
 facilitating the creation of alliances among players. With BetterFleet, you can organize game sessions and invite your
-friends to join in a simple and intuitive manner
+friends to join in a simple and intuitive manner.
 
 **Important Note:** BetterFleet is not an official application of Sea Of Thieves. It was developed by the community for
 players looking to improve their gaming experience.
