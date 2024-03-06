@@ -93,6 +93,7 @@
         "started": "Game started"
       }
     },
+    "run": "Start",
     "status": {
       "action": "TODO",
       "countdown": "Launching in",

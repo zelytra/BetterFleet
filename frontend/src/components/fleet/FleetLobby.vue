@@ -3,7 +3,7 @@
     <BannerTemplate>
       <template #content>
         <div class="header-content">
-          <img src="@/assets/icons/sot.svg" />
+          <img src="@/assets/icons/sot.svg"/>
           <div class="title-content">
             <p>{{ session.sessionName }}</p>
             <p class="id">
@@ -14,22 +14,24 @@
         </div>
       </template>
       <template #left-content>
-        <button class="session-starter">TODO</button>
+        <button @click="startSession" :class="{'session-starter':true,'pending':session.getReadyPlayers().length !=session.players.length}">
+          {{ t('session.run') }}
+        </button>
       </template>
     </BannerTemplate>
     <div class="lobby-content">
       <div class="player-table">
         <PlayerFleet
-          v-for="player in computedsession.players.sort((a, b) => {
+            v-for="player in computedsession.players.sort((a, b) => {
             return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
           })"
-          :player="player"
+            :player="player"
         />
       </div>
       <div class="lobby-details">
         <button
-          :class="{ 'ready-button': true, not: !UserStore.player.isReady }"
-          @click="updateStatus"
+            :class="{ 'ready-button': true, not: !UserStore.player.isReady }"
+            @click="updateStatus"
         >
           <p v-if="UserStore.player.isReady">{{ t("session.player.ready") }}</p>
           <p v-else>{{ t("session.player.notReady") }}</p>
@@ -63,14 +65,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType } from "vue";
-import { Fleet } from "@/objects/Fleet.ts";
+import {computed, PropType} from "vue";
+import {Fleet} from "@/objects/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
-import { useI18n } from "vue-i18n";
+import {useI18n} from "vue-i18n";
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
-import { UserStore } from "@/objects/stores/UserStore.ts";
+import {UserStore} from "@/objects/stores/UserStore.ts";
 
-const { t } = useI18n();
+const {t} = useI18n();
 const props = defineProps({
   session: {
     type: Object as PropType<Fleet>,
@@ -86,8 +88,16 @@ function updateStatus() {
 const emits = defineEmits(["update:selected-value"]);
 const computedsession = computed({
   get: (): Fleet => props.session,
-  set: (): void => {},
+  set: (): void => {
+  },
 });
+
+function startSession(){
+  // Yes I know never trust the client... IT'S AN ALPHA !! (or a beta I don't care)
+  if (!UserStore.player.isMaster){
+    return;
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -132,11 +142,16 @@ const computedsession = computed({
     cursor: pointer;
     height: 100%;
     background: linear-gradient(
-      270deg,
-      rgba(50, 212, 153, 0.2) 0%,
-      rgba(50, 212, 153, 0) 108.45%
+            270deg,
+            rgba(50, 212, 153, 0.2) 0%,
+            rgba(50, 212, 153, 0) 108.45%
     );
     padding: 0 16px;
+    white-space: nowrap;
+
+    &.pending {
+      background: linear-gradient(270deg, rgba(212, 147, 50, 0.20) 0%, rgba(212, 147, 50, 0.00) 108.45%);
+    }
   }
 
   .lobby-content {
@@ -174,9 +189,9 @@ const computedsession = computed({
         all: unset;
         border-radius: 5px;
         background: linear-gradient(
-          0deg,
-          rgba(50, 212, 153, 0.2) -14.61%,
-          rgba(50, 212, 153, 0.07) 167.42%
+                0deg,
+                rgba(50, 212, 153, 0.2) -14.61%,
+                rgba(50, 212, 153, 0.07) 167.42%
         );
         width: 100%;
         height: 80px;
@@ -186,9 +201,9 @@ const computedsession = computed({
 
         &.not {
           background: linear-gradient(
-            0deg,
-            rgba(212, 50, 50, 0.2) -14.61%,
-            rgba(212, 50, 50, 0.07) 167.42%
+                  0deg,
+                  rgba(212, 50, 50, 0.2) -14.61%,
+                  rgba(212, 50, 50, 0.07) 167.42%
           );
         }
       }
@@ -247,9 +262,9 @@ const computedsession = computed({
           width: 100%;
           text-align: center;
           background: linear-gradient(
-            0deg,
-            rgba(212, 50, 50, 0.2) 0%,
-            rgba(212, 50, 50, 0) 97.89%
+                  0deg,
+                  rgba(212, 50, 50, 0.2) 0%,
+                  rgba(212, 50, 50, 0) 97.89%
           );
         }
       }

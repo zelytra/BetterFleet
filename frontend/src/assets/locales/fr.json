@@ -93,6 +93,7 @@
         "started": "Jeux lancé"
       }
     },
+    "run": "Lever l'ancre",
     "status": {
       "action": "Action",
       "countdown": "Lancement dans ",
