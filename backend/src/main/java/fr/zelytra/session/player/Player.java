@@ -1,4 +1,4 @@
-package fr.zelytra.session.fleet;
+package fr.zelytra.session.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

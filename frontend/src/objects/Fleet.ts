@@ -11,7 +11,7 @@ export interface FleetInterface {
   sessionId: string;
   sessionName: string;
   players: Player[];
-  servers: SotServer[];
+  servers: Map<string, SotServer>;
   status: SessionStatus;
   socket?: WebSocket;
 }
@@ -20,7 +20,7 @@ export class Fleet {
   public sessionId: string;
   public sessionName: string;
   public players: Player[];
-  public servers: SotServer[];
+  public servers: Map<string, SotServer>;
   public status: SessionStatus;
   public socket?: WebSocket;
 
@@ -28,7 +28,7 @@ export class Fleet {
     this.sessionId = "";
     this.sessionName = "";
     this.players = [];
-    this.servers = [];
+    this.servers = new Map<string, SotServer>();
     this.status = SessionStatus.WAITING;
   }
 
@@ -52,12 +52,18 @@ export class Fleet {
         messageType: WebSocketMessageType.CONNECT,
       };
       this.socket.send(JSON.stringify(message));
+
+      // If player already connect to a server
+      if (UserStore.player.server) {
+        this.joinServer()
+      }
     };
 
     this.socket.onmessage = (ev: MessageEvent<string>) => {
-      const message: WebSocketMessage = JSON.parse(ev.data) as WebSocketMessage; //TODO inspect
+      const message: WebSocketMessage = JSON.parse(ev.data) as WebSocketMessage;
       switch (message.messageType) {
         case WebSocketMessageType.UPDATE: {
+          console.log(message.data)
           this.handleFleetUpdate(message.data as FleetInterface);
           break;
         }
@@ -107,7 +113,7 @@ export class Fleet {
     this.sessionId = "";
   }
 
-  updateToSession() {
+  updateToSession(): void {
     if (!this.socket) return;
     const message: WebSocketMessage = {
       data: UserStore.player,
@@ -132,6 +138,26 @@ export class Fleet {
       messageType: WebSocketMessageType.CLEAR_STATUS,
     };
     this.socket.send(JSON.stringify(message));
+  }
+
+  joinServer(): void {
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: UserStore.player.server,
+      messageType: WebSocketMessageType.JOIN_SERVER,
+    };
+    console.log("sending join")
+    this.socket.send(JSON.stringify(message));
+  }
+
+  leaveServer(): void {
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: UserStore.player.server,
+      messageType: WebSocketMessageType.LEAVE_SERVER,
+    };
+    this.socket.send(JSON.stringify(message));
+    UserStore.player.server = undefined;
   }
 
   getReadyPlayers(): Player[] {
@@ -159,6 +185,7 @@ export interface Player extends Preferences {
   sessionId?: string;
   serverHostName?: string
   countDown?: SessionRunner
+  server?: SotServer
 }
 
 export interface Preferences {
@@ -169,6 +196,7 @@ export interface SotServer {
   ip: string;
   port: number;
   location: string;
+  hash?: string
   connectedPlayers: Player[];
 }
 

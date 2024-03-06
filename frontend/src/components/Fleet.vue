@@ -31,13 +31,40 @@ const gameStatusRefresh: number = setInterval(() => {
       UserStore.player.status = Utils.parseRustPlayerStatus(response)
       const fleet: Fleet = UserStore.player.fleet as Fleet;
 
+      // Reset player server
+      if (UserStore.player.status == PlayerStates.IN_GAME && Utils.parseRustPlayerStatus(response) != PlayerStates.IN_GAME) {
+        console.log("leave server")
+        fleet.leaveServer();
+      }
+
       if (fleet && fleet.socket && fleet.socket.OPEN) {
         fleet.updateToSession();
       }
 
+
     }
   })
-}, 300);
+}, 400);
+
+const serverIpRefresh: number = setInterval(() => {
+  invoke('get_server_address').then((response: any) => {
+    if (UserStore.player.server) {
+      return;
+    }
+    console.log("join repeat")
+    UserStore.player.server = {
+      connectedPlayers: [],
+      hash: undefined,
+      ip: response.split(":")[0],
+      location: "",
+      port: Number.parseInt(response.split(":")[1]),
+    }
+
+    const fleet: Fleet = UserStore.player.fleet as Fleet;
+    fleet.joinServer();
+
+  })
+}, 400);
 
 onUnmounted(() => {
   if (UserStore.player.fleet) {
@@ -47,6 +74,7 @@ onUnmounted(() => {
 
 onUnmounted(() => {
   clearInterval(gameStatusRefresh)
+  clearInterval(serverIpRefresh)
 })
 </script>
 

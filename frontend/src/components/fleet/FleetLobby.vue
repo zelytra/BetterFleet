@@ -22,8 +22,16 @@
     </BannerTemplate>
     <div class="lobby-content">
       <div class="player-table">
+        <ServerContainer v-if="session.servers" v-for="[hash,server] in session.servers.entries()" :server="hash+' | '+server.location">
+          <PlayerFleet
+              v-for="player in server.connectedPlayers.sort((a, b) => {
+            return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
+          })"
+              :player="player"
+          />
+        </ServerContainer>
         <PlayerFleet
-            v-for="player in computedsession.players.sort((a, b) => {
+          v-for="player in computedsession.players.sort((a, b) => {
             return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
           })"
             :player="player"
@@ -69,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, PropType} from "vue";
+import {computed, onMounted, PropType} from "vue";
 import {Fleet} from "@/objects/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
@@ -77,6 +85,7 @@ import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalTime} from "@js-joda/core";
 import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
+import ServerContainer from "@/vue/templates/ServerContainer.vue";
 
 const {t} = useI18n();
 const props = defineProps({
@@ -85,6 +94,10 @@ const props = defineProps({
     required: true,
   },
 });
+
+onMounted(() => {
+  console.log(typeof props.session?.servers)
+})
 
 function updateStatus() {
   UserStore.player.isReady = !UserStore.player.isReady;
