@@ -1,3 +1,4 @@
+use std::io::{BufRead, BufReader};
 use std::string::String;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -11,6 +12,8 @@ use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
 use std::net::UdpSocket as StdSocket;
 use tokio::net::UdpSocket;
 use std::os::windows::io::{AsRawSocket, FromRawSocket, IntoRawSocket};
+use std::os::windows::process::CommandExt;
+use std::process::{Command, Stdio};
 use std::ptr::null_mut;
 use netstat2::{get_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo};
 use winapi::shared::minwindef::DWORD;
@@ -45,18 +48,21 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     api.write().await.main_menu_port = udp_connections[0];
                 } else if udp_connections.len() == 2 { // 2 sockets = connected to a server
                     // Get UDP Listen port, that the other one that is not main_menu_port
-                    let mut listen_ports: Vec<u16> = Vec::new();
+                    let mut listen_port = udp_connections[0];
 
-                    let main_menu_ports = api.read().await.main_menu_port;
-                    if main_menu_ports == 0 {
+                    let main_menu_port = api.read().await.main_menu_port;
+                    if main_menu_port == 0 {
                         // This may happen when BetterFleet was launched after the connection to the server
-                        // Maybe we shouldn't do that, it may return the wrong server
-                        listen_ports.push(udp_connections[0]);
-                        listen_ports.push(udp_connections[1]);
-                    } else if udp_connections[0] == main_menu_ports {
-                        listen_ports.push(udp_connections[1]);
-                    } else {
-                        listen_ports.push(udp_connections[0]);
+                        // So we use the old technic of netstat powershell which output in order, mainmenu = first udp socket
+                        println!("Using netstat powershell to get main_menu_port");
+                        let udp_connections = get_udp_connections_powershell(pid);
+                        println!("{:?}", udp_connections);
+                        if udp_connections.len() == 2 {
+                            listen_port = udp_connections[1];
+                            api.write().await.main_menu_port = udp_connections[0];
+                        }
+                    } else if udp_connections[0] == main_menu_port {
+                        listen_port = udp_connections[1];
                     }
 
                     // Get hostname
@@ -82,7 +88,6 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     let socket_addresses: Vec<SocketAddr> = ip_addresses.into_iter().map(|ip| SocketAddr::new(ip, 0)).collect();
                     for socket_addr in socket_addresses {
                         let api_clone = Arc::clone(&api);
-                        let listen_ports_clone = listen_ports.clone();
 
                         // One thread / IP
                         tokio::spawn(async move {
@@ -96,7 +101,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                             };
 
                             // Capture the IP by filtering headers
-                            match capture_ip(socket, listen_ports_clone).await {
+                            match capture_ip(socket, listen_port).await {
                                 Some((ip, port)) => {
                                     // Got an IP, lock api and update every information
                                     let mut api_lock = api_clone.write().await;
@@ -113,12 +118,10 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                                     // Got no result, get the last update time and check if it's too old
                                     // This is not a typical timeout and should never happen, it's a security
                                     let last_updated_server_ip = api_clone.read().await.last_updated_server_ip;
-                                    let last_server_ip = api_clone.read().await.server_ip.clone();
-                                    if last_updated_server_ip.elapsed() > Duration::from_secs(20) && last_server_ip != ""{
+                                    if last_updated_server_ip.elapsed() > Duration::from_secs(20) {
                                         println!("Resetting server_ip, no result");
                                         let mut api_lock = api_clone.write().await;
 
-                                        api_lock.game_status = GameStatus::Unknown;
                                         api_lock.server_ip = String::new();
                                         api_lock.server_port = 0;
                                         api_lock.last_updated_server_ip = Instant::now();
@@ -175,6 +178,38 @@ fn get_udp_connections(target_pid: usize) -> Vec<u16> {
     return ports.into_iter().collect::<std::collections::HashSet<u16>>().into_iter().collect();
 }
 
+// In this netstat powershell command, we get the UDP endpoints of a process
+fn get_udp_connections_powershell(pid: usize) -> Vec<u16> {
+    let ps_script = format!(
+        "Get-NetUDPEndpoint -OwningProcess {} | Select-Object -ExpandProperty LocalPort",
+        pid
+    );
+
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    let mut command = Command::new("powershell");
+    command.args(&["-Command", &ps_script])
+        .stdout(Stdio::piped());
+
+    command.creation_flags(CREATE_NO_WINDOW);
+
+    let output = command.spawn()
+        .expect("Failed to start PowerShell command")
+        .stdout
+        .expect("Failed to open stdout");
+
+    let reader = BufReader::new(output);
+    let mut ports = Vec::new();
+
+    for line in reader.lines().filter_map(|l| l.ok()) {
+        if let Ok(port) = line.parse::<u16>() {
+            ports.push(port);
+        }
+    }
+
+    ports
+}
+
 // Get local hostname
 fn get_local_hostname() -> std::io::Result<String> {
     Ok(hostname::get()?.into_string().unwrap_or_else(|_| "localhost".into()))
@@ -196,7 +231,7 @@ pub fn find_pid_of(process_name: &str) -> Vec<String> {
 }
 
 // Receive & filter packets to get the server IP
-async fn capture_ip(socket: UdpSocket, listen_ports: Vec<u16>) -> Option<(String, u16)> {
+async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)> {
     let mut buf = [0u8; (256 * 256) - 1];
     let timeout = Duration::from_millis(2000);
     let start_time = Instant::now();
@@ -250,11 +285,11 @@ async fn capture_ip(socket: UdpSocket, listen_ports: Vec<u16>) -> Option<(String
                                 let mut remote_ip = String::new();
                                 let mut remote_port = 0;
 
-                                if listen_ports.contains(&source_port) {
+                                if source_port == listen_port {
                                     // We are the source
                                     remote_ip = destination_ip;
                                     remote_port = destination_port;
-                                } else if listen_ports.contains(&destination_port) {
+                                } else if destination_port == listen_port {
                                     // We are the destination
                                     remote_ip = source_ip;
                                     remote_port = source_port;
