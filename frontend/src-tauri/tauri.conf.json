@@ -57,14 +57,22 @@
       "csp": null
     },
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "https://raw.githubusercontent.com/zelytra/BetterFleet/master/betterfleet.updater.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE2RDBEMjE0MEIwOTZBQzMKUldURGFna0xGTkxRRnJ1bW0welJxZCtPUmNBZGdoZG9XTC9PL1JSZTBGZjJkWVg3b3NSOVZCZUIK",
+      "windows": {
+        "installMode": "passive"
+      }
     },
     "windows": [
       {
         "fullscreen": false,
         "height": 700,
         "resizable": true,
-        "title": "betterfleet",
+        "title": "BetterFleet",
         "width": 1250
       }
     ]
