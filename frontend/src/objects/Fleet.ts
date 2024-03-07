@@ -3,6 +3,7 @@ import {WebSocketMessage, WebSocketMessageType} from "@/objects/WebSocet.ts";
 import {AlertType} from "@/vue/alert/Alert.ts";
 import {alertProvider} from "@/main.ts";
 import i18n from "@/objects/i18n";
+import {SessionRunner} from "@/objects/SessionRunner.ts";
 
 const {t} = i18n.global;
 
@@ -60,6 +61,10 @@ export class Fleet {
           this.handleFleetUpdate(message.data as FleetInterface);
           break;
         }
+        case WebSocketMessageType.RUN_COUNTDOWN: {
+          this.handleSessionRunner(message.data as SessionRunner);
+          break;
+        }
         default: {
           throw new Error(
             "Failed to handle this message type : " + message.messageType,
@@ -84,6 +89,14 @@ export class Fleet {
     this.servers = receivedFleet.servers;
     this.status = receivedFleet.status;
     UserStore.player.sessionId = receivedFleet.sessionId;
+    const player: Player = receivedFleet.players.filter(x => x.username == UserStore.player.username)[0]
+    UserStore.player.isMaster =player.isMaster;
+    UserStore.player.isMaster =player.isReady;
+  }
+
+  private handleSessionRunner(countdown:SessionRunner){
+    UserStore.player.countDown = countdown
+    console.log(countdown)
   }
 
   leaveSession(): void {
@@ -99,6 +112,15 @@ export class Fleet {
     const message: WebSocketMessage = {
       data: UserStore.player,
       messageType: WebSocketMessageType.UPDATE,
+    };
+    this.socket.send(JSON.stringify(message));
+  }
+
+  runCountDown() {
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: UserStore.player.countDown,
+      messageType: WebSocketMessageType.START_COUNTDOWN,
     };
     this.socket.send(JSON.stringify(message));
   }
@@ -127,6 +149,7 @@ export interface Player extends Preferences {
   fleet?: Fleet;
   sessionId?: string;
   serverHostName?: string
+  countDown?: SessionRunner
 }
 
 export interface Preferences {

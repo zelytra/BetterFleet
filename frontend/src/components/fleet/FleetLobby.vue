@@ -71,6 +71,7 @@ import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
+import {LocalTime} from "@js-joda/core";
 
 const {t} = useI18n();
 const props = defineProps({
@@ -97,6 +98,11 @@ function startSession(){
   if (!UserStore.player.isMaster){
     return;
   }
+  UserStore.player.countDown = {
+    startingTimer:LocalTime.now().toJSON()
+  }
+  console.log(UserStore.player.countDown)
+  props.session!.runCountDown()
 }
 </script>
 
