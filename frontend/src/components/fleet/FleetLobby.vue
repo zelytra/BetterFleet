@@ -14,7 +14,8 @@
         </div>
       </template>
       <template #left-content>
-        <button @click="startSession" :class="{'session-starter':true,'pending':session.getReadyPlayers().length !=session.players.length}">
+        <button @click="startSession"
+                :class="{'session-starter':true,'pending':session.getReadyPlayers().length !=session.players.length}">
           {{ t('session.run') }}
         </button>
       </template>
@@ -61,6 +62,9 @@
         </div>
       </div>
     </div>
+    <transition>
+      <SessionCountdown v-if="UserStore.player.countDown"/>
+    </transition>
   </section>
 </template>
 
@@ -72,6 +76,7 @@ import {useI18n} from "vue-i18n";
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalTime} from "@js-joda/core";
+import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
 
 const {t} = useI18n();
 const props = defineProps({
@@ -93,15 +98,14 @@ const computedsession = computed({
   },
 });
 
-function startSession(){
+function startSession() {
   // Yes I know never trust the client... IT'S AN ALPHA !! (or a beta I don't care)
-  if (!UserStore.player.isMaster){
+  if (!UserStore.player.isMaster) {
     return;
   }
   UserStore.player.countDown = {
-    startingTimer:LocalTime.now().toJSON()
+    startingTimer: LocalTime.now().toJSON()
   }
-  console.log(UserStore.player.countDown)
   props.session!.runCountDown()
 }
 </script>

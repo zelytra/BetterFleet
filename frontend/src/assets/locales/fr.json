@@ -4,6 +4,10 @@
       "content": "La requête est corrompue ou incorrect.",
       "title": "Mauvais requette"
     },
+    "cannotRunResearch": {
+      "content": "Votre jeux n'est pas lancé",
+      "title": "Echec du lancement"
+    },
     "error": {
       "content": "Une erreur est survenu",
       "title": "Erreur"
@@ -77,6 +81,7 @@
         "title": "Insérer votre identifiant de session."
       }
     },
+    "countdown": "La recherche commance dans...",
     "id": "Identifiant de la session",
     "informations": {
       "title": "Informations",

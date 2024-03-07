@@ -96,7 +96,7 @@ export class Fleet {
 
   private handleSessionRunner(countdown:SessionRunner){
     UserStore.player.countDown = countdown
-    console.log(countdown)
+
   }
 
   leaveSession(): void {
