@@ -1,5 +1,56 @@
 {
+  "alert": {
+    "badRequest": {
+      "content": "todo",
+      "title": "Bad request"
+    },
+    "cannotRunResearch": {
+      "content": "Your game is not running",
+      "title": "Failed to start"
+    },
+    "error": {
+      "content": "An error as occured",
+      "title": "Error"
+    },
+    "forbidden": {
+      "content": "todo",
+      "title": "Access refused"
+    },
+    "socket": {
+      "connectionFailed": "Failed to connect to server",
+      "random": "todo",
+      "title": "An error as occured with the server"
+    },
+    "unsupportedMedia": {
+      "content": "todo",
+      "title": "Unsupporte media type"
+    }
+  },
   "appName": "Better Fleet",
+  "config": {
+    "devmode": "Activate developer mod",
+    "lang": {
+      "label": "Lang"
+    },
+    "name": {
+      "label": "Username",
+      "placeholder": "Ichabodt"
+    },
+    "server": {
+      "label": "Server hostname",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "title": "Preferences"
+  },
+  "credits": {
+    "and": "and",
+    "description": "todo",
+    "designed": "todo",
+    "details": "todo",
+    "developed": "",
+    "socials": "todo",
+    "title": "todo"
+  },
   "firstLogin": {
     "button": {
       "description": "TODO",
@@ -15,6 +66,10 @@
     "targetLoading": "Game detected. Loading ships.",
     "tips": "This can take a while..."
   },
+  "locales": {
+    "en": "English",
+    "fr": "French"
+  },
   "session": {
     "choice": {
       "createComment": "TODO",
@@ -27,6 +82,7 @@
         "title": "TODO"
       }
     },
+    "countdown": "Research starting in...",
     "id": "Session identifier",
     "informations": {
       "title": "Informations",
@@ -37,11 +93,13 @@
       "notReady": "Not ready",
       "ready": "Is ready",
       "status": {
-        "in_game": "In game",
-        "offline": "Player offline",
-        "online": "Player online"
+        "closed": "Offline",
+        "in-game": "In game",
+        "main-menu": "In game menu",
+        "started": "Game started"
       }
     },
+    "run": "Start",
     "status": {
       "action": "TODO",
       "countdown": "Launching in",

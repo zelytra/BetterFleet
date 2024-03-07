@@ -1,13 +1,15 @@
 package fr.zelytra.session;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.zelytra.session.fleet.Fleet;
-import fr.zelytra.session.fleet.Player;
+import fr.zelytra.session.player.Player;
+import fr.zelytra.session.server.SotServer;
+import fr.zelytra.session.socket.MessageType;
 import io.quarkus.logging.Log;
 import jakarta.annotation.Nullable;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Manages sessions for a multiplayer game, allowing players to create, join, and leave sessions.
@@ -18,11 +20,15 @@ public class SessionManager {
 
     private final HashMap<String, Fleet> sessions;
 
+    // SotServer cached to avoid API spam and faster server response
+    private final HashMap<String, SotServer> sotServers;
+
     /**
      * Private constructor for singleton pattern.
      */
     private SessionManager() {
         this.sessions = new HashMap<>();
+        this.sotServers = new HashMap<>();
     }
 
     /**
@@ -65,9 +71,9 @@ public class SessionManager {
      *
      * @param sessionId The ID of the session to join.
      * @param player    The player attempting to join the session.
-     * @return true if the player was successfully added, false otherwise.
+     * @return the Fleet where the player was added or null
      */
-    public boolean joinSession(String sessionId, Player player) {
+    public Fleet joinSession(String sessionId, Player player) {
         // First, leave any session the player might currently be in
         if (getPlayerFromSessionId(player.getSocket().getId()) != null) {
             leaveSession(player);
@@ -76,11 +82,11 @@ public class SessionManager {
         Fleet fleet = getFleetFromId(sessionId);
         if (fleet == null) {
             Log.error("[" + sessionId + "] Session doesnt exist for player : " + player.getUsername());
-            return false;
+            return null;
         }
         fleet.getPlayers().add(player);
         Log.info("[" + sessionId + "] " + player.getUsername() + " Join the session !");
-        return true;
+        return fleet;
     }
 
     /**
@@ -91,7 +97,10 @@ public class SessionManager {
     public void leaveSession(Player player) {
         for (Fleet fleet : sessions.values()) {
             fleet.getPlayers().remove(player);
-            SessionSocket.broadcastSessionUpdate(fleet.getSessionId());
+            fleet.getServers().forEach((key, value) -> {
+                value.getConnectedPlayers().remove(player);
+            });
+            SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
             Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
 
             // Clean empty session
@@ -170,5 +179,55 @@ public class SessionManager {
         return false; // The specified player is not found in the session
     }
 
+    public SotServer getServerFromHashing(SotServer server) {
+        String hash = server.generateHash();
 
+        // Return cached SOT server
+        if (sotServers.containsKey(hash)) {
+            return sotServers.get(hash);
+        }
+
+        // The object inject may not be completed, so we're creating fresh one to make sure all data has been initialized
+        SotServer newServer = new SotServer(server.getIp(), server.getPort());
+        sotServers.put(newServer.getHash(), newServer);
+        return newServer;
+    }
+
+    public void playerJoinSotServer(Player player, SotServer server) {
+        SotServer findedSotServer = getServerFromHashing(server);
+
+        Fleet fleet = getFleetByPlayerName(player.getUsername());
+        assert fleet != null;
+
+        // Detect if the server is not already know by the fleet
+        if (!fleet.getServers().containsKey(findedSotServer.getHash())) {
+            fleet.getServers().put(findedSotServer.getHash(), findedSotServer);
+        }
+        // Do not add player if already in
+        if (fleet.getServers().get(findedSotServer.getHash()).getConnectedPlayers().contains(player)) {
+            return;
+        }
+
+        // Add player to SotServer in Fleet and broadcast update
+        fleet.getServers().get(findedSotServer.getHash()).getConnectedPlayers().add(player);
+        Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " join the SotServer: " + fleet.getServers().get(findedSotServer.getHash()).getHash());
+        SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+    }
+
+    public void playerLeaveSotServer(Player player, SotServer server) {
+        SotServer findedSotServer = getServerFromHashing(server);
+
+        Fleet fleet = getFleetByPlayerName(player.getUsername());
+        assert fleet != null;
+
+        SotServer fleetFindedServer = fleet.getServers().get(findedSotServer.getHash());
+        fleetFindedServer.getConnectedPlayers().remove(player);
+
+        // If SotServer empty remove server from the list
+        if (fleetFindedServer.getConnectedPlayers().isEmpty()) {
+            fleet.getServers().remove(fleetFindedServer.getHash());
+        }
+        Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " leave the SotServer: " + fleetFindedServer.getHash());
+        SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+    }
 }

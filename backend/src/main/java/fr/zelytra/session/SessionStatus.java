@@ -1,4 +1,4 @@
-package fr.zelytra.session.fleet;
+package fr.zelytra.session;
 
 public enum SessionStatus {
     WAITING,  // Waiting for player to be ready
