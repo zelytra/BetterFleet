@@ -19,9 +19,10 @@
 
 <script setup lang="ts">
 import {PropType} from "vue";
-import {Fleet, Player} from "@/objects/Fleet.ts";
+import {Fleet} from "@/objects/Fleet.ts";
 import {useI18n} from "vue-i18n";
 import {Utils} from "@/objects/Utils.ts";
+import {Player} from "@/objects/Player.ts";
 
 const {t} = useI18n()
 defineProps({

@@ -4,6 +4,8 @@ import {AlertType} from "@/vue/alert/Alert.ts";
 import {alertProvider} from "@/main.ts";
 import i18n from "@/objects/i18n";
 import {SessionRunner} from "@/objects/SessionRunner.ts";
+import {Player} from "@/objects/Player.ts";
+import {SotServer} from "@/objects/SotServer.ts";
 
 const {t} = i18n.global;
 
@@ -12,7 +14,6 @@ export interface FleetInterface {
   sessionName: string;
   players: Player[];
   servers: Map<string, SotServer>;
-  status: SessionStatus;
   socket?: WebSocket;
 }
 
@@ -21,7 +22,6 @@ export class Fleet {
   public sessionName: string;
   public players: Player[];
   public servers: Map<string, SotServer>;
-  public status: SessionStatus;
   public socket?: WebSocket;
 
   constructor() {
@@ -29,7 +29,6 @@ export class Fleet {
     this.sessionName = "";
     this.players = [];
     this.servers = new Map<string, SotServer>();
-    this.status = SessionStatus.WAITING;
   }
 
   joinSession(sessionId: string) {
@@ -63,7 +62,6 @@ export class Fleet {
       const message: WebSocketMessage = JSON.parse(ev.data) as WebSocketMessage;
       switch (message.messageType) {
         case WebSocketMessageType.UPDATE: {
-          console.log(message.data)
           this.handleFleetUpdate(message.data as FleetInterface);
           break;
         }
@@ -92,8 +90,7 @@ export class Fleet {
     this.sessionId = receivedFleet.sessionId;
     this.sessionName = receivedFleet.sessionName;
     this.players = receivedFleet.players;
-    this.servers = receivedFleet.servers;
-    this.status = receivedFleet.status;
+    this.servers = new Map(Object.entries(receivedFleet.servers));
     UserStore.player.sessionId = receivedFleet.sessionId;
     const player: Player = receivedFleet.players.filter(x => x.username == UserStore.player.username)[0]
     UserStore.player.isMaster = player.isMaster;
@@ -146,7 +143,6 @@ export class Fleet {
       data: UserStore.player.server,
       messageType: WebSocketMessageType.JOIN_SERVER,
     };
-    console.log("sending join")
     this.socket.send(JSON.stringify(message));
   }
 
@@ -176,40 +172,6 @@ export class Fleet {
   }
 }
 
-export interface Player extends Preferences {
-  username: string;
-  status: PlayerStates;
-  isReady: boolean;
-  isMaster: boolean;
-  fleet?: Fleet;
-  sessionId?: string;
-  serverHostName?: string
-  countDown?: SessionRunner
-  server?: SotServer
-}
 
-export interface Preferences {
-  lang?: string;
-}
 
-export interface SotServer {
-  ip: string;
-  port: number;
-  location: string;
-  hash?: string
-  connectedPlayers: Player[];
-}
 
-export enum PlayerStates {
-  CLOSED = "CLOSED", // Game is closed
-  STARTED = "STARTED", // Game detected an // Game is in first menu after launch / launching / stopping
-  MAIN_MENU = "MAIN_MENU", // In menu to select game mode
-  IN_GAME = "IN_GAME", // Status when the remote IP and port was found and player is in game
-}
-
-export enum SessionStatus {
-  WAITING = "WAITING", // Waiting for player to be ready
-  READY = "READY", // All player ready
-  COUNTDOWN = "COUNTDOWN", // Countdown to start the click
-  ACTION = "ACTION", // Clicking in the game
-}

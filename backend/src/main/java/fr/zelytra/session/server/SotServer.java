@@ -29,7 +29,7 @@ public class SotServer {
     public SotServer(String ip, int port) {
         this.ip = ip;
         this.port = port;
-        //Log.info(proxyApiKey);
+
         ProxyCheckAPI proxyCheckAPI = new ProxyCheckAPI(ip);
         this.location = proxyCheckAPI.retrieveCountry();
         this.hash = generateHash();

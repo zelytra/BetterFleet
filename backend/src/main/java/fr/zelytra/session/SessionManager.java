@@ -97,6 +97,9 @@ public class SessionManager {
     public void leaveSession(Player player) {
         for (Fleet fleet : sessions.values()) {
             fleet.getPlayers().remove(player);
+            fleet.getServers().forEach((key, value) -> {
+                value.getConnectedPlayers().remove(player);
+            });
             SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
             Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
 
@@ -193,7 +196,7 @@ public class SessionManager {
     public void playerJoinSotServer(Player player, SotServer server) {
         SotServer findedSotServer = getServerFromHashing(server);
         Log.info(findedSotServer.getHash() + " " + this.sotServers.size());
-        Log.info("retrieveing fleet");
+
         Fleet fleet = getFleetByPlayerName(player.getUsername());
         assert fleet != null;
 
@@ -215,7 +218,7 @@ public class SessionManager {
     public void playerLeaveSotServer(Player player, SotServer server) {
         SotServer findedSotServer = getServerFromHashing(server);
 
-        Fleet fleet = getFleetFromId(player.getSessionId());
+        Fleet fleet = getFleetByPlayerName(player.getUsername());
         assert fleet != null;
 
         SotServer fleetFindedServer = fleet.getServers().get(findedSotServer.getHash());
@@ -226,6 +229,6 @@ public class SessionManager {
             fleet.getServers().remove(fleetFindedServer.getHash());
         }
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " leave the SotServer: " + fleetFindedServer.getHash());
-        SessionSocket.broadcastDataToSession(player.getSessionId(), MessageType.UPDATE, fleet);
+        SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 }
