@@ -2,6 +2,20 @@
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
+   0. Specific Exclusion Clause.
+
+   It is expressly stipulated that [Lazarus], identified by their online pseudonym
+   associated with the creation and management of the FleetCreator application,
+   is under no circumstances granted the right to use, modify, distribute,
+   or sell the [BetterFleet] application (the "Product"), for both personal
+   and commercial purposes. This prohibition is indefinite until expressly
+   revoked in writing by the Product's owner. Any violation of this clause will
+   result in legal action and demands for remedy in accordance with applicable laws.
+
+   This clause is incorporated into the Project [BetterFleet]'s license,
+   and its breach constitutes an infringement of the terms of this license,
+   potentially leading to civil and/or criminal penalties.
+
    TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
    1. Definitions.

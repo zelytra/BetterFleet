@@ -1,2 +1,76 @@
-![banner](/frontend/src/assets/banners/banner.png)
+![image](/frontend/src/assets/banners/banner.png)
+
 # BetterFleet
+
+## About BetterFleet
+
+BetterFleet is a free open source application designed to enhance the gaming experience in Sea Of Thieves by
+facilitating the creation of alliances among players. With BetterFleet, you can organize game sessions and invite your
+friends to join in a simple and intuitive manner.
+
+:warning: BetterFleet is not an official application of Sea Of Thieves. It was developed by the community for
+players looking to improve their gaming experience.
+---
+
+## Features
+
+- **Automatic Session Management:** Facilitates joining the same server with your friends by providing real-time in-game status and server information.
+
+- **Increase likelihood of finding a server:** Includes an automatic "Set sail" feature so that everyone clicks at the same time.
+
+- **Self-Hosted Backend:** The open-source nature of the application allows users to host the backend, offering greater control over deployment and maintenance.
+
+- **Statistics Tracking:** Provides statistical insights to help users assess their server-finding success rate.
+---
+
+## Comparison of Fleet Management Applications: BetterFleet vs. FleetCreator
+
+| Feature                               | BetterFleet                 | FleetCreator                |
+|---------------------------------------|-----------------------------|-----------------------------|
+| Speed                                 | :question: (Need benchmark) | :question: (Need benchmark) |
+| Ad free                               | :white_check_mark:          | :x:                         |
+| Complete free access                  | :white_check_mark:          | :x:                         |
+| UX friendly                           | :white_check_mark:          | :x:                         |
+| Open source                           | :white_check_mark:          | :x:                         |
+| IPv6 support                          | :white_check_mark:          | :x:                         |
+| Automatic click between the same crew | :white_check_mark:          | :x:                         |
+| Size of file                          | <20MB                       | >200MB                      |
+| No memory leak                        | :white_check_mark:          | :warning:*                  |
+
+\* FleetCreator has been observed to consume 8GB of RAM after 10 hours of usage, indicating a possible memory leak.
+
+---
+
+## OS Compatibility
+
+| Operating System | Compatible         |
+|------------------|--------------------|
+| Windows 11       | :white_check_mark: |
+| Windows 10       | :white_check_mark: |
+| macOS            | :x:                |
+| Linux            | :x:                |
+
+---
+
+## Credits 👥
+
+- **Development:** [Zelytra](https://zelytra.fr) & [dadodasyra](https://github.com/dadodasyra)
+- **Design/Graphics:** [ZeTro](https://zetro.fr)
+- **Translator/proofreader:** [Ichabodt](https://github.com/Ichabodt)
+
+We thank everyone who contributes to making BetterFleet better every day. If you would like to contribute to the
+project, feel free to fork the repository and submit your pull requests.
+
+---
+
+## License 📄
+
+BetterFleet is distributed under the MIT license. See the [LICENSE](/LICENSE) file for more information.
+
+---
+
+## Support
+
+If you have any questions or encounter problems with the app, please open an issue.
+
+We hope you enjoy using BetterFleet as much as we enjoyed developing it!
