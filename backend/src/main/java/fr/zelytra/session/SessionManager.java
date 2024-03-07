@@ -1,9 +1,9 @@
 package fr.zelytra.session;
 
 import fr.zelytra.session.fleet.Fleet;
-import fr.zelytra.session.fleet.Player;
-import fr.zelytra.session.socket.MessageType;
+import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
+import fr.zelytra.session.socket.MessageType;
 import io.quarkus.logging.Log;
 import jakarta.annotation.Nullable;
 
@@ -97,7 +97,7 @@ public class SessionManager {
     public void leaveSession(Player player) {
         for (Fleet fleet : sessions.values()) {
             fleet.getPlayers().remove(player);
-            SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE,fleet);
+            SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
             Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
 
             // Clean empty session
@@ -209,7 +209,7 @@ public class SessionManager {
         // Add player to SotServer in Fleet and broadcast update
         fleet.getServers().get(findedSotServer.getHash()).getConnectedPlayers().add(player);
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " join the SotServer: " + fleet.getServers().get(findedSotServer.getHash()).getHash());
-        SessionSocket.broadcastSessionUpdate(fleet.getSessionId());
+        SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
     public void playerLeaveSotServer(Player player, SotServer server) {
@@ -226,6 +226,6 @@ public class SessionManager {
             fleet.getServers().remove(fleetFindedServer.getHash());
         }
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " leave the SotServer: " + fleetFindedServer.getHash());
-        SessionSocket.broadcastSessionUpdate(player.getSessionId());
+        SessionSocket.broadcastDataToSession(player.getSessionId(), MessageType.UPDATE, fleet);
     }
 }
