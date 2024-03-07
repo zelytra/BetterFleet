@@ -1,3 +1,4 @@
+use std::io::{BufRead, BufReader};
 use std::string::String;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -11,6 +12,8 @@ use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
 use std::net::UdpSocket as StdSocket;
 use tokio::net::UdpSocket;
 use std::os::windows::io::{AsRawSocket, FromRawSocket, IntoRawSocket};
+use std::os::windows::process::CommandExt;
+use std::process::{Command, Stdio};
 use std::ptr::null_mut;
 use netstat2::{get_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo};
 use winapi::shared::minwindef::DWORD;
@@ -23,7 +26,7 @@ const SIO_RCVALL: DWORD = 0x98000001;
 
 pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
     let api_base = Arc::new(RwLock::new(Api::new()));
-    let api  = Arc::clone(&api_base);
+    let api = Arc::clone(&api_base);
 
     tokio::spawn(async move {
         loop {
@@ -38,18 +41,29 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                 let udp_connections = get_udp_connections(pid);
 
                 // Update game_status
-                if udp_connections.len() != 2 {
-                    api.write().await.game_status = match udp_connections.len() { //TODO Optimization: Cache game_status and only update when it changes
-                        0 => GameStatus::Started,
-                        1 => GameStatus::MainMenu,
-                        _ => GameStatus::Unknown
-                    };
-                }
+                if udp_connections.len() == 0 { // 0 = First menu/launching
+                    api.write().await.game_status = GameStatus::Started;
+                } else if udp_connections.len() == 1 { // Main menu
+                    api.write().await.game_status = GameStatus::MainMenu;
+                    api.write().await.main_menu_port = udp_connections[0];
+                } else if udp_connections.len() == 2 { // 2 sockets = connected to a server
+                    // Get UDP Listen port, that the other one that is not main_menu_port
+                    let mut listen_port = udp_connections[0];
 
-                // 2 sockets = connected to a server
-                if udp_connections.len() == 2 {
-                    // Get UDP Listen port
-                    let listen_port = udp_connections[1]; // The first one is for MainMenu socket, second one is game server
+                    let main_menu_port = api.read().await.main_menu_port;
+                    if main_menu_port == 0 {
+                        // This may happen when BetterFleet was launched after the connection to the server
+                        // So we use the old technic of netstat powershell which output in order, mainmenu = first udp socket
+                        println!("Using netstat powershell to get main_menu_port");
+                        let udp_connections = get_udp_connections_powershell(pid);
+                        println!("{:?}", udp_connections);
+                        if udp_connections.len() == 2 {
+                            listen_port = udp_connections[1];
+                            api.write().await.main_menu_port = udp_connections[0];
+                        }
+                    } else if udp_connections[0] == main_menu_port {
+                        listen_port = udp_connections[1];
+                    }
 
                     // Get hostname
                     let hostname = match get_local_hostname() {
@@ -104,7 +118,8 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                                     // Got no result, get the last update time and check if it's too old
                                     // This is not a typical timeout and should never happen, it's a security
                                     let last_updated_server_ip = api_clone.read().await.last_updated_server_ip;
-                                    if last_updated_server_ip.elapsed() > Duration::from_secs(20) {
+                                    let last_server_ip = api_clone.read().await.server_ip.clone();
+                                    if last_updated_server_ip.elapsed() > Duration::from_secs(20) && last_server_ip != ""{
                                         println!("Resetting server_ip, no result");
                                         let mut api_lock = api_clone.write().await;
 
@@ -162,6 +177,38 @@ fn get_udp_connections(target_pid: usize) -> Vec<u16> {
 
     //Filter out duplicates
     return ports.into_iter().collect::<std::collections::HashSet<u16>>().into_iter().collect();
+}
+
+// In this netstat powershell command, we get the UDP endpoints of a process
+fn get_udp_connections_powershell(pid: usize) -> Vec<u16> {
+    let ps_script = format!(
+        "Get-NetUDPEndpoint -OwningProcess {} | Select-Object -ExpandProperty LocalPort",
+        pid
+    );
+
+    const CREATE_NO_WINDOW: u32 = 0x08000000;
+
+    let mut command = Command::new("powershell");
+    command.args(&["-Command", &ps_script])
+        .stdout(Stdio::piped());
+
+    command.creation_flags(CREATE_NO_WINDOW);
+
+    let output = command.spawn()
+        .expect("Failed to start PowerShell command")
+        .stdout
+        .expect("Failed to open stdout");
+
+    let reader = BufReader::new(output);
+    let mut ports = Vec::new();
+
+    for line in reader.lines().filter_map(|l| l.ok()) {
+        if let Ok(port) = line.parse::<u16>() {
+            ports.push(port);
+        }
+    }
+
+    ports
 }
 
 // Get local hostname

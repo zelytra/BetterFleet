@@ -4,6 +4,7 @@
 use std::sync::Arc;
 use std::thread::sleep;
 use std::time::Duration;
+use serde::Serialize;
 use tauri::State;
 use tokio::sync::RwLock;
 use crate::api::{Api, GameStatus};
@@ -12,6 +13,13 @@ use crate::window_interaction::{set_focus_to_window, send_key};
 mod fetch_informations;
 mod api;
 mod window_interaction;
+
+#[derive(Serialize)]
+struct GameObject {
+    ip: String,
+    port: u16,
+    status: GameStatus
+}
 
 // Here's how to call Rust functions from frontend : https://tauri.app/v1/guides/features/command/
 
@@ -25,6 +33,7 @@ async fn main() {
             get_game_status,
             get_server_ip,
             get_server_port,
+            get_game_object,
             get_last_updated_server_ip,
             drop_anchor
         ])
@@ -51,6 +60,19 @@ async fn get_server_port(api: State<'_, Arc<RwLock<Api>>>) -> Result<u16, String
 }
 
 #[tauri::command]
+async fn get_game_object(api: State<'_, Arc<RwLock<Api>>>) -> Result<GameObject, String> {
+    // Let's build an array with ip, port and status
+    let api_lock = api.inner().read().await;
+    let game_object = GameObject {
+        ip: api_lock.get_server_ip().await,
+        port: api_lock.get_server_port().await,
+        status: api_lock.get_game_status().await
+    };
+
+    Ok(game_object.into())
+}
+
+#[tauri::command]
 async fn get_last_updated_server_ip(api: State<'_, Arc<RwLock<Api>>>) -> Result<u64, String> {
     let api_lock = api.inner().read().await;
 
@@ -69,8 +91,9 @@ fn drop_anchor() -> bool {
         // Maybe we shouldn't hardcode a sleep duration, but I don't see any other way to do it
         sleep(Duration::from_millis(10));
 
-        // TODO: Currently left key (which focus last focused button)
-        // But we may want to click on the button by using % of the screen size
+        // 2x Left arrow key to focus the button
+        send_key(0x25);
+        sleep(Duration::from_millis(1));
         send_key(0x25);
 
         sleep(Duration::from_millis(1));

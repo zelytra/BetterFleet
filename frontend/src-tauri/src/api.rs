@@ -7,7 +7,8 @@ pub struct Api {
     pub game_status: GameStatus,
     pub server_ip: String,
     pub server_port: u16,
-    pub last_updated_server_ip: Instant
+    pub last_updated_server_ip: Instant,
+    pub main_menu_port: u16
 }
 
 #[derive(PartialEq, Debug, Clone, Serialize)]
@@ -25,7 +26,8 @@ impl Api {
             game_status: GameStatus::Unknown,
             server_ip: String::new(),
             server_port: 0,
-            last_updated_server_ip: Instant::now()
+            last_updated_server_ip: Instant::now(),
+            main_menu_port: 0,
         }
     }
 
