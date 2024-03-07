@@ -45,12 +45,12 @@ usage, suggesting a potential memory leak.
 
 ## OS Compatibility
 
-| Operating System | Compatible |
-|------------------|------------|
-| Windows 11       | ✅         |
-| Windows 10       | ✅         |
-| macOS            | ❌         |
-| Linux            | ❌         |
+| Operating System | Compatible         |
+|------------------|--------------------|
+| Windows 11       | :white_check_mark: |
+| Windows 10       | :white_check_mark: |
+| macOS            | :x:                |
+| Linux            | :x:                |
 
 ---
 
