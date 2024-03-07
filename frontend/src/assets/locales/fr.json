@@ -18,7 +18,8 @@
     },
     "socket": {
       "connectionFailed": "Echec de la connexion au serveur",
-      "title": "Erreur websocket"
+      "random": "Le websocket c'est fermé de facon inattendu",
+      "title": "Une erreur est survenu avec le serveue"
     },
     "unsupportedMedia": {
       "content": "Le media que vous tenté d'envoyer n'est pas supporter par l'application.",

@@ -1,6 +1,11 @@
 package fr.zelytra.session.fleet;
 
+import fr.zelytra.session.SessionStatus;
+import fr.zelytra.session.player.Player;
+import fr.zelytra.session.server.SotServer;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,14 +14,14 @@ public class Fleet {
     private String sessionId;
     private String sessionName;
     private List<Player> players;
-    private List<SotServer> servers;
+    private final HashMap<String, SotServer> servers;
     private SessionStatus status;
 
     public Fleet(String sessionId) {
         this.sessionId = sessionId;
         this.sessionName = "A session name"; //TODO
         this.players = new ArrayList<>();
-        this.servers = new ArrayList<>();
+        this.servers = new HashMap<>();
         this.status = SessionStatus.WAITING;
     }
 
@@ -53,12 +58,8 @@ public class Fleet {
         this.players = players;
     }
 
-    public List<SotServer> getServers() {
+    public HashMap<String, SotServer> getServers() {
         return servers;
-    }
-
-    public void setServers(List<SotServer> servers) {
-        this.servers = servers;
     }
 
     public SessionStatus getStatus() {

@@ -11,9 +11,10 @@ import {inject, onUnmounted, PropType, ref} from "vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalTime} from "@js-joda/core";
 import {useI18n} from "vue-i18n";
-import {Fleet, PlayerStates} from "@/objects/Fleet.ts";
+import {Fleet} from "@/objects/Fleet.ts";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
 import {invoke} from '@tauri-apps/api/tauri';
+import {PlayerStates} from "@/objects/Player.ts";
 
 const delta = ref<LocalTime>(LocalTime.now());
 const {t} = useI18n();

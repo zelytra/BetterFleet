@@ -30,7 +30,7 @@ const props = defineProps({
 <style scoped lang="scss">
 .box {
   width: 315px;
-  height: 60px;
+  //height: 60px;
   border-radius: 5px;
   padding: 9px 18px;
   margin-bottom: 8px;

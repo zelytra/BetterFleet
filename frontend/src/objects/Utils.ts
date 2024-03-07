@@ -1,4 +1,5 @@
-import {PlayerStates} from "@/objects/Fleet.ts";
+import {PlayerStates} from "@/objects/Player.ts";
+
 
 export abstract class Utils {
   public static generateRandomColor(): string {
@@ -14,7 +15,7 @@ export abstract class Utils {
   }
 
   public static parseRustPlayerStatus(status: string):PlayerStates {
-    switch (status.toLowerCase()) {
+    switch (status.toString().toLowerCase()) {
       case "closed":
         return PlayerStates.CLOSED;
       case "started":
