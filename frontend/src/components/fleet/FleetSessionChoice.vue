@@ -43,6 +43,7 @@ import InputText from "@/vue/form/InputText.vue";
 const { t } = useI18n();
 const isModalOpen = ref<boolean>(false);
 const sessionId = ref<string>("");
+
 const props = defineProps({
   session: { type: Object as PropType<Fleet>, required: true },
 });

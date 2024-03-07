@@ -29,11 +29,13 @@
       </router-link>
     </nav>
     <div class="bottom-header">
+      <!-- Maybe will be use in a later version
       <img
         class="update"
         src="@/assets/icons/update.svg"
         alt="update-button"
       >
+      -->
       <div
         v-if="UserStore.player.username"
         class="user-icon"
