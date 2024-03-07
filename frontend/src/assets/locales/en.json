@@ -18,7 +18,8 @@
     },
     "socket": {
       "connectionFailed": "Failed to connect to server",
-      "title": "Websocket error"
+      "random": "todo",
+      "title": "An error as occured with the server"
     },
     "unsupportedMedia": {
       "content": "todo",

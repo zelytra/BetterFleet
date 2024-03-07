@@ -1,4 +1,4 @@
-package fr.zelytra.session.fleet;
+package fr.zelytra.session.player;
 
 public enum PlayerStates {
     CLOSED, // Game is closed

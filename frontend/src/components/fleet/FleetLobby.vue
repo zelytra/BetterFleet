@@ -22,11 +22,19 @@
     </BannerTemplate>
     <div class="lobby-content">
       <div class="player-table">
-        <PlayerFleet
-            v-for="player in computedsession.players.sort((a, b) => {
+        <ServerContainer v-if="computedsession.servers.size > 0" v-for="[hash,server] of session.servers.entries()"
+                         :server="hash+' | '+server.location">
+          <PlayerFleet
+              v-for="player in server.connectedPlayers.sort((a, b) => {
             return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
           })"
+              :player="player"
+          />
+        </ServerContainer>
+        <PlayerFleet
+            v-for="player in getFilteredPlayerList()"
             :player="player"
+            class="player-fleet-card"
         />
       </div>
       <div class="lobby-details">
@@ -77,6 +85,7 @@ import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalTime} from "@js-joda/core";
 import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
+import ServerContainer from "@/vue/templates/ServerContainer.vue";
 
 const {t} = useI18n();
 const props = defineProps({
@@ -107,6 +116,21 @@ function startSession() {
     startingTimer: LocalTime.now().toJSON()
   }
   props.session!.runCountDown()
+}
+
+function getFilteredPlayerList() {
+  const removedPlayer: string[] = [];
+  for (const player of props.session!.players) {
+    computedsession.value.servers.forEach((value, _key) => {
+      if (value.connectedPlayers.filter(x => x.username == player.username).length > 0) {
+        removedPlayer.push(player.username)
+        return;
+      }
+    })
+  }
+  return computedsession.value.players.filter(x => !removedPlayer.includes(x.username)).sort((a, b) => {
+    return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
+  })
 }
 </script>
 
@@ -181,6 +205,10 @@ function startSession() {
       flex-direction: column;
       gap: 10px;
       width: 100%;
+
+      .player-fleet-card {
+        margin: 0 8px;
+      }
     }
 
     .lobby-details {

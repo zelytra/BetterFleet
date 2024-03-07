@@ -9,7 +9,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.countdown.SessionCountDown;
 import fr.zelytra.session.fleet.Fleet;
-import fr.zelytra.session.fleet.Player;
+import fr.zelytra.session.player.Player;
+import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.SocketMessage;
 import io.quarkus.logging.Log;
@@ -45,7 +46,6 @@ public class SessionSocket {
         });
         sessionTimeoutTasks.put(session.getId(), timeoutTask);
         Log.info("[ANYONE] Connecting...");
-
     }
 
 
@@ -78,6 +78,14 @@ public class SessionSocket {
             case CLEAR_STATUS -> {
                 handleClearStatus(session);
             }
+            case JOIN_SERVER -> {
+                SotServer sotServer = objectMapper.convertValue(socketMessage.data(), SotServer.class);
+                handleJoinServerMessage(session, sotServer);
+            }
+            case LEAVE_SERVER -> {
+                SotServer sotServer = objectMapper.convertValue(socketMessage.data(), SotServer.class);
+                handleLeaveServerMessage(session, sotServer);
+            }
             default -> Log.info("Unhandled message type: " + socketMessage.messageType());
         }
     }
@@ -104,6 +112,20 @@ public class SessionSocket {
 
         Log.info("[" + fleet.getSessionId() + "] Starting countdown at " + countDown.getClickTime().toString());
         broadcastDataToSession(fleet.getSessionId(), MessageType.RUN_COUNTDOWN, countDown);
+    }
+
+    // Extracted method to handle JOIN_SERVER messages
+    private void handleJoinServerMessage(Session session, SotServer sotServer) {
+        SessionManager manager = SessionManager.getInstance();
+        Player player = manager.getPlayerFromSessionId(session.getId());
+        manager.playerJoinSotServer(player, sotServer);
+    }
+
+    // Extracted method to handle LEAVE_SERVER messages
+    private void handleLeaveServerMessage(Session session, SotServer sotServer) {
+        SessionManager manager = SessionManager.getInstance();
+        Player player = manager.getPlayerFromSessionId(session.getId());
+        manager.playerLeaveSotServer(player, sotServer);
     }
 
     // Extracted method to handle CONNECT messages
