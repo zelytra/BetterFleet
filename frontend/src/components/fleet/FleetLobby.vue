@@ -63,7 +63,7 @@
       </div>
     </div>
     <transition>
-      <SessionCountdown v-if="UserStore.player.countDown"/>
+      <SessionCountdown v-if="UserStore.player.countDown" :session="session"/>
     </transition>
   </section>
 </template>
@@ -91,7 +91,7 @@ function updateStatus() {
   props.session.updateToSession();
 }
 
-const emits = defineEmits(["update:selected-value"]);
+defineEmits(["update:selected-value"]);
 const computedsession = computed({
   get: (): Fleet => props.session,
   set: (): void => {

@@ -75,8 +75,23 @@ public class SessionSocket {
                 SessionCountDown countDown = objectMapper.convertValue(socketMessage.data(), SessionCountDown.class);
                 handleStartCountdown(session, countDown);
             }
+            case CLEAR_STATUS -> {
+                handleClearStatus(session);
+            }
             default -> Log.info("Unhandled message type: " + socketMessage.messageType());
         }
+    }
+
+    private void handleClearStatus(Session session) {
+
+        SessionManager manager = SessionManager.getInstance();
+        Player player = manager.getPlayerFromSessionId(session.getId());
+        Fleet fleet = manager.getFleetByPlayerName(player.getUsername());
+        fleet.getPlayers().forEach((playerInList) -> {
+            playerInList.setReady(false);
+        });
+        Log.info("[" + fleet.getSessionId() + "] Clearing status of all player");
+        broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
     private void handleStartCountdown(Session session, SessionCountDown countDown) {

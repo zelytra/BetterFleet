@@ -90,11 +90,11 @@ export class Fleet {
     this.status = receivedFleet.status;
     UserStore.player.sessionId = receivedFleet.sessionId;
     const player: Player = receivedFleet.players.filter(x => x.username == UserStore.player.username)[0]
-    UserStore.player.isMaster =player.isMaster;
-    UserStore.player.isMaster =player.isReady;
+    UserStore.player.isMaster = player.isMaster;
+    UserStore.player.isReady = player.isReady;
   }
 
-  private handleSessionRunner(countdown:SessionRunner){
+  private handleSessionRunner(countdown: SessionRunner) {
     UserStore.player.countDown = countdown
 
   }
@@ -121,6 +121,15 @@ export class Fleet {
     const message: WebSocketMessage = {
       data: UserStore.player.countDown,
       messageType: WebSocketMessageType.START_COUNTDOWN,
+    };
+    this.socket.send(JSON.stringify(message));
+  }
+
+  clearPlayersStatus(){
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: undefined,
+      messageType: WebSocketMessageType.CLEAR_STATUS,
     };
     this.socket.send(JSON.stringify(message));
   }

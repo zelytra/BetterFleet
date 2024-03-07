@@ -1,17 +1,17 @@
 <template>
-    <div class="timer-wrapper">
-      <div class="circle-background"/>
-      <h1>{{ t('session.countdown') }}</h1>
-      <h2><strong>{{ delta.second() + ',' + delta.nano().toString().slice(0, 2) }}</strong>s</h2>
-    </div>
+  <div class="timer-wrapper">
+    <div class="circle-background"/>
+    <h1>{{ t('session.countdown') }}</h1>
+    <h2><strong>{{ delta.second() + ',' + delta.nano().toString().slice(0, 2) }}</strong>s</h2>
+  </div>
 </template>
 
 <script setup lang="ts">
-import {inject, onUnmounted, ref} from "vue";
+import {inject, onUnmounted, PropType, ref} from "vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalTime} from "@js-joda/core";
 import {useI18n} from "vue-i18n";
-import {PlayerStates} from "@/objects/Fleet.ts";
+import {Fleet, PlayerStates} from "@/objects/Fleet.ts";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
 import {invoke} from '@tauri-apps/api/tauri';
 
@@ -30,6 +30,7 @@ const updateTimer = setInterval(() => {
 
     if (UserStore.player.status == PlayerStates.MAIN_MENU) {
       invoke('drop_anchor');
+      props.session?.clearPlayersStatus()
     } else {
       alerts!.sendAlert({
         content: t('alert.cannotRunResearch.content'),
@@ -43,6 +44,8 @@ const updateTimer = setInterval(() => {
   delta.value = click.minusSeconds(start.second())
   delta.value = delta.value.minusNanos(start.nano())
 }, 5)
+
+const props = defineProps({session: {type: Object as PropType<Fleet>, required: true}})
 
 onUnmounted(() => {
   clearInterval(updateTimer);
