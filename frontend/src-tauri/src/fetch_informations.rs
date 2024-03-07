@@ -301,7 +301,7 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
                                     Some((remote_ip, remote_port))
                                 } else {
                                     // Result make no sense for SoT
-                                    None
+                                    continue;
                                 }
                             }
                             Err(err) => {
