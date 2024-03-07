@@ -118,7 +118,8 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                                     // Got no result, get the last update time and check if it's too old
                                     // This is not a typical timeout and should never happen, it's a security
                                     let last_updated_server_ip = api_clone.read().await.last_updated_server_ip;
-                                    if last_updated_server_ip.elapsed() > Duration::from_secs(20) {
+                                    let last_server_ip = api_clone.read().await.server_ip.clone();
+                                    if last_updated_server_ip.elapsed() > Duration::from_secs(20) && last_server_ip != ""{
                                         println!("Resetting server_ip, no result");
                                         let mut api_lock = api_clone.write().await;
 
