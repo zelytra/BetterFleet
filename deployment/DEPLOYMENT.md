@@ -26,7 +26,7 @@ server {
         proxy_http_version 1.1;
     }
 
-listen [::]:80;
-listen 80;
+    listen [::]:80;
+    listen 80;
 }
 ```
