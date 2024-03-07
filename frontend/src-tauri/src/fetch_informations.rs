@@ -234,7 +234,7 @@ pub fn find_pid_of(process_name: &str) -> Vec<String> {
 // Receive & filter packets to get the server IP
 async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)> {
     let mut buf = [0u8; (256 * 256) - 1];
-    let timeout = Duration::from_millis(2000);
+    let timeout = Duration::from_millis(500); // This needs to be lower than the main loop sleep duration
     let start_time = Instant::now();
 
     loop {
@@ -311,7 +311,7 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
                         }
                     },
 
-                    Ok(_) => (),
+                    Ok(_) => continue,
                     Err(e) => eprintln!("Error receiving packet: {}", e),
                 }
             }
