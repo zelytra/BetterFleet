@@ -46,7 +46,10 @@
       },
       "resources": [],
       "shortDescription": "",
-      "targets": "all",
+      "targets": [
+        "nsis",
+        "updater"
+      ],
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
@@ -59,7 +62,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://raw.githubusercontent.com/zelytra/BetterFleet/master/betterfleet.updater.json"
+        "https://github.com/zelytra/BetterFleet/releases/latest/download/latest.json"
       ],
       "dialog": true,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE2RDBEMjE0MEIwOTZBQzMKUldURGFna0xGTkxRRnJ1bW0welJxZCtPUmNBZGdoZG9XTC9PL1JSZTBGZjJkWVg3b3NSOVZCZUIK",
