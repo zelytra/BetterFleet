@@ -1,13 +1,14 @@
 package fr.zelytra.session;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.fleet.Player;
+import fr.zelytra.session.socket.MessageType;
 import io.quarkus.logging.Log;
 import jakarta.annotation.Nullable;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Manages sessions for a multiplayer game, allowing players to create, join, and leave sessions.
@@ -65,9 +66,9 @@ public class SessionManager {
      *
      * @param sessionId The ID of the session to join.
      * @param player    The player attempting to join the session.
-     * @return true if the player was successfully added, false otherwise.
+     * @return the Fleet where the player was added or null
      */
-    public boolean joinSession(String sessionId, Player player) {
+    public Fleet joinSession(String sessionId, Player player) {
         // First, leave any session the player might currently be in
         if (getPlayerFromSessionId(player.getSocket().getId()) != null) {
             leaveSession(player);
@@ -76,11 +77,11 @@ public class SessionManager {
         Fleet fleet = getFleetFromId(sessionId);
         if (fleet == null) {
             Log.error("[" + sessionId + "] Session doesnt exist for player : " + player.getUsername());
-            return false;
+            return null;
         }
         fleet.getPlayers().add(player);
         Log.info("[" + sessionId + "] " + player.getUsername() + " Join the session !");
-        return true;
+        return fleet;
     }
 
     /**
@@ -91,7 +92,7 @@ public class SessionManager {
     public void leaveSession(Player player) {
         for (Fleet fleet : sessions.values()) {
             fleet.getPlayers().remove(player);
-            SessionSocket.broadcastSessionUpdate(fleet.getSessionId());
+            SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE,fleet);
             Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
 
             // Clean empty session

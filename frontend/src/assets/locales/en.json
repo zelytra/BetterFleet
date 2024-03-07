@@ -4,6 +4,10 @@
       "content": "todo",
       "title": "Bad request"
     },
+    "cannotRunResearch": {
+      "content": "Your game is not running",
+      "title": "Failed to start"
+    },
     "error": {
       "content": "An error as occured",
       "title": "Error"
@@ -77,6 +81,7 @@
         "title": "TODO"
       }
     },
+    "countdown": "Research starting in...",
     "id": "Session identifier",
     "informations": {
       "title": "Informations",
@@ -93,6 +98,7 @@
         "started": "Game started"
       }
     },
+    "run": "Start",
     "status": {
       "action": "TODO",
       "countdown": "Launching in",
