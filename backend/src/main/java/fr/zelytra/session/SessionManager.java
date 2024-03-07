@@ -187,7 +187,7 @@ public class SessionManager {
             return sotServers.get(hash);
         }
 
-        // The object inject may not be completed, so we're creating fresh one to mae sure all data has been initialized
+        // The object inject may not be completed, so we're creating fresh one to make sure all data has been initialized
         SotServer newServer = new SotServer(server.getIp(), server.getPort());
         sotServers.put(newServer.getHash(), newServer);
         return newServer;
@@ -195,7 +195,6 @@ public class SessionManager {
 
     public void playerJoinSotServer(Player player, SotServer server) {
         SotServer findedSotServer = getServerFromHashing(server);
-        Log.info(findedSotServer.getHash() + " " + this.sotServers.size());
 
         Fleet fleet = getFleetByPlayerName(player.getUsername());
         assert fleet != null;

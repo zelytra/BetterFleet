@@ -1,7 +1,7 @@
 import { reactive } from "vue";
 import LocalStore, { LocalKey } from "@/objects/stores/LocalStore.ts";
 import { i18n } from "@/main.ts";
-import type { Player } from "@/objects/Fleet.ts";
+import {Player} from "@/objects/Player.ts";
 
 export const UserStore = reactive({
   player: {} as Player,

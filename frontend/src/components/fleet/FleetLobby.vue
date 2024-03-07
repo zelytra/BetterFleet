@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onBeforeMount, onMounted, PropType} from "vue";
+import {computed, PropType} from "vue";
 import {Fleet} from "@/objects/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
@@ -86,8 +86,6 @@ import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalTime} from "@js-joda/core";
 import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
 import ServerContainer from "@/vue/templates/ServerContainer.vue";
-import {SotServer} from "@/objects/SotServer.ts";
-import {Player} from "@/objects/Player.ts";
 
 const {t} = useI18n();
 const props = defineProps({
