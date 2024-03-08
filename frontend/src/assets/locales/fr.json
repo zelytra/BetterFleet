@@ -8,6 +8,7 @@
       "content": "Votre jeux n'est pas lancé",
       "title": "Echec du lancement"
     },
+    "cannotRunResearchNotReady": "Echec du lancement vous n'étiez pas prêt",
     "error": {
       "content": "Une erreur est survenu",
       "title": "Erreur"

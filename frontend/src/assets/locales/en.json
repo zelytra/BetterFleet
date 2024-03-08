@@ -8,6 +8,7 @@
       "content": "Your game is not running",
       "title": "Failed to start"
     },
+    "cannotRunResearchNotReady": "Can't run research because your not ready",
     "error": {
       "content": "An error as occured",
       "title": "Error"

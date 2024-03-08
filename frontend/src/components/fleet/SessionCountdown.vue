@@ -30,11 +30,19 @@ const updateTimer = setInterval(() => {
     clearInterval(updateTimer);
 
     if (UserStore.player.status == PlayerStates.MAIN_MENU) {
+      if (!UserStore.player.isReady){
+        alerts!.sendAlert({
+          content: t('alert.cannotRunResearch.content'),
+          title: t('alert.cannotRunResearch.title'),
+          type: AlertType.WARNING
+        })
+        return;
+      }
       invoke('drop_anchor');
       props.session?.clearPlayersStatus()
     } else {
       alerts!.sendAlert({
-        content: t('alert.cannotRunResearch.content'),
+        content: t('alert.cannotRunResearchNotReady'),
         title: t('alert.cannotRunResearch.title'),
         type: AlertType.WARNING
       })
