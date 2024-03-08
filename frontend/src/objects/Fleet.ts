@@ -23,6 +23,7 @@ export class Fleet {
   public players: Player[];
   public servers: Map<string, SotServer>;
   public socket?: WebSocket;
+  private safeClose: boolean = false;
 
   constructor() {
     this.sessionId = "";
@@ -86,12 +87,15 @@ export class Fleet {
     };
 
     this.socket.onclose = () => {
-      alertProvider.sendAlert({
-        content: t("alert.socket.random"),
-        title: t("alert.socket.title"),
-        type: AlertType.ERROR,
-      });
-      UserStore.player.fleet!.sessionId = "";
+      if (!this.safeClose) {
+        alertProvider.sendAlert({
+          content: t("alert.socket.random"),
+          title: t("alert.socket.title"),
+          type: AlertType.ERROR,
+        });
+        UserStore.player.fleet!.sessionId = "";
+      }
+      this.safeClose = false;
     }
   }
 
@@ -115,6 +119,7 @@ export class Fleet {
     if (!this.socket) {
       return;
     }
+    this.safeClose = true;
     this.socket.close();
     this.sessionId = "";
   }
