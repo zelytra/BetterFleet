@@ -4,10 +4,6 @@
       "content": "La requête est corrompue ou incorrect.",
       "title": "Mauvais requette"
     },
-    "cannotRunResearch": {
-      "content": "Votre jeux n'est pas lancé",
-      "title": "Echec du lancement"
-    },
     "cannotRunResearchNotReady": "Echec du lancement vous n'étiez pas prêt",
     "error": {
       "content": "Une erreur est survenu",
@@ -16,6 +12,20 @@
     "forbidden": {
       "content": "Vous ne disposez pas des autorisations nécessaire pour acceder a cette page.",
       "title": "Acces refusé"
+    },
+    "research": {
+      "notInMenu": {
+        "content": "Vous n'ètes pas dans le menu du jeu",
+        "title": "Echec du lancement"
+      },
+      "notReady": {
+        "content": "Echec du lancement vous n'ête pas pret",
+        "title": "Echec du lancement"
+      },
+      "offline": {
+        "content": "Votre jeux est éteint",
+        "title": "Echec du lancement"
+      }
     },
     "socket": {
       "connectionFailed": "Echec de la connexion au serveur",

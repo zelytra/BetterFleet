@@ -29,23 +29,43 @@ const updateTimer = setInterval(() => {
     UserStore.player.countDown = undefined;
     clearInterval(updateTimer);
 
-    if (UserStore.player.status == PlayerStates.MAIN_MENU) {
-      if (!UserStore.player.isReady){
+    switch (UserStore.player.status) {
+      case PlayerStates.MAIN_MENU: {
+        if (!UserStore.player.isReady) {
+          alerts!.sendAlert({
+            content: t('alert.research.notReady.content'),
+            title: t('alert.research.notReady.title'),
+            type: AlertType.WARNING
+          })
+          return;
+        }
+        invoke('drop_anchor');
+        props.session?.clearPlayersStatus()
+        break
+      }
+      case PlayerStates.CLOSED: {
         alerts!.sendAlert({
-          content: t('alert.cannotRunResearch.content'),
-          title: t('alert.cannotRunResearch.title'),
+          content: t('alert.research.offline.content'),
+          title: t('alert.research.offline.title'),
           type: AlertType.WARNING
         })
-        return;
+        break
       }
-      invoke('drop_anchor');
-      props.session?.clearPlayersStatus()
-    } else {
-      alerts!.sendAlert({
-        content: t('alert.cannotRunResearchNotReady'),
-        title: t('alert.cannotRunResearch.title'),
-        type: AlertType.WARNING
-      })
+      case PlayerStates.STARTED:
+      case PlayerStates.IN_GAME: {
+        alerts!.sendAlert({
+          content: t('alert.research.notInMenu.content'),
+          title: t('alert.research.notInMenu.title'),
+          type: AlertType.WARNING
+        })
+        break
+      }
+    }
+
+    if (UserStore.player.status == PlayerStates.MAIN_MENU) {
+
+    } else if (UserStore.player.status == PlayerStates.CLOSED) {
+
     }
     return;
   }

@@ -4,10 +4,6 @@
       "content": "todo",
       "title": "Bad request"
     },
-    "cannotRunResearch": {
-      "content": "Your game is not running",
-      "title": "Failed to start"
-    },
     "cannotRunResearchNotReady": "Can't run research because your not ready",
     "error": {
       "content": "An error as occured",
@@ -16,6 +12,20 @@
     "forbidden": {
       "content": "todo",
       "title": "Access refused"
+    },
+    "research": {
+      "notInMenu": {
+        "content": "Your not in the main menu",
+        "title": "Failed to run research"
+      },
+      "notReady": {
+        "content": "Can't run research because your not ready",
+        "title": "Cannot run research"
+      },
+      "offline": {
+        "content": "Your game is not running",
+        "title": "Cannot run research"
+      }
     },
     "socket": {
       "connectionFailed": "Failed to connect to server",
