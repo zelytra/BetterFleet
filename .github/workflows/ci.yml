@@ -4,7 +4,7 @@ on:
   pull_request: # Triggered on pull requests to any branch
   push:
     branches: # Additionally, trigger on push events to specific branches
-      - develop
+      - master
 
 jobs:
   backend-build:
