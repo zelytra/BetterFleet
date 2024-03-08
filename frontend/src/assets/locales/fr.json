@@ -95,6 +95,7 @@
     },
     "countdown": "La recherche commance dans...",
     "id": "Identifiant de la session",
+    "idCopy": "Copié !",
     "informations": {
       "title": "Informations",
       "totalPlayer": "Joueurs Total"

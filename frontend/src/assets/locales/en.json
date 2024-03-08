@@ -95,6 +95,7 @@
     },
     "countdown": "Research starting in...",
     "id": "Session identifier",
+    "idCopy": "Copy !",
     "informations": {
       "title": "Informations",
       "totalPlayer": "Total Player"

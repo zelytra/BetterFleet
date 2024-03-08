@@ -6,10 +6,17 @@
           <img src="@/assets/icons/sot.svg"/>
           <div class="title-content">
             <p>{{ session.sessionName }}</p>
-            <p class="id">
-              {{ t("session.id") + ": " }}
-              <span>{{ session.sessionId.toUpperCase() }}</span>
-            </p>
+            <div class="id-wrapper">
+              <p class="id">
+                {{ t("session.id") + ": " }}
+                <span>{{ session.sessionId.toUpperCase() }}</span>
+              </p>
+              <img src="@/assets/icons/clipboard.svg" alt="copy-button"
+                   @click="copyIdToClipboard(session.sessionId.toUpperCase())"/>
+              <transition>
+                <p v-if="displayIdCopy">{{ t('session.idCopy')}}</p>
+              </transition>
+            </div>
           </div>
         </div>
       </template>
@@ -77,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, PropType} from "vue";
+import {computed, PropType, ref} from "vue";
 import {Fleet} from "@/objects/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
@@ -88,6 +95,7 @@ import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
 import ServerContainer from "@/vue/templates/ServerContainer.vue";
 
 const {t} = useI18n();
+const displayIdCopy = ref<boolean>(false);
 const props = defineProps({
   session: {
     type: Object as PropType<Fleet>,
@@ -132,6 +140,12 @@ function getFilteredPlayerList() {
     return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
   })
 }
+
+function copyIdToClipboard(id: string) {
+  navigator.clipboard.writeText(id);
+  displayIdCopy.value = true;
+  setTimeout(() => displayIdCopy.value = false, 2000);
+}
 </script>
 
 <style scoped lang="scss">
@@ -154,6 +168,25 @@ function getFilteredPlayerList() {
       height: 64px;
     }
 
+    .id-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      img {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+      }
+
+      p{
+        font-family: BrushTip, sans-serif;
+        font-size: 20px;
+        font-weight: 400;
+        height: 16px;
+      }
+    }
+
     p {
       font-family: BrushTip, sans-serif;
       font-size: 31px;
@@ -168,6 +201,7 @@ function getFilteredPlayerList() {
           color: var(--primary);
         }
       }
+
     }
   }
 
