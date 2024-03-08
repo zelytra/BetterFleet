@@ -4,7 +4,7 @@ on:
   pull_request: # Triggered on pull requests to any branch
   push:
     branches: # Additionally, trigger on push events to specific branches
-      - develop
+      - master
 
 jobs:
   backend-build:
@@ -68,7 +68,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          key: ${{ matrix.config.rust_target }}
+          workspaces: 'frontend/src-tauri'
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
