@@ -14,7 +14,7 @@
         </div>
       </template>
       <template #left-content>
-        <button @click="startSession"
+        <button @click="startSession" v-if="UserStore.player.isMaster"
                 :class="{'session-starter':true,'pending':session.getReadyPlayers().length !=session.players.length}">
           {{ t('session.run') }}
         </button>

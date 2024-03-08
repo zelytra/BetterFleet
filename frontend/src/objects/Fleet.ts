@@ -84,6 +84,15 @@ export class Fleet {
         type: AlertType.ERROR,
       });
     };
+
+    this.socket.onclose = () => {
+      alertProvider.sendAlert({
+        content: t("alert.socket.random"),
+        title: t("alert.socket.title"),
+        type: AlertType.ERROR,
+      });
+      UserStore.player.fleet!.sessionId = "";
+    }
   }
 
   private handleFleetUpdate(receivedFleet: FleetInterface) {
@@ -128,7 +137,7 @@ export class Fleet {
     this.socket.send(JSON.stringify(message));
   }
 
-  clearPlayersStatus(){
+  clearPlayersStatus() {
     if (!this.socket) return;
     const message: WebSocketMessage = {
       data: undefined,
