@@ -61,12 +61,6 @@ const updateTimer = setInterval(() => {
         break
       }
     }
-
-    if (UserStore.player.status == PlayerStates.MAIN_MENU) {
-
-    } else if (UserStore.player.status == PlayerStates.CLOSED) {
-
-    }
     return;
   }
 
