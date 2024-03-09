@@ -97,8 +97,10 @@
     "id": "Session identifier",
     "idCopy": "Copy !",
     "informations": {
+      "success": "Succeed luck",
       "title": "Informations",
-      "totalPlayer": "Total Player"
+      "totalPlayer": "Total Player",
+      "tryNumber": "Try"
     },
     "leave": "Leave session",
     "player": {

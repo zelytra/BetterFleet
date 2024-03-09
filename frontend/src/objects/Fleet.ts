@@ -9,12 +9,18 @@ import {SotServer} from "@/objects/SotServer.ts";
 
 const {t} = i18n.global;
 
+export interface FleetStatistics {
+  tryAmount: number
+  successPrediction: number
+}
+
 export interface FleetInterface {
   sessionId: string;
   sessionName: string;
   players: Player[];
   servers: Map<string, SotServer>;
   socket?: WebSocket;
+  stats: FleetStatistics
 }
 
 export class Fleet {
@@ -24,12 +30,17 @@ export class Fleet {
   public servers: Map<string, SotServer>;
   public socket?: WebSocket;
   private safeClose: boolean = false;
+  public stats: FleetStatistics
 
   constructor() {
     this.sessionId = "";
     this.sessionName = "";
     this.players = [];
     this.servers = new Map<string, SotServer>();
+    this.stats = {
+      tryAmount: 0,
+      successPrediction: 0,
+    }
   }
 
   joinSession(sessionId: string) {
@@ -100,10 +111,12 @@ export class Fleet {
   }
 
   private handleFleetUpdate(receivedFleet: FleetInterface) {
+    console.log(receivedFleet)
     this.sessionId = receivedFleet.sessionId;
     this.sessionName = receivedFleet.sessionName;
     this.players = receivedFleet.players;
     this.servers = new Map(Object.entries(receivedFleet.servers));
+    this.stats = receivedFleet.stats;
     UserStore.player.sessionId = receivedFleet.sessionId;
     const player: Player = receivedFleet.players.filter(x => x.username == UserStore.player.username)[0]
     UserStore.player.isMaster = player.isMaster;

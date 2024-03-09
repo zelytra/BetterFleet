@@ -75,9 +75,7 @@ public class SessionSocket {
                 SessionCountDown countDown = objectMapper.convertValue(socketMessage.data(), SessionCountDown.class);
                 handleStartCountdown(session, countDown);
             }
-            case CLEAR_STATUS -> {
-                handleClearStatus(session);
-            }
+            case CLEAR_STATUS -> handleClearStatus(session);
             case JOIN_SERVER -> {
                 SotServer sotServer = objectMapper.convertValue(socketMessage.data(), SotServer.class);
                 handleJoinServerMessage(session, sotServer);
@@ -109,9 +107,11 @@ public class SessionSocket {
         SessionManager manager = SessionManager.getInstance();
         Player player = manager.getPlayerFromSessionId(session.getId());
         Fleet fleet = manager.getFleetByPlayerName(player.getUsername());
+        fleet.getStats().addTry();
 
         Log.info("[" + fleet.getSessionId() + "] Starting countdown at " + countDown.getClickTime().toString());
         broadcastDataToSession(fleet.getSessionId(), MessageType.RUN_COUNTDOWN, countDown);
+        broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
     // Extracted method to handle JOIN_SERVER messages
