@@ -97,8 +97,10 @@
     "id": "Identifiant de la session",
     "idCopy": "Copié !",
     "informations": {
+      "success": "Chance de succès",
       "title": "Informations",
-      "totalPlayer": "Joueurs Total"
+      "totalPlayer": "Joueurs Total",
+      "tryNumber": "Essai"
     },
     "leave": "Quitter la session",
     "player": {

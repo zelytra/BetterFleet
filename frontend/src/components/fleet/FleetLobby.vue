@@ -57,17 +57,23 @@
             <div class="header-information">
               <h2>{{ t("session.informations.title") }}</h2>
             </div>
-
             <div class="information-data">
-              <h3>{{ t("session.informations.totalPlayer") }}</h3>
-              <p>{{ session.players.length }}</p>
-            </div>
-
-            <div class="information-data important">
               <h3>{{ t("session.informations.totalPlayer") }}</h3>
               <p>
                 {{ session.players.filter((x) => x.isReady).length }} /
                 <span>{{ session.players.length }}</span>
+              </p>
+            </div>
+            <div class="information-data">
+              <h3>{{ t("session.informations.tryNumber") }}</h3>
+              <p>
+                {{ session.stats.tryAmount }}
+              </p>
+            </div>
+            <div class="information-data">
+              <h3>{{ t("session.informations.success") }}</h3>
+              <p>
+                {{ session.stats.successPrediction != 0 ? session.stats.successPrediction : 'Unknown' }}
               </p>
             </div>
           </div>
@@ -247,7 +253,7 @@ function copyIdToClipboard(id: string) {
 
     .lobby-details {
       width: 10%;
-      min-width: 150px;
+      min-width: 170px;
       border-radius: 5px;
       align-items: center;
       box-sizing: border-box;

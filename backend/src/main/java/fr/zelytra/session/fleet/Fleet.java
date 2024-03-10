@@ -16,6 +16,7 @@ public class Fleet {
     private List<Player> players;
     private final HashMap<String, SotServer> servers;
     private SessionStatus status;
+    private FleetStats stats;
 
     public Fleet(String sessionId) {
         this.sessionId = sessionId;
@@ -23,6 +24,7 @@ public class Fleet {
         this.players = new ArrayList<>();
         this.servers = new HashMap<>();
         this.status = SessionStatus.WAITING;
+        this.stats = new FleetStats(0, 0);
     }
 
     public List<Player> getReadyPlayers() {
@@ -70,6 +72,14 @@ public class Fleet {
         this.status = status;
     }
 
+    public FleetStats getStats() {
+        return stats;
+    }
+
+    public void setStats(FleetStats stats) {
+        this.stats = stats;
+    }
+
     /**
      * Retrieves a player by their username.
      * <p>
@@ -81,8 +91,8 @@ public class Fleet {
      * @param username The username of the player to retrieve.
      * @return The {@link Player} object with the matching username, or {@code null} if no matching player is found.
      */
-    public Player getPlayerFromUsername(String username){
-        for (Player player : this.players){
+    public Player getPlayerFromUsername(String username) {
+        for (Player player : this.players) {
             if (player.getUsername().equals(username)) return player;
         }
         return null;
