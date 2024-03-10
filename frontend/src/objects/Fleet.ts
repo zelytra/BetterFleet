@@ -111,7 +111,6 @@ export class Fleet {
   }
 
   private handleFleetUpdate(receivedFleet: FleetInterface) {
-    console.log(receivedFleet)
     this.sessionId = receivedFleet.sessionId;
     this.sessionName = receivedFleet.sessionName;
     this.players = receivedFleet.players;
