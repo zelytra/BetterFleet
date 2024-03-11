@@ -1,4 +1,6 @@
+import {LocalTime} from "@js-joda/core";
+
 export interface SessionRunner {
-    startingTimer: string
-    clickTime?: string
+    startingTimer: LocalTime
+    clickTime?: LocalTime
 }

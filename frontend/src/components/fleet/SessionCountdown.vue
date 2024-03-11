@@ -15,6 +15,7 @@ import {Fleet} from "@/objects/Fleet.ts";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
 import {invoke} from '@tauri-apps/api/tauri';
 import {PlayerStates} from "@/objects/Player.ts";
+import {cli} from "@tauri-apps/api";
 
 const delta = ref<LocalTime>(LocalTime.now());
 const {t} = useI18n();
@@ -22,8 +23,9 @@ const alerts = inject<AlertProvider>("alertProvider");
 
 const updateTimer = setInterval(() => {
   if (!UserStore.player.countDown || !UserStore.player.countDown.clickTime) return;
-  const start: LocalTime = LocalTime.now();
-  const click: LocalTime = LocalTime.parse(UserStore.player.countDown.clickTime);
+
+  const start:LocalTime = LocalTime.now()
+  const click:LocalTime = UserStore.player.countDown.clickTime as LocalTime
 
   if (click.isBefore(start)) {
     UserStore.player.countDown = undefined;
@@ -66,12 +68,14 @@ const updateTimer = setInterval(() => {
 
   delta.value = click.minusSeconds(start.second())
   delta.value = delta.value.minusNanos(start.nano())
+  console.log()
 }, 5)
 
 const props = defineProps({session: {type: Object as PropType<Fleet>, required: true}})
 
 onUnmounted(() => {
   clearInterval(updateTimer);
+  UserStore.player.countDown = undefined;
 })
 </script>
 
