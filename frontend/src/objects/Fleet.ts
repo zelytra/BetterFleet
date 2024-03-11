@@ -124,9 +124,7 @@ export class Fleet {
   }
 
   private handleSessionRunner(countdown: number) {
-    UserStore.player.countDown = {startingTimer: LocalTime.now()}
-    UserStore.player.countDown.clickTime = UserStore.player.countDown.startingTimer.plusSeconds(countdown)
-    console.log(UserStore.player.countDown)
+    UserStore.player.countDown = {clickTime: LocalTime.now().plusSeconds(countdown)}
   }
 
   leaveSession(): void {

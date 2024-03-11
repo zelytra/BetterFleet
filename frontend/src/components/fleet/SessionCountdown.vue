@@ -67,7 +67,6 @@ const updateTimer = setInterval(() => {
 
   delta.value = click.minusSeconds(start.second())
   delta.value = delta.value.minusNanos(start.nano())
-  console.log()
 }, 5)
 
 const props = defineProps({session: {type: Object as PropType<Fleet>, required: true}})
