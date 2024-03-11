@@ -3,9 +3,9 @@ import {WebSocketMessage, WebSocketMessageType} from "@/objects/WebSocet.ts";
 import {AlertType} from "@/vue/alert/Alert.ts";
 import {alertProvider} from "@/main.ts";
 import i18n from "@/objects/i18n";
-import {SessionRunner} from "@/objects/SessionRunner.ts";
 import {Player} from "@/objects/Player.ts";
 import {SotServer} from "@/objects/SotServer.ts";
+import {LocalTime} from "@js-joda/core";
 
 const {t} = i18n.global;
 
@@ -78,7 +78,7 @@ export class Fleet {
           break;
         }
         case WebSocketMessageType.RUN_COUNTDOWN: {
-          this.handleSessionRunner(message.data as SessionRunner);
+          this.handleSessionRunner(message.data as number);
           break;
         }
         default: {
@@ -105,6 +105,7 @@ export class Fleet {
           type: AlertType.ERROR,
         });
         UserStore.player.fleet!.sessionId = "";
+        UserStore.player.countDown = undefined; // Reset timer to avoid app freeze
       }
       this.safeClose = false;
     }
@@ -122,9 +123,8 @@ export class Fleet {
     UserStore.player.isReady = player.isReady;
   }
 
-  private handleSessionRunner(countdown: SessionRunner) {
-    UserStore.player.countDown = countdown
-
+  private handleSessionRunner(countdown: number) {
+    UserStore.player.countDown = {clickTime: LocalTime.now().plusSeconds(countdown)}
   }
 
   leaveSession(): void {
@@ -148,14 +148,14 @@ export class Fleet {
   runCountDown() {
     if (!this.socket) return;
     const message: WebSocketMessage = {
-      data: UserStore.player.countDown,
+      data: null,
       messageType: WebSocketMessageType.START_COUNTDOWN,
     };
     this.socket.send(JSON.stringify(message));
   }
 
   clearPlayersStatus() {
-    if (!this.socket) return;
+    if (!this.socket || !UserStore.player.isMaster) return;
     const message: WebSocketMessage = {
       data: undefined,
       messageType: WebSocketMessageType.CLEAR_STATUS,

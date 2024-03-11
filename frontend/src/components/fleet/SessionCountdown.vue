@@ -22,8 +22,9 @@ const alerts = inject<AlertProvider>("alertProvider");
 
 const updateTimer = setInterval(() => {
   if (!UserStore.player.countDown || !UserStore.player.countDown.clickTime) return;
-  const start: LocalTime = LocalTime.now();
-  const click: LocalTime = LocalTime.parse(UserStore.player.countDown.clickTime);
+
+  const start:LocalTime = LocalTime.now()
+  const click:LocalTime = UserStore.player.countDown.clickTime as LocalTime
 
   if (click.isBefore(start)) {
     UserStore.player.countDown = undefined;
@@ -72,6 +73,7 @@ const props = defineProps({session: {type: Object as PropType<Fleet>, required: 
 
 onUnmounted(() => {
   clearInterval(updateTimer);
+  UserStore.player.countDown = undefined;
 })
 </script>
 

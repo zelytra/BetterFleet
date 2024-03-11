@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import fr.zelytra.session.countdown.SessionCountDown;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
@@ -29,6 +28,7 @@ public class SessionSocket {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final ConcurrentHashMap<String, Future<?>> sessionTimeoutTasks = new ConcurrentHashMap<>();
+    private static final int RISE_ANCHOR_TIMER = 3; // in seconds
 
     @OnOpen
     public void onOpen(Session session) {
@@ -71,10 +71,7 @@ public class SessionSocket {
                 Player player = objectMapper.convertValue(socketMessage.data(), Player.class);
                 handleLeaveMessage(player);
             }
-            case START_COUNTDOWN -> {
-                SessionCountDown countDown = objectMapper.convertValue(socketMessage.data(), SessionCountDown.class);
-                handleStartCountdown(session, countDown);
-            }
+            case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
             case JOIN_SERVER -> {
                 SotServer sotServer = objectMapper.convertValue(socketMessage.data(), SotServer.class);
@@ -100,17 +97,15 @@ public class SessionSocket {
         broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
-    private void handleStartCountdown(Session session, SessionCountDown countDown) {
-
-        countDown.calculateClickTime();
+    private void handleStartCountdown(Session session) {
 
         SessionManager manager = SessionManager.getInstance();
         Player player = manager.getPlayerFromSessionId(session.getId());
         Fleet fleet = manager.getFleetByPlayerName(player.getUsername());
         fleet.getStats().addTry();
 
-        Log.info("[" + fleet.getSessionId() + "] Starting countdown at " + countDown.getClickTime().toString());
-        broadcastDataToSession(fleet.getSessionId(), MessageType.RUN_COUNTDOWN, countDown);
+        Log.info("[" + fleet.getSessionId() + "] Starting countdown in " + SessionSocket.RISE_ANCHOR_TIMER + "s");
+        broadcastDataToSession(fleet.getSessionId(), MessageType.RUN_COUNTDOWN, SessionSocket.RISE_ANCHOR_TIMER);
         broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
@@ -172,34 +167,24 @@ public class SessionSocket {
 
     @OnClose
     public void onClose(Session session) {
-
         // Clean up resources related to the session
         sessionTimeoutTasks.remove(session.getId());
 
         SessionManager manager = SessionManager.getInstance();
         Player player = manager.getPlayerFromSessionId(session.getId());
-
         if (player != null) {
             manager.leaveSession(player);
             Log.info("[" + player.getUsername() + "] Disconnected");
-            return;
+        } else {
+            Log.warn("[UNDEFINED PLAYER] Disconnected");
         }
-        Log.warn("[UNDEFINED PLAYER] Disconnected");
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) throws IOException {
         Log.error("WebSocket error for session " + session.getId() + ": " + throwable);
-
-        SessionManager manager = SessionManager.getInstance();
-        Player player = manager.getPlayerFromSessionId(session.getId());
-        if (player != null) {
-            manager.leaveSession(player);
-        }
-
         session.close();
     }
-
 
     /**
      * Broadcasts a message to all players within a session.
