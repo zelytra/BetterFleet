@@ -1,7 +1,5 @@
 package fr.zelytra.session.fleet;
 
-import io.quarkus.logging.Log;
-
 public class FleetStats {
 
 
@@ -31,7 +29,6 @@ public class FleetStats {
 
     public void addTry() {
         this.tryAmount++;
-        Log.info(this.tryAmount);
     }
 }
 

@@ -156,7 +156,7 @@ export class Fleet {
   }
 
   clearPlayersStatus() {
-    if (!this.socket) return;
+    if (!this.socket || !UserStore.player.isMaster) return;
     const message: WebSocketMessage = {
       data: undefined,
       messageType: WebSocketMessageType.CLEAR_STATUS,
