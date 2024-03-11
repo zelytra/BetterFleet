@@ -150,7 +150,7 @@ export class Fleet {
   runCountDown() {
     if (!this.socket) return;
     const message: WebSocketMessage = {
-      data: UserStore.player.countDown,
+      data: null,
       messageType: WebSocketMessageType.START_COUNTDOWN,
     };
     this.socket.send(JSON.stringify(message));

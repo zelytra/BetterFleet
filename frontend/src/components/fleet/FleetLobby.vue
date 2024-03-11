@@ -96,7 +96,6 @@ import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
-import {LocalTime} from "@js-joda/core";
 import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
 import ServerContainer from "@/vue/templates/ServerContainer.vue";
 
@@ -125,9 +124,6 @@ function startSession() {
   // Yes I know never trust the client... IT'S AN ALPHA !! (or a beta I don't care)
   if (!UserStore.player.isMaster) {
     return;
-  }
-  UserStore.player.countDown = {
-    startingTimer: LocalTime.now().toJSON()
   }
   props.session!.runCountDown()
 }

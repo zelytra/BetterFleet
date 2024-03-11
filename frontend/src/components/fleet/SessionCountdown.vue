@@ -15,7 +15,6 @@ import {Fleet} from "@/objects/Fleet.ts";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
 import {invoke} from '@tauri-apps/api/tauri';
 import {PlayerStates} from "@/objects/Player.ts";
-import {cli} from "@tauri-apps/api";
 
 const delta = ref<LocalTime>(LocalTime.now());
 const {t} = useI18n();
