@@ -172,32 +172,29 @@ public class SessionSocket {
 
     @OnClose
     public void onClose(Session session) {
-
-        // Clean up resources related to the session
-        sessionTimeoutTasks.remove(session.getId());
-
-        SessionManager manager = SessionManager.getInstance();
-        Player player = manager.getPlayerFromSessionId(session.getId());
-
-        if (player != null) {
-            manager.leaveSession(player);
-            Log.info("[" + player.getUsername() + "] Disconnected");
-            return;
-        }
-        Log.warn("[UNDEFINED PLAYER] Disconnected");
+        handleCloseSession(session);
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) throws IOException {
         Log.error("WebSocket error for session " + session.getId() + ": " + throwable);
+        handleCloseSession(session);
+        session.close();
+    }
+
+    private void handleCloseSession(Session session){
+        // Clean up resources related to the session
+        sessionTimeoutTasks.remove(session.getId());
 
         SessionManager manager = SessionManager.getInstance();
         Player player = manager.getPlayerFromSessionId(session.getId());
         if (player != null) {
             manager.leaveSession(player);
+            manager.leaveSession(player); // Leave session to avoid ghost player
+            Log.info("[" + player.getUsername() + "] Disconnected");
+        } else {
+            Log.warn("[UNDEFINED PLAYER] Disconnected");
         }
-
-        session.close();
     }
 
 

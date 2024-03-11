@@ -105,6 +105,7 @@ export class Fleet {
           type: AlertType.ERROR,
         });
         UserStore.player.fleet!.sessionId = "";
+        UserStore.player.countDown = undefined; // Reset timer to avoid app freeze
       }
       this.safeClose = false;
     }
