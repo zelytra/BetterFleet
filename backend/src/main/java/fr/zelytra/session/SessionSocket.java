@@ -131,6 +131,8 @@ public class SessionSocket {
             timeoutTask.cancel(true);
         }
 
+        session.setMaxIdleTimeout(3600000); // 1h of timeout
+
         SessionManager manager = SessionManager.getInstance();
         player.setSocket(session);
 
@@ -167,6 +169,17 @@ public class SessionSocket {
 
     @OnClose
     public void onClose(Session session) {
+        handleSocketClose(session);
+    }
+
+    @OnError
+    public void onError(Session session, Throwable throwable) throws IOException {
+        Log.error("WebSocket error for session " + session.getId() + ": " + throwable);
+        handleSocketClose(session);
+        session.close();
+    }
+
+    private void handleSocketClose(Session session) {
         // Clean up resources related to the session
         sessionTimeoutTasks.remove(session.getId());
 
@@ -178,12 +191,6 @@ public class SessionSocket {
         } else {
             Log.warn("[UNDEFINED PLAYER] Disconnected");
         }
-    }
-
-    @OnError
-    public void onError(Session session, Throwable throwable) throws IOException {
-        Log.error("WebSocket error for session " + session.getId() + ": " + throwable);
-        session.close();
     }
 
     /**
