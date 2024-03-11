@@ -7,9 +7,9 @@ import fr.zelytra.session.socket.MessageType;
 import io.quarkus.logging.Log;
 import jakarta.annotation.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages sessions for a multiplayer game, allowing players to create, join, and leave sessions.
@@ -18,17 +18,17 @@ public class SessionManager {
 
     private static SessionManager instance;
 
-    private final HashMap<String, Fleet> sessions;
+    private final ConcurrentHashMap<String, Fleet> sessions;
 
     // SotServer cached to avoid API spam and faster server response
-    private final HashMap<String, SotServer> sotServers;
+    private final ConcurrentHashMap<String, SotServer> sotServers;
 
     /**
      * Private constructor for singleton pattern.
      */
     private SessionManager() {
-        this.sessions = new HashMap<>();
-        this.sotServers = new HashMap<>();
+        this.sessions = new ConcurrentHashMap<>();
+        this.sotServers = new ConcurrentHashMap<>();
     }
 
     /**
@@ -97,9 +97,7 @@ public class SessionManager {
     public void leaveSession(Player player) {
         for (Fleet fleet : sessions.values()) {
             fleet.getPlayers().remove(player);
-            fleet.getServers().forEach((key, value) -> {
-                value.getConnectedPlayers().remove(player);
-            });
+            fleet.getServers().forEach((key, value) -> value.getConnectedPlayers().remove(player));
             SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
             Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
 
