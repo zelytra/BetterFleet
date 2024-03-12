@@ -1,7 +1,7 @@
 {
   "alert": {
     "badRequest": {
-      "content": "La consulta está corrupta o es incorrecta",
+      "content": "La consulta está corrupta o es incorrecta.",
       "title": "Mala consulta"
     },
     "error": {
@@ -95,7 +95,7 @@
     "de": "Deutsch",
     "en": "Inglés",
     "es": "Español",
-    "fr": "Français"
+    "fr": "Francés"
   },
   "session": {
     "choice": {
