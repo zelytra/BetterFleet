@@ -1,48 +1,47 @@
 {
   "alert": {
     "badRequest": {
-      "content": "La requête est corrompue ou incorrect.",
-      "title": "Mauvais requette"
+      "content": "La requête est corrompue ou incorrecte",
+      "title": "Mauvaise requête"
     },
-    "cannotRunResearchNotReady": "Echec du lancement vous n'étiez pas prêt",
     "error": {
-      "content": "Une erreur est survenu",
+      "content": "Une erreur est survenue",
       "title": "Erreur"
     },
     "forbidden": {
-      "content": "Vous ne disposez pas des autorisations nécessaire pour acceder a cette page.",
-      "title": "Acces refusé"
+      "content": "Vous ne disposez pas des autorisations nécessaires pour accéder à cette page",
+      "title": "Accès refusé"
     },
     "outdated": {
-      "content": "Mettez a jours l'applciation",
-      "title": "Client pas a jours"
+      "content": "Veuillez mettre à jour votre application",
+      "title": "Client obsolète"
     },
     "research": {
       "notInMenu": {
-        "content": "Vous n'ètes pas dans le menu du jeu",
-        "title": "Echec du lancement"
+        "content": "Vous n'êtes pas dans le menu du jeu",
+        "title": "Échec du lancement"
       },
       "notReady": {
-        "content": "Echec du lancement vous n'ête pas pret",
-        "title": "Echec du lancement"
+        "content": "Échec du lancement, vous n'êtes pas prêt",
+        "title": "Échec du lancement"
       },
       "offline": {
-        "content": "Votre jeux est éteint",
-        "title": "Echec du lancement"
+        "content": "Votre jeu est fermé",
+        "title": "Échec du lancement"
       }
     },
     "sessionNotFound": {
-      "content": "Verifier l'id de la session",
-      "title": "Aucune session trouvée"
+      "content": "Vérifiez votre code de session",
+      "title": "Session introuvable"
     },
     "socket": {
-      "connectionFailed": "Echec de la connexion au serveur",
-      "random": "Le websocket c'est fermé de facon inattendu",
-      "title": "Une erreur est survenu avec le serveue"
+      "connectionFailed": "Échec de la connexion au serveur",
+      "random": "Le WebSocket s'est fermé de façon inattendue",
+      "title": "Une erreur est survenue avec le serveur"
     },
     "unsupportedMedia": {
-      "content": "Le media que vous tenté d'envoyer n'est pas supporter par l'application.",
-      "title": "Media non supportée"
+      "content": "Le média que vous tentez d'envoyer n'est pas supporté par l'application",
+      "title": "Média non supporté"
     }
   },
   "appName": "Better Fleet",
@@ -53,77 +52,76 @@
     },
     "name": {
       "label": "Pseudonyme",
-      "placeholder": "Bob"
+      "placeholder": "Pseudonyme"
     },
     "server": {
       "label": "Adresse du serveur",
       "placeholder": "https://betterfleet.com/api"
     },
-    "title": "Préférances"
+    "title": "Préférences"
   },
   "credits": {
     "and": "et",
-    "description": "Better Fleet a été crée pour proposer une application pour faires des alliances sur le jeu Sea Of Thieves",
-    "designed": "Designer par",
-    "details": "Ce n'est pas l'application officielle de Sea of Thieves, mais simplement une application sur le thème du jeu qui propose une aide pour la création d'alliances.",
-    "developed": "Développée par",
-    "socials": "Retrouvez nous ici:",
-    "title": "Crédits / Informations"
+    "description": "Better Fleet a été développé dans le but de faciliter la création d'alliances sur Sea Of Thieves",
+    "designed": "Designé par",
+    "details": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
+    "developed": "Développé par",
+    "socials": "Retrouvez-nous ici :",
+    "title": "Informations"
   },
   "firstLogin": {
     "button": {
-      "description": "Hissons les voiles, monte à bord et rejoins l'équipage !",
-      "title": "Commencer l’aventure !"
+      "description": "Hissons les voiles, main à la barre et cap sur le large !",
+      "title": "Commencer l’aventure"
     },
-    "description": "Veuillez saisir le même nom d'utilisateur que celui utilisé dans votre jeu afin d'assurer une meilleure cohérence.",
-    "tips": "Vous pourrez modifier votre pseudo dans le menu de l’application dans la section “Préférences”.",
-    "title": "Indiquez votre pseudo  Sea Of Thieves"
+    "description": "Veuillez saisir votre gamertag actuel afin de veiller au bon déroulement de l'alliance",
+    "tips": "Vous pouvez modifier votre pseudo à tout moment dans la section “Préférences”",
+    "title": "Comment tu t'appelles l'ami ?"
   },
   "loading": {
     "loading": "Chargement en cours...",
     "targetGame": "Détection du jeu en cours",
     "targetLoading": "Jeu détecté. Préparation des navires.",
-    "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé."
+    "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé"
   },
   "locales": {
     "en": "Anglais",
-    "fr": "Francais"
+    "fr": "Français"
   },
   "session": {
     "choice": {
-      "createComment": "Goûtez à la liberté de régner sur les flots en pirate !",
+      "createComment": "Goûte à la liberté de régner sur les flots en pirate !",
       "createSession": "Créer une session",
-      "joinComment": "Hissons les voiles, monte à bord et rejoins l'équipage !",
+      "joinComment": "Prends une chope, monte à bord et rejoins l'équipage !",
       "joinSession": "Rejoindre une session",
       "modal": {
         "button": "Rejoindre la session",
-        "comment": "Vous devez saisir ci-dessous l'identifiant que le Maître de jeu vous a envoyé pour pouvoir rejoindre la session.",
-        "title": "Insérer votre identifiant de session."
+        "comment": "Chaque session est privée et requiert un code. Demandez-le à l'hôte de la session que vous souhaitez rejoindre !",
+        "title": "Entrez un code de session"
       }
     },
-    "countdown": "La recherche commance dans...",
-    "id": "Identifiant de la session",
+    "countdown": "La recherche commence dans...",
+    "id": "Code de session",
     "idCopy": "Copié !",
     "informations": {
       "success": "Chance de succès",
       "title": "Informations",
-      "totalPlayer": "Joueurs Total",
-      "tryNumber": "Essai"
+      "totalPlayer": "Joueurs prêts",
+      "tryNumber": "Nombre d'essais"
     },
     "leave": "Quitter la session",
     "player": {
       "notReady": "Pas prêt",
-      "ready": "Est prêt",
+      "ready": "Prêt",
       "status": {
         "closed": "Hors ligne",
         "in-game": "En jeu",
         "main-menu": "Dans les menus du jeu",
-        "started": "Jeux lancé"
+        "started": "Jeu lancé"
       }
     },
     "run": "Lever l'ancre",
     "status": {
-      "action": "Action",
       "countdown": "Lancement dans ",
       "ready": "Prêt",
       "waiting": "En attente"
