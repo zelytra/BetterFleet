@@ -135,5 +135,12 @@
       "ready": "Listo",
       "waiting": "Espera"
     }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "",
+      "fleet": "",
+      "home": ""
+    }
   }
 }

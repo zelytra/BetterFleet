@@ -135,5 +135,12 @@
       "ready": "Prêt",
       "waiting": "En attente"
     }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "Page de configuration",
+      "fleet": "Session",
+      "home": "Page d'acceuil"
+    }
   }
 }
