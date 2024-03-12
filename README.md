@@ -1,4 +1,4 @@
-![image](/frontend/src/assets/banners/banner.png)
+![image](/webapp/src/assets/banners/banner.png)
 
 # BetterFleet
 
