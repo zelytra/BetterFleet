@@ -42,6 +42,12 @@
     "unsupportedMedia": {
       "content": "Das Medium, das Sie senden möchten, wird von der Anwendung nicht unterstützt",
       "title": "Nicht unterstützte Medien"
+    },
+    "username": {
+      "length": {
+        "content": "",
+        "title": ""
+      }
     }
   },
   "appName": "Bessere Flotte",
@@ -128,6 +134,13 @@
       "countdown": "Starten in",
       "ready": "Bereit",
       "waiting": "Warten"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "",
+      "fleet": "",
+      "home": ""
     }
   }
 }

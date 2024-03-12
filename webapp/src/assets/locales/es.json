@@ -42,6 +42,12 @@
     "unsupportedMedia": {
       "content": "El medio que estás intentando enviar no es compatible con la aplicación.",
       "title": "Medios no compatibles"
+    },
+    "username": {
+      "length": {
+        "content": "",
+        "title": ""
+      }
     }
   },
   "appName": "Mejor flota",
@@ -128,6 +134,13 @@
       "countdown": "Lanzará en",
       "ready": "Listo",
       "waiting": "Espera"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "",
+      "fleet": "",
+      "home": ""
     }
   }
 }

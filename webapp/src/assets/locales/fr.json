@@ -42,6 +42,12 @@
     "unsupportedMedia": {
       "content": "Le média que vous tentez d'envoyer n'est pas supporté par l'application",
       "title": "Média non supporté"
+    },
+    "username": {
+      "length": {
+        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
+        "title": "Mauvais format de pseudo"
+      }
     }
   },
   "appName": "Better Fleet",
@@ -128,6 +134,13 @@
       "countdown": "Lancement dans ",
       "ready": "Prêt",
       "waiting": "En attente"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "Page de configuration",
+      "fleet": "Session",
+      "home": "Page d'acceuil"
     }
   }
 }
