@@ -1,133 +1,133 @@
 {
   "alert": {
     "badRequest": {
-      "content": "La requête est corrompue ou incorrecte",
-      "title": "Mauvaise requête"
+      "content": "Die Abfrage ist beschädigt oder falsch",
+      "title": "Schlechte Abfrage"
     },
     "error": {
-      "content": "Une erreur est survenue",
-      "title": "Erreur"
+      "content": "Ein Fehler ist aufgetreten",
+      "title": "Fehler"
     },
     "forbidden": {
-      "content": "Vous ne disposez pas des autorisations nécessaires pour accéder à cette page",
-      "title": "Accès refusé"
+      "content": "Sie verfügen nicht über die erforderliche Berechtigung, um auf diese Seite zuzugreifen",
+      "title": "Zugriff abgelehnt"
     },
     "outdated": {
-      "content": "Veuillez mettre à jour votre application",
-      "title": "Client obsolète"
+      "content": "Bitte aktualisieren Sie Ihre Bewerbung",
+      "title": "Veralteter Kunde"
     },
     "research": {
       "notInMenu": {
-        "content": "Vous n'êtes pas dans le menu du jeu",
-        "title": "Échec du lancement"
+        "content": "Sie befinden sich nicht im Spielmenü",
+        "title": "Der Start ist fehlgeschlagen"
       },
       "notReady": {
-        "content": "Échec du lancement, vous n'êtes pas prêt",
-        "title": "Échec du lancement"
+        "content": "Der Start ist fehlgeschlagen. Sie sind nicht bereit",
+        "title": "Der Start ist fehlgeschlagen"
       },
       "offline": {
-        "content": "Votre jeu est fermé",
-        "title": "Échec du lancement"
+        "content": "Dein Spiel ist geschlossen",
+        "title": "Der Start ist fehlgeschlagen"
       }
     },
     "sessionNotFound": {
-      "content": "Vérifiez votre code de session",
-      "title": "Session introuvable"
+      "content": "Überprüfen Sie Ihre Sitzungs-ID",
+      "title": "Sitzung nicht gefunden"
     },
     "socket": {
-      "connectionFailed": "Échec de la connexion au serveur",
-      "random": "Le WebSocket s'est fermé de façon inattendue",
-      "title": "Une erreur est survenue avec le serveur"
+      "connectionFailed": "Die Verbindung zum Server ist fehlgeschlagen",
+      "random": "Der WebSocket wurde unerwartet geschlossen",
+      "title": "Beim Server ist ein Fehler aufgetreten"
     },
     "unsupportedMedia": {
-      "content": "Le média que vous tentez d'envoyer n'est pas supporté par l'application",
-      "title": "Média non supporté"
+      "content": "Das Medium, das Sie senden möchten, wird von der Anwendung nicht unterstützt",
+      "title": "Nicht unterstützte Medien"
     }
   },
-  "appName": "Better Fleet",
+  "appName": "Bessere Flotte",
   "config": {
-    "devmode": "Activer le mode développeur",
+    "devmode": "Aktivieren Sie den Entwicklermodus",
     "lang": {
-      "label": "Langue"
+      "label": "Sprache"
     },
     "name": {
-      "label": "Pseudonyme",
-      "placeholder": "Pseudonyme"
+      "label": "Nutzername",
+      "placeholder": "Nutzername"
     },
     "server": {
-      "label": "Adresse du serveur",
+      "label": "Serveradresse",
       "placeholder": "https://betterfleet.com/api"
     },
-    "subtitle": "Options de préférence",
-    "title": "Paramètres"
+    "subtitle": "Präferenzoptionen",
+    "title": "Einstellungen"
   },
   "credits": {
-    "and": "et",
-    "description": "Better Fleet a été développé dans le but de faciliter la création d'alliances sur Sea Of Thieves",
-    "designed": "Designé par",
-    "details": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
-    "developed": "Développé par",
-    "socials": "Retrouvez-nous ici :",
-    "title": "Informations"
+    "and": "und",
+    "description": "Better Fleet wurde entwickelt, um die Bildung von Allianzen in Sea Of Thieves zu erleichtern",
+    "designed": "Entworfen von",
+    "details": "Better Fleet ist eine nicht offizielle Drittanbieteranwendung, die nichts mit dem Entwicklungsteam von Sea Of Thieves zu tun hat. Die Verwendung ist rein äußerlich und hat keinen Einfluss auf das Spielerlebnis!",
+    "developed": "Entwickelt von",
+    "socials": "Finden Sie uns hier:",
+    "title": "Information"
   },
   "firstLogin": {
     "button": {
-      "description": "Hissons les voiles, main à la barre et cap sur le large !",
-      "title": "Commencer l’aventure"
+      "description": "Hissen Sie die Segel, Jungs, übernehmen Sie das Ruder und machen Sie sich auf den Weg zur See!",
+      "title": "Lasst die Reise beginnen"
     },
-    "description": "Veuillez saisir votre gamertag actuel afin de veiller au bon déroulement de l'alliance",
-    "tips": "Vous pouvez modifier votre pseudo à tout moment dans la section “Préférences”",
-    "title": "Comment tu t'appelles l'ami ?"
+    "description": "Bitte geben Sie Ihren aktuellen Gamertag ein, um den reibungslosen Ablauf der Allianz zu überwachen",
+    "tips": "Sie können Ihren Benutzernamen jederzeit im Abschnitt „Einstellungen“ ändern",
+    "title": "Wie heißt du?"
   },
   "loading": {
-    "loading": "Chargement en cours...",
-    "targetGame": "Détection du jeu en cours",
-    "targetLoading": "Jeu détecté. Préparation des navires.",
-    "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé"
+    "loading": "Wird geladen...",
+    "targetGame": "Spielerkennung läuft",
+    "targetLoading": "Spiel erkannt. Schiffe in Vorbereitung.",
+    "tips": "Dieser Vorgang kann eine Weile dauern. Bitte stellen Sie sicher, dass Ihr Spiel gestartet ist"
   },
   "locales": {
     "de": "Deutsch",
-    "en": "Anglais",
+    "en": "Englisch",
     "es": "Español",
-    "fr": "Français"
+    "fr": "Französisch"
   },
   "session": {
     "choice": {
-      "createComment": "Goûte à la liberté de régner sur les flots en pirate !",
-      "createSession": "Créer une session",
-      "joinComment": "Prends une chope, monte à bord et rejoins l'équipage !",
-      "joinSession": "Rejoindre une session",
+      "createComment": "Genießen Sie die Freiheit und herrschen Sie über das Meer der Diebe!",
+      "createSession": "Erstellen Sie eine Sitzung",
+      "joinComment": "Schnappen Sie sich einen Krug, kommen Sie an Bord und schließen Sie sich der Crew an!",
+      "joinSession": "Nehmen Sie an einer Sitzung teil",
       "modal": {
-        "button": "Rejoindre la session",
-        "comment": "Chaque session est privée et requiert un code. Demandez-le à l'hôte de la session que vous souhaitez rejoindre !",
-        "title": "Entrez un code de session"
+        "button": "Nehmen Sie an der Sitzung teil",
+        "comment": "Jede Sitzung ist privat und erfordert einen Identifikationscode. Fragen Sie den Moderator der Sitzung, an der Sie teilnehmen möchten!",
+        "title": "Geben Sie eine Sitzungs-ID ein"
       }
     },
-    "countdown": "La recherche commence dans...",
-    "id": "Code de session",
-    "idCopy": "Copié !",
+    "countdown": "Die Forschung beginnt in...",
+    "id": "Session-ID",
+    "idCopy": "Kopiert !",
     "informations": {
-      "success": "Chance de succès",
-      "title": "Informations",
-      "totalPlayer": "Joueurs prêts",
-      "tryNumber": "Nombre d'essais"
+      "success": "Erfolgsrate",
+      "title": "Information",
+      "totalPlayer": "Spieler bereit",
+      "tryNumber": "Anzahl der Versuche"
     },
-    "leave": "Quitter la session",
+    "leave": "Verlassen Sie die Sitzung",
     "player": {
-      "notReady": "Pas prêt",
-      "ready": "Prêt",
+      "notReady": "Nicht bereit",
+      "ready": "Bereit",
       "status": {
-        "closed": "Hors ligne",
-        "in-game": "En jeu",
-        "main-menu": "Dans les menus du jeu",
-        "started": "Jeu lancé"
+        "closed": "Offline",
+        "in-game": "Im Spiel",
+        "main-menu": "Im Spielmenü",
+        "started": "Spiel gestartet"
       }
     },
-    "run": "Lever l'ancre",
+    "run": "Segel setzen",
     "status": {
-      "countdown": "Lancement dans ",
-      "ready": "Prêt",
-      "waiting": "En attente"
+      "countdown": "Starten in",
+      "ready": "Bereit",
+      "waiting": "Warten"
     }
   }
 }
