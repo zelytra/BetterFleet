@@ -9,5 +9,6 @@ public enum MessageType {
     LEAVE_SERVER,
     CLEAR_STATUS,
     OUTDATED_CLIENT,
-    SESSION_NOT_FOUND
+    SESSION_NOT_FOUND,
+    KEEP_ALIVE,
 }

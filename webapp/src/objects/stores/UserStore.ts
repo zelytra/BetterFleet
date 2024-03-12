@@ -22,7 +22,6 @@ export const UserStore = reactive({
 
     if (!this.player.clientVersion) {
       this.player.clientVersion = import.meta.env.VITE_VERSION;
-      console.log(this.player.clientVersion)
     }
 
     //@ts-ignore I18N typescript implementation
