@@ -1,133 +1,133 @@
 {
   "alert": {
     "badRequest": {
-      "content": "La consulta está corrupta o es incorrecta.",
-      "title": "Mala consulta"
+      "content": "La requête est corrompue ou incorrecte",
+      "title": "Mauvaise requête"
     },
     "error": {
-      "content": "Ha ocurrido un error",
-      "title": "Error"
+      "content": "Une erreur est survenue",
+      "title": "Erreur"
     },
     "forbidden": {
-      "content": "No tienes el permiso necesario para acceder a esta página.",
-      "title": "Acceso denegado"
+      "content": "Vous ne disposez pas des autorisations nécessaires pour accéder à cette page",
+      "title": "Accès refusé"
     },
     "outdated": {
-      "content": "Por favor actualice su aplicación",
-      "title": "Cliente obsoleto"
+      "content": "Veuillez mettre à jour votre application",
+      "title": "Client obsolète"
     },
     "research": {
       "notInMenu": {
-        "content": "No estás en el menú del juego.",
-        "title": "Lanzamiento fallido"
+        "content": "Vous n'êtes pas dans le menu du jeu",
+        "title": "Échec du lancement"
       },
       "notReady": {
-        "content": "Error al iniciar, no estás listo",
-        "title": "Lanzamiento fallido"
+        "content": "Échec du lancement, vous n'êtes pas prêt",
+        "title": "Échec du lancement"
       },
       "offline": {
-        "content": "Tu juego está cerrado",
-        "title": "Lanzamiento fallido"
+        "content": "Votre jeu est fermé",
+        "title": "Échec du lancement"
       }
     },
     "sessionNotFound": {
-      "content": "Verifique su ID de sesión",
-      "title": "Sesión no encontrada"
+      "content": "Vérifiez votre code de session",
+      "title": "Session introuvable"
     },
     "socket": {
-      "connectionFailed": "La conexión al servidor falló",
-      "random": "El WebSocket se cerró inesperadamente",
-      "title": "Ha ocurrido un error con el servidor."
+      "connectionFailed": "Échec de la connexion au serveur",
+      "random": "Le WebSocket s'est fermé de façon inattendue",
+      "title": "Une erreur est survenue avec le serveur"
     },
     "unsupportedMedia": {
-      "content": "El medio que estás intentando enviar no es compatible con la aplicación.",
-      "title": "Medios no compatibles"
+      "content": "Le média que vous tentez d'envoyer n'est pas supporté par l'application",
+      "title": "Média non supporté"
     }
   },
-  "appName": "Mejor flota",
+  "appName": "Better Fleet",
   "config": {
-    "devmode": "Habilitar el modo desarrollador",
+    "devmode": "Activer le mode développeur",
     "lang": {
-      "label": "Idioma"
+      "label": "Langue"
     },
     "name": {
-      "label": "Nombre de usuario",
-      "placeholder": "Nombre de usuario"
+      "label": "Pseudonyme",
+      "placeholder": "Pseudonyme"
     },
     "server": {
-      "label": "Dirección del servidor",
+      "label": "Adresse du serveur",
       "placeholder": "https://betterfleet.com/api"
     },
-    "subtitle": "Opciones de preferencia",
-    "title": "Configuraciones"
+    "subtitle": "Options de préférence",
+    "title": "Paramètres"
   },
   "credits": {
-    "and": "y",
-    "description": "Better Fleet se desarrolló para facilitar la formación de alianzas en Sea Of Thieves",
-    "designed": "Diseñada por",
-    "details": "Better Fleet es una aplicación de terceros no oficial y no relacionada con el equipo de desarrollo de Sea Of Thieves. ¡Su uso es puramente externo y no tiene ningún impacto en la experiencia de juego!",
-    "developed": "Desarrollado por",
-    "socials": "Encuéntranos aquí:",
-    "title": "Información"
+    "and": "et",
+    "description": "Better Fleet a été développé dans le but de faciliter la création d'alliances sur Sea Of Thieves",
+    "designed": "Designé par",
+    "details": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
+    "developed": "Développé par",
+    "socials": "Retrouvez-nous ici :",
+    "title": "Informations"
   },
   "firstLogin": {
     "button": {
-      "description": "¡Icen las velas muchachos, tomen el timón y salgan al mar!",
-      "title": "Que comience la jornada"
+      "description": "Hissons les voiles, main à la barre et cap sur le large !",
+      "title": "Commencer l’aventure"
     },
-    "description": "Ingrese su gamertag actual para supervisar el buen funcionamiento de la alianza.",
-    "tips": "Puedes cambiar tu nombre de usuario en cualquier momento en la sección \"Preferencias\"",
-    "title": "¿Cómo te llamas muchacho?"
+    "description": "Veuillez saisir votre gamertag actuel afin de veiller au bon déroulement de l'alliance",
+    "tips": "Vous pouvez modifier votre pseudo à tout moment dans la section “Préférences”",
+    "title": "Comment tu t'appelles l'ami ?"
   },
   "loading": {
-    "loading": "Cargando...",
-    "targetGame": "Detección de juego en curso",
-    "targetLoading": "Juego detectado. Naves en preparación.",
-    "tips": "Este proceso puede tardar un poco, asegúrate de que tu juego esté iniciado."
+    "loading": "Chargement en cours...",
+    "targetGame": "Détection du jeu en cours",
+    "targetLoading": "Jeu détecté. Préparation des navires.",
+    "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé"
   },
   "locales": {
     "de": "Deutsch",
-    "en": "Inglés",
+    "en": "Anglais",
     "es": "Español",
-    "fr": "Francés"
+    "fr": "Français"
   },
   "session": {
     "choice": {
-      "createComment": "¡Dale un mordisco a la libertad y domina el mar de ladrones!",
-      "createSession": "Crear una sesión",
-      "joinComment": "¡Coge una jarra, sube a bordo y únete a la tripulación!",
-      "joinSession": "Unirse a una sesión",
+      "createComment": "Goûte à la liberté de régner sur les flots en pirate !",
+      "createSession": "Créer une session",
+      "joinComment": "Prends une chope, monte à bord et rejoins l'équipage !",
+      "joinSession": "Rejoindre une session",
       "modal": {
-        "button": "Únete a la sesión",
-        "comment": "Cada sesión es privada y requiere un código de identificación. ¡Pregúntale al anfitrión de la sesión a la que deseas unirte!",
-        "title": "Ingrese una ID de sesión"
+        "button": "Rejoindre la session",
+        "comment": "Chaque session est privée et requiert un code. Demandez-le à l'hôte de la session que vous souhaitez rejoindre !",
+        "title": "Entrez un code de session"
       }
     },
-    "countdown": "La investigación comienza en...",
-    "id": "ID de sesión",
-    "idCopy": "¡Copiado!",
+    "countdown": "La recherche commence dans...",
+    "id": "Code de session",
+    "idCopy": "Copié !",
     "informations": {
-      "success": "Tasa de éxito",
-      "title": "Información",
-      "totalPlayer": "Jugadores listos",
-      "tryNumber": "Número de intentos"
+      "success": "Chance de succès",
+      "title": "Informations",
+      "totalPlayer": "Joueurs prêts",
+      "tryNumber": "Nombre d'essais"
     },
-    "leave": "abandonar la sesión",
+    "leave": "Quitter la session",
     "player": {
-      "notReady": "No está listo",
-      "ready": "Listo",
+      "notReady": "Pas prêt",
+      "ready": "Prêt",
       "status": {
-        "closed": "Desconectado",
-        "in-game": "En el juego",
-        "main-menu": "En el menú del juego",
-        "started": "Juego lanzado"
+        "closed": "Hors ligne",
+        "in-game": "En jeu",
+        "main-menu": "Dans les menus du jeu",
+        "started": "Jeu lancé"
       }
     },
-    "run": "Zarpar",
+    "run": "Lever l'ancre",
     "status": {
-      "countdown": "Lanzará en",
-      "ready": "Listo",
-      "waiting": "Espera"
+      "countdown": "Lancement dans ",
+      "ready": "Prêt",
+      "waiting": "En attente"
     }
   }
 }
