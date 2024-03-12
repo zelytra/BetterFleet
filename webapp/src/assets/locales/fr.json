@@ -1,133 +1,133 @@
 {
   "alert": {
     "badRequest": {
-      "content": "Die Abfrage ist beschädigt oder falsch",
-      "title": "Schlechte Abfrage"
+      "content": "The query is corrupted or incorrect",
+      "title": "Bad query"
     },
     "error": {
-      "content": "Ein Fehler ist aufgetreten",
-      "title": "Fehler"
+      "content": "An error has occured",
+      "title": "Error"
     },
     "forbidden": {
-      "content": "Sie verfügen nicht über die erforderliche Berechtigung, um auf diese Seite zuzugreifen",
-      "title": "Zugriff abgelehnt"
+      "content": "You do not have the necessary permission to access this page",
+      "title": "Access denied"
     },
     "outdated": {
-      "content": "Bitte aktualisieren Sie Ihre Bewerbung",
-      "title": "Veralteter Kunde"
+      "content": "Please update your application",
+      "title": "Outdated client"
     },
     "research": {
       "notInMenu": {
-        "content": "Sie befinden sich nicht im Spielmenü",
-        "title": "Der Start ist fehlgeschlagen"
+        "content": "You are not in the game menu",
+        "title": "Launch failed"
       },
       "notReady": {
-        "content": "Der Start ist fehlgeschlagen. Sie sind nicht bereit",
-        "title": "Der Start ist fehlgeschlagen"
+        "content": "Launch failed, you are not ready",
+        "title": "Launch failed"
       },
       "offline": {
-        "content": "Dein Spiel ist geschlossen",
-        "title": "Der Start ist fehlgeschlagen"
+        "content": "Your game is closed",
+        "title": "Launch failed"
       }
     },
     "sessionNotFound": {
-      "content": "Überprüfen Sie Ihre Sitzungs-ID",
-      "title": "Sitzung nicht gefunden"
+      "content": "Verify your Session ID",
+      "title": "Session not found"
     },
     "socket": {
-      "connectionFailed": "Die Verbindung zum Server ist fehlgeschlagen",
-      "random": "Der WebSocket wurde unerwartet geschlossen",
-      "title": "Beim Server ist ein Fehler aufgetreten"
+      "connectionFailed": "The connection to the server failed",
+      "random": "The WebSocket closed unexpectedly",
+      "title": "An error has occured with the server"
     },
     "unsupportedMedia": {
-      "content": "Das Medium, das Sie senden möchten, wird von der Anwendung nicht unterstützt",
-      "title": "Nicht unterstützte Medien"
+      "content": "The media you are trying to send is not supported by the application",
+      "title": "Unsupported media"
     }
   },
-  "appName": "Bessere Flotte",
+  "appName": "Better Fleet",
   "config": {
-    "devmode": "Aktivieren Sie den Entwicklermodus",
+    "devmode": "Enable developer mode",
     "lang": {
-      "label": "Sprache"
+      "label": "Language"
     },
     "name": {
-      "label": "Nutzername",
-      "placeholder": "Nutzername"
+      "label": "Username",
+      "placeholder": "Username"
     },
     "server": {
-      "label": "Serveradresse",
+      "label": "Server address",
       "placeholder": "https://betterfleet.com/api"
     },
-    "subtitle": "Präferenzoptionen",
-    "title": "Einstellungen"
+    "subtitle": "Preference options",
+    "title": "Settings"
   },
   "credits": {
-    "and": "und",
-    "description": "Better Fleet wurde entwickelt, um die Bildung von Allianzen in Sea Of Thieves zu erleichtern",
-    "designed": "Entworfen von",
-    "details": "Better Fleet ist eine nicht offizielle Drittanbieteranwendung, die nichts mit dem Entwicklungsteam von Sea Of Thieves zu tun hat. Die Verwendung ist rein äußerlich und hat keinen Einfluss auf das Spielerlebnis!",
-    "developed": "Entwickelt von",
-    "socials": "Finden Sie uns hier:",
+    "and": "and",
+    "description": "Better Fleet was developed in order to facilitate the formation of alliances on Sea Of Thieves",
+    "designed": "Designed by",
+    "details": "Better Fleet is a non official third party application unrelated to the development team of Sea Of Thieves. Its use is purely external and has no impact on gameplay experience !",
+    "developed": "Developed by",
+    "socials": "Find us here :",
     "title": "Information"
   },
   "firstLogin": {
     "button": {
-      "description": "Hissen Sie die Segel, Jungs, übernehmen Sie das Ruder und machen Sie sich auf den Weg zur See!",
-      "title": "Lasst die Reise beginnen"
+      "description": "Hoist the sails lads, take the helm and head out to sea !",
+      "title": "Let the journey begin"
     },
-    "description": "Bitte geben Sie Ihren aktuellen Gamertag ein, um den reibungslosen Ablauf der Allianz zu überwachen",
-    "tips": "Sie können Ihren Benutzernamen jederzeit im Abschnitt „Einstellungen“ ändern",
-    "title": "Wie heißt du?"
+    "description": "Please enter your current gamertag to oversee the smooth running of the alliance",
+    "tips": "You can change your username at any moment in the \"Preferences\" section",
+    "title": "What's your name lad ?"
   },
   "loading": {
-    "loading": "Wird geladen...",
-    "targetGame": "Spielerkennung läuft",
-    "targetLoading": "Spiel erkannt. Schiffe in Vorbereitung.",
-    "tips": "Dieser Vorgang kann eine Weile dauern. Bitte stellen Sie sicher, dass Ihr Spiel gestartet ist"
+    "loading": "Loading...",
+    "targetGame": "Game detection in progress",
+    "targetLoading": "Game detected. Ships in preparation.",
+    "tips": "This process might take a while, please make sure your game is launched"
   },
   "locales": {
     "de": "Deutsch",
-    "en": "Englisch",
+    "en": "English",
     "es": "Español",
-    "fr": "Französisch"
+    "fr": "French"
   },
   "session": {
     "choice": {
-      "createComment": "Genießen Sie die Freiheit und herrschen Sie über das Meer der Diebe!",
-      "createSession": "Erstellen Sie eine Sitzung",
-      "joinComment": "Schnappen Sie sich einen Krug, kommen Sie an Bord und schließen Sie sich der Crew an!",
-      "joinSession": "Nehmen Sie an einer Sitzung teil",
+      "createComment": "Take a bite at freedom and rule on the sea of theives !",
+      "createSession": "Create a session",
+      "joinComment": "Grab a tankard, come aboard and join the crew !",
+      "joinSession": "Join a session",
       "modal": {
-        "button": "Nehmen Sie an der Sitzung teil",
-        "comment": "Jede Sitzung ist privat und erfordert einen Identifikationscode. Fragen Sie den Moderator der Sitzung, an der Sie teilnehmen möchten!",
-        "title": "Geben Sie eine Sitzungs-ID ein"
+        "button": "Join the session",
+        "comment": "Every session is private and requires an identification code. Ask it to the host of the session you wish to join !",
+        "title": "Enter a Session ID"
       }
     },
-    "countdown": "Die Forschung beginnt in...",
-    "id": "Session-ID",
-    "idCopy": "Kopiert !",
+    "countdown": "The research begins in...",
+    "id": "Session ID",
+    "idCopy": "Copied !",
     "informations": {
-      "success": "Erfolgsrate",
+      "success": "Success rate",
       "title": "Information",
-      "totalPlayer": "Spieler bereit",
-      "tryNumber": "Anzahl der Versuche"
+      "totalPlayer": "Players ready",
+      "tryNumber": "Number of tries"
     },
-    "leave": "Verlassen Sie die Sitzung",
+    "leave": "Leave the session",
     "player": {
-      "notReady": "Nicht bereit",
-      "ready": "Bereit",
+      "notReady": "Not ready",
+      "ready": "Ready",
       "status": {
         "closed": "Offline",
-        "in-game": "Im Spiel",
-        "main-menu": "Im Spielmenü",
-        "started": "Spiel gestartet"
+        "in-game": "In game",
+        "main-menu": "In the game menu",
+        "started": "Game launched"
       }
     },
-    "run": "Segel setzen",
+    "run": "Set sail",
     "status": {
-      "countdown": "Starten in",
-      "ready": "Bereit",
-      "waiting": "Warten"
+      "countdown": "Launch in ",
+      "ready": "Ready",
+      "waiting": "Waiting"
     }
   }
 }
