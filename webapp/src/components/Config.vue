@@ -13,25 +13,25 @@
         <div class="content-wrapper">
           <div class="side-content">
             <InputText
-              v-model:input-value="username"
-              :placeholder="t('config.name.placeholder')"
-              :label="t('config.name.label')"
+                v-model:input-value="username"
+                :placeholder="t('config.name.placeholder')"
+                :label="t('config.name.label')"
             />
             <div class="dev-mode-wrapper">
-              <input type="checkbox" v-model="devMode" />
+              <input type="checkbox" v-model="devMode"/>
               <p>{{ t("config.devmode") }}</p>
             </div>
             <InputText
-              v-model:input-value="UserStore.player.serverHostName"
-              :placeholder="t('config.server.placeholder')"
-              :label="t('config.server.label')"
-              :lock="!devMode"
+                v-model:input-value="UserStore.player.serverHostName"
+                :placeholder="t('config.server.placeholder')"
+                :label="t('config.server.label')"
+                :lock="!devMode"
             />
           </div>
           <div class="side-content">
             <SingleSelect
-              :label="t('config.lang.label')"
-              v-model:data="langOptions"
+                :label="t('config.lang.label')"
+                v-model:data="langOptions"
             />
           </div>
         </div>
@@ -52,10 +52,10 @@
         <div class="social-wrapper">
           <p>{{ t("credits.socials") }}</p>
           <a href="https://discord.gg/sHPp5CPxf2" target="_blank"
-            ><img src="@/assets/icons/discord.svg"
+          ><img src="@/assets/icons/discord.svg"
           /></a>
           <a href="https://github.com/zelytra/BetterFleet" target="_blank"
-            ><img src="@/assets/icons/github.svg"
+          ><img src="@/assets/icons/github.svg"
           /></a>
         </div>
         <p class="light">
@@ -68,23 +68,25 @@
 
 <script setup lang="ts">
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
-import { useI18n } from "vue-i18n";
+import {useI18n} from "vue-i18n";
 import InputText from "@/vue/form/InputText.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
-import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
-import { onMounted, ref, watch } from "vue";
+import {SingleSelectInterface} from "@/vue/form/Inputs.ts";
+import {inject, onMounted, ref, watch} from "vue";
 
 import fr from "@/assets/icons/locales/fr.svg";
 import de from "@/assets/icons/locales/de.svg";
 import es from "@/assets/icons/locales/es.svg";
 import en from "@/assets/icons/locales/en.svg";
-import { UserStore } from "@/objects/stores/UserStore.ts";
-import { onBeforeRouteLeave } from "vue-router";
+import {UserStore} from "@/objects/stores/UserStore.ts";
+import {onBeforeRouteLeave} from "vue-router";
+import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
 
-const { t, availableLocales } = useI18n();
-const langOptions = ref<SingleSelectInterface>({ data: [] });
+const {t, availableLocales} = useI18n();
+const langOptions = ref<SingleSelectInterface>({data: []});
 const devMode = ref<boolean>(false);
 const username = ref<string>(UserStore.player.username);
+const alerts = inject<AlertProvider>("alertProvider");
 
 onMounted(() => {
   for (const locale of availableLocales) {
@@ -97,7 +99,7 @@ onMounted(() => {
 
   if (UserStore.player.lang) {
     langOptions.value.selectedValue = langOptions.value.data.filter(
-      (x) => x.id == UserStore.player.lang,
+        (x) => x.id == UserStore.player.lang,
     )[0];
   } else {
     langOptions.value.selectedValue = langOptions.value.data[0];
@@ -109,8 +111,13 @@ watch(langOptions.value, () => {
 });
 
 onBeforeRouteLeave((_to, _from, next) => {
-  if (username.value.length == 0) {
+  if (username.value.length == 0 || username.value.length >= 16) {
     next(false);
+    alerts!.sendAlert({
+      content: t('alert.username.lenght.content'),
+      title: t('alert.username.lenght.title'),
+      type: AlertType.ERROR
+    })
   } else {
     UserStore.player.username = username.value;
     next();
@@ -214,12 +221,12 @@ function getImgUrl(iconName: string): string {
             height: 10px;
             background: var(--primary-text);
             clip-path: polygon(
-              14% 44%,
-              0 65%,
-              50% 100%,
-              100% 16%,
-              80% 0%,
-              43% 62%
+                    14% 44%,
+                    0 65%,
+                    50% 100%,
+                    100% 16%,
+                    80% 0%,
+                    43% 62%
             );
             transform-origin: bottom left;
           }

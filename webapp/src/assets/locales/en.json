@@ -42,6 +42,12 @@
     "unsupportedMedia": {
       "content": "The media you are trying to send is not supported by the application",
       "title": "Unsupported media"
+    },
+    "username": {
+      "lenght": {
+        "content": "",
+        "title": ""
+      }
     }
   },
   "appName": "Better Fleet",
