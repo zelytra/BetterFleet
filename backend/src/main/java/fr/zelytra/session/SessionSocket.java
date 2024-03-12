@@ -147,6 +147,7 @@ public class SessionSocket {
             }
             return;
         }
+        session.setMaxIdleTimeout(30000); // 1h of timeout
 
         SessionManager manager = SessionManager.getInstance();
         player.setSocket(session);
