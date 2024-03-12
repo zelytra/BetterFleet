@@ -9,7 +9,7 @@
     </BannerTemplate>
     <div class="config-content">
       <div class="side-content inputs">
-        <h2>{{ t("credits.title") }}</h2>
+        <h2>{{ t("config.subtitle") }}</h2>
         <div class="content-wrapper">
           <div class="side-content">
             <InputText
