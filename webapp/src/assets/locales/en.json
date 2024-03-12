@@ -92,10 +92,10 @@
     "tips": "This process might take a while, please make sure your game is launched"
   },
   "locales": {
-    "de": "Deutsche",
+    "de": "Deutsch",
     "en": "English",
     "es": "Español",
-    "fr": "Français"
+    "fr": "French"
   },
   "session": {
     "choice": {
