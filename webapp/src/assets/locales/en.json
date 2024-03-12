@@ -58,7 +58,8 @@
       "label": "Server address",
       "placeholder": "https://betterfleet.com/api"
     },
-    "title": "Preferences"
+    "subtitle": "Preference options",
+    "title": "Settings"
   },
   "credits": {
     "and": "and",

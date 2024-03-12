@@ -58,7 +58,8 @@
       "label": "Dirección del servidor",
       "placeholder": "https://betterfleet.com/api"
     },
-    "title": "Preferencias"
+    "subtitle": "Opciones de preferencia",
+    "title": "Configuraciones"
   },
   "credits": {
     "and": "y",
