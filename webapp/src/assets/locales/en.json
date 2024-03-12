@@ -22,7 +22,7 @@
         "title": "Launch failed"
       },
       "notReady": {
-        "content": "You are not ready",
+        "content": "Launch failed, you are not ready",
         "title": "Launch failed"
       },
       "offline": {
@@ -42,6 +42,12 @@
     "unsupportedMedia": {
       "content": "The media you are trying to send is not supported by the application",
       "title": "Unsupported media"
+    },
+    "username": {
+      "length": {
+        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
+        "title": "Mauvais format de pseudo"
+      }
     }
   },
   "appName": "Better Fleet",
@@ -128,6 +134,13 @@
       "countdown": "Launch in ",
       "ready": "Ready",
       "waiting": "Waiting"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "Page de configuration",
+      "fleet": "Session",
+      "home": "Page d'acceuil"
     }
   }
 }
