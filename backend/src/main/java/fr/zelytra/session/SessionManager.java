@@ -102,24 +102,33 @@ public class SessionManager {
      * @param player The player to remove from their session.
      */
     public void leaveSession(Player player) {
-        for (Fleet fleet : sessions.values()) {
 
-            SotServer sotServer = getSotServerFromPlayer(player);
-            if (sotServer != null) {
-                playerLeaveSotServer(player, sotServer);
-            }
+        Fleet fleet = getFleetByPlayerName(player.getUsername());
 
-            fleet.getPlayers().remove(player);
-            fleet.getServers().forEach((key, value) -> value.getConnectedPlayers().remove(player));
-            SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
-            Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
-
-            // Clean empty session
-            if (fleet.getPlayers().isEmpty()) {
-                sessions.remove(fleet.getSessionId());
-                Log.info("[" + fleet.getSessionId() + "] Has been disbanded");
-            }
+        SotServer sotServer = getSotServerFromPlayer(player);
+        if (sotServer != null) {
+            playerLeaveSotServer(player, sotServer);
         }
+
+        fleet.getPlayers().remove(player);
+        fleet.getServers().forEach((key, value) -> value.getConnectedPlayers().remove(player));
+
+        // Check if player was master, then give another user the master role
+        if (player.isMaster() && !fleet.getPlayers().isEmpty()) {
+            Player newMaster = fleet.getPlayers().get(0);
+            newMaster.setMaster(true);
+            Log.info("[" + fleet.getSessionId() + "] Master as left, giving the role to " + newMaster.getUsername());
+        }
+
+        SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
+
+        // Clean empty session
+        if (fleet.getPlayers().isEmpty()) {
+            sessions.remove(fleet.getSessionId());
+            Log.info("[" + fleet.getSessionId() + "] Has been disbanded");
+        }
+
     }
 
     /**

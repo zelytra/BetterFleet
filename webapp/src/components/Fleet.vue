@@ -52,7 +52,6 @@ const gameStatusRefresh: number = setInterval(() => {
   })
 }, 400);
 
-
 onUnmounted(() => {
   if (UserStore.player.fleet) {
     UserStore.player.fleet.leaveSession();

@@ -192,6 +192,15 @@ export class Fleet {
     return this.players.filter((player) => player.isReady);
   }
 
+  sendKeepAlive(){
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: null,
+      messageType: WebSocketMessageType.KEEP_ALIVE,
+    };
+    this.socket.send(JSON.stringify(message));
+  }
+
   public static getFormatedStatus(player: Player) {
     return player.status.toString().toLowerCase().replace("_", "-");
   }
