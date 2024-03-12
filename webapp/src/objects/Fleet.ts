@@ -88,6 +88,14 @@ export class Fleet {
           })
           break
         }
+        case WebSocketMessageType.SESSION_NOT_FOUND: {
+          alertProvider.sendAlert({
+            content: t('alert.sessionNotFound.content'),
+            title: t('alert.sessionNotFound.title'),
+            type: AlertType.ERROR
+          })
+          break
+        }
         default: {
           throw new Error(
             "Failed to handle this message type : " + message.messageType,

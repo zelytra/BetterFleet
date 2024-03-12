@@ -31,6 +31,10 @@
         "title": "Echec du lancement"
       }
     },
+    "sessionNotFound": {
+      "content": "Verifier l'id de la session",
+      "title": "Aucune session trouvée"
+    },
     "socket": {
       "connectionFailed": "Echec de la connexion au serveur",
       "random": "Le websocket c'est fermé de facon inattendu",

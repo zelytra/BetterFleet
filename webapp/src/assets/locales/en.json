@@ -31,6 +31,10 @@
         "title": "Cannot run research"
       }
     },
+    "sessionNotFound": {
+      "content": "Verify your session id",
+      "title": "Session not found"
+    },
     "socket": {
       "connectionFailed": "Failed to connect to server",
       "random": "todo",

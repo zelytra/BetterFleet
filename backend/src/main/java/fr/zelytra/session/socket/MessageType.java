@@ -8,5 +8,6 @@ public enum MessageType {
     JOIN_SERVER,
     LEAVE_SERVER,
     CLEAR_STATUS,
-    OUTDATED_CLIENT
+    OUTDATED_CLIENT,
+    SESSION_NOT_FOUND
 }

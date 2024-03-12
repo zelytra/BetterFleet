@@ -159,10 +159,14 @@ public class SessionSocket {
             String newSessionId = manager.createSession();
             Fleet fleet = manager.joinSession(newSessionId, player);
             player.setMaster(true);
-            broadcastDataToSession(newSessionId, MessageType.UPDATE, fleet);
+            if (fleet != null) {
+                broadcastDataToSession(newSessionId, MessageType.UPDATE, fleet);
+            }
         } else {
             Fleet fleet = manager.joinSession(sessionId, player);
-            broadcastDataToSession(sessionId, MessageType.UPDATE, fleet);
+            if (fleet != null) {
+                broadcastDataToSession(sessionId, MessageType.UPDATE, fleet);
+            }
         }
 
 
