@@ -29,7 +29,6 @@ export class Fleet {
   public players: Player[];
   public servers: Map<string, SotServer>;
   public socket?: WebSocket;
-  private safeClose: boolean = false;
   public stats: FleetStatistics
 
   constructor() {
@@ -81,6 +80,14 @@ export class Fleet {
           this.handleSessionRunner(message.data as number);
           break;
         }
+        case WebSocketMessageType.OUTDATED_CLIENT: {
+          alertProvider.sendAlert({
+            content: t('alert.outdated.content'),
+            title: t('alert.outdated.title'),
+            type: AlertType.ERROR
+          })
+          break
+        }
         default: {
           throw new Error(
             "Failed to handle this message type : " + message.messageType,
@@ -98,16 +105,8 @@ export class Fleet {
     };
 
     this.socket.onclose = () => {
-      if (!this.safeClose) {
-        alertProvider.sendAlert({
-          content: t("alert.socket.random"),
-          title: t("alert.socket.title"),
-          type: AlertType.ERROR,
-        });
-        UserStore.player.fleet!.sessionId = "";
-        UserStore.player.countDown = undefined; // Reset timer to avoid app freeze
-      }
-      this.safeClose = false;
+      UserStore.player.fleet!.sessionId = "";
+      UserStore.player.countDown = undefined; // Reset timer to avoid app freeze
     }
   }
 
@@ -131,7 +130,6 @@ export class Fleet {
     if (!this.socket) {
       return;
     }
-    this.safeClose = true;
     this.socket.close();
     this.sessionId = "";
   }

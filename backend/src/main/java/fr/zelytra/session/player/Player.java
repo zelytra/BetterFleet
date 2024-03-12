@@ -16,8 +16,11 @@ public class Player {
     private boolean isMaster;
 
     private String sessionId; // Not always the same as the fleet
+
     @JsonIgnore
     private Session socket;
+
+    private String clientVersion;
 
     // Constructor
     public Player() {
@@ -71,6 +74,14 @@ public class Player {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public String getClientVersion() {
+        return clientVersion;
+    }
+
+    public void setClientVersion(String clientVersion) {
+        this.clientVersion = clientVersion;
     }
 
     @Override
