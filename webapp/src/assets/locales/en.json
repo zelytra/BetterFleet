@@ -22,7 +22,7 @@
         "title": "Launch failed"
       },
       "notReady": {
-        "content": "Launch failed, you are not ready",
+        "content": "You are not ready",
         "title": "Launch failed"
       },
       "offline": {
@@ -86,10 +86,10 @@
     "tips": "This process might take a while, please make sure your game is launched"
   },
   "locales": {
-    "de": "Deutsch",
+    "de": "Deutsche",
     "en": "English",
     "es": "Español",
-    "fr": "French"
+    "fr": "Français"
   },
   "session": {
     "choice": {
