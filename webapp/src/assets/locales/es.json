@@ -1,7 +1,7 @@
 {
   "alert": {
     "badRequest": {
-      "content": "La consulta está corrupta o es incorrecta.",
+      "content": "La consulta está corrupta o es incorrecta",
       "title": "Mala consulta"
     },
     "error": {
@@ -22,7 +22,7 @@
         "title": "Lanzamiento fallido"
       },
       "notReady": {
-        "content": "Error al iniciar, no estás listo",
+        "content": "No estás listo",
         "title": "Lanzamiento fallido"
       },
       "offline": {
@@ -87,9 +87,9 @@
   },
   "locales": {
     "de": "Deutsch",
-    "en": "Inglés",
+    "en": "English",
     "es": "Español",
-    "fr": "Francés"
+    "fr": "Français"
   },
   "session": {
     "choice": {
