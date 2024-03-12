@@ -22,7 +22,7 @@
         "title": "Échec du lancement"
       },
       "notReady": {
-        "content": "Vous n'êtes pas prêt",
+        "content": "Échec du lancement, vous n'êtes pas prêt",
         "title": "Échec du lancement"
       },
       "offline": {
@@ -42,6 +42,12 @@
     "unsupportedMedia": {
       "content": "Le média que vous tentez d'envoyer n'est pas supporté par l'application",
       "title": "Média non supporté"
+    },
+    "username": {
+      "length": {
+        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
+        "title": "Mauvais format de pseudo"
+      }
     }
   },
   "appName": "Better Fleet",
@@ -87,7 +93,7 @@
   },
   "locales": {
     "de": "Deutsch",
-    "en": "English",
+    "en": "Anglais",
     "es": "Español",
     "fr": "Français"
   },
@@ -128,6 +134,13 @@
       "countdown": "Lancement dans ",
       "ready": "Prêt",
       "waiting": "En attente"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "Page de configuration",
+      "fleet": "Session",
+      "home": "Page d'acceuil"
     }
   }
 }
