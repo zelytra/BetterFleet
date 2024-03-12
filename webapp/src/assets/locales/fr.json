@@ -85,7 +85,9 @@
     "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé"
   },
   "locales": {
+    "de": "Deutsch",
     "en": "Anglais",
+    "es": "Español",
     "fr": "Français"
   },
   "session": {

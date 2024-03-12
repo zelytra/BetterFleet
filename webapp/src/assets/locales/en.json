@@ -85,7 +85,9 @@
     "tips": "This process might take a while, please make sure your game is launched"
   },
   "locales": {
+    "de": "Deutsch",
     "en": "English",
+    "es": "Español",
     "fr": "French"
   },
   "session": {

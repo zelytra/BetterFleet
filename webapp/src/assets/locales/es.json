@@ -1,0 +1,132 @@
+{
+  "alert": {
+    "badRequest": {
+      "content": "La consulta está corrupta o es incorrecta.",
+      "title": "Mala consulta"
+    },
+    "error": {
+      "content": "Ha ocurrido un error",
+      "title": "Error"
+    },
+    "forbidden": {
+      "content": "No tienes el permiso necesario para acceder a esta página.",
+      "title": "Acceso denegado"
+    },
+    "outdated": {
+      "content": "Por favor actualice su aplicación",
+      "title": "Cliente obsoleto"
+    },
+    "research": {
+      "notInMenu": {
+        "content": "No estás en el menú del juego.",
+        "title": "Lanzamiento fallido"
+      },
+      "notReady": {
+        "content": "Error al iniciar, no estás listo",
+        "title": "Lanzamiento fallido"
+      },
+      "offline": {
+        "content": "Tu juego está cerrado",
+        "title": "Lanzamiento fallido"
+      }
+    },
+    "sessionNotFound": {
+      "content": "Verifique su ID de sesión",
+      "title": "Sesión no encontrada"
+    },
+    "socket": {
+      "connectionFailed": "La conexión al servidor falló",
+      "random": "El WebSocket se cerró inesperadamente",
+      "title": "Ha ocurrido un error con el servidor."
+    },
+    "unsupportedMedia": {
+      "content": "El medio que estás intentando enviar no es compatible con la aplicación.",
+      "title": "Medios no compatibles"
+    }
+  },
+  "appName": "Mejor flota",
+  "config": {
+    "devmode": "Habilitar el modo desarrollador",
+    "lang": {
+      "label": "Idioma"
+    },
+    "name": {
+      "label": "Nombre de usuario",
+      "placeholder": "Nombre de usuario"
+    },
+    "server": {
+      "label": "Dirección del servidor",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "title": "Preferencias"
+  },
+  "credits": {
+    "and": "y",
+    "description": "Better Fleet se desarrolló para facilitar la formación de alianzas en Sea Of Thieves",
+    "designed": "Diseñada por",
+    "details": "Better Fleet es una aplicación de terceros no oficial y no relacionada con el equipo de desarrollo de Sea Of Thieves. ¡Su uso es puramente externo y no tiene ningún impacto en la experiencia de juego!",
+    "developed": "Desarrollado por",
+    "socials": "Encuéntranos aquí:",
+    "title": "Información"
+  },
+  "firstLogin": {
+    "button": {
+      "description": "¡Icen las velas muchachos, tomen el timón y salgan al mar!",
+      "title": "Que comience la jornada"
+    },
+    "description": "Ingrese su gamertag actual para supervisar el buen funcionamiento de la alianza.",
+    "tips": "Puedes cambiar tu nombre de usuario en cualquier momento en la sección \"Preferencias\"",
+    "title": "¿Cómo te llamas muchacho?"
+  },
+  "loading": {
+    "loading": "Cargando...",
+    "targetGame": "Detección de juego en curso",
+    "targetLoading": "Juego detectado. Naves en preparación.",
+    "tips": "Este proceso puede tardar un poco, asegúrate de que tu juego esté iniciado."
+  },
+  "locales": {
+    "de": "Deutsch",
+    "en": "Inglés",
+    "es": "Español",
+    "fr": "Francés"
+  },
+  "session": {
+    "choice": {
+      "createComment": "¡Dale un mordisco a la libertad y domina el mar de ladrones!",
+      "createSession": "Crear una sesión",
+      "joinComment": "¡Coge una jarra, sube a bordo y únete a la tripulación!",
+      "joinSession": "Unirse a una sesión",
+      "modal": {
+        "button": "Únete a la sesión",
+        "comment": "Cada sesión es privada y requiere un código de identificación. ¡Pregúntale al anfitrión de la sesión a la que deseas unirte!",
+        "title": "Ingrese una ID de sesión"
+      }
+    },
+    "countdown": "La investigación comienza en...",
+    "id": "ID de sesión",
+    "idCopy": "¡Copiado!",
+    "informations": {
+      "success": "Tasa de éxito",
+      "title": "Información",
+      "totalPlayer": "Jugadores listos",
+      "tryNumber": "Número de intentos"
+    },
+    "leave": "abandonar la sesión",
+    "player": {
+      "notReady": "No está listo",
+      "ready": "Listo",
+      "status": {
+        "closed": "Desconectado",
+        "in-game": "En el juego",
+        "main-menu": "En el menú del juego",
+        "started": "Juego lanzado"
+      }
+    },
+    "run": "Zarpar",
+    "status": {
+      "countdown": "Lanzará en",
+      "ready": "Listo",
+      "waiting": "Espera"
+    }
+  }
+}

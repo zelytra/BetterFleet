@@ -75,6 +75,8 @@ import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
 import { onMounted, ref, watch } from "vue";
 
 import fr from "@/assets/icons/locales/fr.svg";
+import de from "@/assets/icons/locales/de.svg";
+import es from "@/assets/icons/locales/es.svg";
 import en from "@/assets/icons/locales/en.svg";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import { onBeforeRouteLeave } from "vue-router";
@@ -119,6 +121,10 @@ function getImgUrl(iconName: string): string {
   switch (iconName) {
     case "fr":
       return fr;
+    case "de":
+      return de;
+    case "es":
+      return es;
     default:
       return en;
   }
