@@ -194,7 +194,6 @@ export class Fleet {
 
   sendKeepAlive(){
     if (!this.socket) return;
-    console.log("keep alive")
     const message: WebSocketMessage = {
       data: null,
       messageType: WebSocketMessageType.KEEP_ALIVE,
