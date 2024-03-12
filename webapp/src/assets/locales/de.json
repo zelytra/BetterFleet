@@ -22,7 +22,7 @@
         "title": "Der Start ist fehlgeschlagen"
       },
       "notReady": {
-        "content": "Der Start ist fehlgeschlagen. Sie sind nicht bereit",
+        "content": "Sie sind nicht bereit",
         "title": "Der Start ist fehlgeschlagen"
       },
       "offline": {
@@ -93,9 +93,9 @@
   },
   "locales": {
     "de": "Deutsch",
-    "en": "Englisch",
+    "en": "English",
     "es": "Español",
-    "fr": "Französisch"
+    "fr": "Français"
   },
   "session": {
     "choice": {
