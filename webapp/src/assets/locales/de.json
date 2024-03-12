@@ -1,0 +1,133 @@
+{
+  "alert": {
+    "badRequest": {
+      "content": "Die Abfrage ist beschädigt oder falsch",
+      "title": "Schlechte Abfrage"
+    },
+    "error": {
+      "content": "Ein Fehler ist aufgetreten",
+      "title": "Fehler"
+    },
+    "forbidden": {
+      "content": "Sie verfügen nicht über die erforderliche Berechtigung, um auf diese Seite zuzugreifen",
+      "title": "Zugriff abgelehnt"
+    },
+    "outdated": {
+      "content": "Bitte aktualisieren Sie Ihre Bewerbung",
+      "title": "Veralteter Kunde"
+    },
+    "research": {
+      "notInMenu": {
+        "content": "Sie befinden sich nicht im Spielmenü",
+        "title": "Der Start ist fehlgeschlagen"
+      },
+      "notReady": {
+        "content": "Der Start ist fehlgeschlagen. Sie sind nicht bereit",
+        "title": "Der Start ist fehlgeschlagen"
+      },
+      "offline": {
+        "content": "Dein Spiel ist geschlossen",
+        "title": "Der Start ist fehlgeschlagen"
+      }
+    },
+    "sessionNotFound": {
+      "content": "Überprüfen Sie Ihre Sitzungs-ID",
+      "title": "Sitzung nicht gefunden"
+    },
+    "socket": {
+      "connectionFailed": "Die Verbindung zum Server ist fehlgeschlagen",
+      "random": "Der WebSocket wurde unerwartet geschlossen",
+      "title": "Beim Server ist ein Fehler aufgetreten"
+    },
+    "unsupportedMedia": {
+      "content": "Das Medium, das Sie senden möchten, wird von der Anwendung nicht unterstützt",
+      "title": "Nicht unterstützte Medien"
+    }
+  },
+  "appName": "Bessere Flotte",
+  "config": {
+    "devmode": "Aktivieren Sie den Entwicklermodus",
+    "lang": {
+      "label": "Sprache"
+    },
+    "name": {
+      "label": "Nutzername",
+      "placeholder": "Nutzername"
+    },
+    "server": {
+      "label": "Serveradresse",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "subtitle": "Präferenzoptionen",
+    "title": "Einstellungen"
+  },
+  "credits": {
+    "and": "und",
+    "description": "Better Fleet wurde entwickelt, um die Bildung von Allianzen in Sea Of Thieves zu erleichtern",
+    "designed": "Entworfen von",
+    "details": "Better Fleet ist eine nicht offizielle Drittanbieteranwendung, die nichts mit dem Entwicklungsteam von Sea Of Thieves zu tun hat. Die Verwendung ist rein äußerlich und hat keinen Einfluss auf das Spielerlebnis!",
+    "developed": "Entwickelt von",
+    "socials": "Finden Sie uns hier:",
+    "title": "Information"
+  },
+  "firstLogin": {
+    "button": {
+      "description": "Hissen Sie die Segel, Jungs, übernehmen Sie das Ruder und machen Sie sich auf den Weg zur See!",
+      "title": "Lasst die Reise beginnen"
+    },
+    "description": "Bitte geben Sie Ihren aktuellen Gamertag ein, um den reibungslosen Ablauf der Allianz zu überwachen",
+    "tips": "Sie können Ihren Benutzernamen jederzeit im Abschnitt „Einstellungen“ ändern",
+    "title": "Wie heißt du?"
+  },
+  "loading": {
+    "loading": "Wird geladen...",
+    "targetGame": "Spielerkennung läuft",
+    "targetLoading": "Spiel erkannt. Schiffe in Vorbereitung.",
+    "tips": "Dieser Vorgang kann eine Weile dauern. Bitte stellen Sie sicher, dass Ihr Spiel gestartet ist"
+  },
+  "locales": {
+    "de": "Deutsch",
+    "en": "Englisch",
+    "es": "Español",
+    "fr": "Französisch"
+  },
+  "session": {
+    "choice": {
+      "createComment": "Genießen Sie die Freiheit und herrschen Sie über das Meer der Diebe!",
+      "createSession": "Erstellen Sie eine Sitzung",
+      "joinComment": "Schnappen Sie sich einen Krug, kommen Sie an Bord und schließen Sie sich der Crew an!",
+      "joinSession": "Nehmen Sie an einer Sitzung teil",
+      "modal": {
+        "button": "Nehmen Sie an der Sitzung teil",
+        "comment": "Jede Sitzung ist privat und erfordert einen Identifikationscode. Fragen Sie den Moderator der Sitzung, an der Sie teilnehmen möchten!",
+        "title": "Geben Sie eine Sitzungs-ID ein"
+      }
+    },
+    "countdown": "Die Forschung beginnt in...",
+    "id": "Session-ID",
+    "idCopy": "Kopiert !",
+    "informations": {
+      "success": "Erfolgsrate",
+      "title": "Information",
+      "totalPlayer": "Spieler bereit",
+      "tryNumber": "Anzahl der Versuche"
+    },
+    "leave": "Verlassen Sie die Sitzung",
+    "player": {
+      "notReady": "Nicht bereit",
+      "ready": "Bereit",
+      "status": {
+        "closed": "Offline",
+        "in-game": "Im Spiel",
+        "main-menu": "Im Spielmenü",
+        "started": "Spiel gestartet"
+      }
+    },
+    "run": "Segel setzen",
+    "status": {
+      "countdown": "Starten in",
+      "ready": "Bereit",
+      "waiting": "Warten"
+    }
+  }
+}

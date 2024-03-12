@@ -1,130 +1,131 @@
 {
   "alert": {
     "badRequest": {
-      "content": "todo",
-      "title": "Bad request"
+      "content": "The query is corrupted or incorrect",
+      "title": "Bad query"
     },
-    "cannotRunResearchNotReady": "Can't run research because your not ready",
     "error": {
-      "content": "An error as occured",
+      "content": "An error has occured",
       "title": "Error"
     },
     "forbidden": {
-      "content": "todo",
-      "title": "Access refused"
+      "content": "You do not have the necessary permission to access this page",
+      "title": "Access denied"
     },
     "outdated": {
       "content": "Please update your application",
-      "title": "Client outdated"
+      "title": "Outdated client"
     },
     "research": {
       "notInMenu": {
-        "content": "Your not in the main menu",
-        "title": "Failed to run research"
+        "content": "You are not in the game menu",
+        "title": "Launch failed"
       },
       "notReady": {
-        "content": "Can't run research because your not ready",
-        "title": "Cannot run research"
+        "content": "Launch failed, you are not ready",
+        "title": "Launch failed"
       },
       "offline": {
-        "content": "Your game is not running",
-        "title": "Cannot run research"
+        "content": "Your game is closed",
+        "title": "Launch failed"
       }
     },
     "sessionNotFound": {
-      "content": "Verify your session id",
+      "content": "Verify your Session ID",
       "title": "Session not found"
     },
     "socket": {
-      "connectionFailed": "Failed to connect to server",
-      "random": "todo",
-      "title": "An error as occured with the server"
+      "connectionFailed": "The connection to the server failed",
+      "random": "The WebSocket closed unexpectedly",
+      "title": "An error has occured with the server"
     },
     "unsupportedMedia": {
-      "content": "todo",
-      "title": "Unsupporte media type"
+      "content": "The media you are trying to send is not supported by the application",
+      "title": "Unsupported media"
     }
   },
   "appName": "Better Fleet",
   "config": {
-    "devmode": "Activate developer mod",
+    "devmode": "Enable developer mode",
     "lang": {
-      "label": "Lang"
+      "label": "Language"
     },
     "name": {
       "label": "Username",
-      "placeholder": "Ichabodt"
+      "placeholder": "Username"
     },
     "server": {
-      "label": "Server hostname",
+      "label": "Server address",
       "placeholder": "https://betterfleet.com/api"
     },
-    "title": "Preferences"
+    "subtitle": "Preference options",
+    "title": "Settings"
   },
   "credits": {
     "and": "and",
-    "description": "todo",
-    "designed": "todo",
-    "details": "todo",
-    "developed": "",
-    "socials": "todo",
-    "title": "todo"
+    "description": "Better Fleet was developed in order to facilitate the formation of alliances on Sea Of Thieves",
+    "designed": "Designed by",
+    "details": "Better Fleet is a non official third party application unrelated to the development team of Sea Of Thieves. Its use is purely external and has no impact on gameplay experience !",
+    "developed": "Developed by",
+    "socials": "Find us here :",
+    "title": "Information"
   },
   "firstLogin": {
     "button": {
-      "description": "TODO",
-      "title": "TODO"
+      "description": "Hoist the sails lads, take the helm and head out to sea !",
+      "title": "Let the journey begin"
     },
-    "description": "TODO",
-    "tips": "TODO",
-    "title": "TODO"
+    "description": "Please enter your current gamertag to oversee the smooth running of the alliance",
+    "tips": "You can change your username at any moment in the \"Preferences\" section",
+    "title": "What's your name lad ?"
   },
   "loading": {
     "loading": "Loading...",
-    "targetGame": "Searching game",
-    "targetLoading": "Game detected. Loading ships.",
-    "tips": "This can take a while..."
+    "targetGame": "Game detection in progress",
+    "targetLoading": "Game detected. Ships in preparation.",
+    "tips": "This process might take a while, please make sure your game is launched"
   },
   "locales": {
+    "de": "Deutsch",
     "en": "English",
+    "es": "Español",
     "fr": "French"
   },
   "session": {
     "choice": {
-      "createComment": "TODO",
+      "createComment": "Take a bite at freedom and rule on the sea of theives !",
       "createSession": "Create a session",
-      "joinComment": "TODO",
+      "joinComment": "Grab a tankard, come aboard and join the crew !",
       "joinSession": "Join a session",
       "modal": {
         "button": "Join the session",
-        "comment": "TODO",
-        "title": "TODO"
+        "comment": "Every session is private and requires an identification code. Ask it to the host of the session you wish to join !",
+        "title": "Enter a Session ID"
       }
     },
-    "countdown": "Research starting in...",
-    "id": "Session identifier",
-    "idCopy": "Copy !",
+    "countdown": "The research begins in...",
+    "id": "Session ID",
+    "idCopy": "Copied !",
     "informations": {
-      "success": "Succeed luck",
-      "title": "Informations",
-      "totalPlayer": "Total Player",
-      "tryNumber": "Try"
+      "success": "Success rate",
+      "title": "Information",
+      "totalPlayer": "Players ready",
+      "tryNumber": "Number of tries"
     },
-    "leave": "Leave session",
+    "leave": "Leave the session",
     "player": {
       "notReady": "Not ready",
-      "ready": "Is ready",
+      "ready": "Ready",
       "status": {
         "closed": "Offline",
         "in-game": "In game",
-        "main-menu": "In game menu",
-        "started": "Game started"
+        "main-menu": "In the game menu",
+        "started": "Game launched"
       }
     },
-    "run": "Start",
+    "run": "Set sail",
     "status": {
-      "action": "TODO",
-      "countdown": "Launching in",
+      "countdown": "Launch in ",
       "ready": "Ready",
       "waiting": "Waiting"
     }
