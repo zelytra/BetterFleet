@@ -22,7 +22,7 @@
         "title": "Der Start ist fehlgeschlagen"
       },
       "notReady": {
-        "content": "Sie sind nicht bereit",
+        "content": "Der Start ist fehlgeschlagen. Sie sind nicht bereit",
         "title": "Der Start ist fehlgeschlagen"
       },
       "offline": {
@@ -42,6 +42,12 @@
     "unsupportedMedia": {
       "content": "Das Medium, das Sie senden möchten, wird von der Anwendung nicht unterstützt",
       "title": "Nicht unterstützte Medien"
+    },
+    "username": {
+      "length": {
+        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
+        "title": "Mauvais format de pseudo"
+      }
     }
   },
   "appName": "Bessere Flotte",
@@ -87,7 +93,7 @@
   },
   "locales": {
     "de": "Deutsch",
-    "en": "English",
+    "en": "Englisch",
     "es": "Español",
     "fr": "Français"
   },
@@ -128,6 +134,13 @@
       "countdown": "Starten in",
       "ready": "Bereit",
       "waiting": "Warten"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "Page de configuration",
+      "fleet": "Session",
+      "home": "Page d'acceuil"
     }
   }
 }
