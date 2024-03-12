@@ -114,8 +114,8 @@ onBeforeRouteLeave((_to, _from, next) => {
   if (username.value.length == 0 || username.value.length >= 16) {
     next(false);
     alerts!.sendAlert({
-      content: t('alert.username.lenght.content'),
-      title: t('alert.username.lenght.title'),
+      content: t('alert.username.length.content'),
+      title: t('alert.username.length.title'),
       type: AlertType.ERROR
     })
   } else {
