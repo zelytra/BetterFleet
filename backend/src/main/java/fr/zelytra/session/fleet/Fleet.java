@@ -1,6 +1,5 @@
 package fr.zelytra.session.fleet;
 
-import fr.zelytra.session.SessionStatus;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 
@@ -15,7 +14,6 @@ public class Fleet {
     private String sessionName;
     private List<Player> players;
     private final HashMap<String, SotServer> servers;
-    private SessionStatus status;
     private FleetStats stats;
 
     public Fleet(String sessionId) {
@@ -23,7 +21,6 @@ public class Fleet {
         this.sessionName = "A session name"; //TODO
         this.players = new ArrayList<>();
         this.servers = new HashMap<>();
-        this.status = SessionStatus.WAITING;
         this.stats = new FleetStats(0, 0);
     }
 
@@ -62,14 +59,6 @@ public class Fleet {
 
     public HashMap<String, SotServer> getServers() {
         return servers;
-    }
-
-    public SessionStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(SessionStatus status) {
-        this.status = status;
     }
 
     public FleetStats getStats() {

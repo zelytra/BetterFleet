@@ -1,6 +1,6 @@
-import { reactive } from "vue";
-import LocalStore, { LocalKey } from "@/objects/stores/LocalStore.ts";
-import { i18n } from "@/main.ts";
+import {reactive} from "vue";
+import LocalStore, {LocalKey} from "@/objects/stores/LocalStore.ts";
+import {i18n} from "@/main.ts";
 import {Player} from "@/objects/Player.ts";
 
 export const UserStore = reactive({
@@ -16,8 +16,14 @@ export const UserStore = reactive({
 
     if (!this.player.lang) this.player.lang = browserLang;
     if (!this.player.username) this.player.username = "";
-    if (!this.player.serverHostName)
+    if (!this.player.serverHostName) {
       this.player.serverHostName = import.meta.env.VITE_SOCKET_HOST;
+    }
+
+    if (!this.player.clientVersion) {
+      this.player.clientVersion = import.meta.env.VITE_VERSION;
+      console.log(this.player.clientVersion)
+    }
 
     //@ts-ignore I18N typescript implementation
     i18n.global.locale.value = this.player.lang;

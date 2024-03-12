@@ -9,7 +9,7 @@
           :placeholder="placeholder"
           @keydown.enter="emits('validate')"
       />
-      <span class="cross" @click="resetInput">
+      <span :class="{cross:true,disabled:lock}" @click="resetInput">
       <img src="@/assets/icons/cross.svg"/>
     </span>
     </div>
@@ -40,7 +40,9 @@ const computedInput = computed({
 });
 
 function resetInput() {
-  computedInput.value = "";
+  if (!props.lock) {
+    computedInput.value = "";
+  }
 }
 </script>
 
@@ -64,7 +66,7 @@ function resetInput() {
     min-width: 250px;
 
     &.disabled {
-      cursor: no-drop;
+      cursor: not-allowed;
       background: rgba(23, 26, 33, 0.40);
       color: var(--secondary-text);
     }
@@ -76,6 +78,10 @@ function resetInput() {
 
     span.cross {
       cursor: pointer;
+
+      &.disabled {
+        cursor: not-allowed;
+      }
     }
   }
 }

@@ -7,6 +7,7 @@ import fr.zelytra.session.socket.MessageType;
 import io.quarkus.logging.Log;
 import jakarta.annotation.Nullable;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,6 +82,12 @@ public class SessionManager {
 
         Fleet fleet = getFleetFromId(sessionId);
         if (fleet == null) {
+            SessionSocket.sendDataToPlayer(player.getSocket(), MessageType.SESSION_NOT_FOUND, null);
+            try {
+                player.getSocket().close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             Log.error("[" + sessionId + "] Session doesnt exist for player : " + player.getUsername());
             return null;
         }

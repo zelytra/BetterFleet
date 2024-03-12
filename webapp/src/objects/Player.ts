@@ -19,6 +19,7 @@ export interface Player extends Preferences {
   serverHostName?: string;
   countDown?: SessionRunner;
   server?: SotServer;
+  clientVersion?:string
 }
 
 export interface Preferences {

@@ -13,6 +13,10 @@
       "content": "todo",
       "title": "Access refused"
     },
+    "outdated": {
+      "content": "Please update your application",
+      "title": "Client outdated"
+    },
     "research": {
       "notInMenu": {
         "content": "Your not in the main menu",
@@ -26,6 +30,10 @@
         "content": "Your game is not running",
         "title": "Cannot run research"
       }
+    },
+    "sessionNotFound": {
+      "content": "Verify your session id",
+      "title": "Session not found"
     },
     "socket": {
       "connectionFailed": "Failed to connect to server",

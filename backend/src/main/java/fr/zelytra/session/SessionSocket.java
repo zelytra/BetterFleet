@@ -17,6 +17,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
 import java.util.TimeZone;
@@ -29,6 +30,9 @@ public class SessionSocket {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final ConcurrentHashMap<String, Future<?>> sessionTimeoutTasks = new ConcurrentHashMap<>();
     private static final int RISE_ANCHOR_TIMER = 3; // in seconds
+
+    @ConfigProperty(name = "app.version")
+    String appVersion;
 
     @OnOpen
     public void onOpen(Session session) {
@@ -50,7 +54,7 @@ public class SessionSocket {
 
 
     @OnMessage
-    public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId) throws JsonProcessingException {
+    public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -131,6 +135,18 @@ public class SessionSocket {
             timeoutTask.cancel(true);
         }
 
+        // Refuse connection from client with different version
+        if (player.getClientVersion() == null || !player.getClientVersion().equalsIgnoreCase(appVersion)) {
+            Log.warn("[" + player.getUsername() + "] Client is out of date, connection refused (" + player.getClientVersion() + ")");
+            try {
+                sendDataToPlayer(session, MessageType.OUTDATED_CLIENT, null);
+                session.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return;
+        }
+
         session.setMaxIdleTimeout(3600000); // 1h of timeout
 
         SessionManager manager = SessionManager.getInstance();
@@ -143,10 +159,14 @@ public class SessionSocket {
             String newSessionId = manager.createSession();
             Fleet fleet = manager.joinSession(newSessionId, player);
             player.setMaster(true);
-            broadcastDataToSession(newSessionId, MessageType.UPDATE, fleet);
+            if (fleet != null) {
+                broadcastDataToSession(newSessionId, MessageType.UPDATE, fleet);
+            }
         } else {
             Fleet fleet = manager.joinSession(sessionId, player);
-            broadcastDataToSession(sessionId, MessageType.UPDATE, fleet);
+            if (fleet != null) {
+                broadcastDataToSession(sessionId, MessageType.UPDATE, fleet);
+            }
         }
 
 
@@ -223,9 +243,51 @@ public class SessionSocket {
         Fleet fleet = manager.getFleetFromId(sessionId);
         assert fleet != null;
 
+        String json = formatMessage(messageType, data);
+
+        for (Player player : fleet.getPlayers()) {
+            player.getSocket().getAsyncRemote().sendText(json, result -> {
+                if (result.getException() != null) {
+                    Log.error("Unable to send message: " + result.getException());
+                }
+            });
+        }
+    }
+
+    /**
+     * Sends a message to a player within a session identified by the WebSocket ID.
+     * <p>
+     * This method sends a specified data object to a player in a session identified by the WebSocket ID. The message type
+     * and data to be broadcast are specified by the parameters. It uses {@link SessionManager} to check if the session
+     * and the corresponding WebSocket connection exist. If the session or WebSocket does not exist, it logs an info
+     * message and returns without sending any data. It constructs a {@link SocketMessage} with the messageType and data,
+     * converts it into JSON format, and then sends this JSON string to the player using their WebSocket.
+     * If any error occurs during the JSON conversion or sending, it logs an error or throws an {@link Error} respectively.
+     *
+     * @param <T>         The type of data to be sent. This allows the method to be used with various types of
+     *                    data objects.
+     * @param session     The WebSocket to which the data will be sent. This is used to identify the
+     *                    player who should receive the message.
+     * @param messageType The type of the message to be sent. This helps in identifying the purpose or action of
+     *                    the message on the client side.
+     * @param data        The data to be sent. This is the actual content of the message being sent to the player.
+     *                    The type of this data is generic, allowing for flexibility in what can be sent.
+     * @throws Error if there is an issue with converting the {@link SocketMessage} object to a JSON string.
+     */
+    public static <T> void sendDataToPlayer(Session session, MessageType messageType, T data) {
+        String json = formatMessage(messageType, data);
+
+        // Send the data to the specific WebSocket connection
+        session.getAsyncRemote().sendText(json, result -> {
+            if (result.getException() != null) {
+                Log.error("Unable to send message to [" + session.getId() + "]: " + result.getException());
+            }
+        });
+    }
+
+    private static <T> String formatMessage(MessageType messageType, T data) {
         SocketMessage<T> message = new SocketMessage<>(messageType, data);
 
-        // Send to all players the Countdown data
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // To serialize as ISO-8601 strings
@@ -236,14 +298,7 @@ public class SessionSocket {
         } catch (JsonProcessingException e) {
             throw new Error(e);
         }
-
-        for (Player player : fleet.getPlayers()) {
-            player.getSocket().getAsyncRemote().sendText(json, result -> {
-                if (result.getException() != null) {
-                    Log.error("Unable to send message: " + result.getException());
-                }
-            });
-        }
+        return json;
     }
 
 

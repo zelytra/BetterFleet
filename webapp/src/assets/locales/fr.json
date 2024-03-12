@@ -13,6 +13,10 @@
       "content": "Vous ne disposez pas des autorisations nécessaire pour acceder a cette page.",
       "title": "Acces refusé"
     },
+    "outdated": {
+      "content": "Mettez a jours l'applciation",
+      "title": "Client pas a jours"
+    },
     "research": {
       "notInMenu": {
         "content": "Vous n'ètes pas dans le menu du jeu",
@@ -26,6 +30,10 @@
         "content": "Votre jeux est éteint",
         "title": "Echec du lancement"
       }
+    },
+    "sessionNotFound": {
+      "content": "Verifier l'id de la session",
+      "title": "Aucune session trouvée"
     },
     "socket": {
       "connectionFailed": "Echec de la connexion au serveur",
