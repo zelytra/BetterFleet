@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onBeforeMount, onUnmounted, PropType, ref} from "vue";
+import {computed, onUnmounted, PropType, ref} from "vue";
 import {Fleet} from "@/objects/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
