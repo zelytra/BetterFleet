@@ -5,6 +5,8 @@
     <Statistics/>
     <Separator/>
     <Descriptions/>
+    <Separator/>
+    <Comparaison/>
   </div>
 </template>
 
@@ -14,6 +16,7 @@ import AppPresentation from "@/components/home/AppPresentation.vue";
 import Separator from "@/vue/Separator.vue";
 import Statistics from "@/components/home/Statistics.vue";
 import Descriptions from "@/components/home/Descriptions.vue";
+import Comparaison from "@/components/home/Comparison.vue";
 </script>
 
 <style scoped lang="scss">

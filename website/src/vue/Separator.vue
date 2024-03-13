@@ -16,5 +16,6 @@ hr{
   z-index: 999;
   opacity: 1;
   margin-top: -15px;
+  margin-bottom: -15px;
 }
 </style>

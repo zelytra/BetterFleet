@@ -28,6 +28,7 @@ section {
   align-items: center;
   height: 600px;
   gap: 200px;
+  background: var(--secondary-background);
 
   .description {
     display: flex;
@@ -35,10 +36,6 @@ section {
     align-items: center;
     gap: 40px;
     max-width: 300px;
-
-    img {
-
-    }
 
     p {
       text-align: center;
