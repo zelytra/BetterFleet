@@ -44,7 +44,7 @@ section {
     width: 100%;
     height: 100%;
     opacity: 0.6;
-    background-image: url("@/assets/backgrounds/prezentation.png");
+    background-image: url("@assets/backgrounds/presentation.png");
     background-repeat: no-repeat;
     background-position: 50% 0;
     background-size: cover;
