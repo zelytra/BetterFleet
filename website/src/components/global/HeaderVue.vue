@@ -11,8 +11,8 @@
         {{ route.name }}
       </router-link>
     </nav>
-    <a v-if="AppStore.githubRelease.url" :href="AppStore.githubRelease.url">
-      <PirateButton :label="t('button.download')"/>
+    <a v-if="AppStore.githubRelease.url" :href="AppStore.githubRelease.url" target="_blank">
+      <PirateButton :label="t('button.download')" @on-button-click="incrementDownload"/>
     </a>
   </header>
   <div class="header-details">
@@ -26,6 +26,7 @@ import {routes} from "@/router";
 import PirateButton from "@/vue/PirateButton.vue";
 import {useI18n} from "vue-i18n";
 import {AppStore} from "@/objects/stores/appStore.ts";
+import {incrementDownload} from "@/objects/Stats.ts";
 
 const {t} = useI18n()
 </script>
@@ -42,7 +43,7 @@ header {
   background: url("@/assets/backgrounds/header.svg") repeat-x 50% 100%/1200px 144px;
   position: relative;
   z-index: 4;
-  margin-bottom:35px;
+  margin-bottom: 35px;
 
   img {
     height: 60px;

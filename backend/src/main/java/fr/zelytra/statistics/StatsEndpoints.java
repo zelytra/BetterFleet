@@ -52,12 +52,11 @@ public class StatsEndpoints {
 
     @POST
     @Path("/download")
-    @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public Response addDownloadCount() {
-        Log.info("[GET] /stats/download");
+        Log.info("[POST] /stats/download");
         StatisticsEntity foundStat = statisticsRepository.getEntity();
         foundStat.setDownload(foundStat.getDownload() + 1);
-        return Response.ok(foundStat).build();
+        return Response.ok().build();
     }
 }

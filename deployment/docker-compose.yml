@@ -18,12 +18,10 @@ services:
     restart: unless-stopped
 
   backend:
-    image: zelytra/better-fleet-backend:latest
+    image: bf-b
     container_name: betterfleet-backend
     depends_on:
       - postgres-app
-      - postgres-auth
-      - keycloak
     ports:
       - "2601:8080"
     environment:
@@ -31,4 +29,16 @@ services:
       DB_DATABASE: BetterFleet
       DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: unless-stopped
+
+  frontend:
+    image: bf-f
+    container_name: betterfleet-website
+    depends_on:
+      - postgres-app
+      - backend
+    ports:
+      - "2602:80"
+    environment:
+      VITE_BACKEND_HOST: ${PUBLIC_QUARKUS_HOSTNAME}
     restart: unless-stopped

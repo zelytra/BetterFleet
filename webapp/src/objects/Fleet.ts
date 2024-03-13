@@ -51,7 +51,7 @@ export class Fleet {
     UserStore.player.isMaster = false;
 
     this.socket = new WebSocket(
-      import.meta.env.VITE_SOCKET_HOST + "/" + sessionId,
+      UserStore.player.serverHostName + "/" + sessionId,
     );
 
     // Send player data to backend for initialization
