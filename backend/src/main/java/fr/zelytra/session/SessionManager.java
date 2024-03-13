@@ -277,4 +277,8 @@ public class SessionManager {
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " leave the SotServer: " + fleetFindedServer.getHash());
         SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
+
+    public ConcurrentHashMap<String, Fleet> getSessions() {
+        return this.sessions;
+    }
 }

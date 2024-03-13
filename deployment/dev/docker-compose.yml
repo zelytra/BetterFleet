@@ -1,0 +1,18 @@
+version: '3.4'
+services:
+
+  postgres-app:
+    image: postgres:14.2-alpine
+    container_name: betterfleet-postgres-app
+    ports:
+      - "2600:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./psql-data/app:/var/lib/postgresql/betterfleet/data/pgdata
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: BetterFleet
+      PGDATA: /var/lib/postgresql/betterfleet/data/pgdata
+    restart: unless-stopped

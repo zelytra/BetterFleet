@@ -14,5 +14,11 @@
   "presentation": {
     "content": "Lorem ipsum dolor sit amet consectetur. Magna ornare placerat dignissim pellentesque. Suspendisse sit massa           maecenas nec. A vulputate placerat sollicitudin tristique nulla vitae. Suspendisse tellus viverra rhoncus           egestas lacus senectus viverra amet ante.",
     "title": "BetterFleet"
+  },
+  "stats": {
+    "download": "Téléchargement",
+    "players": "Joueurs en ligne",
+    "sessions": "Session ouverte",
+    "title": "Statistiques"
   }
 }
