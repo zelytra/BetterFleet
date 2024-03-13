@@ -22,7 +22,7 @@
         "title": "Launch failed"
       },
       "notReady": {
-        "content": "Launch failed, you are not ready",
+        "content": "You are not ready",
         "title": "Launch failed"
       },
       "offline": {
@@ -45,8 +45,8 @@
     },
     "username": {
       "length": {
-        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
-        "title": "Mauvais format de pseudo"
+        "content": "Your username cannot be empty or go over 16 characters",
+        "title": "Invalid username format"
       }
     }
   },
@@ -95,11 +95,11 @@
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
-    "fr": "French"
+    "fr": "Français"
   },
   "session": {
     "choice": {
-      "createComment": "Take a bite at freedom and rule on the sea of theives !",
+      "createComment": "Take a bite at freedom and rule on the sea of thieves !",
       "createSession": "Create a session",
       "joinComment": "Grab a tankard, come aboard and join the crew !",
       "joinSession": "Join a session",
@@ -138,9 +138,9 @@
   },
   "tooltips": {
     "navbar": {
-      "config": "Page de configuration",
+      "config": "Configuration page",
       "fleet": "Session",
-      "home": "Page d'acceuil"
+      "home": "Home page"
     }
   }
 }
