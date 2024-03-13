@@ -1,48 +1,47 @@
 package fr.zelytra.session;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
+import fr.zelytra.session.socket.SocketMessage;
+import fr.zelytra.statistics.StatisticsEntity;
+import fr.zelytra.statistics.StatisticsRepository;
 import io.quarkus.logging.Log;
 import jakarta.annotation.Nullable;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.websocket.Session;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Manages sessions for a multiplayer game, allowing players to create, join, and leave sessions.
  */
+@ApplicationScoped
 public class SessionManager {
 
-    private static SessionManager instance;
-
-    private final ConcurrentHashMap<String, Fleet> sessions;
+    private final ConcurrentHashMap<String, Fleet> sessions = new ConcurrentHashMap<>();
 
     // SotServer cached to avoid API spam and faster server response
-    private final ConcurrentHashMap<String, SotServer> sotServers;
+    private final ConcurrentHashMap<String, SotServer> sotServers = new ConcurrentHashMap<>();
 
-    /**
-     * Private constructor for singleton pattern.
-     */
-    private SessionManager() {
-        this.sessions = new ConcurrentHashMap<>();
-        this.sotServers = new ConcurrentHashMap<>();
-    }
+    @Inject
+    StatisticsRepository statisticsRepository;
 
-    /**
-     * Returns the singleton instance of the SessionManager.
-     *
-     * @return The singleton instance of SessionManager.
-     */
-    public static SessionManager getInstance() {
-        if (SessionManager.instance == null) {
-            instance = new SessionManager();
-        }
-        return instance;
-    }
+    @Inject
+    ExecutorService executor;
 
     /**
      * Creates a new session with a unique ID and adds it to the sessions map.
@@ -52,6 +51,7 @@ public class SessionManager {
     public String createSession() {
         String uuid = UUID.randomUUID().toString().substring(0, 7).toUpperCase();
         sessions.put(uuid, new Fleet(uuid));
+        executor.submit(this::incrementSession);
         Log.info("[" + uuid + "] Session created !");
         return uuid;
     }
@@ -82,7 +82,7 @@ public class SessionManager {
 
         Fleet fleet = getFleetFromId(sessionId);
         if (fleet == null) {
-            SessionSocket.sendDataToPlayer(player.getSocket(), MessageType.SESSION_NOT_FOUND, null);
+            sendDataToPlayer(player.getSocket(), MessageType.SESSION_NOT_FOUND, null);
             try {
                 player.getSocket().close();
             } catch (IOException e) {
@@ -120,7 +120,7 @@ public class SessionManager {
             Log.info("[" + fleet.getSessionId() + "] Master as left, giving the role to " + newMaster.getUsername());
         }
 
-        SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
 
         // Clean empty session
@@ -258,7 +258,7 @@ public class SessionManager {
         // Add player to SotServer in Fleet and broadcast update
         fleet.getServers().get(findedSotServer.getHash()).getConnectedPlayers().add(player);
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " join the SotServer: " + fleet.getServers().get(findedSotServer.getHash()).getHash());
-        SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
     public void playerLeaveSotServer(Player player, SotServer server) {
@@ -275,6 +275,111 @@ public class SessionManager {
             fleet.getServers().remove(fleetFindedServer.getHash());
         }
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " leave the SotServer: " + fleetFindedServer.getHash());
-        SessionSocket.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+    }
+
+    public ConcurrentHashMap<String, Fleet> getSessions() {
+        return this.sessions;
+    }
+
+    /**
+     * Broadcasts a message to all players within a session.
+     * <p>
+     * This method sends a specified data object to all players in a session identified by the sessionId. The message type
+     * and data to be broadcast are specified by the parameters. It uses {@link SessionManager} to check if the session
+     * exists and to retrieve the corresponding {@link Fleet} of players. If the session does not exist, it logs an info
+     * message and returns without sending any data. It constructs a {@link SocketMessage} with the messageType and data,
+     * converts it into JSON format, and then broadcasts this JSON string to all players in the session using their sockets.
+     * If any error occurs during the JSON conversion or broadcasting, it logs an error or throws an {@link Error} respectively.
+     *
+     * @param <T>         The type of data to be broadcasted. This allows the method to be used with various types of
+     *                    data objects.
+     * @param sessionId   The ID of the session to which the data will be broadcast. This is used to identify the
+     *                    group of players who should receive the message.
+     * @param messageType The type of the message to be sent. This helps in identifying the purpose or action of
+     *                    the message on the client side.
+     * @param data        The data to be broadcast. This is the actual content of the message being sent to the players.
+     *                    The type of this data is generic, allowing for flexibility in what can be sent.
+     * @throws Error if there is an issue with converting the {@link SocketMessage} object to a JSON string.
+     */
+    public <T> void broadcastDataToSession(String sessionId, MessageType messageType, T data) {
+
+        if (!isSessionExist(sessionId)) {
+            Log.info("[" + sessionId + "] Failed to broadcast, session not found");
+            return;
+        }
+        Fleet fleet = getFleetFromId(sessionId);
+        assert fleet != null;
+
+        String json = formatMessage(messageType, data);
+
+        for (Player player : fleet.getPlayers()) {
+            player.getSocket().getAsyncRemote().sendText(json, result -> {
+                if (result.getException() != null) {
+                    Log.error("Unable to send message: " + result.getException());
+                }
+            });
+        }
+    }
+
+    /**
+     * Sends a message to a player within a session identified by the WebSocket ID.
+     * <p>
+     * This method sends a specified data object to a player in a session identified by the WebSocket ID. The message type
+     * and data to be broadcast are specified by the parameters. It uses {@link SessionManager} to check if the session
+     * and the corresponding WebSocket connection exist. If the session or WebSocket does not exist, it logs an info
+     * message and returns without sending any data. It constructs a {@link SocketMessage} with the messageType and data,
+     * converts it into JSON format, and then sends this JSON string to the player using their WebSocket.
+     * If any error occurs during the JSON conversion or sending, it logs an error or throws an {@link Error} respectively.
+     *
+     * @param <T>         The type of data to be sent. This allows the method to be used with various types of
+     *                    data objects.
+     * @param session     The WebSocket to which the data will be sent. This is used to identify the
+     *                    player who should receive the message.
+     * @param messageType The type of the message to be sent. This helps in identifying the purpose or action of
+     *                    the message on the client side.
+     * @param data        The data to be sent. This is the actual content of the message being sent to the player.
+     *                    The type of this data is generic, allowing for flexibility in what can be sent.
+     * @throws Error if there is an issue with converting the {@link SocketMessage} object to a JSON string.
+     */
+    public <T> void sendDataToPlayer(Session session, MessageType messageType, T data) {
+        String json = formatMessage(messageType, data);
+
+        // Send the data to the specific WebSocket connection
+        session.getAsyncRemote().sendText(json, result -> {
+            if (result.getException() != null) {
+                Log.error("Unable to send message to [" + session.getId() + "]: " + result.getException());
+            }
+        });
+    }
+
+    private <T> String formatMessage(MessageType messageType, T data) {
+        SocketMessage<T> message = new SocketMessage<>(messageType, data);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // To serialize as ISO-8601 strings
+        objectMapper.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String json;
+        try {
+            json = objectMapper.writeValueAsString(message);
+        } catch (JsonProcessingException e) {
+            throw new Error(e);
+        }
+        return json;
+    }
+
+    @ActivateRequestContext
+    @Transactional
+    public void incrementSession(){
+        StatisticsEntity entity = statisticsRepository.getEntity();
+        entity.setSessionsOpen(entity.getSessionsOpen() + 1);
+    }
+
+    @ActivateRequestContext
+    @Transactional
+    public void incrementTry(){
+        StatisticsEntity entity = statisticsRepository.getEntity();
+        entity.setSessionTry(entity.getSessionTry() + 1);
     }
 }

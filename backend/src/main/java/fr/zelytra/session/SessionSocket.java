@@ -1,11 +1,9 @@
 package fr.zelytra.session;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.Player;
@@ -14,13 +12,13 @@ import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.SocketMessage;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
-import java.util.TimeZone;
 import java.util.concurrent.*;
 
 @ServerEndpoint("/sessions/{sessionId}") // WebSocket endpoint
@@ -33,6 +31,12 @@ public class SessionSocket {
 
     @ConfigProperty(name = "app.version")
     String appVersion;
+
+    @Inject
+    SessionManager sessionManager;
+
+    @Inject
+    ExecutorService sqlExecutor;
 
     @OnOpen
     public void onOpen(Session session) {
@@ -77,7 +81,8 @@ public class SessionSocket {
             }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
-            case KEEP_ALIVE -> {}
+            case KEEP_ALIVE -> {
+            }
             case JOIN_SERVER -> {
                 SotServer sotServer = objectMapper.convertValue(socketMessage.data(), SotServer.class);
                 handleJoinServerMessage(session, sotServer);
@@ -92,38 +97,40 @@ public class SessionSocket {
 
     private void handleClearStatus(Session session) {
 
-        SessionManager manager = SessionManager.getInstance();
+        SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
         Fleet fleet = manager.getFleetByPlayerName(player.getUsername());
         fleet.getPlayers().forEach((playerInList) -> {
             playerInList.setReady(false);
         });
         Log.info("[" + fleet.getSessionId() + "] Clearing status of all player");
-        broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
     private void handleStartCountdown(Session session) {
 
-        SessionManager manager = SessionManager.getInstance();
+        SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
         Fleet fleet = manager.getFleetByPlayerName(player.getUsername());
         fleet.getStats().addTry();
 
+        sqlExecutor.submit(sessionManager::incrementTry);
+
         Log.info("[" + fleet.getSessionId() + "] Starting countdown in " + SessionSocket.RISE_ANCHOR_TIMER + "s");
-        broadcastDataToSession(fleet.getSessionId(), MessageType.RUN_COUNTDOWN, SessionSocket.RISE_ANCHOR_TIMER);
-        broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.RUN_COUNTDOWN, SessionSocket.RISE_ANCHOR_TIMER);
+        sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
     // Extracted method to handle JOIN_SERVER messages
     private void handleJoinServerMessage(Session session, SotServer sotServer) {
-        SessionManager manager = SessionManager.getInstance();
+        SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
         manager.playerJoinSotServer(player, sotServer);
     }
 
     // Extracted method to handle LEAVE_SERVER messages
     private void handleLeaveServerMessage(Session session, SotServer sotServer) {
-        SessionManager manager = SessionManager.getInstance();
+        SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
         manager.playerLeaveSotServer(player, sotServer);
     }
@@ -140,7 +147,7 @@ public class SessionSocket {
         if (player.getClientVersion() == null || !player.getClientVersion().equalsIgnoreCase(appVersion)) {
             Log.warn("[" + player.getUsername() + "] Client is out of date, connection refused (" + player.getClientVersion() + ")");
             try {
-                sendDataToPlayer(session, MessageType.OUTDATED_CLIENT, null);
+                sessionManager.sendDataToPlayer(session, MessageType.OUTDATED_CLIENT, null);
                 session.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -149,7 +156,7 @@ public class SessionSocket {
         }
         session.setMaxIdleTimeout(30000); // 1h of timeout
 
-        SessionManager manager = SessionManager.getInstance();
+        SessionManager manager = sessionManager;
         player.setSocket(session);
 
         Log.info("[" + player.getUsername() + "] Connected !");
@@ -160,19 +167,19 @@ public class SessionSocket {
             Fleet fleet = manager.joinSession(newSessionId, player);
             player.setMaster(true);
             if (fleet != null) {
-                broadcastDataToSession(newSessionId, MessageType.UPDATE, fleet);
+                sessionManager.broadcastDataToSession(newSessionId, MessageType.UPDATE, fleet);
             }
         } else {
             Fleet fleet = manager.joinSession(sessionId, player);
             if (fleet != null) {
-                broadcastDataToSession(sessionId, MessageType.UPDATE, fleet);
+                sessionManager.broadcastDataToSession(sessionId, MessageType.UPDATE, fleet);
             }
         }
     }
 
     // Extracted method to handle LEAVE messages
     private void handleLeaveMessage(Player player) {
-        SessionManager manager = SessionManager.getInstance();
+        SessionManager manager = sessionManager;
         Fleet fleet = manager.getFleetFromId(player.getSessionId());
         assert fleet != null;
         Player foundedplayer = fleet.getPlayerFromUsername(player.getUsername());
@@ -180,7 +187,7 @@ public class SessionSocket {
         foundedplayer.setReady(player.isReady());
         foundedplayer.setStatus(player.getStatus());
 
-        broadcastDataToSession(player.getSessionId(), MessageType.UPDATE, fleet);
+        sessionManager.broadcastDataToSession(player.getSessionId(), MessageType.UPDATE, fleet);
 
         Log.info("[" + player.getUsername() + "] Data updated for session !");
     }
@@ -201,7 +208,7 @@ public class SessionSocket {
         // Clean up resources related to the session
         sessionTimeoutTasks.remove(session.getId());
 
-        SessionManager manager = SessionManager.getInstance();
+        SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
         if (player != null) {
             manager.leaveSession(player);
@@ -210,94 +217,4 @@ public class SessionSocket {
             Log.warn("[UNDEFINED PLAYER] Disconnected");
         }
     }
-
-    /**
-     * Broadcasts a message to all players within a session.
-     * <p>
-     * This method sends a specified data object to all players in a session identified by the sessionId. The message type
-     * and data to be broadcast are specified by the parameters. It uses {@link SessionManager} to check if the session
-     * exists and to retrieve the corresponding {@link Fleet} of players. If the session does not exist, it logs an info
-     * message and returns without sending any data. It constructs a {@link SocketMessage} with the messageType and data,
-     * converts it into JSON format, and then broadcasts this JSON string to all players in the session using their sockets.
-     * If any error occurs during the JSON conversion or broadcasting, it logs an error or throws an {@link Error} respectively.
-     *
-     * @param <T>         The type of data to be broadcasted. This allows the method to be used with various types of
-     *                    data objects.
-     * @param sessionId   The ID of the session to which the data will be broadcast. This is used to identify the
-     *                    group of players who should receive the message.
-     * @param messageType The type of the message to be sent. This helps in identifying the purpose or action of
-     *                    the message on the client side.
-     * @param data        The data to be broadcast. This is the actual content of the message being sent to the players.
-     *                    The type of this data is generic, allowing for flexibility in what can be sent.
-     * @throws Error if there is an issue with converting the {@link SocketMessage} object to a JSON string.
-     */
-    public static <T> void broadcastDataToSession(String sessionId, MessageType messageType, T data) {
-        SessionManager manager = SessionManager.getInstance();
-
-        if (!manager.isSessionExist(sessionId)) {
-            Log.info("[" + sessionId + "] Failed to broadcast, session not found");
-            return;
-        }
-        Fleet fleet = manager.getFleetFromId(sessionId);
-        assert fleet != null;
-
-        String json = formatMessage(messageType, data);
-
-        for (Player player : fleet.getPlayers()) {
-            player.getSocket().getAsyncRemote().sendText(json, result -> {
-                if (result.getException() != null) {
-                    Log.error("Unable to send message: " + result.getException());
-                }
-            });
-        }
-    }
-
-    /**
-     * Sends a message to a player within a session identified by the WebSocket ID.
-     * <p>
-     * This method sends a specified data object to a player in a session identified by the WebSocket ID. The message type
-     * and data to be broadcast are specified by the parameters. It uses {@link SessionManager} to check if the session
-     * and the corresponding WebSocket connection exist. If the session or WebSocket does not exist, it logs an info
-     * message and returns without sending any data. It constructs a {@link SocketMessage} with the messageType and data,
-     * converts it into JSON format, and then sends this JSON string to the player using their WebSocket.
-     * If any error occurs during the JSON conversion or sending, it logs an error or throws an {@link Error} respectively.
-     *
-     * @param <T>         The type of data to be sent. This allows the method to be used with various types of
-     *                    data objects.
-     * @param session     The WebSocket to which the data will be sent. This is used to identify the
-     *                    player who should receive the message.
-     * @param messageType The type of the message to be sent. This helps in identifying the purpose or action of
-     *                    the message on the client side.
-     * @param data        The data to be sent. This is the actual content of the message being sent to the player.
-     *                    The type of this data is generic, allowing for flexibility in what can be sent.
-     * @throws Error if there is an issue with converting the {@link SocketMessage} object to a JSON string.
-     */
-    public static <T> void sendDataToPlayer(Session session, MessageType messageType, T data) {
-        String json = formatMessage(messageType, data);
-
-        // Send the data to the specific WebSocket connection
-        session.getAsyncRemote().sendText(json, result -> {
-            if (result.getException() != null) {
-                Log.error("Unable to send message to [" + session.getId() + "]: " + result.getException());
-            }
-        });
-    }
-
-    private static <T> String formatMessage(MessageType messageType, T data) {
-        SocketMessage<T> message = new SocketMessage<>(messageType, data);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // To serialize as ISO-8601 strings
-        objectMapper.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String json;
-        try {
-            json = objectMapper.writeValueAsString(message);
-        } catch (JsonProcessingException e) {
-            throw new Error(e);
-        }
-        return json;
-    }
-
-
 }

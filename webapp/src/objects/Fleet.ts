@@ -2,7 +2,7 @@ import {UserStore} from "@/objects/stores/UserStore.ts";
 import {WebSocketMessage, WebSocketMessageType} from "@/objects/WebSocet.ts";
 import {AlertType} from "@/vue/alert/Alert.ts";
 import {alertProvider} from "@/main.ts";
-import i18n from "@/objects/i18n";
+import {i18n} from "@/objects/i18n";
 import {Player} from "@/objects/Player.ts";
 import {SotServer} from "@/objects/SotServer.ts";
 import {LocalTime} from "@js-joda/core";
@@ -51,7 +51,7 @@ export class Fleet {
     UserStore.player.isMaster = false;
 
     this.socket = new WebSocket(
-      import.meta.env.VITE_SOCKET_HOST + "/" + sessionId,
+      UserStore.player.serverHostName + "/" + sessionId,
     );
 
     // Send player data to backend for initialization
