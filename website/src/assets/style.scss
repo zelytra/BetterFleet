@@ -8,7 +8,7 @@
   font-family: Windlass, sans-serif;
   font-weight: 400;
 
-  scrollbar-color: var(--primary)  rgba(50, 212, 153, 0.10);
+  scrollbar-color: var(--primary) rgba(50, 212, 153, 0.10);
   scrollbar-width: thin;
   color: var(--primary-text);
   user-select: none;
@@ -23,14 +23,15 @@ body {
   --primary-border: #E8E8E8;
   --secondary-background: #222631;
   --important: #D43232;
-  --warning: #D49332;
+  --warning: #FFBE5C;
   --information: #32D499;
 }
 
 html, body {
   background: var(--primary-background);
-  height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
+  overflow-y: auto;
   width: auto;
 }
 

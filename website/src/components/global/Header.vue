@@ -1,6 +1,6 @@
 <template>
   <header>
-    <img src="@/assets/icons/logo.svg"/>
+    <img src="@/assets/icons/logo.svg" alt="app icon"/>
     <nav>
       <router-link
           v-for="route in routes"
@@ -15,6 +15,10 @@
       <PirateButton :label="t('button.download')"/>
     </a>
   </header>
+  <div class="header-details">
+    <img src="@/assets/icons/fire.svg" alt="fire icon"/>
+    <p>{{ t('header.details') }}</p>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -37,6 +41,7 @@ header {
   height: 90px;
   background: url("@/assets/backgrounds/header.svg") repeat-x 50% 100%/1200px 144px;
   position: relative;
+  z-index: 4;
 
   img {
     height: 60px;
@@ -55,5 +60,24 @@ header {
       color: var(--primary);
     }
   }
+}
+
+.header-details {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  gap: 24px;
+  top: 50px;
+  z-index: 3;
+  position: absolute;
+  background: url("@/assets/backgrounds/header-details.svg") repeat-x 50% 100%/1200px 144px;
+  height: 120px;
+
+  p {
+    color: var(--warning);
+  }
+
+
 }
 </style>

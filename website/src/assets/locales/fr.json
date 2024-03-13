@@ -2,6 +2,9 @@
   "button": {
     "download": "Télécharger"
   },
+  "header": {
+    "details": "Better Fleet est actuellement en alpha ! Testez l’application dès maintenant."
+  },
   "nav": {
     "documentation": "Documentation",
     "home": "Acceuil",
