@@ -1,0 +1,10 @@
+{
+  "button": {
+    "download": "Télécharger"
+  },
+  "nav": {
+    "documentation": "Documentation",
+    "home": "Acceuil",
+    "support": "Support"
+  }
+}

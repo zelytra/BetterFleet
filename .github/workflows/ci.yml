@@ -22,7 +22,7 @@ jobs:
           distribution: 'temurin'
       - name: Build with Maven
         run: mvn quarkus:build package
-  frontend-build:
+  webapp-build:
     name: Vite build test
     runs-on: ubuntu-latest
 
@@ -36,8 +36,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      #        with:
-      #          path: 'webapp/'
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -46,6 +44,30 @@ jobs:
           cache-dependency-path: webapp/package-lock.json
       - run: npm ci
       - run: npm run build --if-present
+
+  website-build:
+    name: Vite build test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 18.x ]
+
+    defaults:
+      run:
+        working-directory: 'website'
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: webapp/package-lock.json
+      - run: npm ci
+      - run: npm run build --if-present
+
   test-tauri:
     name: "Tauri build test"
     strategy:

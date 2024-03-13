@@ -43,7 +43,7 @@
         :style="{ backgroundColor: Utils.generateRandomColor() }"
       >
         <p>
-          {{ UserStore.player.username.charAt(0) }}
+          {{ AppStore.player.username.charAt(0) }}
         </p>
       </div>
       <p>v{{ version }}</p>
