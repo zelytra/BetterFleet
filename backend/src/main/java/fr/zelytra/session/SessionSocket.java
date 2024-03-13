@@ -77,6 +77,7 @@ public class SessionSocket {
             }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
+            case KEEP_ALIVE -> {}
             case JOIN_SERVER -> {
                 SotServer sotServer = objectMapper.convertValue(socketMessage.data(), SotServer.class);
                 handleJoinServerMessage(session, sotServer);
@@ -146,8 +147,7 @@ public class SessionSocket {
             }
             return;
         }
-
-        session.setMaxIdleTimeout(3600000); // 1h of timeout
+        session.setMaxIdleTimeout(30000); // 1h of timeout
 
         SessionManager manager = SessionManager.getInstance();
         player.setSocket(session);
@@ -168,8 +168,6 @@ public class SessionSocket {
                 broadcastDataToSession(sessionId, MessageType.UPDATE, fleet);
             }
         }
-
-
     }
 
     // Extracted method to handle LEAVE messages

@@ -6,6 +6,7 @@
         :key="route.name"
         class="router-link"
         :to="route.path"
+        :title="route.meta.tooltip"
       >
         <img
           v-if="route.meta"

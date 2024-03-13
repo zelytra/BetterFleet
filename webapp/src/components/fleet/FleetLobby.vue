@@ -14,7 +14,7 @@
               <img src="@/assets/icons/clipboard.svg" alt="copy-button"
                    @click="copyIdToClipboard(session.sessionId.toUpperCase())"/>
               <transition>
-                <p v-if="displayIdCopy">{{ t('session.idCopy')}}</p>
+                <p v-if="displayIdCopy">{{ t('session.idCopy') }}</p>
               </transition>
             </div>
           </div>
@@ -29,7 +29,7 @@
     </BannerTemplate>
     <div class="lobby-content">
       <div class="player-table">
-        <ServerContainer v-if="computedsession.servers.size > 0" v-for="[hash,server] of session.servers.entries()"
+        <ServerContainer v-if="computedSession.servers.size > 0" v-for="[hash,server] of session.servers.entries()"
                          :server="hash+' | '+server.location">
           <PlayerFleet
               v-for="player in server.connectedPlayers.sort((a, b) => {
@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, PropType, ref} from "vue";
+import {computed, onUnmounted, PropType, ref} from "vue";
 import {Fleet} from "@/objects/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
@@ -108,13 +108,23 @@ const props = defineProps({
   },
 });
 
+const keepAlive: number = setInterval(() => {
+  if (props.session) {
+    props.session.sendKeepAlive()
+  }
+}, 30000)
+
+onUnmounted(() => {
+  clearInterval(keepAlive)
+})
+
 function updateStatus() {
   UserStore.player.isReady = !UserStore.player.isReady;
   props.session.updateToSession();
 }
 
 defineEmits(["update:selected-value"]);
-const computedsession = computed({
+const computedSession = computed({
   get: (): Fleet => props.session,
   set: (): void => {
   },
@@ -131,14 +141,14 @@ function startSession() {
 function getFilteredPlayerList() {
   const removedPlayer: string[] = [];
   for (const player of props.session!.players) {
-    computedsession.value.servers.forEach((value, _key) => {
+    computedSession.value.servers.forEach((value, _key) => {
       if (value.connectedPlayers.filter(x => x.username == player.username).length > 0) {
         removedPlayer.push(player.username)
         return;
       }
     })
   }
-  return computedsession.value.players.filter(x => !removedPlayer.includes(x.username)).sort((a, b) => {
+  return computedSession.value.players.filter(x => !removedPlayer.includes(x.username)).sort((a, b) => {
     return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
   })
 }
@@ -181,7 +191,7 @@ function copyIdToClipboard(id: string) {
         cursor: pointer;
       }
 
-      p{
+      p {
         font-family: BrushTip, sans-serif;
         font-size: 20px;
         font-weight: 400;
