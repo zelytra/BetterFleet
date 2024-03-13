@@ -42,6 +42,7 @@ header {
   background: url("@/assets/backgrounds/header.svg") repeat-x 50% 100%/1200px 144px;
   position: relative;
   z-index: 4;
+  margin-bottom:35px;
 
   img {
     height: 60px;

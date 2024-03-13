@@ -17,7 +17,9 @@ const emits = defineEmits(['onButtonClick'])
 button {
   all: unset;
   background: url("@/assets/backgrounds/button.svg") 0 0/100% 100% no-repeat;;
-  padding: 13px 60px;
+  padding: 20px 20px;
+  min-width: 150px;
   cursor: pointer;
+  text-align: center;
 }
 </style>
