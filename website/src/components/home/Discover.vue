@@ -4,8 +4,8 @@
     <div class="slider-wrapper">
       <div class="slider-nav">
         <span @click="index=0" :class="{selected:index==0}">{{ t('discover.discord.nav') }}</span>
-        <span @click="index=1" :class="{selected:index==1}">{{ t('discover.discord.nav') }}</span>
-        <span @click="index=2" :class="{selected:index==2}">{{ t('discover.discord.nav') }}</span>
+        <span @click="index=1" :class="{selected:index==1}">{{ t('discover.github.nav') }}</span>
+        <span @click="index=2" :class="{selected:index==2}">{{ t('discover.translation.nav') }}</span>
       </div>
       <div class="content-wrapper">
         <transition>
@@ -14,7 +14,7 @@
               <h2>{{ t('discover.discord.title') }}</h2>
               <p>{{ t('discover.discord.content') }}</p>
               <a href="https://discord.gg/sHPp5CPxf2" target="_blank">
-                <PirateButton label="Rejoindre discord"/>
+                <PirateButton :label="t('discover.discord.button')"/>
               </a>
             </div>
             <div class="side-content image">
@@ -23,10 +23,10 @@
           </div>
           <div class="content" v-else-if="index==1">
             <div class="side-content">
-              <h2>{{ t('discover.discord.title') }}</h2>
-              <p>{{ t('discover.discord.content') }}</p>
-              <a href="https://discord.gg/sHPp5CPxf2" target="_blank">
-                <PirateButton label="Rejoindre discord"/>
+              <h2>{{ t('discover.github.title') }}</h2>
+              <p>{{ t('discover.github.content') }}</p>
+              <a href="https://github.com/zelytra/BetterFleet" target="_blank">
+                <PirateButton :label="t('discover.github.button')"/>
               </a>
             </div>
             <div class="side-content image">
@@ -35,10 +35,10 @@
           </div>
           <div class="content" v-else-if="index==2">
             <div class="side-content">
-              <h2>{{ t('discover.discord.title') }}</h2>
-              <p>{{ t('discover.discord.content') }}</p>
-              <a href="https://discord.gg/sHPp5CPxf2" target="_blank">
-                <PirateButton label="Rejoindre discord"/>
+              <h2>{{ t('discover.translation.title') }}</h2>
+              <p>{{ t('discover.translation.content') }}</p>
+              <a href="https://crowdin.com/project/betterfleet" target="_blank">
+                <PirateButton :label="t('discover.translation.button')"/>
               </a>
             </div>
             <div class="side-content image">

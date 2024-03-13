@@ -2,6 +2,7 @@ package fr.zelytra.statistics;
 
 import fr.zelytra.session.SessionManager;
 import io.quarkus.logging.Log;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -10,12 +11,17 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Path("/stats")
 public class StatsEndpoints {
+
+    @Inject
+    StatisticsRepository statisticsRepository;
+    
+    @Inject
+    SessionManager sessionManager;
 
     @GET
     @Path("/online-users")
@@ -23,7 +29,7 @@ public class StatsEndpoints {
     public Response getTotalOnlineUsers() {
         Log.info("[GET] /stats/online-users");
         AtomicInteger totalUser = new AtomicInteger();
-        SessionManager.getInstance().getSessions().forEach((key, value) -> {
+        sessionManager.getSessions().forEach((key, value) -> {
             totalUser.addAndGet(value.getPlayers().size());
         });
         return Response.ok(totalUser.get()).build();
@@ -50,17 +56,8 @@ public class StatsEndpoints {
     @Transactional
     public Response addDownloadCount() {
         Log.info("[GET] /stats/download");
-        StatisticsEntity foundStat = getEntity();
+        StatisticsEntity foundStat = statisticsRepository.getEntity();
         foundStat.setDownload(foundStat.getDownload() + 1);
         return Response.ok(foundStat).build();
-    }
-
-    private StatisticsEntity getEntity() {
-        StatisticsEntity entity = StatisticsEntity.findById(LocalDate.now());
-        if (entity == null) {
-            entity = new StatisticsEntity();
-            entity.persist();
-        }
-        return entity;
     }
 }

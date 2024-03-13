@@ -15,11 +15,24 @@
   },
   "discover": {
     "discord": {
+      "button": "Rejoindre le discord",
       "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas laoreet  sit amet sem ut fermentum. Vestibulum eu ligula orci. Praesent  consectetur, nulla at consectetur finibus, diam magna finibus velit,  vitae porttitor lorem nisl id justo. Vivamus cursus placerat urna ac  lacinia. Fusce tristique, odio quis egestas cursus, eros justo rutrum  mauris, ut molestie nunc massa at nulla. Aenean consectetur metus sed  magna pulvinar varius. Orci varius natoque penatibus et magnis dis  parturient montes, nascetur ridiculus mus. Orci varius natoque penatibus  et magnis dis parturient montes, nascetur ridiculus mus.",
       "nav": "Discord communautaire",
       "title": "Comment fonctionne Better Fleet ?"
     },
-    "title": "Découvrez nos fonctionnalitées"
+    "github": {
+      "button": "Github",
+      "content": "Lorem ipsum",
+      "nav": "Un projet open source",
+      "title": "Github title"
+    },
+    "title": "Découvrez nos fonctionnalitées",
+    "translation": {
+      "button": "Crowdin",
+      "content": "Lorem ipsum",
+      "nav": "Traduction",
+      "title": "Aplpication multi-langues"
+    }
   },
   "header": {
     "details": "Better Fleet est actuellement en alpha ! Testez l’application dès maintenant."
