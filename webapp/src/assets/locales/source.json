@@ -1,0 +1,146 @@
+{
+  "alert": {
+    "badRequest": {
+      "content": "La requête est corrompue ou incorrecte",
+      "title": "Mauvaise requête"
+    },
+    "error": {
+      "content": "Une erreur est survenue",
+      "title": "Erreur"
+    },
+    "forbidden": {
+      "content": "Vous ne disposez pas des autorisations nécessaires pour accéder à cette page",
+      "title": "Accès refusé"
+    },
+    "outdated": {
+      "content": "Veuillez mettre à jour votre application",
+      "title": "Client obsolète"
+    },
+    "research": {
+      "notInMenu": {
+        "content": "Vous n'êtes pas dans le menu du jeu",
+        "title": "Échec du lancement"
+      },
+      "notReady": {
+        "content": "Échec du lancement, vous n'êtes pas prêt",
+        "title": "Échec du lancement"
+      },
+      "offline": {
+        "content": "Votre jeu est fermé",
+        "title": "Échec du lancement"
+      }
+    },
+    "sessionNotFound": {
+      "content": "Vérifiez votre code de session",
+      "title": "Session introuvable"
+    },
+    "socket": {
+      "connectionFailed": "Échec de la connexion au serveur",
+      "random": "Le WebSocket s'est fermé de façon inattendue",
+      "title": "Une erreur est survenue avec le serveur"
+    },
+    "unsupportedMedia": {
+      "content": "Le média que vous tentez d'envoyer n'est pas supporté par l'application",
+      "title": "Média non supporté"
+    },
+    "username": {
+      "length": {
+        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
+        "title": "Mauvais format de pseudo"
+      }
+    }
+  },
+  "appName": "Better Fleet",
+  "config": {
+    "devmode": "Activer le mode développeur",
+    "lang": {
+      "label": "Langue"
+    },
+    "name": {
+      "label": "Pseudonyme",
+      "placeholder": "Pseudonyme"
+    },
+    "server": {
+      "label": "Adresse du serveur",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "subtitle": "Options de préférence",
+    "title": "Paramètres"
+  },
+  "credits": {
+    "and": "et",
+    "description": "Better Fleet a été développé dans le but de faciliter la création d'alliances sur Sea Of Thieves",
+    "designed": "Designé par",
+    "details": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
+    "developed": "Développé par",
+    "socials": "Retrouvez-nous ici :",
+    "title": "Informations"
+  },
+  "firstLogin": {
+    "button": {
+      "description": "Hissons les voiles, main à la barre et cap sur le large !",
+      "title": "Commencer l’aventure"
+    },
+    "description": "Veuillez saisir votre gamertag actuel afin de veiller au bon déroulement de l'alliance",
+    "tips": "Vous pouvez modifier votre pseudo à tout moment dans la section “Préférences”",
+    "title": "Comment tu t'appelles l'ami ?"
+  },
+  "loading": {
+    "loading": "Chargement en cours...",
+    "targetGame": "Détection du jeu en cours",
+    "targetLoading": "Jeu détecté. Préparation des navires.",
+    "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé"
+  },
+  "locales": {
+    "de": "Deutsch",
+    "en": "Anglais",
+    "es": "Español",
+    "fr": "Français"
+  },
+  "session": {
+    "choice": {
+      "createComment": "Goûte à la liberté de régner sur les flots en pirate !",
+      "createSession": "Créer une session",
+      "joinComment": "Prends une chope, monte à bord et rejoins l'équipage !",
+      "joinSession": "Rejoindre une session",
+      "modal": {
+        "button": "Rejoindre la session",
+        "comment": "Chaque session est privée et requiert un code. Demandez-le à l'hôte de la session que vous souhaitez rejoindre !",
+        "title": "Entrez un code de session"
+      }
+    },
+    "countdown": "La recherche commence dans...",
+    "id": "Code de session",
+    "idCopy": "Copié !",
+    "informations": {
+      "success": "Chance de succès",
+      "title": "Informations",
+      "totalPlayer": "Joueurs prêts",
+      "tryNumber": "Nombre d'essais"
+    },
+    "leave": "Quitter la session",
+    "player": {
+      "notReady": "Pas prêt",
+      "ready": "Prêt",
+      "status": {
+        "closed": "Hors ligne",
+        "in-game": "En jeu",
+        "main-menu": "Dans les menus du jeu",
+        "started": "Jeu lancé"
+      }
+    },
+    "run": "Lever l'ancre",
+    "status": {
+      "countdown": "Lancement dans ",
+      "ready": "Prêt",
+      "waiting": "En attente"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "Page de configuration",
+      "fleet": "Session",
+      "home": "Page d'acceuil"
+    }
+  }
+}
