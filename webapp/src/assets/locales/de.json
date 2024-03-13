@@ -22,7 +22,7 @@
         "title": "Der Start ist fehlgeschlagen"
       },
       "notReady": {
-        "content": "Sie sind nicht bereit",
+        "content": "Der Start ist fehlgeschlagen. Sie sind nicht bereit",
         "title": "Der Start ist fehlgeschlagen"
       },
       "offline": {
@@ -45,8 +45,8 @@
     },
     "username": {
       "length": {
-        "content": "",
-        "title": ""
+        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
+        "title": "Mauvais format de pseudo"
       }
     }
   },
@@ -93,7 +93,7 @@
   },
   "locales": {
     "de": "Deutsch",
-    "en": "English",
+    "en": "Englisch",
     "es": "Español",
     "fr": "Französisch"
   },
@@ -138,9 +138,9 @@
   },
   "tooltips": {
     "navbar": {
-      "config": "",
-      "fleet": "",
-      "home": ""
+      "config": "Page de configuration",
+      "fleet": "Session",
+      "home": "Page d'acceuil"
     }
   }
 }
