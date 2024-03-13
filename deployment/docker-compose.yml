@@ -18,7 +18,7 @@ services:
     restart: unless-stopped
 
   backend:
-    image: bf-b
+    image: zelytra/better-fleet-backend:latest
     container_name: betterfleet-backend
     depends_on:
       - postgres-app
@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: bf-f
+    image: zelytra/better-fleet-website:latest
     container_name: betterfleet-website
     depends_on:
       - postgres-app
