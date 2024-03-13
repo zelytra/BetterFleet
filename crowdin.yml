@@ -1,5 +1,5 @@
 files:
-  - source: /webapp/src/assets/locales/fr.json
+  - source: /webapp/src/assets/locales/source.json
     translation: /webapp/src/assets/locales/%two_letters_code%.json
-  - source: /website/src/assets/locales/fr.json
+  - source: /website/src/assets/locales/source.json
     translation: /website/src/assets/locales/%two_letters_code%.json
