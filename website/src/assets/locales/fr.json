@@ -13,6 +13,14 @@
     "hourglass": "Lorem ipsum dolor sit amet consectetur. Risus malesuada ultricies lectus faucibus. Tempor scelerisque lacus blandit tristique euismod est tellus. Habitasse metus ornare lectus et nec tempus arcu ut aliquet. Donec purus vitae volutpat ut in elementum cursus id.",
     "key": "Lorem ipsum dolor sit amet consectetur. Risus malesuada ultricies lectus faucibus. Tempor scelerisque lacus blandit tristique euismod est tellus. Habitasse metus ornare lectus et nec tempus arcu ut aliquet. Donec purus vitae volutpat ut in elementum cursus id."
   },
+  "discover": {
+    "discord": {
+      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas laoreet  sit amet sem ut fermentum. Vestibulum eu ligula orci. Praesent  consectetur, nulla at consectetur finibus, diam magna finibus velit,  vitae porttitor lorem nisl id justo. Vivamus cursus placerat urna ac  lacinia. Fusce tristique, odio quis egestas cursus, eros justo rutrum  mauris, ut molestie nunc massa at nulla. Aenean consectetur metus sed  magna pulvinar varius. Orci varius natoque penatibus et magnis dis  parturient montes, nascetur ridiculus mus. Orci varius natoque penatibus  et magnis dis parturient montes, nascetur ridiculus mus.",
+      "nav": "Discord communautaire",
+      "title": "Comment fonctionne Better Fleet ?"
+    },
+    "title": "Découvrez nos fonctionnalitées"
+  },
   "header": {
     "details": "Better Fleet est actuellement en alpha ! Testez l’application dès maintenant."
   },

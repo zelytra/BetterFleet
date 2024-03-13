@@ -6,6 +6,8 @@
     <Separator/>
     <Descriptions/>
     <Separator/>
+    <Discover/>
+    <Separator/>
     <Comparaison/>
   </div>
 </template>
@@ -17,6 +19,7 @@ import Separator from "@/vue/Separator.vue";
 import Statistics from "@/components/home/Statistics.vue";
 import Descriptions from "@/components/home/Descriptions.vue";
 import Comparaison from "@/components/home/Comparison.vue";
+import Discover from "@/components/home/Discover.vue";
 </script>
 
 <style scoped lang="scss">

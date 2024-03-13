@@ -51,9 +51,10 @@ section {
     align-items: center;
     justify-content: center;
     gap: 120px;
+    padding: 0 30px;
 
     img {
-      max-width: 800px;
+      max-width: 600px;
     }
 
     .description {
