@@ -1,2 +1,3 @@
 deployment/psql-data/
 .idea/
+/deployment/dev/psql-data/
