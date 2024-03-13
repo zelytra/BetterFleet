@@ -23,7 +23,7 @@ jobs:
       - name: Build with Maven
         run: mvn quarkus:build package
   webapp-build:
-    name: Vite build test
+    name: Webapp Vite build test
     runs-on: ubuntu-latest
 
     strategy:
@@ -46,7 +46,7 @@ jobs:
       - run: npm run build --if-present
 
   website-build:
-    name: Vite build test
+    name: Website Vite build test
     runs-on: ubuntu-latest
 
     strategy:
