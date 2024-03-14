@@ -86,13 +86,13 @@
     "title": "¿Cómo te llamas muchacho?"
   },
   "loading": {
-    "loading": "Chargement...",
+    "loading": "Cargando...",
     "targetGame": "Detección de juego en curso",
     "targetLoading": "Juego detectado. Naves en preparación.",
     "tips": "Este proceso puede tardar un poco, asegúrate de que tu juego esté iniciado."
   },
   "locales": {
-    "de": "Deutsch",
+    "de": "Alemán",
     "en": "Inglés",
     "es": "Español",
     "fr": "Francés"
@@ -139,7 +139,7 @@
   "tooltips": {
     "navbar": {
       "config": "Page de configuration",
-      "fleet": "Session",
+      "fleet": "Sesión",
       "home": "Page d'acceuil"
     }
   }
