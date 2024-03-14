@@ -24,7 +24,7 @@
       <p><span>Better Fleet©</span> {{ t('credits.license') }} {{ date }} | {{ t('credits.developed') }}
         <a href="https://zelytra.fr">Zelytra</a>
         {{ t('credits.and') }} <a
-            href="https://github.com/dadodasyra">Dadodasyra</a> - {{ t('credits.designed') }}
+            href="https://github.com/dadodasyra">dadodasyra</a> - {{ t('credits.designed') }}
         <a href="https://zetro.fr">ZeTRro</a>
       </p>
     </div>
