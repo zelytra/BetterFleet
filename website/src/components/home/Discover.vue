@@ -111,10 +111,12 @@ section {
         background-size: cover;
         padding: 10px 20px;
         white-space: nowrap;
+        width: 250px;
         cursor: pointer;
+        text-align: center;
 
         &:hover, &.selected {
-          background: url("@/assets/backgrounds/button.svg") 100% 0/100% 100% no-repeat;
+          background: url("@/assets/backgrounds/button.svg") no-repeat;
           background-size: cover;
         }
       }
@@ -163,6 +165,7 @@ section {
 .v-enter-active,
 .v-leave-active {
   transition: 0.3s ease;
+  position: absolute;
 }
 
 .v-enter-from,
