@@ -139,7 +139,7 @@
   "tooltips": {
     "navbar": {
       "config": "Page de configuration",
-      "fleet": "Session",
+      "fleet": "Sitzung",
       "home": "Page d'acceuil"
     }
   }

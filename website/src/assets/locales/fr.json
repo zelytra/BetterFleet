@@ -5,40 +5,40 @@
     "downloadHere": "Télécharger ici"
   },
   "comparison": {
-    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas laoreet  sit amet sem ut fermentum. Vestibulum eu ligula orci. Praesent  consectetur, nulla at consectetur finibus, diam magna finibus velit,  vitae porttitor lorem nisl id justo. Vivamus cursus placerat urna ac  lacinia. Fusce tristique, odio quis egestas cursus, eros justo rutrum  mauris, ut molestie nunc massa at nulla. Aenean consectetur metus sed  magna pulvinar varius. Orci varius natoque penatibus et magnis dis  parturient montes, nascetur ridiculus mus. Orci varius natoque penatibus  et magnis dis parturient montes, nascetur ridiculus mus.",
-    "subtitle": "Comment fonctionne Better Fleet ?",
+    "description": "Better Fleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de Fleet Creator. Lorsqu'on observe notre graphique, les barres vertes, correspondant à BetterFleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, BetterFleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. BetterFleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
+    "subtitle": "Une connexion turbo-chargée pour une expérience de jeu triple vitesse !",
     "title": "Comparaison avec Fleet Creator"
   },
   "credits": {
     "and": "&",
-    "designed": "Désigner par",
-    "developed": "Développer par",
+    "designed": "Designé par",
+    "developed": "Développé par",
     "license": "Licence"
   },
   "descriptions": {
     "globe": "Better Fleet mêle design et efficacité. Reprenant une direction artistique proche de Sea of Thieves, vous aurez l'impression de naviguer dans une extension du jeu au summum de la réactivité.",
-    "hourglass": "Lorem ipsum dolor sit amet consectetur. Risus malesuada ultricies lectus faucibus. Tempor scelerisque lacus blandit tristique euismod est tellus. Habitasse metus ornare lectus et nec tempus arcu ut aliquet. Donec purus vitae volutpat ut in elementum cursus id.",
+    "hourglass": "Notre fonctionnalité d'auto-click synchronisée met en œuvre un timer parfaitement coordonné entre tous les joueurs de la session, garantissant une recherche de serveur d'une efficacité redoutable qui réduit le temps d'attente au minimum.",
     "key": "Notre application assure la sécurité des utilisateurs grâce à son code open source, permettant une transparence totale, et à une équipe de développeurs actifs qui se consacre à des mises à jour régulières et à la maintenance de la sécurité."
   },
   "discover": {
     "discord": {
       "button": "Rejoindre le Discord",
-      "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas laoreet  sit amet sem ut fermentum. Vestibulum eu ligula orci. Praesent  consectetur, nulla at consectetur finibus, diam magna finibus velit,  vitae porttitor lorem nisl id justo. Vivamus cursus placerat urna ac  lacinia. Fusce tristique, odio quis egestas cursus, eros justo rutrum  mauris, ut molestie nunc massa at nulla. Aenean consectetur metus sed  magna pulvinar varius. Orci varius natoque penatibus et magnis dis  parturient montes, nascetur ridiculus mus. Orci varius natoque penatibus  et magnis dis parturient montes, nascetur ridiculus mus.",
-      "nav": "Discord communautaire",
-      "title": "Comment fonctionne Better Fleet ?"
+      "content": "Notre application s'étend bien au-delà d'une simple interface, car elle s'ancre au sein d'une communauté vibrante et engagée sur notre serveur Discord dédié. Cet espace dynamique est le carrefour où les joueurs peuvent non seulement partager leurs expériences, mais aussi contribuer activement au développement en soumettant des idées d'amélioration. Le dialogue ouvert et constructif est encouragé, forgeant une synergie entre les utilisateurs et les créateurs. De plus, notre serveur Discord offre un support robuste pour ceux qui souhaitent intégrer notre application de leur côté. Que ce soit pour des conseils techniques, des orientations stratégiques ou des astuces de personnalisation, nos membres et notre équipe de support sont toujours prêts à aider, assurant une intégration transparente et réussie.",
+      "nav": "Notre communauté",
+      "title": "Notre plateforme d'échange préférée !"
     },
     "github": {
       "button": "Github",
-      "content": "Lorem ipsum",
-      "nav": "Un projet open source",
-      "title": "Github title"
+      "content": "Au cœur de notre projet se trouve un engagement profond pour l'open source, reflété par notre code accessible à tous et notre équipe de développeurs actifs et réceptifs. Cette philosophie garantit une évolution constante de notre application, propulsée par une collaboration transparente et des échanges fructueux avec notre communauté. Les retours des joueurs sont une pierre angulaire de notre processus de développement, car ils nous permettent de peaufiner et d'améliorer notre offre, en veillant à ce qu'elle réponde précisément aux besoins et aux désirs de nos utilisateurs. L'ouverture aux suggestions et la capacité d'adaptation rapide de nos développeurs assurent que notre application reste à la pointe, tout en cultivant une relation de confiance et de respect mutuel avec notre communauté engagée.",
+      "nav": "Innovation Collaborative",
+      "title": "Notre Engagement Open Source pour une Application en Constante Évolution"
     },
-    "title": "Découvrez nos fonctionnalités",
+    "title": "Nos valeurs et objectifs",
     "translation": {
       "button": "Crowdin",
-      "content": "Lorem ipsum",
-      "nav": "Traduction",
-      "title": "Application multilingue"
+      "content": "Notre application embrasse la diversité et l'inclusivité à travers son développement axé sur la norme i18n, ouvrant la porte à des traductions dans n'importe quelle langue par la communauté elle-même. Cette approche garantit que notre application peut être facilement adaptée et utilisée par des utilisateurs du monde entier, reflétant notre engagement à briser les barrières linguistiques. En outre, nous avons mis en place un projet Crowdin public, fournissant une plateforme intuitive pour tous ceux désireux de contribuer aux efforts de traduction. Cette initiative favorise une collaboration internationale, permettant à notre application de s'enrichir des nuances culturelles et linguistiques de chaque contributeur. Ensemble, nous construisons une expérience de jeu véritablement mondiale, accessible et engageante pour une communauté internationale en constante expansion.",
+      "nav": "Traduction Participative",
+      "title": "Unir les Joueurs du Monde Entier grâce à i18n et Crowdin"
     }
   },
   "download": {
@@ -47,23 +47,23 @@
   "footer": {
     "content": "Rejoignez notre aventure mondiale - votre passion, notre technologie. Ensemble, transformons le jeu. Propulsé par la communauté et l'innovation ouverte.",
     "discord": "Rencontrez-vous un souci ? Contactez immédiatement notre équipe via notre serveur ",
-    "github": "Vous êtes développeur et vous adorez naviguez sur les mers de Sea Of Thieves ? Alors venez contribuez au projet !",
+    "github": "Vous êtes développeur et vous adorez naviguer sur les mers de Sea of Thieves ? Alors venez contribuer au projet !",
     "warning": {
-      "content": "Better Fleet n'est pas une application officielle associée à Sea of Thieves et se distancie de toute référence directe à ce jeu.",
+      "content": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
       "title": "Avertissements"
     }
   },
   "header": {
     "details": "Better Fleet est actuellement en alpha ! Testez l’application dès maintenant !"
   },
-  "name": "BetterFleet",
+  "name": "Better Fleet",
   "nav": {
     "documentation": "Documentation",
     "home": "Accueil",
     "support": "Support"
   },
   "presentation": {
-    "content": "Lorem ipsum dolor sit amet consectetur. Magna ornare placerat dignissim pellentesque. Suspendisse sit massa           maecenas nec. A vulputate placerat sollicitudin tristique nulla vitae. Suspendisse tellus viverra rhoncus           egestas lacus senectus viverra amet ante.",
+    "content": "Plongez dans l'univers de Sea of Thieves avec l'outil ultime conçu pour forger des alliances comme jamais auparavant. Notre application révolutionne la façon dont les joueurs se connectent, offrant une fluidité exceptionnelle et augmentant significativement vos chances de trouver une alliance, dépassant de loin les capacités des autres applications. Rejoignez notre communauté et transformez votre expérience de jeu en une aventure épique, où créer des liens et naviguer ensemble devient une réalité accessible à chaque clic.",
     "title": "Better Fleet"
   },
   "stats": {

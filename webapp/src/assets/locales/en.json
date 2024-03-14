@@ -86,7 +86,7 @@
     "title": "What's your name lad ?"
   },
   "loading": {
-    "loading": "Loading in progress...",
+    "loading": "Loading...",
     "targetGame": "Game detection in progress",
     "targetLoading": "Game detected. Ships in preparation.",
     "tips": "This process might take a while, please make sure your game is launched"
@@ -133,7 +133,7 @@
     "status": {
       "countdown": "Launch in ",
       "ready": "Ready",
-      "waiting": "Waiting..."
+      "waiting": "Waiting"
     }
   },
   "tooltips": {
