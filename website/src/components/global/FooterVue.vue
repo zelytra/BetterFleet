@@ -25,7 +25,7 @@
         <a href="https://zelytra.fr">Zelytra</a>
         {{ t('credits.and') }} <a
             href="https://github.com/dadodasyra">dadodasyra</a> - {{ t('credits.designed') }}
-        <a href="https://zetro.fr">ZeTRro</a>
+        <a href="https://zetro.fr">ZeTro</a>
       </p>
     </div>
   </footer>
