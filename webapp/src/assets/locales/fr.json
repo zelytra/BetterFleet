@@ -22,7 +22,7 @@
         "title": "Échec du lancement"
       },
       "notReady": {
-        "content": "Échec du lancement, vous n'êtes pas prêt",
+        "content": "Vous n'êtes pas prêt",
         "title": "Échec du lancement"
       },
       "offline": {
@@ -45,8 +45,8 @@
     },
     "username": {
       "length": {
-        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
-        "title": "Mauvais format de pseudo"
+        "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
+        "title": "Format de pseudo invalide"
       }
     }
   },
@@ -93,7 +93,7 @@
   },
   "locales": {
     "de": "Deutsch",
-    "en": "Anglais",
+    "en": "English",
     "es": "Español",
     "fr": "Français"
   },
@@ -138,9 +138,9 @@
   },
   "tooltips": {
     "navbar": {
-      "config": "Page de configuration",
+      "config": "Paramètres",
       "fleet": "Session",
-      "home": "Page d'acceuil"
+      "home": "Page d'accueil"
     }
   }
 }
