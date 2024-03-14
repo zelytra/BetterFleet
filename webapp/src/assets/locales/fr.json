@@ -86,7 +86,7 @@
     "title": "Comment tu t'appelles l'ami ?"
   },
   "loading": {
-    "loading": "Chargement en cours...",
+    "loading": "Chargement...",
     "targetGame": "Détection du jeu en cours",
     "targetLoading": "Jeu détecté. Préparation des navires.",
     "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé"
