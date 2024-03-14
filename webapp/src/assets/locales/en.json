@@ -86,7 +86,7 @@
     "title": "What's your name lad ?"
   },
   "loading": {
-    "loading": "Loading in progress...",
+    "loading": "Loading...",
     "targetGame": "Game detection in progress",
     "targetLoading": "Game detected. Ships in preparation.",
     "tips": "This process might take a while, please make sure your game is launched"
@@ -94,8 +94,8 @@
   "locales": {
     "de": "Deutsch",
     "en": "English",
-    "es": "Spanish",
-    "fr": "French"
+    "es": "Español",
+    "fr": "Français"
   },
   "session": {
     "choice": {
@@ -133,7 +133,7 @@
     "status": {
       "countdown": "Launch in ",
       "ready": "Ready",
-      "waiting": "Waiting..."
+      "waiting": "Waiting"
     }
   },
   "tooltips": {
