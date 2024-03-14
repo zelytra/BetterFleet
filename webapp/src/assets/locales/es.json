@@ -22,7 +22,7 @@
         "title": "Lanzamiento fallido"
       },
       "notReady": {
-        "content": "Error al iniciar, no estás listo",
+        "content": "No estás listo",
         "title": "Lanzamiento fallido"
       },
       "offline": {
