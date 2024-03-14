@@ -6,7 +6,7 @@
   },
   "comparison": {
     "description": "Better Fleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de \"Fleet Creator\". Lorsqu'on observe notre graphique, les barres vertes, correspondant à BetterFleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, BetterFleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. BetterFleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
-    "subtitle": "Une connexion turbo-chargée pour une expérience de jeu triple vitesse !",
+    "subtitle": "¡Una conexión turbo para una experiencia de juego de triple velocidad!",
     "title": "Comparación con Fleet Creator"
   },
   "credits": {
@@ -23,22 +23,22 @@
   "discover": {
     "discord": {
       "button": "Rejoindre le discord",
-      "content": "Notre application s'étend bien au-delà d'une simple interface, car elle s'ancre au sein d'une communauté vibrante et engagée sur notre serveur Discord dédié. Cet espace dynamique est le carrefour où les joueurs peuvent non seulement partager leurs expériences, mais aussi contribuer activement au développement en soumettant des idées d'amélioration. Le dialogue ouvert et constructif est encouragé, forgeant une synergie entre les utilisateurs et les créateurs. De plus, notre serveur Discord offre un support robuste pour ceux qui souhaitent intégrer notre application de leur côté. Que ce soit pour des conseils techniques, des orientations stratégiques ou des astuces de personnalisation, nos membres et notre équipe de support sont toujours prêts à aider, assurant une intégration transparente et réussie.",
-      "nav": "Notre communauté",
+      "content": "Nuestra aplicación va mucho más allá de una simple interfaz, ya que está anclada en una comunidad vibrante y comprometida en nuestro servidor dedicado de Discord. Este espacio dinámico es el centro donde los jugadores no sólo pueden compartir sus experiencias, sino también contribuir activamente al desarrollo presentando ideas para mejorar. Se fomenta el diálogo abierto y constructivo, generando sinergias entre usuarios y creadores. Además, nuestro servidor Discord ofrece un soporte sólido para aquellos que quieran integrar nuestra aplicación de su lado. Ya sea para asesoramiento técnico, orientación estratégica o consejos de personalización, nuestros miembros y equipo de soporte siempre están listos para ayudar, garantizando una integración perfecta y exitosa.",
+      "nav": "Nuestra comunidad",
       "title": "Notre plateforme d'échange préféré !"
     },
     "github": {
       "button": "GitHub",
-      "content": "Au cœur de notre projet se trouve un engagement profond pour l'open source, reflété par notre code accessible à tous et notre équipe de développeurs actifs et réceptifs. Cette philosophie garantit une évolution constante de notre application, propulsée par une collaboration transparente et des échanges fructueux avec notre communauté. Les retours des joueurs sont une pierre angulaire de notre processus de développement, car ils nous permettent de peaufiner et d'améliorer notre offre, en veillant à ce qu'elle réponde précisément aux besoins et aux désirs de nos utilisateurs. L'ouverture aux suggestions et la capacité d'adaptation rapide de nos développeurs assurent que notre application reste à la pointe, tout en cultivant une relation de confiance et de respect mutuel avec notre communauté engagée.",
-      "nav": "Innovation Collaborative",
-      "title": "Notre Engagement Open Source pour une Application en Constante Évolution"
+      "content": "En el corazón de nuestro proyecto hay un profundo compromiso con el código abierto, reflejado en nuestro código de acceso público y nuestro equipo de desarrolladores activos y receptivos. Esta filosofía garantiza una evolución constante de nuestra aplicación, impulsada por una colaboración transparente y intercambios fructíferos con nuestra comunidad. Los comentarios de los jugadores son una piedra angular de nuestro proceso de desarrollo, ya que nos permiten refinar y mejorar nuestra oferta, asegurando que satisfaga con precisión las necesidades y deseos de nuestros usuarios. La apertura de nuestros desarrolladores a las sugerencias y la rápida adaptación garantizan que nuestra aplicación se mantenga a la vanguardia, al tiempo que cultiva una relación de confianza y respeto mutuo con nuestra comprometida comunidad.",
+      "nav": "Innovación colaborativa",
+      "title": "Nuestro compromiso de código abierto con una aplicación en constante evolución"
     },
-    "title": "Nos valeurs et objectifs",
+    "title": "Nuestros valores y objetivos",
     "translation": {
       "button": "multitud",
-      "content": "Notre application embrasse la diversité et l'inclusivité à travers son développement axé sur la norme i18n, ouvrant la porte à des traductions dans n'importe quelle langue par la communauté elle-même. Cette approche garantit que notre application peut être facilement adaptée et utilisée par des utilisateurs du monde entier, reflétant notre engagement à briser les barrières linguistiques. En outre, nous avons mis en place un projet Crowdin public, fournissant une plateforme intuitive pour tous ceux désireux de contribuer aux efforts de traduction. Cette initiative favorise une collaboration internationale, permettant à notre application de s'enrichir des nuances culturelles et linguistiques de chaque contributeur. Ensemble, nous construisons une expérience de jeu véritablement mondiale, accessible et engageante pour une communauté internationale en constante expansion.",
-      "nav": "Traduction Participative",
-      "title": "Unir les Joueurs du Monde Entier grâce à i18n et Crowdin"
+      "content": "Nuestra aplicación abraza la diversidad y la inclusión a través de su desarrollo enfocado en el estándar i18n, abriendo la puerta a traducciones a cualquier idioma por parte de la propia comunidad. Este enfoque garantiza que nuestra aplicación pueda ser adaptada y utilizada fácilmente por usuarios de todo el mundo, lo que refleja nuestro compromiso de romper las barreras del idioma. Además, hemos establecido un proyecto público Crowdin, que proporciona una plataforma intuitiva para cualquier persona interesada en contribuir a los esfuerzos de traducción. Esta iniciativa promueve la colaboración internacional, permitiendo que nuestra aplicación se enriquezca con los matices culturales y lingüísticos de cada colaborador. Juntos, estamos construyendo una experiencia de juego verdaderamente global, accesible y atractiva para una comunidad internacional en constante expansión.",
+      "nav": "Traducción Participativa",
+      "title": "Uniendo jugadores de todo el mundo con i18n y Crowdin"
     }
   },
   "download": {
@@ -63,7 +63,7 @@
     "support": "Apoyo"
   },
   "presentation": {
-    "content": "Plongez dans l'univers de Sea of Thieves avec l'outil ultime conçu pour forger des alliances comme jamais auparavant. Notre application révolutionne la façon dont les joueurs se connectent, offrant une fluidité exceptionnelle et augmentant significativement vos chances de trouver une alliance, dépassant de loin les capacités des autres applications. Rejoignez notre communauté et transformez votre expérience de jeu en une aventure épique, où créer des liens et naviguer ensemble devient une réalité accessible à chaque clic.",
+    "content": "Sumérgete en el mundo de Sea of Thieves con la herramienta definitiva diseñada para forjar alianzas como nunca antes. Nuestra aplicación revoluciona la forma en que los jugadores se conectan, brindando una fluidez excepcional y aumentando significativamente sus posibilidades de encontrar una alianza, superando con creces las capacidades de otras aplicaciones. Únase a nuestra comunidad y transforme su experiencia de juego en una aventura épica, donde unirse y navegar juntos se convierte en una realidad accesible con cada clic.",
     "title": "BetterFleet"
   },
   "stats": {
