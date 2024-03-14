@@ -22,7 +22,7 @@
         "title": "Der Start ist fehlgeschlagen"
       },
       "notReady": {
-        "content": "Der Start ist fehlgeschlagen. Sie sind nicht bereit",
+        "content": "Sie sind nicht bereit",
         "title": "Der Start ist fehlgeschlagen"
       },
       "offline": {
