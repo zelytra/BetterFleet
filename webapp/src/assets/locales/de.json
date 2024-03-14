@@ -86,7 +86,7 @@
     "title": "Wie heißt du?"
   },
   "loading": {
-    "loading": "Chargement...",
+    "loading": "Wird geladen...",
     "targetGame": "Spielerkennung läuft",
     "targetLoading": "Spiel erkannt. Schiffe in Vorbereitung.",
     "tips": "Dieser Vorgang kann eine Weile dauern. Bitte stellen Sie sicher, dass Ihr Spiel gestartet ist"
@@ -139,7 +139,7 @@
   "tooltips": {
     "navbar": {
       "config": "Page de configuration",
-      "fleet": "Session",
+      "fleet": "Sitzung",
       "home": "Page d'acceuil"
     }
   }
