@@ -26,7 +26,6 @@ const {t} = useI18n()
 
 <style scoped lang="scss">
 section {
-
   height: 700px;
   padding: 64px;
   box-sizing: border-box;

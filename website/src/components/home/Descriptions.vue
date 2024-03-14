@@ -40,6 +40,8 @@ section {
     p {
       text-align: center;
       color: var(--secondary-text);
+      height: 140px;
+      overflow: hidden;
     }
   }
 }
