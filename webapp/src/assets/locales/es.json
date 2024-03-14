@@ -86,7 +86,7 @@
     "title": "¿Cómo te llamas muchacho?"
   },
   "loading": {
-    "loading": "Cargando...",
+    "loading": "Chargement...",
     "targetGame": "Detección de juego en curso",
     "targetLoading": "Juego detectado. Naves en preparación.",
     "tips": "Este proceso puede tardar un poco, asegúrate de que tu juego esté iniciado."
