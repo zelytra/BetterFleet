@@ -133,7 +133,7 @@
     "status": {
       "countdown": "Launch in ",
       "ready": "Ready",
-      "waiting": "Waiting"
+      "waiting": "Waiting..."
     }
   },
   "tooltips": {
