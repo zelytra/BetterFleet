@@ -9,13 +9,13 @@
     "title": "Comparaison avec Fleet Creator"
   },
   "descriptions": {
-    "globe": "Lorem ipsum dolor sit amet consectetur. Risus malesuada ultricies lectus faucibus. Tempor scelerisque lacus blandit tristique euismod est tellus. Habitasse metus ornare lectus et nec tempus arcu ut aliquet. Donec purus vitae volutpat ut in elementum cursus id.",
+    "globe": "Better Fleet mêle design et efficacité. Reprenant une direction artistique proche de Sea of Thieves, vous aurez l'impression de naviguer dans une extension du jeu au summum de la réactivité.",
     "hourglass": "Lorem ipsum dolor sit amet consectetur. Risus malesuada ultricies lectus faucibus. Tempor scelerisque lacus blandit tristique euismod est tellus. Habitasse metus ornare lectus et nec tempus arcu ut aliquet. Donec purus vitae volutpat ut in elementum cursus id.",
-    "key": "Lorem ipsum dolor sit amet consectetur. Risus malesuada ultricies lectus faucibus. Tempor scelerisque lacus blandit tristique euismod est tellus. Habitasse metus ornare lectus et nec tempus arcu ut aliquet. Donec purus vitae volutpat ut in elementum cursus id."
+    "key": "Notre application assure la sécurité des utilisateurs grâce à son code open source, permettant une transparence totale, et à une équipe de développeurs actifs qui se consacre à des mises à jour régulières et à la maintenance de la sécurité."
   },
   "discover": {
     "discord": {
-      "button": "Rejoindre le discord",
+      "button": "Rejoindre le Discord",
       "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas laoreet  sit amet sem ut fermentum. Vestibulum eu ligula orci. Praesent  consectetur, nulla at consectetur finibus, diam magna finibus velit,  vitae porttitor lorem nisl id justo. Vivamus cursus placerat urna ac  lacinia. Fusce tristique, odio quis egestas cursus, eros justo rutrum  mauris, ut molestie nunc massa at nulla. Aenean consectetur metus sed  magna pulvinar varius. Orci varius natoque penatibus et magnis dis  parturient montes, nascetur ridiculus mus. Orci varius natoque penatibus  et magnis dis parturient montes, nascetur ridiculus mus.",
       "nav": "Discord communautaire",
       "title": "Comment fonctionne Better Fleet ?"
@@ -26,33 +26,33 @@
       "nav": "Un projet open source",
       "title": "Github title"
     },
-    "title": "Découvrez nos fonctionnalitées",
+    "title": "Découvrez nos fonctionnalités",
     "translation": {
       "button": "Crowdin",
       "content": "Lorem ipsum",
       "nav": "Traduction",
-      "title": "Aplpication multi-langues"
+      "title": "Application multilingue"
     }
   },
   "footer": {
     "content": "Lorem ipsum"
   },
   "header": {
-    "details": "Better Fleet est actuellement en alpha ! Testez l’application dès maintenant."
+    "details": "Better Fleet est actuellement en alpha ! Testez l’application dès maintenant !"
   },
   "nav": {
     "documentation": "Documentation",
-    "home": "Acceuil",
+    "home": "Accueil",
     "support": "Support"
   },
   "presentation": {
     "content": "Lorem ipsum dolor sit amet consectetur. Magna ornare placerat dignissim pellentesque. Suspendisse sit massa           maecenas nec. A vulputate placerat sollicitudin tristique nulla vitae. Suspendisse tellus viverra rhoncus           egestas lacus senectus viverra amet ante.",
-    "title": "BetterFleet"
+    "title": "Better Fleet"
   },
   "stats": {
-    "download": "Téléchargement",
+    "download": "Téléchargements",
     "players": "Joueurs en ligne",
-    "sessions": "Session ouverte",
+    "sessions": "Sessions ouvertes",
     "title": "Statistiques"
   }
 }
