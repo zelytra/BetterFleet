@@ -5,7 +5,7 @@
       "title": "Bad query"
     },
     "error": {
-      "content": "An error has occured",
+      "content": "An error has occurred",
       "title": "Error"
     },
     "forbidden": {
@@ -22,7 +22,7 @@
         "title": "Launch failed"
       },
       "notReady": {
-        "content": "Launch failed, you are not ready",
+        "content": "You are not ready",
         "title": "Launch failed"
       },
       "offline": {
@@ -37,7 +37,7 @@
     "socket": {
       "connectionFailed": "The connection to the server failed",
       "random": "The WebSocket closed unexpectedly",
-      "title": "An error has occured with the server"
+      "title": "An error has occurred with the server"
     },
     "unsupportedMedia": {
       "content": "The media you are trying to send is not supported by the application",
@@ -45,8 +45,8 @@
     },
     "username": {
       "length": {
-        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
-        "title": "Mauvais format de pseudo"
+        "content": "Your username cannot be empty or go over 16 characters",
+        "title": "Invalid username format"
       }
     }
   },
@@ -71,7 +71,7 @@
     "and": "and",
     "description": "Better Fleet was developed in order to facilitate the formation of alliances on Sea Of Thieves",
     "designed": "Designed by",
-    "details": "Better Fleet is a non official third party application unrelated to the development team of Sea Of Thieves. Its use is purely external and has no impact on gameplay experience !",
+    "details": "Better Fleet is a non-official third party application unrelated to the development team of Sea Of Thieves. Its use is purely external and has no impact on gameplay experience !",
     "developed": "Developed by",
     "socials": "Find us here :",
     "title": "Information"
@@ -82,7 +82,7 @@
       "title": "Let the journey begin"
     },
     "description": "Please enter your current gamertag to oversee the smooth running of the alliance",
-    "tips": "You can change your username at any moment in the \"Preferences\" section",
+    "tips": "You can change your username at any moment in the settings",
     "title": "What's your name lad ?"
   },
   "loading": {
@@ -95,11 +95,11 @@
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
-    "fr": "French"
+    "fr": "Français"
   },
   "session": {
     "choice": {
-      "createComment": "Take a bite at freedom and rule on the sea of theives !",
+      "createComment": "Take a bite at freedom and rule on the sea of thieves !",
       "createSession": "Create a session",
       "joinComment": "Grab a tankard, come aboard and join the crew !",
       "joinSession": "Join a session",
@@ -138,9 +138,9 @@
   },
   "tooltips": {
     "navbar": {
-      "config": "Page de configuration",
+      "config": "Settings",
       "fleet": "Session",
-      "home": "Page d'acceuil"
+      "home": "Home page"
     }
   }
 }
