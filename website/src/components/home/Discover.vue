@@ -96,7 +96,7 @@ section {
     background: url("@/assets/backgrounds/discover.svg") no-repeat;
     background-size: contain;
     position: relative;
-    overflow: hidden;
+    //overflow: hidden;
 
     .slider-nav {
       display: flex;
@@ -108,7 +108,7 @@ section {
       transform: translate(-50%, 0);
 
       span {
-        background: url("@/assets/backgrounds/button-off.svg") 100% 0/100% 100% no-repeat;
+        background: url("@/assets/backgrounds/button-off.svg") no-repeat;
         background-size: cover;
         padding: 10px 20px;
         white-space: nowrap;
