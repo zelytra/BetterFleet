@@ -96,7 +96,6 @@ section {
     background: url("@/assets/backgrounds/discover.svg") no-repeat;
     background-size: contain;
     position: relative;
-    //overflow: hidden;
 
     .slider-nav {
       display: flex;
