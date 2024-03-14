@@ -10,6 +10,7 @@
     <Separator/>
     <Comparaison/>
     <Separator/>
+    <Download/>
     <FooterVue/>
   </div>
 </template>
@@ -23,6 +24,7 @@ import Descriptions from "@/components/home/Descriptions.vue";
 import Comparaison from "@/components/home/Comparison.vue";
 import Discover from "@/components/home/Discover.vue";
 import FooterVue from "@/components/global/FooterVue.vue";
+import Download from "@/components/home/Download.vue";
 </script>
 
 <style scoped lang="scss">
