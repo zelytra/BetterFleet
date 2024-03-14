@@ -7,7 +7,14 @@ export const AppStore = reactive({
   tauriRelease: {} as TauriRelease,
   githubRelease: {} as GithubRelease,
   init() {
-    axios.get("https://github.com/zelytra/BetterFleet/releases/latest/download/latest.json").then((resonse: AxiosResponse) => {
+    const httpRequest = axios.create({
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, DELETE",
+        Authorization: "",
+      }
+    })
+    httpRequest.get("https://github.com/zelytra/BetterFleet/releases/latest/download/latest.json").then((resonse: AxiosResponse) => {
       this.tauriRelease = resonse.data as TauriRelease;
       this.githubRelease = {
         url: this.tauriRelease.platforms["windows-x86_64"].url.replace("nsis.zip", "exe"),
