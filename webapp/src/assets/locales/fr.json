@@ -32,8 +32,8 @@
     },
     "session": {
       "notLeave": {
-        "content": "Vous ne pouvez pas quitter la page lors d'un lancement",
-        "title": "Vous ne pouvez pas quitter la page"
+        "content": "Vous ne pouvez pas quitter cette page",
+        "title": "Lancement en cours"
       }
     },
     "sessionNotFound": {
@@ -52,7 +52,7 @@
     "username": {
       "ignore": {
         "content": "Votre pseudonyme n'a pas été changé",
-        "title": "Changement annulé"
+        "title": "Lancement en cours"
       },
       "length": {
         "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
