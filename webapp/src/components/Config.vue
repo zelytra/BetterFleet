@@ -19,7 +19,7 @@
             />
             <div class="dev-mode-wrapper">
               <input type="checkbox" v-model="devMode"/>
-              <p>{{ t("config.devmode") }}</p>
+              <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
             </div>
             <InputText
                 v-model:input-value="UserStore.player.serverHostName"
@@ -112,6 +112,15 @@ watch(langOptions.value, () => {
 
 onBeforeRouteLeave((_to, _from, next) => {
   if (username.value.length == 0 || username.value.length >= 16) {
+    if (UserStore.player.countDown) {
+      alerts!.sendAlert({
+        content: t('alert.username.ignore.content'),
+        title: t('alert.username.ignore.title'),
+        type: AlertType.WARNING
+      })
+      next();
+      return
+    }
     next(false);
     alerts!.sendAlert({
       content: t('alert.username.length.content'),
@@ -202,6 +211,10 @@ function getImgUrl(iconName: string): string {
             flex-direction: column;
             gap: 24px;
           }
+        }
+
+        .dev-mode-wrapper p {
+          cursor: pointer;
         }
 
         input[type="checkbox"] {
