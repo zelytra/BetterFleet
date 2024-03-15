@@ -296,11 +296,12 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
                                     remote_port = source_port;
                                 }
 
-                                if remote_port > 30000 && remote_port < 40000 {
+                                if remote_port >= 30000 && remote_port < 40000 {
                                     // Got a plausible result
                                     Some((remote_ip, remote_port))
                                 } else {
                                     // Result make no sense for SoT
+                                    println!("Result make no sense for SoT: {} {}", remote_ip, remote_port);
                                     continue;
                                 }
                             }

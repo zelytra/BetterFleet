@@ -1,6 +1,6 @@
 <template>
-  <div class="server-wrapper" :style="{borderColor:randomColor}">
-    <h2 :style="{color:randomColor}">{{ server }}</h2>
+  <div :class="{'server-wrapper':true}" :style="{borderColor:color,backgroundColor:getBackgroundColor()}">
+    <h2 :style="{color:color}">{{ server }}</h2>
     <div class="player-wrapper">
       <slot/>
     </div>
@@ -8,13 +8,27 @@
 </template>
 
 <script setup lang="ts">
-import {Utils} from "@/objects/Utils.ts";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {findClosestColor} from "@/objects/Color.ts";
 
-defineProps({
-  server: String
+const color = ref<string>();
+
+const props = defineProps({
+  server: String,
+  hash: {type: String, required: true},
+  playerCount: {type: Number, required: true}
 })
-const randomColor = ref<string>(Utils.generateRandomColor());
+
+onMounted(() => {
+  color.value = findClosestColor(props.hash);
+})
+
+function getBackgroundColor(): string {
+  if (props.playerCount >= 5) {
+    return color.value + "1A"
+  }
+  return "";
+}
 </script>
 
 <style scoped lang="scss">

@@ -9,7 +9,9 @@
             <div class="id-wrapper">
               <p class="id">
                 {{ t("session.id") + ": " }}
-                <span>{{ session.sessionId.toUpperCase() }}</span>
+                <span @click="copyIdToClipboard(session.sessionId.toUpperCase())">{{
+                    session.sessionId.toUpperCase()
+                  }}</span>
               </p>
               <img src="@/assets/icons/clipboard.svg" alt="copy-button"
                    @click="copyIdToClipboard(session.sessionId.toUpperCase())"/>
@@ -30,7 +32,8 @@
     <div class="lobby-content">
       <div class="player-table">
         <ServerContainer v-if="computedSession.servers.size > 0" v-for="[hash,server] of session.servers.entries()"
-                         :server="hash+' | '+server.location">
+                         :server="hash.toUpperCase()+' | '+server.location" :hash="hash"
+                         :player-count="server.connectedPlayers.length">
           <PlayerFleet
               v-for="player in server.connectedPlayers.sort((a, b) => {
             return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
@@ -209,7 +212,7 @@ function copyIdToClipboard(id: string) {
         font-size: 16px;
 
         span {
-          user-select: all;
+          cursor: pointer;
           color: var(--primary);
         }
       }

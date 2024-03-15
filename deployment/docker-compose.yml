@@ -8,7 +8,7 @@ services:
       - "2600:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - /psql-data/app:/var/lib/postgresql/betterfleet/data/pgdata
+      - ./psql-data/app:/var/lib/postgresql/betterfleet/data/pgdata
       - /etc/localtime:/etc/localtime:ro
     environment:
       POSTGRES_USER: ${POSTGRES_USER}

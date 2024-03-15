@@ -7,8 +7,7 @@ export class HTTPAxios {
 
     private readonly header = {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, DELETE",
-        Authorization: "",
+        "Access-Control-Allow-Methods": "GET, POST, DELETE"
     };
     private readonly url = import.meta.env.VITE_BACKEND_HOST + "/";
     public isAuth = false;
