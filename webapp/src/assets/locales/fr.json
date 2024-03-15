@@ -30,6 +30,12 @@
         "title": "Échec du lancement"
       }
     },
+    "session": {
+      "notLeave": {
+        "content": "Vous ne pouvez pas quitter la page lors d'un lancement",
+        "title": "Vous ne pouvez pas quitter la page"
+      }
+    },
     "sessionNotFound": {
       "content": "Vérifiez votre code de session",
       "title": "Session introuvable"
@@ -44,6 +50,10 @@
       "title": "Média non supporté"
     },
     "username": {
+      "ignore": {
+        "content": "Le conteur c'est lancé",
+        "title": "Changement ignoré"
+      },
       "length": {
         "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
         "title": "Format de pseudo invalide"
@@ -84,6 +94,9 @@
     "description": "Veuillez saisir votre gamertag actuel afin de veiller au bon déroulement de l'alliance",
     "tips": "Vous pouvez modifier votre pseudo à tout moment dans les paramètres",
     "title": "Comment tu t'appelles l'ami ?"
+  },
+  "home": {
+    "title": "Bienvenue sur l'alpha de"
   },
   "loading": {
     "loading": "Chargement en cours...",

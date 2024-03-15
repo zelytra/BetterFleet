@@ -9,7 +9,9 @@
             <div class="id-wrapper">
               <p class="id">
                 {{ t("session.id") + ": " }}
-                <span>{{ session.sessionId.toUpperCase() }}</span>
+                <span @click="copyIdToClipboard(session.sessionId.toUpperCase())">{{
+                    session.sessionId.toUpperCase()
+                  }}</span>
               </p>
               <img src="@/assets/icons/clipboard.svg" alt="copy-button"
                    @click="copyIdToClipboard(session.sessionId.toUpperCase())"/>
@@ -209,7 +211,7 @@ function copyIdToClipboard(id: string) {
         font-size: 16px;
 
         span {
-          user-select: all;
+          cursor: pointer;
           color: var(--primary);
         }
       }
