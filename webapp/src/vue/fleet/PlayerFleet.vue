@@ -1,7 +1,9 @@
 <template>
   <div class="player-fleet-wrapper">
     <div class="content username">
-      <span class="user-icon" :style="{backgroundColor:Utils.generateRandomColor()}">{{ player.username.charAt(0) }}</span>
+      <span class="user-icon" :style="{backgroundColor:Utils.generateRandomColor()}">{{
+          player.username.charAt(0)
+        }}</span>
       <p>{{ player.username }}</p>
       <img v-if="player.isMaster" src="@/assets/icons/key.svg"/>
     </div>
@@ -75,6 +77,8 @@ defineProps({
     .player-status {
       padding-right: 24px;
       position: relative;
+      width: 100px;
+      text-align: end;
 
       &:after {
         content: '';
