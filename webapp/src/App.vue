@@ -34,7 +34,6 @@ import {Fleet} from "@/objects/Fleet.ts";
 import {invoke} from "@tauri-apps/api/tauri";
 import {RustSotServer} from "@/objects/SotServer.ts";
 import {Utils} from "@/objects/Utils.ts";
-import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
 import router from "@/router";
 
 const {t} = useI18n();
