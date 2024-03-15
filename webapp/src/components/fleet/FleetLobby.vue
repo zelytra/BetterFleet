@@ -85,9 +85,6 @@
         </div>
       </div>
     </div>
-    <transition>
-      <SessionCountdown v-if="UserStore.player.countDown" :session="session"/>
-    </transition>
   </section>
 </template>
 

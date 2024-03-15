@@ -15,16 +15,17 @@ import {Fleet} from "@/objects/Fleet.ts";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
 import {invoke} from '@tauri-apps/api/tauri';
 import {PlayerStates} from "@/objects/Player.ts";
+import {onBeforeRouteLeave} from "vue-router";
 
 const delta = ref<LocalTime>(LocalTime.now());
 const {t} = useI18n();
 const alerts = inject<AlertProvider>("alertProvider");
 
-const updateTimer = setInterval(() => {
+let updateTimer = setInterval(() => {
   if (!UserStore.player.countDown || !UserStore.player.countDown.clickTime) return;
 
-  const start:LocalTime = LocalTime.now()
-  const click:LocalTime = UserStore.player.countDown.clickTime as LocalTime
+  const start: LocalTime = LocalTime.now()
+  const click: LocalTime = UserStore.player.countDown.clickTime as LocalTime
 
   if (click.isBefore(start)) {
     UserStore.player.countDown = undefined;
@@ -38,10 +39,9 @@ const updateTimer = setInterval(() => {
             title: t('alert.research.notReady.title'),
             type: AlertType.WARNING
           })
-          return;
+          break
         }
         invoke('drop_anchor');
-        props.session?.clearPlayersStatus()
         break
       }
       case PlayerStates.CLOSED: {
@@ -62,6 +62,7 @@ const updateTimer = setInterval(() => {
         break
       }
     }
+    props.session?.clearPlayersStatus()
     return;
   }
 
@@ -73,8 +74,10 @@ const props = defineProps({session: {type: Object as PropType<Fleet>, required: 
 
 onUnmounted(() => {
   clearInterval(updateTimer);
+  updateTimer = 0;
   UserStore.player.countDown = undefined;
 })
+
 </script>
 
 <style scoped lang="scss">

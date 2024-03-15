@@ -2,6 +2,7 @@ import {reactive} from "vue";
 import LocalStore, {LocalKey} from "@/objects/stores/LocalStore.ts";
 import {i18n} from "@/main.ts";
 import {Player} from "@/objects/Player.ts";
+import {Fleet} from "@/objects/Fleet.ts";
 
 export const UserStore = reactive({
   player: {} as Player,
@@ -26,6 +27,7 @@ export const UserStore = reactive({
 
     //@ts-ignore I18N typescript implementation
     i18n.global.locale.value = this.player.lang;
+    this.player.fleet = new Fleet();
   },
 
   setUser(user: Player) {
