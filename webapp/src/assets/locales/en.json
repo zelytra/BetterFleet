@@ -30,6 +30,12 @@
         "title": "Launch failed"
       }
     },
+    "session": {
+      "notLeave": {
+        "content": "You cannot leave the page when launching",
+        "title": "You cannot leave the page"
+      }
+    },
     "sessionNotFound": {
       "content": "Verify your Session ID",
       "title": "Session not found"
@@ -44,6 +50,10 @@
       "title": "Unsupported media"
     },
     "username": {
+      "ignore": {
+        "content": "Storyteller started",
+        "title": "Change skipped"
+      },
       "length": {
         "content": "Your username cannot be empty or go over 16 characters",
         "title": "Invalid username format"
@@ -84,6 +94,9 @@
     "description": "Please enter your current gamertag to oversee the smooth running of the alliance",
     "tips": "You can change your username at any moment in the settings",
     "title": "What's your name lad ?"
+  },
+  "home": {
+    "title": "Welcome to alpha of"
   },
   "loading": {
     "loading": "Loading...",
