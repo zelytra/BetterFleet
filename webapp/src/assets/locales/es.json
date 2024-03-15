@@ -30,6 +30,12 @@
         "title": "Lanzamiento fallido"
       }
     },
+    "session": {
+      "notLeave": {
+        "content": "No puedes salir de la página durante un lanzamiento.",
+        "title": "No puedes salir de la pagina."
+      }
+    },
     "sessionNotFound": {
       "content": "Verifique su ID de sesión",
       "title": "Sesión no encontrada"
@@ -44,6 +50,10 @@
       "title": "Medios no compatibles"
     },
     "username": {
+      "ignore": {
+        "content": "Se lanza el narrador",
+        "title": "Cambio ignorado"
+      },
       "length": {
         "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
         "title": "Mauvais format de pseudo"
@@ -84,6 +94,9 @@
     "description": "Ingrese su gamertag actual para supervisar el buen funcionamiento de la alianza.",
     "tips": "Puedes cambiar tu nombre de usuario en cualquier momento en la sección \"Preferencias\"",
     "title": "¿Cómo te llamas muchacho?"
+  },
+  "home": {
+    "title": "Bienvenido a la alfa de"
   },
   "loading": {
     "loading": "Cargando...",
