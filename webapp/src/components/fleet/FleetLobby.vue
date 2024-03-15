@@ -32,7 +32,8 @@
     <div class="lobby-content">
       <div class="player-table">
         <ServerContainer v-if="computedSession.servers.size > 0" v-for="[hash,server] of session.servers.entries()"
-                         :server="hash+' | '+server.location">
+                         :server="hash.toUpperCase()+' | '+server.location" :hash="hash"
+                         :player-count="server.connectedPlayers.length">
           <PlayerFleet
               v-for="player in server.connectedPlayers.sort((a, b) => {
             return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
