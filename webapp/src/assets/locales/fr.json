@@ -32,8 +32,8 @@
     },
     "session": {
       "notLeave": {
-        "content": "Vous ne pouvez pas quitter la page lors d'un lancement",
-        "title": "Vous ne pouvez pas quitter la page"
+        "content": "Vous ne pouvez pas quitter cette page",
+        "title": "Lancement en cours"
       }
     },
     "sessionNotFound": {
@@ -51,8 +51,8 @@
     },
     "username": {
       "ignore": {
-        "content": "Le conteur c'est lancé",
-        "title": "Changement ignoré"
+        "content": "Votre pseudonyme n'a pas été changé",
+        "title": "Lancement en cours"
       },
       "length": {
         "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
@@ -79,7 +79,7 @@
   },
   "credits": {
     "and": "et",
-    "description": "Better Fleet a été développé dans le but de faciliter la création d'alliances sur Sea Of Thieves",
+    "description": "Better Fleet a été développé dans le but de faciliter la création d'alliances sur Sea of Thieves",
     "designed": "Designé par",
     "details": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
     "developed": "Développé par",
@@ -144,7 +144,7 @@
     },
     "run": "Lever l'ancre",
     "status": {
-      "countdown": "Lancement dans ",
+      "countdown": "Lancement dans",
       "ready": "Prêt",
       "waiting": "En attente"
     }

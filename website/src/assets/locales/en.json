@@ -5,14 +5,14 @@
     "downloadHere": "Download here"
   },
   "comparison": {
-    "description": "Better Fleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de \"Fleet Creator\". Lorsqu'on observe notre graphique, les barres vertes, correspondant à BetterFleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, BetterFleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. BetterFleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
-    "subtitle": "Une connexion turbo-chargée pour une expérience de jeu triple vitesse !",
+    "description": "Better Fleet stands as a performance titan by reducing server search time significantly – displaying a speed 3 to 4 times higher than that of Fleet Creator. When we look at our graph, the green bars, corresponding to BetterFleet, reach inferior values with a consistency that notes a advanced technical optimization. This means that, concretely, BetterFleet locates the game server with remarkable agility, drastically reducing connection delays. Players can thus expedite a near-instant transition to their favorite virtual worlds, thanks to a concise platform for efficiency and speed. BetterFleet is the assurance of an uncompromising performance for an unequal user experience.",
+    "subtitle": "A turbocharged connection for triple speed game!",
     "title": "Comparison with Fleet Creator"
   },
   "credits": {
     "and": "&",
     "designed": "Assign by",
-    "developed": "Develop by",
+    "developed": "Powered by",
     "license": "License"
   },
   "descriptions": {
@@ -23,22 +23,22 @@
   "discover": {
     "discord": {
       "button": "Rejoindre le discord",
-      "content": "Notre application s'étend bien au-delà d'une simple interface, car elle s'ancre au sein d'une communauté vibrante et engagée sur notre serveur Discord dédié. Cet espace dynamique est le carrefour où les joueurs peuvent non seulement partager leurs expériences, mais aussi contribuer activement au développement en soumettant des idées d'amélioration. Le dialogue ouvert et constructif est encouragé, forgeant une synergie entre les utilisateurs et les créateurs. De plus, notre serveur Discord offre un support robuste pour ceux qui souhaitent intégrer notre application de leur côté. Que ce soit pour des conseils techniques, des orientations stratégiques ou des astuces de personnalisation, nos membres et notre équipe de support sont toujours prêts à aider, assurant une intégration transparente et réussie.",
-      "nav": "Notre communauté",
+      "content": "Our application has grown well beyond a simple interface because it is anchored in a vibrant, committed community on our dedicated Discord server. This dynamic space is the crossroads where players can not only share their experiences, but also actively contribute to development by submitting ideas for improvement. Open and constructive dialogue is encouraged, forging synergy between users and creators. In addition, our Discord server provides robust support for those who want to integrate our application on their side. Whether for technical advice, strategic orientations or customization tips, our members and our support team are always ready to help, ensuring a transparent and successful integration.",
+      "nav": "Our community",
       "title": "Notre plateforme d'échange préféré !"
     },
     "github": {
       "button": "Github",
-      "content": "Au cœur de notre projet se trouve un engagement profond pour l'open source, reflété par notre code accessible à tous et notre équipe de développeurs actifs et réceptifs. Cette philosophie garantit une évolution constante de notre application, propulsée par une collaboration transparente et des échanges fructueux avec notre communauté. Les retours des joueurs sont une pierre angulaire de notre processus de développement, car ils nous permettent de peaufiner et d'améliorer notre offre, en veillant à ce qu'elle réponde précisément aux besoins et aux désirs de nos utilisateurs. L'ouverture aux suggestions et la capacité d'adaptation rapide de nos développeurs assurent que notre application reste à la pointe, tout en cultivant une relation de confiance et de respect mutuel avec notre communauté engagée.",
-      "nav": "Innovation Collaborative",
-      "title": "Notre Engagement Open Source pour une Application en Constante Évolution"
+      "content": "At the heart of our project is a deep commitment to open source, Reflected by our code accessible to all and our team of active and receptive developers. This philosophy guarantees a constant evolution of our application, driven by transparent collaboration and fruitful exchanges with our community. Player feedback is a cornerstone of our development process, as it allows us to fine-tune and improve our offer, by ensuring that it responds precisely to the needs and desires of our users. Openness to suggestions and ability to adapt quickly to our developers ensure that our application remains at the cutting edge, while cultivating a relationship of trust and mutual respect with our committed community.",
+      "nav": "Collaborative Innovation",
+      "title": "Our Open Source Engagement for Constant Evolution Application"
     },
-    "title": "Nos valeurs et objectifs",
+    "title": "Our Values and Objectives",
     "translation": {
       "button": "Crowdin",
-      "content": "Notre application embrasse la diversité et l'inclusivité à travers son développement axé sur la norme i18n, ouvrant la porte à des traductions dans n'importe quelle langue par la communauté elle-même. Cette approche garantit que notre application peut être facilement adaptée et utilisée par des utilisateurs du monde entier, reflétant notre engagement à briser les barrières linguistiques. En outre, nous avons mis en place un projet Crowdin public, fournissant une plateforme intuitive pour tous ceux désireux de contribuer aux efforts de traduction. Cette initiative favorise une collaboration internationale, permettant à notre application de s'enrichir des nuances culturelles et linguistiques de chaque contributeur. Ensemble, nous construisons une expérience de jeu véritablement mondiale, accessible et engageante pour une communauté internationale en constante expansion.",
-      "nav": "Traduction Participative",
-      "title": "Unir les Joueurs du Monde Entier grâce à i18n et Crowdin"
+      "content": "Our application embraces diversity and inclusiveness through its i18n based development opening the door to translations in any language by the community itself. This approach ensures that our application can be easily adapted and used by users around the world. reflecting our commitment to breaking language barriers. In addition, we have set up a public Crowdin project, providing an intuitive platform for all those willing to contribute to the translation efforts. This initiative promotes international collaboration, enabling our application to be enriched by the cultural and linguistic nuances of each contributor. Together, we build a truly global, accessible and engaging gaming experience for an ever-expanding international community.",
+      "nav": "Participatory Translation",
+      "title": "Uniting Entire World Players with i18n and Crowdin"
     }
   },
   "download": {
@@ -49,7 +49,7 @@
     "discord": "Having trouble? Please contact our team via our server ",
     "github": "If you are a developer and you love sailing on the seas of Sea Of Thieves, come and contribute to the project!",
     "warning": {
-      "content": "Better Fleet is not an official application associated with Sea of Thieves and distances itself from any direct reference to this game.",
+      "content": "Better Fleet is an unofficial third-party application unrelated to the Sea of Thieves development team. Its use is external and does not affect the experience in any way!",
       "title": "Warnings"
     }
   },
@@ -63,7 +63,7 @@
     "support": "Support"
   },
   "presentation": {
-    "content": "Plongez dans l'univers de Sea of Thieves avec l'outil ultime conçu pour forger des alliances comme jamais auparavant. Notre application révolutionne la façon dont les joueurs se connectent, offrant une fluidité exceptionnelle et augmentant significativement vos chances de trouver une alliance, dépassant de loin les capacités des autres applications. Rejoignez notre communauté et transformez votre expérience de jeu en une aventure épique, où créer des liens et naviguer ensemble devient une réalité accessible à chaque clic.",
+    "content": "Dive into the world of Sea of Thieves with the ultimate tool to forge alliances like never before. Our app is changing how players log in, offering exceptional fluidity and significantly increasing your chances of finding an alliance, far beyond the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, or create links and navigate together becomes a reference accessible with each click.",
     "title": "BetterFleet"
   },
   "stats": {
