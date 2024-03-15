@@ -78,6 +78,17 @@ onUnmounted(() => {
   UserStore.player.countDown = undefined;
 })
 
+onBeforeRouteLeave((_to, _from, next) => {
+  if (UserStore.player.countDown) {
+    next(false);
+    alerts?.sendAlert({
+      content: t('alert.session.notLeave.content'),
+      title: t('alert.session.notLeave.title'),
+      type: AlertType.WARNING
+    })
+  }
+});
+
 </script>
 
 <style scoped lang="scss">

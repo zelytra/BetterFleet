@@ -112,6 +112,15 @@ watch(langOptions.value, () => {
 
 onBeforeRouteLeave((_to, _from, next) => {
   if (username.value.length == 0 || username.value.length >= 16) {
+    if (UserStore.player.countDown) {
+      alerts!.sendAlert({
+        content: t('alert.username.ignore.content'),
+        title: t('alert.username.ignore.title'),
+        type: AlertType.WARNING
+      })
+      next();
+      return
+    }
     next(false);
     alerts!.sendAlert({
       content: t('alert.username.length.content'),

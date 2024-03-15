@@ -7,9 +7,6 @@
           <component :is="Component"/>
         </transition>
       </router-view>
-      <transition>
-        <SessionCountdown v-if="UserStore.player.countDown" :session="UserStore.player.fleet"/>
-      </transition>
     </section>
   </section>
   <Loading :is-loading="false">
@@ -29,7 +26,7 @@ import Loading from "@/vue/templates/Loading.vue";
 import {useI18n} from "vue-i18n";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalKey} from "@/objects/stores/LocalStore.ts";
-import {onMounted, onUnmounted} from "vue";
+import {onMounted, onUnmounted, watch} from "vue";
 import FirstLogin from "@/vue/templates/FirstLogin.vue";
 import AlertComponent from "@/vue/alert/AlertComponent.vue";
 import {PlayerStates} from "@/objects/Player.ts";
@@ -38,6 +35,7 @@ import {invoke} from "@tauri-apps/api/tauri";
 import {RustSotServer} from "@/objects/SotServer.ts";
 import {Utils} from "@/objects/Utils.ts";
 import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
+import router from "@/router";
 
 const {t} = useI18n();
 const gameStatusRefresh: number = setInterval(() => {
@@ -79,6 +77,7 @@ onMounted(() => {
     username: "",
   });
 });
+
 window.onbeforeunload = () => {
   window.localStorage.setItem(
       LocalKey.USER_STORE,
@@ -86,13 +85,16 @@ window.onbeforeunload = () => {
   );
 };
 
-
 onUnmounted(() => {
   if (UserStore.player.fleet) {
     UserStore.player.fleet.leaveSession();
   }
   clearInterval(gameStatusRefresh)
 });
+
+watch(()=>UserStore.player.countDown, () => {
+  router.push("/fleet")
+})
 </script>
 
 <style scoped lang="scss">
