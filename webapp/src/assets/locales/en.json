@@ -32,8 +32,8 @@
     },
     "session": {
       "notLeave": {
-        "content": "You cannot leave the page when launching",
-        "title": "You cannot leave the page"
+        "content": "You cannot leave this page",
+        "title": "Countdown running"
       }
     },
     "sessionNotFound": {
@@ -51,8 +51,8 @@
     },
     "username": {
       "ignore": {
-        "content": "Storyteller started",
-        "title": "Change skipped"
+        "content": "Username modification cancelled",
+        "title": "Countdown running"
       },
       "length": {
         "content": "Your username cannot be empty or go over 16 characters",
@@ -96,7 +96,7 @@
     "title": "What's your name lad ?"
   },
   "home": {
-    "title": "Welcome to alpha of"
+    "title": "Welcome to the alpha of"
   },
   "loading": {
     "loading": "Loading...",
@@ -144,7 +144,7 @@
     },
     "run": "Set sail",
     "status": {
-      "countdown": "Launch in ",
+      "countdown": "Launch in",
       "ready": "Ready",
       "waiting": "Waiting"
     }
