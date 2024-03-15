@@ -19,7 +19,7 @@
             />
             <div class="dev-mode-wrapper">
               <input type="checkbox" v-model="devMode"/>
-              <p>{{ t("config.devmode") }}</p>
+              <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
             </div>
             <InputText
                 v-model:input-value="UserStore.player.serverHostName"
@@ -202,6 +202,10 @@ function getImgUrl(iconName: string): string {
             flex-direction: column;
             gap: 24px;
           }
+        }
+
+        .dev-mode-wrapper p {
+          cursor: pointer;
         }
 
         input[type="checkbox"] {
