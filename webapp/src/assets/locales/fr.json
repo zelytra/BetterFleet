@@ -51,8 +51,8 @@
     },
     "username": {
       "ignore": {
-        "content": "Le conteur c'est lancé",
-        "title": "Changement ignoré"
+        "content": "Votre pseudonyme n'a pas été changé",
+        "title": "Changement annulé"
       },
       "length": {
         "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
@@ -144,7 +144,7 @@
     },
     "run": "Lever l'ancre",
     "status": {
-      "countdown": "Lancement dans ",
+      "countdown": "Lancement dans",
       "ready": "Prêt",
       "waiting": "En attente"
     }
