@@ -16,13 +16,4 @@ public class StatisticsRepository implements PanacheRepository<StatisticsEntity>
         }
         return entity;
     }
-
-    public static void incrementSession() {
-        StatisticsEntity entity = StatisticsEntity.findById(LocalDate.now());
-        if (entity == null) {
-            entity = new StatisticsEntity();
-            entity.persist();
-        }
-        entity.setSessionsOpen(entity.getSessionsOpen() + 1);
-    }
 }
