@@ -31,7 +31,7 @@ public class StatsEndpointsTest {
     @BeforeEach
     public void setup() {
         ConcurrentHashMap<String, Fleet> fleetConcurrentHashMap = new ConcurrentHashMap<>();
-        Fleet fleet = new Fleet("test");
+        Fleet fleet = new Fleet();
         fleet.getPlayers().add(new Player());
         fleet.getPlayers().add(new Player());
         fleetConcurrentHashMap.put("1", fleet);

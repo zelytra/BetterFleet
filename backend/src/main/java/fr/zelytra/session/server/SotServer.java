@@ -2,7 +2,7 @@ package fr.zelytra.session.server;
 
 import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.Player;
-import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.nio.charset.StandardCharsets;
@@ -11,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+@ApplicationScoped
 public class SotServer {
 
     private String ip;

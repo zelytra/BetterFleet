@@ -2,12 +2,15 @@ package fr.zelytra.session.fleet;
 
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+@ApplicationScoped
 public class Fleet {
 
     private String sessionId;
@@ -16,8 +19,8 @@ public class Fleet {
     private final HashMap<String, SotServer> servers;
     private FleetStats stats;
 
-    public Fleet(String sessionId) {
-        this.sessionId = sessionId;
+    public Fleet() {
+        this.sessionId = UUID.randomUUID().toString().substring(0, 7).toUpperCase();
         this.sessionName = "A session name"; //TODO
         this.players = new ArrayList<>();
         this.servers = new HashMap<>();

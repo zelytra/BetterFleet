@@ -22,7 +22,6 @@ import jakarta.websocket.Session;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
@@ -49,11 +48,13 @@ public class SessionManager {
      * @return UUID of the created session
      */
     public String createSession() {
-        String uuid = UUID.randomUUID().toString().substring(0, 7).toUpperCase();
-        sessions.put(uuid, new Fleet(uuid));
-        executor.submit(this::incrementSession);
-        Log.info("[" + uuid + "] Session created !");
-        return uuid;
+        Fleet fleet = new Fleet();
+        sessions.put(fleet.getSessionId(), fleet);
+        if (executor != null) {
+            executor.submit(this::incrementSession);
+        }
+        Log.info("[" + fleet.getSessionId() + "] Session created !");
+        return fleet.getSessionId();
     }
 
     /**
@@ -314,6 +315,12 @@ public class SessionManager {
         String json = formatMessage(messageType, data);
 
         for (Player player : fleet.getPlayers()) {
+
+            if (player.getSocket() == null || player.getSocket().getAsyncRemote() == null) {
+                Log.error("Failed to retrieve the player socket of " + player.getUsername());
+                continue;
+            }
+
             player.getSocket().getAsyncRemote().sendText(json, result -> {
                 if (result.getException() != null) {
                     Log.error("Unable to send message: " + result.getException());
@@ -345,6 +352,11 @@ public class SessionManager {
     public <T> void sendDataToPlayer(Session session, MessageType messageType, T data) {
         String json = formatMessage(messageType, data);
 
+        if (session == null || session.getAsyncRemote() == null) {
+            Log.error("Failed to get the player socket");
+            return;
+        }
+
         // Send the data to the specific WebSocket connection
         session.getAsyncRemote().sendText(json, result -> {
             if (result.getException() != null) {
@@ -371,14 +383,14 @@ public class SessionManager {
 
     @ActivateRequestContext
     @Transactional
-    public void incrementSession(){
+    public void incrementSession() {
         StatisticsEntity entity = statisticsRepository.getEntity();
         entity.setSessionsOpen(entity.getSessionsOpen() + 1);
     }
 
     @ActivateRequestContext
     @Transactional
-    public void incrementTry(){
+    public void incrementTry() {
         StatisticsEntity entity = statisticsRepository.getEntity();
         entity.setSessionTry(entity.getSessionTry() + 1);
     }

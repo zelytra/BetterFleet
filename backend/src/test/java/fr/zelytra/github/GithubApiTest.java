@@ -23,15 +23,6 @@ public class GithubApiTest {
     }
 
     @Test
-    public void testGithubApi() {
-        GithubRelease githubRelease = githubApi.getGithubRelease();
-
-        // Verify the release information
-        assert "1.0.0".equals(githubRelease.getVersion());
-        assert "https://example.com/download.exe".equals(githubRelease.getUrl());
-    }
-
-    @Test
     public void testGetGithubRelease() {
         GithubRelease githubRelease = githubApi.getGithubRelease();
 
