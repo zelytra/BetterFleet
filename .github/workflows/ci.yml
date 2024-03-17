@@ -24,7 +24,10 @@ jobs:
         run: mvn quarkus:build package
 
   backend-test:
-    name: Build and Run Tests
+    name: Quarkus UT
+    defaults:
+      run:
+        working-directory: 'backend'
     runs-on: ubuntu-latest
     # Permissions block is optional, useful for dependabot checks
     permissions:
