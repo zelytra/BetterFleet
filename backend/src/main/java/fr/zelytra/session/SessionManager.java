@@ -11,6 +11,7 @@ import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.SocketMessage;
 import fr.zelytra.statistics.StatisticsEntity;
 import fr.zelytra.statistics.StatisticsRepository;
+import io.quarkus.arc.Lock;
 import io.quarkus.logging.Log;
 import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,18 +24,20 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 
 /**
  * Manages sessions for a multiplayer game, allowing players to create, join, and leave sessions.
  */
 @ApplicationScoped
+@Lock
 public class SessionManager {
 
-    private final ConcurrentHashMap<String, Fleet> sessions = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Fleet> sessions = new ConcurrentHashMap<>();
 
     // SotServer cached to avoid API spam and faster server response
-    private final ConcurrentHashMap<String, SotServer> sotServers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, SotServer> sotServers = new ConcurrentHashMap<>();
 
     @Inject
     StatisticsRepository statisticsRepository;
@@ -47,6 +50,7 @@ public class SessionManager {
      *
      * @return UUID of the created session
      */
+    @Lock(value = Lock.Type.WRITE, time = 200)
     public String createSession() {
         Fleet fleet = new Fleet();
         sessions.put(fleet.getSessionId(), fleet);
@@ -63,6 +67,7 @@ public class SessionManager {
      * @param sessionId The ID of the session to check.
      * @return true if the session exists, false otherwise.
      */
+    @Lock(value = Lock.Type.READ, time = 200)
     public boolean isSessionExist(String sessionId) {
         return sessions.containsKey(sessionId);
     }
@@ -75,6 +80,7 @@ public class SessionManager {
      * @param player    The player attempting to join the session.
      * @return the Fleet where the player was added or null
      */
+    @Lock(value = Lock.Type.WRITE, time = 200)
     public Fleet joinSession(String sessionId, Player player) {
         // First, leave any session the player might currently be in
         if (getPlayerFromSessionId(player.getSocket().getId()) != null) {
@@ -102,6 +108,7 @@ public class SessionManager {
      *
      * @param player The player to remove from their session.
      */
+    @Lock(value = Lock.Type.WRITE, time = 200)
     public void leaveSession(Player player) {
 
         Fleet fleet = getFleetByPlayerName(player.getUsername());
@@ -147,6 +154,7 @@ public class SessionManager {
      * @return The {@link SotServer} instance the player is connected to, or {@code null} if the player
      * is not connected to any SotServer or does not exist.
      */
+    @Lock(value = Lock.Type.READ, time = 200)
     public SotServer getSotServerFromPlayer(Player player) {
         for (Fleet fleet : sessions.values()) {
             for (SotServer server : fleet.getServers().values()) {
@@ -166,6 +174,7 @@ public class SessionManager {
      * @return The Fleet instance for the given session ID, or null if it doesn't exist.
      */
     @Nullable
+    @Lock(value = Lock.Type.READ, time = 200)
     public Fleet getFleetFromId(String sessionId) {
         if (sessionId == null) return null;
         return sessions.getOrDefault(sessionId, null);
@@ -177,6 +186,7 @@ public class SessionManager {
      * @param sessionId The WebSocket session ID of the player.
      * @return The Player with the matching WebSocket session ID, or null if not found.
      */
+    @Lock(value = Lock.Type.READ, time = 200)
     public Player getPlayerFromSessionId(String sessionId) {
         for (Map.Entry<String, Fleet> sessionEntry : sessions.entrySet()) {
             Fleet fleet = sessionEntry.getValue();
@@ -195,6 +205,7 @@ public class SessionManager {
      * @param username The WebSocket session ID of the player.
      * @return The Fleet containing the Player with the matching WebSocket session ID, or null if not found.
      */
+    @Lock(value = Lock.Type.READ, time = 200)
     public Fleet getFleetByPlayerName(String username) {
         for (Map.Entry<String, Fleet> sessionEntry : sessions.entrySet()) {
             Fleet fleet = sessionEntry.getValue();
@@ -214,6 +225,7 @@ public class SessionManager {
      * @param sessionId The ID of the session to check.
      * @return true if the specified player is in the session with the given ID, false otherwise.
      */
+    @Lock(value = Lock.Type.READ, time = 200)
     public boolean isPlayerInSession(Player player, String sessionId) {
         Fleet fleet = sessions.get(sessionId);
         if (fleet != null) {
@@ -227,6 +239,7 @@ public class SessionManager {
         return false; // The specified player is not found in the session
     }
 
+    @Lock(value = Lock.Type.READ, time = 200)
     public SotServer getServerFromHashing(SotServer server) {
         String hash = server.generateHash();
 
@@ -241,6 +254,7 @@ public class SessionManager {
         return newServer;
     }
 
+    @Lock(value = Lock.Type.WRITE, time = 200)
     public void playerJoinSotServer(Player player, SotServer server) {
         SotServer findedSotServer = getServerFromHashing(server);
 
@@ -262,6 +276,7 @@ public class SessionManager {
         broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
+    @Lock(value = Lock.Type.WRITE, time = 200)
     public void playerLeaveSotServer(Player player, SotServer server) {
         SotServer findedSotServer = getServerFromHashing(server);
 
@@ -279,7 +294,8 @@ public class SessionManager {
         broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
-    public ConcurrentHashMap<String, Fleet> getSessions() {
+    @Lock(value = Lock.Type.READ, time = 200)
+    public ConcurrentMap<String, Fleet> getSessions() {
         return this.sessions;
     }
 
@@ -365,7 +381,7 @@ public class SessionManager {
         });
     }
 
-    private <T> String formatMessage(MessageType messageType, T data) {
+    public  <T> String formatMessage(MessageType messageType, T data) {
         SocketMessage<T> message = new SocketMessage<>(messageType, data);
 
         ObjectMapper objectMapper = new ObjectMapper();

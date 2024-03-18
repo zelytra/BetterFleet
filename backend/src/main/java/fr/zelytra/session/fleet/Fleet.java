@@ -7,8 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class Fleet {
@@ -16,7 +16,7 @@ public class Fleet {
     private String sessionId;
     private String sessionName;
     private List<Player> players;
-    private final HashMap<String, SotServer> servers;
+    private final Map<String, SotServer> servers;
     private FleetStats stats;
 
     public Fleet() {
@@ -28,11 +28,11 @@ public class Fleet {
     }
 
     public List<Player> getReadyPlayers() {
-        return this.players.stream().filter(Player::isReady).collect(Collectors.toList());
+        return this.players.stream().filter(Player::isReady).toList();
     }
 
     public List<Player> getMasters() {
-        return this.players.stream().filter(Player::isMaster).collect(Collectors.toList());
+        return this.players.stream().filter(Player::isMaster).toList();
     }
 
     // Getters and Setters
@@ -60,7 +60,7 @@ public class Fleet {
         this.players = players;
     }
 
-    public HashMap<String, SotServer> getServers() {
+    public Map<String, SotServer> getServers() {
         return servers;
     }
 
