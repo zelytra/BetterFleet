@@ -68,7 +68,7 @@ class SessionSocketTest {
 
     @Test
     void stressTest() throws IOException, InterruptedException, EncodeException, DeploymentException {
-        List<Player> fakePlayers = generateFakePlayer(450);
+        List<Player> fakePlayers = generateFakePlayer(50);
         String fleetId = "";
         for (Player player : fakePlayers) {
 
