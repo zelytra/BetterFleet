@@ -77,7 +77,7 @@ public class SessionSocket {
             }
             case UPDATE -> {
                 Player player = objectMapper.convertValue(socketMessage.data(), Player.class);
-                handleLeaveMessage(player);
+                handleUpdateMessage(player);
             }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
@@ -177,8 +177,7 @@ public class SessionSocket {
         }
     }
 
-    // Extracted method to handle LEAVE messages
-    private void handleLeaveMessage(Player player) {
+    private void handleUpdateMessage(Player player) {
         SessionManager manager = sessionManager;
         Fleet fleet = manager.getFleetFromId(player.getSessionId());
         assert fleet != null;

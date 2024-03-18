@@ -4,7 +4,6 @@ import fr.zelytra.session.client.BetterFleetClient;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.socket.MessageType;
-import io.quarkus.logging.Log;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -22,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -44,12 +44,13 @@ class SessionSocketTest {
     SessionManager sessionManager;
 
     private BetterFleetClient betterFleetClient;
+    private URI uri;
 
     @BeforeEach
     void setup() throws URISyntaxException, DeploymentException, IOException {
         Mockito.doReturn(null).when(executorService).submit(any(Runnable.class));
         String sessionId = sessionManager.createSession();
-        URI uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + sessionId);
+        this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + sessionId);
         betterFleetClient = new BetterFleetClient();
         ContainerProvider.getWebSocketContainer().connectToServer(betterFleetClient, uri);
     }
@@ -66,30 +67,24 @@ class SessionSocketTest {
     }
 
     @Test
-    void stressTest_LowImpact() throws IOException, InterruptedException, EncodeException {
-        List<Player> fakePlayers = generateFakePlayer(10);
+    void stressTest() throws IOException, InterruptedException, EncodeException, DeploymentException {
+        List<Player> fakePlayers = generateFakePlayer(450);
         String fleetId = "";
         for (Player player : fakePlayers) {
-            if (!fleetId.isEmpty()) {
-                player.setSessionId(fleetId);
-            }
 
-            betterFleetClient.sendMessage(MessageType.CONNECT, player);
-            assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+            BetterFleetClient playerClient = new BetterFleetClient();
+            ContainerProvider.getWebSocketContainer().connectToServer(playerClient, uri);
+            playerClient.sendMessage(MessageType.CONNECT, player);
 
-            Fleet socketMessage = betterFleetClient.getMessageReceived(Fleet.class);
+            assertTrue(playerClient.getLatch().await(1, TimeUnit.SECONDS));
+            Fleet socketMessage = playerClient.getMessageReceived(Fleet.class);
             assertNotNull(socketMessage);
 
-            if (fleetId.isEmpty() && socketMessage.getSessionId() != null) {
+            if (fleetId.isEmpty()) {
                 fleetId = socketMessage.getSessionId();
             }
-
-            if (!fleetId.isEmpty()) {
-                assertEquals(fleetId, socketMessage.getSessionId());
-            }
-            Log.info(fleetId);
         }
-        assertEquals(sessionManager.getSessions().get(fleetId).getPlayers().size(), fakePlayers.size());
+        assertEquals(fakePlayers.size(), sessionManager.getSessions().get(fleetId).getPlayers().size());
     }
 
     @Test
@@ -98,7 +93,28 @@ class SessionSocketTest {
         assertEquals(0, SessionSocket.sessionTimeoutTasks.size());
     }
 
-    public List<Player> generateFakePlayer(int amount) {
+    @Test
+    void onOpen_PlayerSetReady_ReadyTrue() throws IOException, InterruptedException, EncodeException {
+        Player player = new Player();
+        player.setUsername("Player 1");
+        player.setClientVersion(appVersion);
+        player.setReady(false);
+
+        betterFleetClient.sendMessage(MessageType.CONNECT, player);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        String sessionId = betterFleetClient.getMessageReceived(Fleet.class).getSessionId();
+        player.setSessionId(sessionId);
+
+        player.setReady(true);
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.UPDATE, player);
+
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        Fleet socketMessage = betterFleetClient.getMessageReceived(Fleet.class);
+        assertEquals(1, socketMessage.getReadyPlayers().size());
+    }
+
+    private List<Player> generateFakePlayer(int amount) {
         List<Player> fakePlayer = new ArrayList<>();
         for (int x = 0; x < amount; x++) {
             Player player = new Player();

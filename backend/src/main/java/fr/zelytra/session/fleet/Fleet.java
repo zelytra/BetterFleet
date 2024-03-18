@@ -4,11 +4,8 @@ import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class Fleet {
@@ -28,11 +25,11 @@ public class Fleet {
     }
 
     public List<Player> getReadyPlayers() {
-        return this.players.stream().filter(Player::isReady).toList();
+        return this.players.stream().filter(Player::isReady).collect(Collectors.toList());
     }
 
     public List<Player> getMasters() {
-        return this.players.stream().filter(Player::isMaster).toList();
+        return this.players.stream().filter(Player::isMaster).collect(Collectors.toList());
     }
 
     // Getters and Setters
