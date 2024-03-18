@@ -21,12 +21,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.io.IOException;
 import java.util.concurrent.*;
 
-@ServerEndpoint("/sessions/{sessionId}") // WebSocket endpoint
+@ServerEndpoint(value = "/sessions/{sessionId}") // WebSocket endpoint
 @ApplicationScoped
 public class SessionSocket {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final ConcurrentHashMap<String, Future<?>> sessionTimeoutTasks = new ConcurrentHashMap<>();
+    public static final ConcurrentMap<String, Future<?>> sessionTimeoutTasks = new ConcurrentHashMap<>();
     private static final int RISE_ANCHOR_TIMER = 3; // in seconds
 
     @ConfigProperty(name = "app.version")
@@ -44,7 +44,7 @@ public class SessionSocket {
         Future<?> timeoutTask = executor.submit(() -> {
             try {
                 // Wait for a certain period for the initial message
-                TimeUnit.SECONDS.sleep(10); // for example, 10 seconds timeout
+                TimeUnit.SECONDS.sleep(1); // 1 seconds timeout
                 // If the initial message is not received, close the session
                 Log.info("[" + session.getId() + "] Timeout reached. Closing session.");
                 session.close();
@@ -77,7 +77,7 @@ public class SessionSocket {
             }
             case UPDATE -> {
                 Player player = objectMapper.convertValue(socketMessage.data(), Player.class);
-                handleLeaveMessage(player);
+                handleUpdateMessage(player);
             }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
@@ -177,8 +177,7 @@ public class SessionSocket {
         }
     }
 
-    // Extracted method to handle LEAVE messages
-    private void handleLeaveMessage(Player player) {
+    private void handleUpdateMessage(Player player) {
         SessionManager manager = sessionManager;
         Fleet fleet = manager.getFleetFromId(player.getSessionId());
         assert fleet != null;

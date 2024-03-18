@@ -41,7 +41,7 @@ public class StatsEndpoints {
     public Response getAllStats() {
         Log.info("[GET] /stats/all");
         StatisticsEntity totalStats = new StatisticsEntity();
-        List<StatisticsEntity> statisticsEntityList = StatisticsEntity.listAll();
+        List<StatisticsEntity> statisticsEntityList = statisticsRepository.listAll();
         for (StatisticsEntity entity : statisticsEntityList) {
             totalStats.setDownload(totalStats.getDownload() + entity.getDownload());
             totalStats.setSessionsOpen(totalStats.getSessionsOpen() + entity.getSessionsOpen());

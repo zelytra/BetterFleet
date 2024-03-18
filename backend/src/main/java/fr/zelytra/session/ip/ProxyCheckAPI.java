@@ -1,6 +1,7 @@
 package fr.zelytra.session.ip;
 
 import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -14,6 +15,7 @@ import java.net.URL;
  * <p>
  * The api have a limitation of 100 request per day without token. Increased to 1000 with a token.
  */
+@ApplicationScoped
 public class ProxyCheckAPI {
 
     private static final String apiURL = "https://proxycheck.io/v2/";
@@ -21,7 +23,10 @@ public class ProxyCheckAPI {
     private static final String tokenParam = "key=";
 
     private final StringBuilder finalUrl = new StringBuilder();
-    private final String ip;
+    private String ip;
+
+    public ProxyCheckAPI(){
+    }
 
     public ProxyCheckAPI(String ip) {
         this.ip = ip;
@@ -31,7 +36,7 @@ public class ProxyCheckAPI {
     public ProxyCheckAPI(String ip, String apiKey) {
         this.ip = ip;
         finalUrl.append(apiURL)
-                .append(ip)
+                .append(this.getIp())
                 .append("?")
                 .append(requestPathParam)
                 .append("&")
@@ -60,7 +65,7 @@ public class ProxyCheckAPI {
 
                 StringBuilder location = new StringBuilder();
                 JSONObject jsonResponse = new JSONObject(response.toString());
-                JSONObject ipJsonObject = jsonResponse.getJSONObject(ip); // Assuming the value is a String
+                JSONObject ipJsonObject = jsonResponse.getJSONObject(this.getIp());
 
                 location.append(ipJsonObject.getString("continent")).append(" - ");
                 location.append(ipJsonObject.getString("country")).append(" - ");
@@ -75,10 +80,17 @@ public class ProxyCheckAPI {
                 Log.error("GET request not worked, Response Code: " + responseCode);
             }
         } catch (Exception e) {
-            Log.error("Failed to retrieve information via ProxyChecker of ip " + this.ip);
+            Log.error("Failed to retrieve information via ProxyChecker of ip " + this.getIp());
             e.printStackTrace();
         }
         return "";
     }
 
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
 }

@@ -2,9 +2,12 @@ package fr.zelytra.session.fleet;
 
 public class FleetStats {
 
-
     private int tryAmount;
     private int successPrediction;
+
+    public FleetStats() {
+
+    }
 
     public FleetStats(int tryAmount, int successPrediction) {
         this.tryAmount = tryAmount;

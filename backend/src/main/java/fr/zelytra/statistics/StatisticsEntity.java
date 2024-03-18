@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "statistics", schema = "betterfleet")
+@Table(name = "statistics")
 public class StatisticsEntity extends PanacheEntityBase {
 
     @Id
