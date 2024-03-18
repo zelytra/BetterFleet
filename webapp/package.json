@@ -14,7 +14,7 @@
   "dependencies": {
     "@js-joda/core": "^5.6.1",
     "@tauri-apps/api": "^1.5.3",
-    "axios": "^1.6.7",
+    "axios": "^1.6.8",
     "vue": "^3.4.21",
     "vue-i18n": "^9.10.1"
   },
