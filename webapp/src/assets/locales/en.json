@@ -63,7 +63,7 @@
   "appName": "Better Fleet",
   "config": {
     "device": {
-      "label": "Platforms"
+      "label": "Platform"
     },
     "devmode": "Enable developer mode",
     "lang": {
@@ -116,16 +116,16 @@
   "modal": {
     "confirm": {
       "launch": {
-        "cancel": "Undo",
-        "confirm": "Raise Anchor",
-        "content": "Not all players are ready! Are you sure you want to anchor up?",
-        "title": "WARNING!"
+        "cancel": "Cancel",
+        "confirm": "Set sail",
+        "content": "Not all players are ready ! Are you sure you want to set sail ?",
+        "title": "WARNING !"
       },
       "leave": {
-        "cancel": "Undo",
-        "confirm": "Exit session",
+        "cancel": "Cancel",
+        "confirm": "Leave the session",
         "content": "Are you sure you want to leave the session?",
-        "title": "EXIT SESSION"
+        "title": "LEAVE THE SESSION"
       }
     }
   },
