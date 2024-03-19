@@ -8,7 +8,7 @@
       <img v-if="player.isMaster" src="@/assets/icons/key.svg"/>
     </div>
     <div class="content">
-      <p class="status">
+      <p :class="{status:true,offline:player.status == PlayerStates.CLOSED }">
         {{ t('session.player.status.' + Fleet.getFormatedStatus(player)) }}
       </p>
     </div>
@@ -24,7 +24,7 @@ import {PropType} from "vue";
 import {Fleet} from "@/objects/Fleet.ts";
 import {useI18n} from "vue-i18n";
 import {Utils} from "@/objects/Utils.ts";
-import {Player} from "@/objects/Player.ts";
+import {Player, PlayerStates} from "@/objects/Player.ts";
 
 const {t} = useI18n()
 defineProps({
@@ -71,6 +71,10 @@ defineProps({
 
       &.status {
         color: var(--primary);
+
+        &.offline {
+          color: var(--secondary-text);
+        }
       }
     }
 
