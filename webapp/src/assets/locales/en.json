@@ -62,6 +62,9 @@
   },
   "appName": "Better Fleet",
   "config": {
+    "device": {
+      "label": "Platforms"
+    },
     "devmode": "Enable developer mode",
     "lang": {
       "label": "Language"
@@ -109,6 +112,22 @@
     "en": "English",
     "es": "Español",
     "fr": "Français"
+  },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "Undo",
+        "confirm": "Raise Anchor",
+        "content": "Not all players are ready! Are you sure you want to anchor up?",
+        "title": "WARNING!"
+      },
+      "leave": {
+        "cancel": "Undo",
+        "confirm": "Exit session",
+        "content": "Are you sure you want to leave the session?",
+        "title": "EXIT SESSION"
+      }
+    }
   },
   "session": {
     "choice": {
