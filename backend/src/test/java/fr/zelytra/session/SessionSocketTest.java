@@ -63,7 +63,7 @@ class SessionSocketTest {
         betterFleetClient.sendMessage(MessageType.CONNECT, player);
 
         assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
-        assertEquals(1, SessionSocket.sessionTimeoutTasks.size());
+        assertEquals(0, SessionSocket.sessionTimeoutTasks.size());
     }
 
     @Test
