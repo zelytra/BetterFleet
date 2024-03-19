@@ -1,10 +1,10 @@
 import {createApp} from 'vue'
 import "@/assets/style.scss";
 import "@/assets/font.scss";
-import en from "@/assets/locales/fr.json";
+import en from "@/assets/locales/en.json";
 import fr from "@/assets/locales/fr.json";
-import es from "@/assets/locales/fr.json";
-import de from "@/assets/locales/fr.json";
+import es from "@/assets/locales/es.json";
+import de from "@/assets/locales/de.json";
 import {createI18n} from "vue-i18n";
 import App from "./App.vue";
 import router from "@/router";
