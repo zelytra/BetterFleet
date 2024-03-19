@@ -110,6 +110,16 @@
     "es": "Español",
     "fr": "Français"
   },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "Annuler",
+        "confirm": "Levez l'ancre",
+        "content": "Pas tout les joueurs sont prêt ! Êtes vous sûr de vouloir levez l’ancre ?",
+        "title": "ATTENTION !"
+      }
+    }
+  },
   "session": {
     "choice": {
       "createComment": "Goûte à la liberté de régner sur les flots en pirate !",
