@@ -5,6 +5,8 @@
           player.username.charAt(0)
         }}</span>
       <p>{{ player.username }}</p>
+      <img v-if="player.device == PlayerDevice.XBOX" src="@/assets/icons/xbox.svg"/>
+      <img v-if="player.device == PlayerDevice.PLAYSTATION" src="@/assets/icons/playstation.svg"/>
       <img v-if="player.isMaster" src="@/assets/icons/key.svg"/>
     </div>
     <div class="content">
@@ -24,7 +26,7 @@ import {PropType} from "vue";
 import {Fleet} from "@/objects/Fleet.ts";
 import {useI18n} from "vue-i18n";
 import {Utils} from "@/objects/Utils.ts";
-import {Player, PlayerStates} from "@/objects/Player.ts";
+import {Player, PlayerDevice, PlayerStates} from "@/objects/Player.ts";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 
 const {t} = useI18n()
