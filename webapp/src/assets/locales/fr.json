@@ -63,7 +63,7 @@
   "appName": "Better Fleet",
   "config": {
     "device": {
-      "label": "Plateformes"
+      "label": "Plateforme"
     },
     "devmode": "Activer le mode développeur",
     "lang": {
@@ -126,14 +126,14 @@
     "confirm": {
       "launch": {
         "cancel": "Annuler",
-        "confirm": "Levez l'ancre",
-        "content": "Pas tout les joueurs sont prêt ! Êtes vous sûr de vouloir levez l’ancre ?",
+        "confirm": "Lever l'ancre",
+        "content": "Tout le monde n'est pas prêt ! Êtes-vous sûr de vouloir lever l'ancre ?",
         "title": "ATTENTION !"
       },
       "leave": {
         "cancel": "Annuler",
         "confirm": "Quitter la session",
-        "content": "Êtes vous sûr de vouloir quitter la session ?",
+        "content": "Êtes-vous sûr de vouloir quitter la session ?",
         "title": "QUITTER LA SESSION"
       }
     }
