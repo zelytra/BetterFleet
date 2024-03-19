@@ -62,6 +62,9 @@
   },
   "appName": "Mejor flota",
   "config": {
+    "device": {
+      "label": "Plataformas"
+    },
     "devmode": "Habilitar el modo desarrollador",
     "lang": {
       "label": "Idioma"
@@ -109,6 +112,22 @@
     "en": "Inglés",
     "es": "Español",
     "fr": "Francés"
+  },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "anular",
+        "confirm": "Levantar el ancla",
+        "content": "¡No todos los jugadores están preparados! ¿Estás seguro de que quieres levar anclas?",
+        "title": "ATENCIÓN !"
+      },
+      "leave": {
+        "cancel": "anular",
+        "confirm": "Salir de la sesión",
+        "content": "¿Estás seguro de que quieres abandonar la sesión?",
+        "title": "SALIR DE LA SESIÓN"
+      }
+    }
   },
   "session": {
     "choice": {
