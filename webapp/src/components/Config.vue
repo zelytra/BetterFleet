@@ -33,6 +33,10 @@
                 :label="t('config.lang.label')"
                 v-model:data="langOptions"
             />
+            <SingleSelect
+                :label="t('config.device.label')"
+                v-model:data="deviceOptions"
+            />
           </div>
         </div>
       </div>
@@ -78,12 +82,17 @@ import fr from "@/assets/icons/locales/fr.svg";
 import de from "@/assets/icons/locales/de.svg";
 import es from "@/assets/icons/locales/es.svg";
 import en from "@/assets/icons/locales/en.svg";
+import xbox from "@/assets/icons/xbox.svg";
+import microsoft from "@/assets/icons/microsoft.svg";
+import playstation from "@/assets/icons/playstation.svg";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {onBeforeRouteLeave} from "vue-router";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
+import {PlayerDevice} from "@/objects/Player.ts";
 
 const {t, availableLocales} = useI18n();
 const langOptions = ref<SingleSelectInterface>({data: []});
+const deviceOptions = ref<SingleSelectInterface>({data: []});
 const devMode = ref<boolean>(false);
 const username = ref<string>(UserStore.player.username);
 const alerts = inject<AlertProvider>("alertProvider");
@@ -97,6 +106,30 @@ onMounted(() => {
     });
   }
 
+  deviceOptions.value.data.push({
+    display: "Microsoft",
+    id: PlayerDevice.MICROSOFT,
+    image: getDeviceImgUrl('microsoft')
+  })
+  deviceOptions.value.data.push({
+    display: "Xbox",
+    id: PlayerDevice.XBOX,
+    image: getDeviceImgUrl('xbox')
+  })
+  deviceOptions.value.data.push({
+    display: "PlayStation",
+    id: PlayerDevice.PLAYSTATION,
+    image: getDeviceImgUrl('playstation')
+  })
+
+  if (UserStore.player.device) {
+    deviceOptions.value.selectedValue = deviceOptions.value.data.filter((x) =>
+        x.id == UserStore.player.device
+    )[0]
+  } else {
+    deviceOptions.value.selectedValue = deviceOptions.value.data[0]
+  }
+
   if (UserStore.player.lang) {
     langOptions.value.selectedValue = langOptions.value.data.filter(
         (x) => x.id == UserStore.player.lang,
@@ -108,6 +141,13 @@ onMounted(() => {
 
 watch(langOptions.value, () => {
   UserStore.setLang(langOptions.value.selectedValue!.id);
+});
+
+watch(deviceOptions.value, () => {
+  UserStore.player.device = deviceOptions.value.selectedValue!.id as PlayerDevice;
+  if (UserStore.player.fleet && UserStore.player.fleet.sessionId){
+    UserStore.player.fleet.updateToSession()
+  }
 });
 
 onBeforeRouteLeave((_to, _from, next) => {
@@ -143,6 +183,19 @@ function getImgUrl(iconName: string): string {
       return es;
     default:
       return en;
+  }
+}
+
+function getDeviceImgUrl(iconName: string): string {
+  switch (iconName) {
+    case "microsoft":
+      return microsoft;
+    case "xbox":
+      return xbox;
+    case "playstation":
+      return playstation;
+    default:
+      return microsoft;
   }
 }
 </script>

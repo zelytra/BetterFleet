@@ -22,6 +22,8 @@ public class Player {
 
     private String clientVersion;
 
+    private PlayerDevice device;
+
     // Constructor
     public Player() {
     }
@@ -82,6 +84,14 @@ public class Player {
 
     public void setClientVersion(String clientVersion) {
         this.clientVersion = clientVersion;
+    }
+
+    public PlayerDevice getDevice() {
+        return device;
+    }
+
+    public void setDevice(PlayerDevice device) {
+        this.device = device;
     }
 
     @Override

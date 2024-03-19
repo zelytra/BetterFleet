@@ -7,7 +7,7 @@
     </div>
     <transition>
       <div class="dropdown" v-if="isOpen" @mouseleave="isOpen=false" v-click-outside="()=>isOpen = false">
-      <span v-for="option in data.data" @click="updateData(option)">
+      <span v-for="option in data.data.filter((x)=> x.id !== data.selectedValue?.id)" @click="updateData(option)">
          <img :src="option.image" alt="flag"/>
           {{ option.display }}
         </span>
@@ -104,6 +104,7 @@ function updateData(option: InputData) {
   }
 
   .dropdown {
+    z-index: 9;
     background: var(--secondary-background);
     border: 1px solid rgba(255, 255, 255, 0.10);
     position: absolute;

@@ -29,7 +29,7 @@ import {LocalKey} from "@/objects/stores/LocalStore.ts";
 import {onMounted, onUnmounted, watch} from "vue";
 import FirstLogin from "@/vue/templates/FirstLogin.vue";
 import AlertComponent from "@/vue/alert/AlertComponent.vue";
-import {PlayerStates} from "@/objects/Player.ts";
+import {PlayerDevice, PlayerStates} from "@/objects/Player.ts";
 import {Fleet} from "@/objects/Fleet.ts";
 import {invoke} from "@tauri-apps/api/tauri";
 import {RustSotServer} from "@/objects/SotServer.ts";
@@ -74,6 +74,7 @@ onMounted(() => {
     isReady: false,
     status: PlayerStates.CLOSED,
     username: "",
+    device : PlayerDevice.MICROSOFT
   });
 });
 
@@ -104,7 +105,7 @@ watch(()=>UserStore.player.countDown, () => {
     height: 100vh;
     overflow: hidden;
     overflow-y: auto;
-    padding: 7px 10px;
+    padding: 12px;
     width: 100%;
     box-sizing: border-box;
     position: relative;

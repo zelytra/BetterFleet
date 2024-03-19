@@ -128,6 +128,7 @@ export class Fleet {
     const player: Player = receivedFleet.players.filter(x => x.username == UserStore.player.username)[0]
     UserStore.player.isMaster = player.isMaster;
     UserStore.player.isReady = player.isReady;
+    UserStore.player.device = player.device;
   }
 
   private handleSessionRunner(countdown: number) {

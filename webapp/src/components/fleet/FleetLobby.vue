@@ -23,7 +23,7 @@
         </div>
       </template>
       <template #left-content>
-        <button @click="startSession" v-if="UserStore.player.isMaster"
+        <button @click="confirmationStartSession()" v-if="UserStore.player.isMaster"
                 :class="{'session-starter':true,'pending':session.getReadyPlayers().length !=session.players.length}">
           {{ t('session.run') }}
         </button>
@@ -31,7 +31,7 @@
     </BannerTemplate>
     <div class="lobby-content">
       <div class="player-table">
-        <ServerContainer v-if="computedSession.servers.size > 0" v-for="[hash,server] of session.servers.entries()"
+        <ServerContainer v-if="computedSession.servers.size > 0" v-for="[hash,server] of getFilteredSotServer()"
                          :server="hash.toUpperCase()+' | '+server.location" :hash="hash"
                          :player-count="server.connectedPlayers.length">
           <PlayerFleet
@@ -80,7 +80,7 @@
               </p>
             </div>
           </div>
-          <button class="session-status" @click="session.leaveSession()">
+          <button class="session-status" @click="leaveConfirmation=true">
             <p>{{ t("session.leave") }}</p>
           </button>
         </div>
@@ -89,6 +89,28 @@
     <transition>
       <SessionCountdown v-if="UserStore.player.countDown" :session="session"/>
     </transition>
+    <ConfirmationModal
+        v-model:is-confirmation-modal-open="launchConfirmation"
+        @on-confirm="startSession"
+        :cancel="t('modal.confirm.launch.cancel')"
+        :confirm="t('modal.confirm.launch.confirm')"
+        :content="t('modal.confirm.launch.content')"
+        :title="t('modal.confirm.launch.title')"
+        cancel-class="important"
+        confirm-class="warning"
+        title-class="warning"
+    />
+    <ConfirmationModal
+        v-model:is-confirmation-modal-open="leaveConfirmation"
+        @on-confirm="session.leaveSession()"
+        :cancel="t('modal.confirm.leave.cancel')"
+        :confirm="t('modal.confirm.leave.confirm')"
+        :content="t('modal.confirm.leave.content')"
+        :title="t('modal.confirm.leave.title')"
+        cancel-class="information"
+        confirm-class="important"
+        title-class="important"
+    />
   </section>
 </template>
 
@@ -101,9 +123,12 @@ import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
 import ServerContainer from "@/vue/templates/ServerContainer.vue";
+import ConfirmationModal from "@/vue/form/ConfirmationModal.vue";
 
 const {t} = useI18n();
 const displayIdCopy = ref<boolean>(false);
+const launchConfirmation = ref<boolean>(false);
+const leaveConfirmation = ref<boolean>(false);
 const props = defineProps({
   session: {
     type: Object as PropType<Fleet>,
@@ -133,6 +158,14 @@ const computedSession = computed({
   },
 });
 
+function confirmationStartSession() {
+  if (props.session.getReadyPlayers().length != props.session.players.length) {
+    launchConfirmation.value = true
+  } else {
+    startSession()
+  }
+}
+
 function startSession() {
   // Yes I know never trust the client... IT'S AN ALPHA !! (or a beta I don't care)
   if (!UserStore.player.isMaster) {
@@ -156,6 +189,12 @@ function getFilteredPlayerList() {
   })
 }
 
+function getFilteredSotServer() {
+  return new Map([...props.session.servers].sort((a, b) => {
+    return a[1].connectedPlayers.length - b[1].connectedPlayers.length
+  }))
+}
+
 function copyIdToClipboard(id: string) {
   navigator.clipboard.writeText(id);
   displayIdCopy.value = true;
@@ -169,7 +208,7 @@ function copyIdToClipboard(id: string) {
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+
 
   .header-content {
     display: flex;
@@ -238,7 +277,8 @@ function copyIdToClipboard(id: string) {
   }
 
   .lobby-content {
-    height: calc(100% - 140px); // Minus header height
+    margin-top: 12px;
+    height: calc(100% - 128px); // Minus header height
     display: flex;
     gap: 12px;
 

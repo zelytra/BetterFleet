@@ -1,14 +1,16 @@
 <template>
-  <div class="player-fleet-wrapper">
+  <div :class="{'player-fleet-wrapper':true,'is-player':UserStore.player.username == player.username}">
     <div class="content username">
       <span class="user-icon" :style="{backgroundColor:Utils.generateRandomColor()}">{{
           player.username.charAt(0)
         }}</span>
       <p>{{ player.username }}</p>
+      <img v-if="player.device == PlayerDevice.XBOX" src="@/assets/icons/xbox.svg"/>
+      <img v-if="player.device == PlayerDevice.PLAYSTATION" src="@/assets/icons/playstation.svg"/>
       <img v-if="player.isMaster" src="@/assets/icons/key.svg"/>
     </div>
     <div class="content">
-      <p class="status">
+      <p :class="{status:true,offline:player.status == PlayerStates.CLOSED }">
         {{ t('session.player.status.' + Fleet.getFormatedStatus(player)) }}
       </p>
     </div>
@@ -24,7 +26,8 @@ import {PropType} from "vue";
 import {Fleet} from "@/objects/Fleet.ts";
 import {useI18n} from "vue-i18n";
 import {Utils} from "@/objects/Utils.ts";
-import {Player} from "@/objects/Player.ts";
+import {Player, PlayerDevice, PlayerStates} from "@/objects/Player.ts";
+import {UserStore} from "@/objects/stores/UserStore.ts";
 
 const {t} = useI18n()
 defineProps({
@@ -43,6 +46,13 @@ defineProps({
   background: var(--primary-background-static);
   padding: 8px 13px;
   border-radius: 5px;
+
+  &.is-player{
+    border: 1px solid var(--primary);
+    background: rgba(50, 212, 153, 0.10);
+
+
+  }
 
   .content {
     display: flex;
@@ -71,6 +81,10 @@ defineProps({
 
       &.status {
         color: var(--primary);
+
+        &.offline {
+          color: var(--secondary-text);
+        }
       }
     }
 
