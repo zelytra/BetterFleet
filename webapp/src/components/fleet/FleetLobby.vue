@@ -31,7 +31,7 @@
     </BannerTemplate>
     <div class="lobby-content">
       <div class="player-table">
-        <ServerContainer v-if="computedSession.servers.size > 0" v-for="[hash,server] of session.servers.entries()"
+        <ServerContainer v-if="computedSession.servers.size > 0" v-for="[hash,server] of getFilteredSotServer()"
                          :server="hash.toUpperCase()+' | '+server.location" :hash="hash"
                          :player-count="server.connectedPlayers.length">
           <PlayerFleet
@@ -154,6 +154,12 @@ function getFilteredPlayerList() {
   return computedSession.value.players.filter(x => !removedPlayer.includes(x.username)).sort((a, b) => {
     return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
   })
+}
+
+function getFilteredSotServer() {
+  return new Map([...props.session.servers].sort((a, b) => {
+    a[1].connectedPlayers.length > b[1].connectedPlayers.length
+  }))
 }
 
 function copyIdToClipboard(id: string) {
