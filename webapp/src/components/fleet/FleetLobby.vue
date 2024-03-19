@@ -80,7 +80,7 @@
               </p>
             </div>
           </div>
-          <button class="session-status" @click="session.leaveSession()">
+          <button class="session-status" @click="leaveConfirmation=true">
             <p>{{ t("session.leave") }}</p>
           </button>
         </div>
@@ -100,6 +100,17 @@
         confirm-class="warning"
         title-class="warning"
     />
+    <ConfirmationModal
+        v-model:is-confirmation-modal-open="leaveConfirmation"
+        @on-confirm="session.leaveSession()"
+        :cancel="t('modal.confirm.leave.cancel')"
+        :confirm="t('modal.confirm.leave.confirm')"
+        :content="t('modal.confirm.leave.content')"
+        :title="t('modal.confirm.leave.title')"
+        cancel-class="information"
+        confirm-class="important"
+        title-class="important"
+    />
   </section>
 </template>
 
@@ -117,6 +128,7 @@ import ConfirmationModal from "@/vue/form/ConfirmationModal.vue";
 const {t} = useI18n();
 const displayIdCopy = ref<boolean>(false);
 const launchConfirmation = ref<boolean>(false);
+const leaveConfirmation = ref<boolean>(false);
 const props = defineProps({
   session: {
     type: Object as PropType<Fleet>,

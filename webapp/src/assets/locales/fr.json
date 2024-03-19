@@ -117,6 +117,12 @@
         "confirm": "Levez l'ancre",
         "content": "Pas tout les joueurs sont prêt ! Êtes vous sûr de vouloir levez l’ancre ?",
         "title": "ATTENTION !"
+      },
+      "leave": {
+        "cancel": "Annuler",
+        "confirm": "Quitter la session",
+        "content": "Êtes vous sûr de vouloir quitter la session ?",
+        "title": "QUITTER LA SESSION"
       }
     }
   },
