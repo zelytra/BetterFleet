@@ -1,5 +1,5 @@
 <template>
-  <div class="player-fleet-wrapper">
+  <div :class="{'player-fleet-wrapper':true,'is-player':UserStore.player.username == player.username}">
     <div class="content username">
       <span class="user-icon" :style="{backgroundColor:Utils.generateRandomColor()}">{{
           player.username.charAt(0)
@@ -25,6 +25,7 @@ import {Fleet} from "@/objects/Fleet.ts";
 import {useI18n} from "vue-i18n";
 import {Utils} from "@/objects/Utils.ts";
 import {Player, PlayerStates} from "@/objects/Player.ts";
+import {UserStore} from "@/objects/stores/UserStore.ts";
 
 const {t} = useI18n()
 defineProps({
@@ -43,6 +44,13 @@ defineProps({
   background: var(--primary-background-static);
   padding: 8px 13px;
   border-radius: 5px;
+
+  &.is-player{
+    border: 1px solid var(--primary);
+    background: rgba(50, 212, 153, 0.10);
+
+
+  }
 
   .content {
     display: flex;
