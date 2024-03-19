@@ -22,7 +22,7 @@ import ModalTemplate from "@/vue/templates/ModalTemplate.vue";
 
 const isConfirmationModalOpen = defineModel<boolean>('isConfirmationModalOpen');
 
-const props = defineProps({
+defineProps({
   title: String,
   titleClass: {
     type: String,
@@ -40,9 +40,7 @@ const props = defineProps({
     required: false
   }
 })
-const emits = defineEmits<{
-  (e: "onConfirm", event: any): void;
-}>();
+const emits = defineEmits(['onConfirm']);
 </script>
 
 <style scoped lang="scss">
