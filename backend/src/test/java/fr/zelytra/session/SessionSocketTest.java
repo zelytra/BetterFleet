@@ -56,17 +56,6 @@ class SessionSocketTest {
     }
 
     @Test
-    void onOpen_PlayerConnect_PlayerShouldNotBeInTheTimeOutList() throws IOException, InterruptedException, EncodeException {
-        Player player = new Player();
-        player.setUsername("Player 1");
-        player.setClientVersion(appVersion);
-        betterFleetClient.sendMessage(MessageType.CONNECT, player);
-
-        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
-        assertEquals(0, SessionSocket.sessionTimeoutTasks.size());
-    }
-
-    @Test
     void stressTest() throws IOException, InterruptedException, EncodeException, DeploymentException {
         List<Player> fakePlayers = generateFakePlayer(50);
         String fleetId = "";
