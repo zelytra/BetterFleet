@@ -145,7 +145,7 @@ watch(langOptions.value, () => {
 
 watch(deviceOptions.value, () => {
   UserStore.player.device = deviceOptions.value.selectedValue!.id as PlayerDevice;
-  if (UserStore.player.fleet){
+  if (UserStore.player.fleet && UserStore.player.fleet.sessionId){
     UserStore.player.fleet.updateToSession()
   }
 });
