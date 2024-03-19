@@ -73,6 +73,11 @@
       "label": "Pseudonyme",
       "placeholder": "Pseudonyme"
     },
+    "savebar": {
+      "cancel": "Annuler les modifications",
+      "content": "Hop hop hop ! J’ai vue que tu as fait des modifcations ! ",
+      "save": "Enregistrer"
+    },
     "server": {
       "label": "Adresse du serveur",
       "placeholder": "https://betterfleet.com/api"
