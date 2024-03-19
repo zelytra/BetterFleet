@@ -123,9 +123,9 @@
       },
       "leave": {
         "cancel": "Stornieren",
-        "confirm": "Quitter la session",
-        "content": "Êtes vous sûr de vouloir quitter la session ?",
-        "title": "QUITTER LA SESSION"
+        "confirm": "Sitzung beenden",
+        "content": "Sind Sie sicher, dass Sie die Sitzung verlassen möchten?",
+        "title": "VERLASSEN SIE DIE SITZUNG"
       }
     }
   },
