@@ -161,7 +161,6 @@ const computedSession = computed({
 function confirmationStartSession() {
   if (props.session.getReadyPlayers().length != props.session.players.length) {
     launchConfirmation.value = true
-    console.log(launchConfirmation.value)
   } else {
     startSession()
   }

@@ -104,6 +104,7 @@ function updateData(option: InputData) {
   }
 
   .dropdown {
+    z-index: 9;
     background: var(--secondary-background);
     border: 1px solid rgba(255, 255, 255, 0.10);
     position: absolute;

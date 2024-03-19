@@ -62,6 +62,9 @@
   },
   "appName": "Better Fleet",
   "config": {
+    "device": {
+      "label": "Plateformes"
+    },
     "devmode": "Activer le mode développeur",
     "lang": {
       "label": "Langue"

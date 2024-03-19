@@ -1,7 +1,7 @@
 import {reactive} from "vue";
 import LocalStore, {LocalKey} from "@/objects/stores/LocalStore.ts";
 import {i18n} from "@/main.ts";
-import {Player} from "@/objects/Player.ts";
+import {Player, PlayerDevice} from "@/objects/Player.ts";
 import {Fleet} from "@/objects/Fleet.ts";
 
 export const UserStore = reactive({
@@ -14,8 +14,10 @@ export const UserStore = reactive({
     this.player.username = readedPlayer.username;
     this.player.lang = readedPlayer.lang;
     this.player.serverHostName = readedPlayer.serverHostName;
+    this.player.device = readedPlayer.device;
 
     if (!this.player.lang) this.player.lang = browserLang;
+    if (!this.player.device) this.player.device = PlayerDevice.MICROSOFT;
     if (!this.player.username) this.player.username = "";
     if (!this.player.serverHostName) {
       this.player.serverHostName = import.meta.env.VITE_SOCKET_HOST;

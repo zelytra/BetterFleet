@@ -9,17 +9,24 @@ export enum PlayerStates {
   IN_GAME = "IN_GAME", // Status when the remote IP and port was found and player is in game
 }
 
+export enum PlayerDevice {
+  XBOX = "XBOX",
+  MICROSOFT = "MICROSOFT",
+  PLAYSTATION = "PLAYSTATION",
+}
+
 export interface Player extends Preferences {
   username: string;
   status: PlayerStates;
   isReady: boolean;
   isMaster: boolean;
+  device: PlayerDevice
   fleet?: Fleet;
   sessionId?: string;
   serverHostName?: string;
   countDown?: SessionRunner;
   server?: SotServer;
-  clientVersion?:string
+  clientVersion?: string
 }
 
 export interface Preferences {
