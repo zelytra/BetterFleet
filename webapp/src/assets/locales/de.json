@@ -62,6 +62,9 @@
   },
   "appName": "Bessere Flotte",
   "config": {
+    "device": {
+      "label": "Plattformen"
+    },
     "devmode": "Aktivieren Sie den Entwicklermodus",
     "lang": {
       "label": "Sprache"
@@ -109,6 +112,22 @@
     "en": "Englisch",
     "es": "Español",
     "fr": "Französisch"
+  },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "Stornieren",
+        "confirm": "Heben Sie den Anker",
+        "content": "Nicht alle Spieler sind bereit! Sind Sie sicher, dass Sie den Anker lichten möchten?",
+        "title": "AUFMERKSAMKEIT !"
+      },
+      "leave": {
+        "cancel": "Stornieren",
+        "confirm": "Quitter la session",
+        "content": "Êtes vous sûr de vouloir quitter la session ?",
+        "title": "QUITTER LA SESSION"
+      }
+    }
   },
   "session": {
     "choice": {
