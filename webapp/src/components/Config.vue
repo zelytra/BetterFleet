@@ -129,6 +129,7 @@ function loadOptionList() {
     id: PlayerDevice.PLAYSTATION,
     image: getDeviceImgUrl('playstation')
   })
+  resetConfig();
 }
 
 function resetConfig() {
