@@ -158,7 +158,7 @@ function getFilteredPlayerList() {
 
 function getFilteredSotServer() {
   return new Map([...props.session.servers].sort((a, b) => {
-    a[1].connectedPlayers.length > b[1].connectedPlayers.length
+    return a[1].connectedPlayers.length - b[1].connectedPlayers.length
   }))
 }
 
