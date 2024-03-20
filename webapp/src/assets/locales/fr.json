@@ -82,6 +82,10 @@
       "label": "Adresse du serveur",
       "placeholder": "https://betterfleet.com/api"
     },
+    "sound": {
+      "check": "Activer/Désactivé le décompte sonnore",
+      "label": "Décompte Sonore"
+    },
     "subtitle": "Options de préférence",
     "title": "Paramètres"
   },

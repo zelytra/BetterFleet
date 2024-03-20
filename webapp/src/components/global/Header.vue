@@ -55,7 +55,7 @@
 import {routes} from "@/router";
 import {ref} from "vue";
 import {UserStore} from "../../objects/stores/UserStore.ts";
-import {Utils} from "@/objects/Utils.ts";
+import {Utils} from "@/objects/utils/Utils.ts";
 
 const version = ref(import.meta.env.VITE_VERSION);
 </script>

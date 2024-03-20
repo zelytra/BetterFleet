@@ -1,10 +1,10 @@
 import {UserStore} from "@/objects/stores/UserStore.ts";
-import {WebSocketMessage, WebSocketMessageType} from "@/objects/WebSocet.ts";
+import {WebSocketMessage, WebSocketMessageType} from "@/objects/fleet/WebSocet.ts";
 import {AlertType} from "@/vue/alert/Alert.ts";
 import {alertProvider} from "@/main.ts";
 import {i18n} from "@/objects/i18n";
-import {Player} from "@/objects/Player.ts";
-import {SotServer} from "@/objects/SotServer.ts";
+import {Player} from "@/objects/fleet/Player.ts";
+import {SotServer} from "@/objects/fleet/SotServer.ts";
 import {LocalTime} from "@js-joda/core";
 
 const {t} = i18n.global;
