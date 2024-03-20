@@ -82,6 +82,10 @@
       "label": "Server address",
       "placeholder": "https://betterfleet.com/api"
     },
+    "sound": {
+      "check": "Enable/Deactivate account ringtone",
+      "label": "Sound count"
+    },
     "subtitle": "Preference options",
     "title": "Settings"
   },
