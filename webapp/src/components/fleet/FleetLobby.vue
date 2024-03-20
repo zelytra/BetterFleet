@@ -32,7 +32,7 @@
     <div class="lobby-content">
       <div class="player-table">
         <ServerContainer v-if="computedSession.servers.size > 0" v-for="[hash,server] of getFilteredSotServer()"
-                         :server="hash.toUpperCase()+' | '+server.location" :hash="hash"
+                         :server="hash.toUpperCase()+' | '+server.location" :color="server.color"
                          :player-count="server.connectedPlayers.length">
           <PlayerFleet
               v-for="player in server.connectedPlayers.sort((a, b) => {

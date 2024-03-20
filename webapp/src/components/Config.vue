@@ -22,7 +22,7 @@
               <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
             </div>
             <InputText
-                v-model:input-value="UserStore.player.serverHostName"
+                v-model:input-value="hostName"
                 :placeholder="t('config.server.placeholder')"
                 :label="t('config.server.label')"
                 :lock="!devMode"
@@ -67,6 +67,7 @@
         </p>
       </div>
     </div>
+    <SaveBar :bar-active="isConfigDifferent()" @save="onSave()" @cancel="resetConfig"/>
   </div>
 </template>
 
@@ -76,7 +77,7 @@ import {useI18n} from "vue-i18n";
 import InputText from "@/vue/form/InputText.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
 import {SingleSelectInterface} from "@/vue/form/Inputs.ts";
-import {inject, onMounted, ref, watch} from "vue";
+import {inject, onMounted, ref,} from "vue";
 
 import fr from "@/assets/icons/locales/fr.svg";
 import de from "@/assets/icons/locales/de.svg";
@@ -86,18 +87,25 @@ import xbox from "@/assets/icons/xbox.svg";
 import microsoft from "@/assets/icons/microsoft.svg";
 import playstation from "@/assets/icons/playstation.svg";
 import {UserStore} from "@/objects/stores/UserStore.ts";
-import {onBeforeRouteLeave} from "vue-router";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
 import {PlayerDevice} from "@/objects/Player.ts";
+import SaveBar from "@/vue/utils/SaveBar.vue";
 
 const {t, availableLocales} = useI18n();
 const langOptions = ref<SingleSelectInterface>({data: []});
 const deviceOptions = ref<SingleSelectInterface>({data: []});
 const devMode = ref<boolean>(false);
+const hostName = ref<string>(UserStore.player.serverHostName!)
 const username = ref<string>(UserStore.player.username);
 const alerts = inject<AlertProvider>("alertProvider");
 
 onMounted(() => {
+  loadOptionList();
+  resetConfig();
+});
+
+function loadOptionList() {
+  langOptions.value.data = []
   for (const locale of availableLocales) {
     langOptions.value.data.push({
       display: t("locales." + locale),
@@ -105,7 +113,7 @@ onMounted(() => {
       image: getImgUrl(locale),
     });
   }
-
+  deviceOptions.value.data = []
   deviceOptions.value.data.push({
     display: "Microsoft",
     id: PlayerDevice.MICROSOFT,
@@ -121,7 +129,9 @@ onMounted(() => {
     id: PlayerDevice.PLAYSTATION,
     image: getDeviceImgUrl('playstation')
   })
+}
 
+function resetConfig() {
   if (UserStore.player.device) {
     deviceOptions.value.selectedValue = deviceOptions.value.data.filter((x) =>
         x.id == UserStore.player.device
@@ -137,31 +147,21 @@ onMounted(() => {
   } else {
     langOptions.value.selectedValue = langOptions.value.data[0];
   }
-});
 
-watch(langOptions.value, () => {
-  UserStore.setLang(langOptions.value.selectedValue!.id);
-});
-
-watch(deviceOptions.value, () => {
-  UserStore.player.device = deviceOptions.value.selectedValue!.id as PlayerDevice;
-  if (UserStore.player.fleet && UserStore.player.fleet.sessionId){
-    UserStore.player.fleet.updateToSession()
+  if (UserStore.player.username) {
+    username.value = UserStore.player.username;
   }
-});
 
-onBeforeRouteLeave((_to, _from, next) => {
+  if (UserStore.player.serverHostName) {
+    hostName.value = UserStore.player.serverHostName;
+  }
+}
+
+function onSave() {
+  UserStore.setLang(langOptions.value.selectedValue!.id);
+  UserStore.player.device = deviceOptions.value.selectedValue!.id as PlayerDevice;
+
   if (username.value.length == 0 || username.value.length >= 16) {
-    if (UserStore.player.countDown) {
-      alerts!.sendAlert({
-        content: t('alert.username.ignore.content'),
-        title: t('alert.username.ignore.title'),
-        type: AlertType.WARNING
-      })
-      next();
-      return
-    }
-    next(false);
     alerts!.sendAlert({
       content: t('alert.username.length.content'),
       title: t('alert.username.length.title'),
@@ -169,9 +169,20 @@ onBeforeRouteLeave((_to, _from, next) => {
     })
   } else {
     UserStore.player.username = username.value;
-    next();
   }
-});
+  UserStore.player.serverHostName = hostName.value;
+  if (UserStore.player.fleet && UserStore.player.fleet.sessionId) {
+    UserStore.player.fleet.updateToSession()
+  }
+  loadOptionList();
+}
+
+function isConfigDifferent(): boolean {
+  if (UserStore.player.username != username.value) return true;
+  if (UserStore.player.serverHostName != hostName.value) return true;
+  if (langOptions.value.selectedValue && UserStore.player.lang != langOptions.value.selectedValue!.id) return true;
+  return deviceOptions.value.selectedValue != undefined && UserStore.player.device != deviceOptions.value.selectedValue!.id;
+}
 
 function getImgUrl(iconName: string): string {
   switch (iconName) {
@@ -206,6 +217,8 @@ function getDeviceImgUrl(iconName: string): string {
   flex-direction: column;
   gap: 14px;
   height: 100%;
+  position: relative;
+  overflow: hidden;
 
   p.page-title {
     text-align: center;

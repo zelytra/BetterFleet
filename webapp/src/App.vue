@@ -56,6 +56,7 @@ const gameStatusRefresh: number = setInterval(() => {
           ip: rustSotServer.ip,
           location: "",
           port: rustSotServer.port,
+          color: ""
         }
         fleet.joinServer();
       }
@@ -74,7 +75,7 @@ onMounted(() => {
     isReady: false,
     status: PlayerStates.CLOSED,
     username: "",
-    device : PlayerDevice.MICROSOFT
+    device: PlayerDevice.MICROSOFT
   });
 });
 
@@ -92,7 +93,7 @@ onUnmounted(() => {
   clearInterval(gameStatusRefresh)
 });
 
-watch(()=>UserStore.player.countDown, () => {
+watch(() => UserStore.player.countDown, () => {
   router.push("/fleet")
 })
 </script>
