@@ -21,6 +21,8 @@ export const UserStore = reactive({
     if (!this.player.lang) this.player.lang = browserLang;
     if (!this.player.device) this.player.device = PlayerDevice.MICROSOFT;
     if (!this.player.username) this.player.username = "";
+    if (!this.player.soundEnable) this.player.soundEnable = true;
+    if (!this.player.soundLevel) this.player.soundLevel = 30;
     if (!this.player.serverHostName) {
       this.player.serverHostName = import.meta.env.VITE_SOCKET_HOST;
     }
