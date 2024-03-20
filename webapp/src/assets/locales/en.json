@@ -74,8 +74,8 @@
       "placeholder": "Username"
     },
     "savebar": {
-      "cancel": "Discard changes",
-      "content": "Hop hop hoop! I've seen you made some changes! ",
+      "cancel": "Cancel modifications",
+      "content": "Hold your horses ! I see you've made some changes !",
       "save": "Save"
     },
     "server": {
@@ -83,8 +83,8 @@
       "placeholder": "https://betterfleet.com/api"
     },
     "sound": {
-      "check": "Enable/Deactivate account ringtone",
-      "label": "Sound count"
+      "check": "Enable/Disable audio countdown",
+      "label": "Audio countdown"
     },
     "subtitle": "Preference options",
     "title": "Settings"
