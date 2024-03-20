@@ -100,6 +100,12 @@ const username = ref<string>(UserStore.player.username);
 const alerts = inject<AlertProvider>("alertProvider");
 
 onMounted(() => {
+  loadOptionList();
+  resetConfig();
+});
+
+function loadOptionList() {
+  langOptions.value.data = []
   for (const locale of availableLocales) {
     langOptions.value.data.push({
       display: t("locales." + locale),
@@ -107,7 +113,7 @@ onMounted(() => {
       image: getImgUrl(locale),
     });
   }
-
+  deviceOptions.value.data = []
   deviceOptions.value.data.push({
     display: "Microsoft",
     id: PlayerDevice.MICROSOFT,
@@ -123,9 +129,7 @@ onMounted(() => {
     id: PlayerDevice.PLAYSTATION,
     image: getDeviceImgUrl('playstation')
   })
-
-  resetConfig();
-});
+}
 
 function resetConfig() {
   if (UserStore.player.device) {
@@ -170,6 +174,7 @@ function onSave() {
   if (UserStore.player.fleet && UserStore.player.fleet.sessionId) {
     UserStore.player.fleet.updateToSession()
   }
+  loadOptionList();
 }
 
 function isConfigDifferent(): boolean {
