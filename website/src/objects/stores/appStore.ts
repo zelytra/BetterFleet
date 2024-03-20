@@ -12,7 +12,6 @@ export const AppStore = reactive({
       this.githubRelease = response.data as GithubRelease
     })
     const browserLang = navigator.language.substring(0, 2);
-    console.log(browserLang)
     i18n.global.locale.value = browserLang as ("fr" | "en" | "es" | "de")
   },
 });
