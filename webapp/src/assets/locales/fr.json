@@ -63,7 +63,7 @@
   "appName": "Better Fleet",
   "config": {
     "device": {
-      "label": "Plateformes"
+      "label": "Plateforme"
     },
     "devmode": "Activer le mode développeur",
     "lang": {
@@ -75,7 +75,7 @@
     },
     "savebar": {
       "cancel": "Annuler les modifications",
-      "content": "Hop hop hop ! J’ai vue que tu as fait des modifcations ! ",
+      "content": "Hop hop hop ! J’ai vu que tu as fait des modifications !",
       "save": "Enregistrer"
     },
     "server": {
@@ -83,8 +83,8 @@
       "placeholder": "https://betterfleet.com/api"
     },
     "sound": {
-      "check": "Activer/Désactivé le décompte sonnore",
-      "label": "Décompte Sonore"
+      "check": "Activer/Désactiver le décompte sonore",
+      "label": "Décompte sonore"
     },
     "subtitle": "Options de préférence",
     "title": "Paramètres"
@@ -126,14 +126,14 @@
     "confirm": {
       "launch": {
         "cancel": "Annuler",
-        "confirm": "Levez l'ancre",
-        "content": "Pas tout les joueurs sont prêt ! Êtes vous sûr de vouloir levez l’ancre ?",
+        "confirm": "Lever l'ancre",
+        "content": "Tout le monde n'est pas prêt ! Êtes-vous sûr de vouloir lever l'ancre ?",
         "title": "ATTENTION !"
       },
       "leave": {
         "cancel": "Annuler",
         "confirm": "Quitter la session",
-        "content": "Êtes vous sûr de vouloir quitter la session ?",
+        "content": "Êtes-vous sûr de vouloir quitter la session ?",
         "title": "QUITTER LA SESSION"
       }
     }

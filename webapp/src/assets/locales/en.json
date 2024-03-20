@@ -62,6 +62,9 @@
   },
   "appName": "Better Fleet",
   "config": {
+    "device": {
+      "label": "Platform"
+    },
     "devmode": "Enable developer mode",
     "lang": {
       "label": "Language"
@@ -70,9 +73,18 @@
       "label": "Username",
       "placeholder": "Username"
     },
+    "savebar": {
+      "cancel": "Cancel modifications",
+      "content": "Hold your horses ! I see you've made some changes !",
+      "save": "Save"
+    },
     "server": {
       "label": "Server address",
       "placeholder": "https://betterfleet.com/api"
+    },
+    "sound": {
+      "check": "Enable/Disable audio countdown",
+      "label": "Audio countdown"
     },
     "subtitle": "Preference options",
     "title": "Settings"
@@ -109,6 +121,22 @@
     "en": "English",
     "es": "Español",
     "fr": "Français"
+  },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "Cancel",
+        "confirm": "Set sail",
+        "content": "Not all players are ready ! Are you sure you want to set sail ?",
+        "title": "WARNING !"
+      },
+      "leave": {
+        "cancel": "Cancel",
+        "confirm": "Leave the session",
+        "content": "Are you sure you want to leave the session?",
+        "title": "LEAVE THE SESSION"
+      }
+    }
   },
   "session": {
     "choice": {

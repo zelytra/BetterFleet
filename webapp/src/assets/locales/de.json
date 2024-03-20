@@ -62,6 +62,9 @@
   },
   "appName": "Bessere Flotte",
   "config": {
+    "device": {
+      "label": "Plattformen"
+    },
     "devmode": "Aktivieren Sie den Entwicklermodus",
     "lang": {
       "label": "Sprache"
@@ -70,9 +73,18 @@
       "label": "Nutzername",
       "placeholder": "Nutzername"
     },
+    "savebar": {
+      "cancel": "Änderungen verwerfen",
+      "content": "Hop Hop Hop! Ich habe gesehen, dass du einige Änderungen vorgenommen hast! ",
+      "save": "Speichern"
+    },
     "server": {
       "label": "Serveradresse",
       "placeholder": "https://betterfleet.com/api"
+    },
+    "sound": {
+      "check": "Audio-Countdown aktivieren/deaktivieren",
+      "label": "Tonanzahl"
     },
     "subtitle": "Präferenzoptionen",
     "title": "Einstellungen"
@@ -106,9 +118,25 @@
   },
   "locales": {
     "de": "Deutsch",
-    "en": "Englisch",
+    "en": "English",
     "es": "Español",
-    "fr": "Französisch"
+    "fr": "Français"
+  },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "Stornieren",
+        "confirm": "Heben Sie den Anker",
+        "content": "Nicht alle Spieler sind bereit! Sind Sie sicher, dass Sie den Anker lichten möchten?",
+        "title": "AUFMERKSAMKEIT !"
+      },
+      "leave": {
+        "cancel": "Stornieren",
+        "confirm": "Sitzung beenden",
+        "content": "Sind Sie sicher, dass Sie die Sitzung verlassen möchten?",
+        "title": "VERLASSEN SIE DIE SITZUNG"
+      }
+    }
   },
   "session": {
     "choice": {

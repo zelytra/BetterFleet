@@ -62,6 +62,9 @@
   },
   "appName": "Mejor flota",
   "config": {
+    "device": {
+      "label": "Plataformas"
+    },
     "devmode": "Habilitar el modo desarrollador",
     "lang": {
       "label": "Idioma"
@@ -70,9 +73,18 @@
       "label": "Nombre de usuario",
       "placeholder": "Nombre de usuario"
     },
+    "savebar": {
+      "cancel": "Descartar los cambios",
+      "content": "¡Salto, salto, salto! ¡Vi que hiciste algunos cambios! ",
+      "save": "Ahorrar"
+    },
     "server": {
       "label": "Dirección del servidor",
       "placeholder": "https://betterfleet.com/api"
+    },
+    "sound": {
+      "check": "Activar/desactivar la cuenta atrás de audio",
+      "label": "Conteo de sonidos"
     },
     "subtitle": "Opciones de preferencia",
     "title": "Configuraciones"
@@ -105,10 +117,26 @@
     "tips": "Este proceso puede tardar un poco, asegúrate de que tu juego esté iniciado."
   },
   "locales": {
-    "de": "Alemán",
-    "en": "Inglés",
+    "de": "Deutsch",
+    "en": "English",
     "es": "Español",
-    "fr": "Francés"
+    "fr": "Français"
+  },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "anular",
+        "confirm": "Levantar el ancla",
+        "content": "¡No todos los jugadores están preparados! ¿Estás seguro de que quieres levar anclas?",
+        "title": "ATENCIÓN !"
+      },
+      "leave": {
+        "cancel": "anular",
+        "confirm": "Salir de la sesión",
+        "content": "¿Estás seguro de que quieres abandonar la sesión?",
+        "title": "SALIR DE LA SESIÓN"
+      }
+    }
   },
   "session": {
     "choice": {
