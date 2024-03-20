@@ -107,10 +107,10 @@ import microsoft from "@/assets/icons/microsoft.svg";
 import playstation from "@/assets/icons/playstation.svg";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
-import {PlayerDevice} from "@/objects/fleet/Player.ts";
 import SaveBar from "@/vue/utils/SaveBar.vue";
 import InputSlider from "@/vue/form/InputSlider.vue";
 import countdownSound from "@assets/sounds/countdown.mp3";
+import {PlayerDevice} from "@/objects/fleet/Player.ts";
 
 const {t, availableLocales} = useI18n();
 const alerts = inject<AlertProvider>("alertProvider");
@@ -155,9 +155,6 @@ function loadOptionList() {
     id: PlayerDevice.PLAYSTATION,
     image: getDeviceImgUrl('playstation')
   })
-
-  volume.value = UserStore.player.soundLevel;
-  activeSound.value = UserStore.player.soundEnable;
   resetConfig();
 }
 
@@ -185,6 +182,9 @@ function resetConfig() {
   if (UserStore.player.serverHostName) {
     hostName.value = UserStore.player.serverHostName;
   }
+
+  volume.value = UserStore.player.soundLevel;
+  activeSound.value = UserStore.player.soundEnable;
 }
 
 function onSave() {
