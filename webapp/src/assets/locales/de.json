@@ -82,6 +82,10 @@
       "label": "Serveradresse",
       "placeholder": "https://betterfleet.com/api"
     },
+    "sound": {
+      "check": "Audio-Countdown aktivieren/deaktivieren",
+      "label": "Tonanzahl"
+    },
     "subtitle": "Präferenzoptionen",
     "title": "Einstellungen"
   },
