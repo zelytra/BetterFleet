@@ -73,6 +73,11 @@
       "label": "Nutzername",
       "placeholder": "Nutzername"
     },
+    "savebar": {
+      "cancel": "Änderungen verwerfen",
+      "content": "Hop Hop Hop! Ich habe gesehen, dass du einige Änderungen vorgenommen hast! ",
+      "save": "Speichern"
+    },
     "server": {
       "label": "Serveradresse",
       "placeholder": "https://betterfleet.com/api"
