@@ -2,34 +2,28 @@
   <div class="input-global-wrapper">
     <label v-if="label">{{ label }}</label>
     <div :class="{'input-wrapper':true,disabled:lock}">
+      <p>0</p>
       <input
-          v-model="inputValue"
-          type="text"
+          class="range"
+          v-model.number="inputValue as number"
+          type="range"
+          :min="0"
+          :max="100"
           :disabled="lock"
-          :placeholder="placeholder"
-          @keydown.enter="emits('validate')"
       />
-      <span :class="{cross:true,disabled:lock}" @click="resetInput">
-      <img src="@/assets/icons/cross.svg"/>
-    </span>
+      <p>100</p>
     </div>
   </div>
+
 </template>
 
 <script setup lang="ts">
-const inputValue = defineModel<string>('inputValue',{default:()=>""});
-const props = defineProps({
-  placeholder: {type: String, required: false, default: ""},
+const inputValue = defineModel<number>('inputValue');
+defineProps({
   label: {type: String, required: false},
   lock: {type: Boolean, required: false, default: () => false}
 });
 const emits = defineEmits(["validate"]);
-
-function resetInput() {
-  if (!props.lock) {
-    inputValue.value = "";
-  }
-}
 </script>
 
 <style scoped lang="scss">
@@ -40,10 +34,7 @@ function resetInput() {
 
   .input-wrapper {
     position: relative;
-    padding: 5px 10px;
     border-radius: 5px;
-    border: 1px solid var(--white-10, rgba(255, 255, 255, 0.1));
-    background: var(--white-5, rgba(255, 255, 255, 0.05));
     display: flex;
     box-sizing: border-box;
     justify-content: space-between;
@@ -52,14 +43,29 @@ function resetInput() {
     min-width: 250px;
 
     &.disabled {
-      cursor: not-allowed;
-      background: rgba(23, 26, 33, 0.40);
-      color: var(--secondary-text);
+      opacity: 0.8;
     }
 
-    input[type="text"] {
-      all: unset;
+    p {
+      font-size: 14px;
+    }
+
+    input[type="range"].range {
+      appearance: none;
       width: 100%;
+      background: var(--primary);
+      height: 4px;
+      border-radius: 5px;
+
+      &::-webkit-slider-thumb {
+        appearance: none;
+        width: 5px;
+        height: 16px;
+        border-radius: 5px;
+        background: white;
+        cursor: pointer;
+      }
+
     }
 
     span.cross {

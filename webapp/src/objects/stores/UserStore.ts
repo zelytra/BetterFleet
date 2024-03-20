@@ -1,8 +1,8 @@
 import {reactive} from "vue";
 import LocalStore, {LocalKey} from "@/objects/stores/LocalStore.ts";
 import {i18n} from "@/main.ts";
-import {Player, PlayerDevice} from "@/objects/Player.ts";
-import {Fleet} from "@/objects/Fleet.ts";
+import {Player, PlayerDevice} from "@/objects/fleet/Player.ts";
+import {Fleet} from "@/objects/fleet/Fleet.ts";
 
 export const UserStore = reactive({
   player: {} as Player,
@@ -15,10 +15,14 @@ export const UserStore = reactive({
     this.player.lang = readedPlayer.lang;
     this.player.serverHostName = readedPlayer.serverHostName;
     this.player.device = readedPlayer.device;
+    this.player.soundLevel = readedPlayer.soundLevel;
+    this.player.soundEnable = readedPlayer.soundEnable;
 
     if (!this.player.lang) this.player.lang = browserLang;
     if (!this.player.device) this.player.device = PlayerDevice.MICROSOFT;
     if (!this.player.username) this.player.username = "";
+    if (!this.player.soundEnable) this.player.soundEnable = true;
+    if (!this.player.soundLevel) this.player.soundLevel = 30;
     if (!this.player.serverHostName) {
       this.player.serverHostName = import.meta.env.VITE_SOCKET_HOST;
     }

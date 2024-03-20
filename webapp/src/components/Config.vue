@@ -17,16 +17,35 @@
                 :placeholder="t('config.name.placeholder')"
                 :label="t('config.name.label')"
             />
-            <div class="dev-mode-wrapper">
-              <input type="checkbox" v-model="devMode"/>
-              <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
+            <div class="input-section">
+              <InputText
+                  v-model:input-value="hostName"
+                  :placeholder="t('config.server.placeholder')"
+                  :label="t('config.server.label')"
+                  :lock="!devMode"
+              />
+              <div class="dev-mode-wrapper">
+                <input type="checkbox" v-model="devMode"/>
+                <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
+              </div>
             </div>
-            <InputText
-                v-model:input-value="hostName"
-                :placeholder="t('config.server.placeholder')"
-                :label="t('config.server.label')"
-                :lock="!devMode"
-            />
+            <div class="input-section">
+              <div class="sound-wrapper">
+                <InputSlider
+                    v-model:input-value="volume"
+                    :label="t('config.sound.label')"
+                    :lock="!activeSound"
+                />
+                <button @click="runSound()">
+                  <img src="@/assets/icons/sound.svg" alt="sound icon"/>
+                  <p>tester</p>
+                </button>
+              </div>
+              <div class="dev-mode-wrapper">
+                <input type="checkbox" v-model="activeSound"/>
+                <p @click="activeSound = !activeSound">{{ t("config.sound.check") }}</p>
+              </div>
+            </div>
           </div>
           <div class="side-content">
             <SingleSelect
@@ -88,16 +107,23 @@ import microsoft from "@/assets/icons/microsoft.svg";
 import playstation from "@/assets/icons/playstation.svg";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
-import {PlayerDevice} from "@/objects/Player.ts";
 import SaveBar from "@/vue/utils/SaveBar.vue";
+import InputSlider from "@/vue/form/InputSlider.vue";
+import countdownSound from "@assets/sounds/countdown.mp3";
+import {PlayerDevice} from "@/objects/fleet/Player.ts";
 
 const {t, availableLocales} = useI18n();
+const alerts = inject<AlertProvider>("alertProvider");
+
 const langOptions = ref<SingleSelectInterface>({data: []});
 const deviceOptions = ref<SingleSelectInterface>({data: []});
 const devMode = ref<boolean>(false);
+const volume = ref<number>(50);
+const activeSound = ref<boolean>(true)
 const hostName = ref<string>(UserStore.player.serverHostName!)
 const username = ref<string>(UserStore.player.username);
-const alerts = inject<AlertProvider>("alertProvider");
+
+const sound = new Audio(countdownSound);
 
 onMounted(() => {
   loadOptionList();
@@ -129,6 +155,7 @@ function loadOptionList() {
     id: PlayerDevice.PLAYSTATION,
     image: getDeviceImgUrl('playstation')
   })
+  resetConfig();
 }
 
 function resetConfig() {
@@ -155,12 +182,16 @@ function resetConfig() {
   if (UserStore.player.serverHostName) {
     hostName.value = UserStore.player.serverHostName;
   }
+
+  volume.value = UserStore.player.soundLevel;
+  activeSound.value = UserStore.player.soundEnable;
 }
 
 function onSave() {
   UserStore.setLang(langOptions.value.selectedValue!.id);
   UserStore.player.device = deviceOptions.value.selectedValue!.id as PlayerDevice;
-
+  UserStore.player.soundLevel = volume.value;
+  UserStore.player.soundEnable = activeSound.value;
   if (username.value.length == 0 || username.value.length >= 16) {
     alerts!.sendAlert({
       content: t('alert.username.length.content'),
@@ -181,6 +212,8 @@ function isConfigDifferent(): boolean {
   if (UserStore.player.username != username.value) return true;
   if (UserStore.player.serverHostName != hostName.value) return true;
   if (langOptions.value.selectedValue && UserStore.player.lang != langOptions.value.selectedValue!.id) return true;
+  if (volume.value != UserStore.player.soundLevel) return true;
+  if (activeSound.value != UserStore.player.soundEnable) return true;
   return deviceOptions.value.selectedValue != undefined && UserStore.player.device != deviceOptions.value.selectedValue!.id;
 }
 
@@ -207,6 +240,14 @@ function getDeviceImgUrl(iconName: string): string {
       return playstation;
     default:
       return microsoft;
+  }
+}
+
+function runSound() {
+  console.log(volume.value)
+  if (sound.paused) {
+    sound.volume = volume.value / 100;
+    sound.play()
   }
 }
 </script>
@@ -246,7 +287,31 @@ function getDeviceImgUrl(iconName: string): string {
       gap: 20px;
       border-radius: 5px;
       padding: 16px 8px;
-      //overflow: hidden;
+
+      .input-section {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .sound-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 26px;
+
+          button {
+            all: unset;
+            display: flex;
+            align-self: end;
+            align-items: center;
+            height: auto;
+            gap: 12px;
+            border-radius: 5px;
+            background: rgba(50, 212, 153, 0.05);
+            padding: 4px 12px;
+            cursor: pointer;
+          }
+        }
+      }
 
       .dev-mode-wrapper {
         display: flex;

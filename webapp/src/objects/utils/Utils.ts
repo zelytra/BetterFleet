@@ -1,4 +1,4 @@
-import {PlayerStates} from "@/objects/Player.ts";
+import {PlayerStates} from "@/objects/fleet/Player.ts";
 
 
 export abstract class Utils {

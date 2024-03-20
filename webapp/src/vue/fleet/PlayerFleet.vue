@@ -23,10 +23,10 @@
 
 <script setup lang="ts">
 import {PropType} from "vue";
-import {Fleet} from "@/objects/Fleet.ts";
+import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {useI18n} from "vue-i18n";
-import {Utils} from "@/objects/Utils.ts";
-import {Player, PlayerDevice, PlayerStates} from "@/objects/Player.ts";
+import {Utils} from "@/objects/utils/Utils.ts";
+import {Player, PlayerDevice, PlayerStates} from "@/objects/fleet/Player.ts";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 
 const {t} = useI18n()

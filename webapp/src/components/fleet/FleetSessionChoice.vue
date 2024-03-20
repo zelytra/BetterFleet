@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import SessionCard from "@/vue/templates/SessionCard.vue";
 import {useI18n} from "vue-i18n";
-import {Fleet} from "@/objects/Fleet.ts";
+import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {PropType, ref, watch} from "vue";
 import ModaleTemplate from "@/vue/templates/ModalTemplate.vue";
 import InputText from "@/vue/form/InputText.vue";

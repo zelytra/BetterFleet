@@ -1,4 +1,4 @@
-import {Player, PlayerStates} from "@/objects/Player.ts";
+import {Player, PlayerStates} from "@/objects/fleet/Player.ts";
 
 export interface SotServer {
   ip: string;

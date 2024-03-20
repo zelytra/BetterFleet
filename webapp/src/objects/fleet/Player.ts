@@ -1,6 +1,6 @@
-import {SessionRunner} from "@/objects/SessionRunner.ts";
-import {Fleet} from "@/objects/Fleet.ts";
-import {SotServer} from "@/objects/SotServer.ts";
+import {SessionRunner} from "@/objects/fleet/SessionRunner.ts";
+import {Fleet} from "@/objects/fleet/Fleet.ts";
+import {SotServer} from "@/objects/fleet/SotServer.ts";
 
 export enum PlayerStates {
   CLOSED = "CLOSED", // Game is closed
@@ -31,4 +31,6 @@ export interface Player extends Preferences {
 
 export interface Preferences {
   lang?: string;
+  soundEnable: boolean
+  soundLevel: number
 }

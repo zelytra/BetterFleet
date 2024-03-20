@@ -11,17 +11,25 @@ import {inject, onUnmounted, PropType, ref} from "vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalTime} from "@js-joda/core";
 import {useI18n} from "vue-i18n";
-import {Fleet} from "@/objects/Fleet.ts";
+import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
 import {invoke} from '@tauri-apps/api/tauri';
-import {PlayerStates} from "@/objects/Player.ts";
+import {PlayerStates} from "@/objects/fleet/Player.ts";
 import {onBeforeRouteLeave} from "vue-router";
+import countdownSound from "@/assets/sounds/countdown.mp3"
 
 const delta = ref<LocalTime>(LocalTime.now());
 const {t} = useI18n();
 const alerts = inject<AlertProvider>("alertProvider");
+const sound = new Audio(countdownSound);
 
 let updateTimer = setInterval(() => {
+
+  if (sound.paused && UserStore.player.soundEnable) {
+    sound.volume = UserStore.player.soundLevel / 100
+    sound.play();
+  }
+
   if (!UserStore.player.countDown || !UserStore.player.countDown.clickTime) return;
 
   const start: LocalTime = LocalTime.now()

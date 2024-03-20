@@ -116,7 +116,7 @@
 
 <script setup lang="ts">
 import {computed, onUnmounted, PropType, ref} from "vue";
-import {Fleet} from "@/objects/Fleet.ts";
+import {Fleet} from "@/objects/fleet/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
