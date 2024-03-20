@@ -73,6 +73,11 @@
       "label": "Nombre de usuario",
       "placeholder": "Nombre de usuario"
     },
+    "savebar": {
+      "cancel": "Descartar los cambios",
+      "content": "¡Salto, salto, salto! ¡Vi que hiciste algunos cambios! ",
+      "save": "Ahorrar"
+    },
     "server": {
       "label": "Dirección del servidor",
       "placeholder": "https://betterfleet.com/api"
