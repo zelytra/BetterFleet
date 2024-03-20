@@ -82,6 +82,10 @@
       "label": "Dirección del servidor",
       "placeholder": "https://betterfleet.com/api"
     },
+    "sound": {
+      "check": "Activar/desactivar la cuenta atrás de audio",
+      "label": "Conteo de sonidos"
+    },
     "subtitle": "Opciones de preferencia",
     "title": "Configuraciones"
   },
