@@ -8,24 +8,15 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {findClosestColor} from "@/objects/Color.ts";
-
-const color = ref<string>();
-
 const props = defineProps({
   server: String,
-  hash: {type: String, required: true},
+  color: {type: String, required: true},
   playerCount: {type: Number, required: true}
-})
-
-onMounted(() => {
-  color.value = findClosestColor(props.hash);
 })
 
 function getBackgroundColor(): string {
   if (props.playerCount >= 5) {
-    return color.value + "1A"
+    return props.color + "1A"
   }
   return "";
 }
