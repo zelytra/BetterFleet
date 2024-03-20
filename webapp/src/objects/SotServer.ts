@@ -5,6 +5,7 @@ export interface SotServer {
   port: number;
   location: string;
   hash?: string;
+  color: string;
   connectedPlayers: Player[];
 }
 

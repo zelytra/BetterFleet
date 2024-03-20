@@ -52,7 +52,6 @@ const emits = defineEmits(['onConfirm']);
   justify-content: space-between;
   align-items: center;
   gap: 18px;
-  background: var(--secondary-background);
 
   .content {
     display: flex;
