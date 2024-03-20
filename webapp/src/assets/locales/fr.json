@@ -83,8 +83,8 @@
       "placeholder": "https://betterfleet.com/api"
     },
     "sound": {
-      "check": "Activer/Désactivé le décompte sonnore",
-      "label": "Décompte Sonore"
+      "check": "Activer/Désactiver le décompte sonore",
+      "label": "Décompte sonore"
     },
     "subtitle": "Options de préférence",
     "title": "Paramètres"
