@@ -49,9 +49,7 @@ defineProps({
 
   &.is-player{
     border: 1px solid var(--primary);
-    background: rgba(50, 212, 153, 0.10);
-
-
+    //background: rgba(50, 212, 153, 0.10);
   }
 
   .content {
