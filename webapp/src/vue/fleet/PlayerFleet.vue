@@ -60,7 +60,7 @@ defineProps({
     gap: 15px;
 
     &.username {
-      width: 200px;
+      width: 250px;
 
       .user-icon {
         border-radius: 50%;
