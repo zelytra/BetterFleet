@@ -12,7 +12,7 @@ import {keycloakStore} from "@/objects/stores/LoginStates.ts";
 function authUser() {
 
   if (!keycloakStore.isKeycloakInit || !keycloakStore.keycloak.authenticated) {
-    keycloakStore.init(window.location.origin);
+    keycloakStore.loginUser()
   }
 }
 </script>

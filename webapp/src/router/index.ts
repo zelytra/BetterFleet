@@ -7,7 +7,7 @@ import Fleet from "@/components/Fleet.vue";
 import Config from "@/components/Config.vue";
 import i18n from "@/objects/i18n";
 import {keycloakStore} from "@/objects/stores/LoginStates.ts";
-import Authentification from "@/components/global/Authentification.vue";
+import Authentication from "@/components/global/Authentication.vue";
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -34,7 +34,7 @@ export const routes = [
   {
     path: "/auth",
     name: "Auth",
-    component: Authentification,
+    component: Authentication,
     meta: {
       icon: sot,
       //tooltip: t('tooltips.navbar.home')
@@ -59,7 +59,6 @@ export const routes = [
       requiresAuth: true
     }
   },
-
 ];
 
 export const router = createRouter({
@@ -68,7 +67,6 @@ export const router = createRouter({
 });
 
 router.beforeEach((to, _from) => {
-  //keycloakStore.keycloak.loadUserInfo().then((x)=>{console.log(x)})
   if (to.meta.requiresAuth) {
     if (!keycloakStore.isKeycloakInit || !keycloakStore.keycloak.authenticated) {
       router.push('auth')
