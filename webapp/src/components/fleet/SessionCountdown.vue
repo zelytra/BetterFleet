@@ -49,7 +49,7 @@ let updateTimer = setInterval(() => {
           })
           break
         }
-        invoke('drop_anchor');
+        invoke('rise_anchor');
         break
       }
       case PlayerStates.CLOSED: {
