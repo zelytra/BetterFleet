@@ -71,61 +71,8 @@
         </div>
       </div>
     </ParameterPart>
-    <!--
-    <div class="config-content">
-      <div class="side-content inputs">
-        <h2>{{ t("config.subtitle") }}</h2>
-        <div class="content-wrapper">
-          <div class="side-content">
-            <InputText
-                v-model:input-value="username"
-                :placeholder="t('config.name.placeholder')"
-                :label="t('config.name.label')"
-            />
-            <div class="input-section">
-              <InputText
-                  v-model:input-value="hostName"
-                  :placeholder="t('config.server.placeholder')"
-                  :label="t('config.server.label')"
-                  :lock="!devMode"
-              />
-              <div class="dev-mode-wrapper">
-                <input type="checkbox" v-model="devMode"/>
-                <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
-              </div>
-            </div>
-            <div class="input-section">
-              <div class="sound-wrapper">
-                <InputSlider
-                    v-model:input-value="volume"
-                    :label="t('config.sound.label')"
-                    :lock="!activeSound"
-                />
-                <button @click="runSound()">
-                  <img src="@/assets/icons/sound.svg" alt="sound icon"/>
-                  <p>tester</p>
-                </button>
-              </div>
-              <div class="dev-mode-wrapper">
-                <input type="checkbox" v-model="activeSound"/>
-                <p @click="activeSound = !activeSound">{{ t("config.sound.check") }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="side-content">
-            <SingleSelect
-                :label="t('config.lang.label')"
-                v-model:data="langOptions"
-            />
-            <SingleSelect
-                :label="t('config.device.label')"
-                v-model:data="deviceOptions"
-            />
-          </div>
-        </div>
-      </div>
+    <ParameterPart title="Crédit">
       <div class="side-content credits">
-        <h2>{{ t("credits.title") }}</h2>
         <p>{{ t("credits.description") }}</p>
         <p>
           {{ t("credits.developed") }}
@@ -150,8 +97,7 @@
           {{ t("credits.details") }}
         </p>
       </div>
-    </div>
-    -->
+    </ParameterPart>
     <SaveBar :bar-active="isConfigDifferent()" @save="onSave()" @cancel="resetConfig"/>
   </div>
 </template>
@@ -455,7 +401,7 @@ button {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  max-width: 400px;
+  gap: 20px;
 
   p {
     font-size: 16px;

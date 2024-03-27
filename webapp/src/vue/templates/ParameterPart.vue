@@ -22,6 +22,21 @@ defineProps({
   width: 100%;
   gap: 20px;
 
+  h2{
+    position: relative;
+    &:after {
+      display: flex;
+      position: absolute;
+      content: '';
+      bottom: -10px;
+      left: 50%;
+      transform: translate(-50%, 0);
+      background: url("@assets/backgrounds/underline.svg") no-repeat;
+      width: 100px;
+      height: 12px;
+    }
+  }
+
   .template-wrapper {
     border: 2px solid #222631;
     background: rgba(34, 38, 49, 0.20);
