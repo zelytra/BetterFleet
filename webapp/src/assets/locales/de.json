@@ -66,12 +66,18 @@
       "label": "Plattformen"
     },
     "devmode": "Aktivieren Sie den Entwicklermodus",
+    "disconnect": "Abmelden",
     "lang": {
       "label": "Sprache"
     },
     "name": {
       "label": "Nutzername",
       "placeholder": "Nutzername"
+    },
+    "part": {
+      "audio": "Audio",
+      "developer": "Entwickler",
+      "general": "Allgemein"
     },
     "savebar": {
       "cancel": "Änderungen verwerfen",
@@ -84,7 +90,8 @@
     },
     "sound": {
       "check": "Audio-Countdown aktivieren/deaktivieren",
-      "label": "Tonanzahl"
+      "label": "Tonanzahl",
+      "test": "prüfen"
     },
     "subtitle": "Präferenzoptionen",
     "title": "Einstellungen"
