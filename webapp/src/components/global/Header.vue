@@ -2,7 +2,7 @@
   <div class="nav-wrapper">
     <nav>
       <router-link
-        v-for="(route,index) in routes"
+        v-for="(route,index) in routes.filter((x)=>x.meta.displayInNav)"
         :key="route.name"
         class="router-link"
         :to="route.path"
@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import {routes} from "@/router";
 import {ref} from "vue";
-import {UserStore} from "../../objects/stores/UserStore.ts";
+import {UserStore} from "@/objects/stores/UserStore.ts";
 import {Utils} from "@/objects/utils/Utils.ts";
 
 const version = ref(import.meta.env.VITE_VERSION);

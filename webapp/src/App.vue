@@ -12,11 +12,6 @@
   <Loading :is-loading="false">
     <h1>{{ t("loading.targetGame") }}</h1>
   </Loading>
-  <FirstLogin
-      :is-display="
-      !UserStore.player.username || UserStore.player.username.length === 0
-    "
-  />
   <AlertComponent/>
 </template>
 
@@ -27,7 +22,6 @@ import {useI18n} from "vue-i18n";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalKey} from "@/objects/stores/LocalStore.ts";
 import {onMounted, onUnmounted, watch} from "vue";
-import FirstLogin from "@/vue/templates/FirstLogin.vue";
 import AlertComponent from "@/vue/alert/AlertComponent.vue";
 import {PlayerDevice, PlayerStates} from "@/objects/fleet/Player.ts";
 import {Fleet} from "@/objects/fleet/Fleet.ts";
