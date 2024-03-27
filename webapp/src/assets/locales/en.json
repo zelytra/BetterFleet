@@ -66,12 +66,18 @@
       "label": "Platform"
     },
     "devmode": "Enable developer mode",
+    "disconnect": "Sign out",
     "lang": {
       "label": "Language"
     },
     "name": {
       "label": "Username",
       "placeholder": "Username"
+    },
+    "part": {
+      "audio": "Audio",
+      "developer": "Developer",
+      "general": "General"
     },
     "savebar": {
       "cancel": "Cancel modifications",
@@ -84,7 +90,8 @@
     },
     "sound": {
       "check": "Enable/Disable audio countdown",
-      "label": "Audio countdown"
+      "label": "Audio countdown",
+      "test": "test"
     },
     "subtitle": "Preference options",
     "title": "Settings"

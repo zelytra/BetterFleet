@@ -66,6 +66,7 @@
       "label": "Plataformas"
     },
     "devmode": "Habilitar el modo desarrollador",
+    "disconnect": "Desconectarse",
     "lang": {
       "label": "Idioma"
     },
@@ -73,9 +74,14 @@
       "label": "Nombre de usuario",
       "placeholder": "Nombre de usuario"
     },
+    "part": {
+      "audio": "Audio",
+      "developer": "Desarrollador",
+      "general": "General"
+    },
     "savebar": {
       "cancel": "Descartar los cambios",
-      "content": "¡Salto, salto, salto! ¡Vi que hiciste algunos cambios! ",
+      "content": "¡Salto, salto, salto! ¡Vi que hiciste algunos cambios!",
       "save": "Ahorrar"
     },
     "server": {
@@ -84,7 +90,8 @@
     },
     "sound": {
       "check": "Activar/desactivar la cuenta atrás de audio",
-      "label": "Conteo de sonidos"
+      "label": "Conteo de sonidos",
+      "test": "prueba"
     },
     "subtitle": "Opciones de preferencia",
     "title": "Configuraciones"
