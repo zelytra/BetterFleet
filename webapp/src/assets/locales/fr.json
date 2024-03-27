@@ -129,6 +129,15 @@
     "es": "Español",
     "fr": "Français"
   },
+  "login": {
+    "continue": "Continuer",
+    "description": "Bienvenue sur Better Fleet ! Nous sommes ravis de vous compter parmi nous. Pour que vous puissiez utiliser pleinement l'application, il est nécessaire de connecter votre compte Microsoft à celle-ci.",
+    "disconnect": "Ce n’est pas votre compte ? ",
+    "loginButton": "Se connecter à XBOX",
+    "succeed": "Connexion réussie !",
+    "userWelcome": "Bienvenue",
+    "welcome": "Bienvenue sur"
+  },
   "modal": {
     "confirm": {
       "launch": {

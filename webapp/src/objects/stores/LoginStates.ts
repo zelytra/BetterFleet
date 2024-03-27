@@ -1,6 +1,10 @@
 import {reactive} from 'vue'
 import Keycloak, {KeycloakConfig} from "keycloak-js";
 
+export interface KeycloakUser {
+  username: string
+}
+
 let initOptions: KeycloakConfig = {
   url: import.meta.env.VITE_KEYCLOAK_HOST,
   realm: 'Betterfleet',
@@ -9,21 +13,26 @@ let initOptions: KeycloakConfig = {
 
 export const keycloakStore = reactive({
   keycloak: new Keycloak(initOptions),
-  isKeycloakInit: false,
+  isAuthenticated: false,
+  user: {} as KeycloakUser,
 
   init(redirectionUrl: string) {
     this.keycloak.init({
       onLoad: 'check-sso',
       checkLoginIframe: false,
-      silentCheckSsoRedirectUri: false,
-      redirectUri: redirectionUrl
-      //silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+      redirectUri: redirectionUrl,
     }).then((auth: boolean) => {
-      this.isKeycloakInit = auth;
+      this.isAuthenticated = auth;
+      if (auth) {
+        this.keycloak.loadUserInfo().then((userInfo:any) => {
+          console.log(userInfo)
+          this.user.username = userInfo.name
+        })
+      }
     })
   },
   loginUser(redirectionUrl: string) {
-    if (!keycloakStore.isKeycloakInit || !keycloakStore.keycloak.authenticated) {
+    if (!keycloakStore.isAuthenticated || !keycloakStore.keycloak.authenticated) {
       window.open(keycloakStore.keycloak.createLoginUrl({redirectUri: redirectionUrl}), '_self')
     }
   }

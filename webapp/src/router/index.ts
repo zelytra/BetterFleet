@@ -7,7 +7,7 @@ import Fleet from "@/components/Fleet.vue";
 import Config from "@/components/Config.vue";
 import i18n from "@/objects/i18n";
 import {keycloakStore} from "@/objects/stores/LoginStates.ts";
-import Authentication from "@/components/global/Authentication.vue";
+import Authentication from "@/components/Authentication.vue";
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -15,6 +15,7 @@ declare module 'vue-router' {
     role?: string,
     tooltip?: string
     requiresAuth?: boolean
+    displayInNav: boolean
   }
 }
 
@@ -28,7 +29,8 @@ export const routes = [
     meta: {
       icon: sot,
       tooltip: t('tooltips.navbar.home'),
-      requiresAuth: true
+      requiresAuth: true,
+      displayInNav: true
     }
   },
   {
@@ -37,7 +39,7 @@ export const routes = [
     component: Authentication,
     meta: {
       icon: sot,
-      //tooltip: t('tooltips.navbar.home')
+      displayInNav: false
     }
   },
   {
@@ -47,7 +49,8 @@ export const routes = [
     meta: {
       icon: fleet,
       tooltip: t('tooltips.navbar.fleet'),
-      requiresAuth: true
+      requiresAuth: true,
+      displayInNav: true
     }
   }, {
     path: "/config",
@@ -56,7 +59,8 @@ export const routes = [
     meta: {
       icon: config,
       tooltip: t('tooltips.navbar.config'),
-      requiresAuth: true
+      requiresAuth: true,
+      displayInNav: true
     }
   },
 ];
@@ -68,7 +72,7 @@ export const router = createRouter({
 
 router.beforeEach((to, _from) => {
   if (to.meta.requiresAuth) {
-    if (!keycloakStore.isKeycloakInit || !keycloakStore.keycloak.authenticated) {
+    if (!keycloakStore.isAuthenticated || !keycloakStore.keycloak.authenticated) {
       router.push('auth')
     }
   }
