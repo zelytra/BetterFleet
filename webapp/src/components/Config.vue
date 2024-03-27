@@ -2,65 +2,77 @@
   <div class="config-wrapper">
     <BannerTemplate>
       <template #content>
-        <p class="page-title">
-          {{ t("config.title") }}
-        </p>
-      </template>
-    </BannerTemplate>
-    <div class="config-content">
-      <div class="side-content inputs">
-        <h2>{{ t("config.subtitle") }}</h2>
-        <div class="content-wrapper">
-          <div class="side-content">
-            <InputText
-                v-model:input-value="username"
-                :placeholder="t('config.name.placeholder')"
-                :label="t('config.name.label')"
-            />
-            <div class="input-section">
-              <InputText
-                  v-model:input-value="hostName"
-                  :placeholder="t('config.server.placeholder')"
-                  :label="t('config.server.label')"
-                  :lock="!devMode"
-              />
-              <div class="dev-mode-wrapper">
-                <input type="checkbox" v-model="devMode"/>
-                <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
-              </div>
+        <div class="user-info">
+          <div class="username">
+            <div
+                v-if="UserStore.player.username"
+                class="user-icon"
+                :style="{ backgroundColor: Utils.generateRandomColor() }"
+            >
+              <p>
+                {{ UserStore.player.username.charAt(0) }}
+              </p>
             </div>
-            <div class="input-section">
-              <div class="sound-wrapper">
-                <InputSlider
-                    v-model:input-value="volume"
-                    :label="t('config.sound.label')"
-                    :lock="!activeSound"
-                />
-                <button @click="runSound()">
-                  <img src="@/assets/icons/sound.svg" alt="sound icon"/>
-                  <p>tester</p>
-                </button>
-              </div>
-              <div class="dev-mode-wrapper">
-                <input type="checkbox" v-model="activeSound"/>
-                <p @click="activeSound = !activeSound">{{ t("config.sound.check") }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="side-content">
-            <SingleSelect
-                :label="t('config.lang.label')"
-                v-model:data="langOptions"
-            />
-            <SingleSelect
-                :label="t('config.device.label')"
-                v-model:data="deviceOptions"
-            />
+            <p>{{ UserStore.player.username }}</p>
           </div>
         </div>
+      </template>
+      <template #left-content>
+        <button>
+          {{ t('config.disconnect') }}
+        </button>
+      </template>
+    </BannerTemplate>
+    <ParameterPart :title="t('config.part.general')">
+      <InputText
+          v-model:input-value="username"
+          :placeholder="t('config.name.placeholder')"
+          :label="t('config.name.label')"
+      />
+      <SingleSelect
+          :label="t('config.lang.label')"
+          v-model:data="langOptions"
+      />
+      <SingleSelect
+          :label="t('config.device.label')"
+          v-model:data="deviceOptions"
+      />
+    </ParameterPart>
+    <ParameterPart :title="t('config.part.audio')">
+      <div class="input-section">
+        <div class="sound-wrapper">
+          <InputSlider
+              v-model:input-value="volume"
+              :label="t('config.sound.label')"
+              :lock="!activeSound"
+          />
+          <button @click="runSound()">
+            <img src="@/assets/icons/sound.svg" alt="sound icon"/>
+            <p>{{ t("config.sound.test") }}</p>
+          </button>
+        </div>
+        <div class="dev-mode-wrapper">
+          <input type="checkbox" v-model="activeSound"/>
+          <p @click="activeSound = !activeSound">{{ t("config.sound.check") }}</p>
+        </div>
       </div>
+    </ParameterPart>
+    <ParameterPart :title="t('config.part.developer')">
+      <div class="input-section">
+        <InputText
+            v-model:input-value="hostName"
+            :placeholder="t('config.server.placeholder')"
+            :label="t('config.server.label')"
+            :lock="!devMode"
+        />
+        <div class="dev-mode-wrapper">
+          <input type="checkbox" v-model="devMode"/>
+          <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
+        </div>
+      </div>
+    </ParameterPart>
+    <ParameterPart title="Crédit">
       <div class="side-content credits">
-        <h2>{{ t("credits.title") }}</h2>
         <p>{{ t("credits.description") }}</p>
         <p>
           {{ t("credits.developed") }}
@@ -85,7 +97,7 @@
           {{ t("credits.details") }}
         </p>
       </div>
-    </div>
+    </ParameterPart>
     <SaveBar :bar-active="isConfigDifferent()" @save="onSave()" @cancel="resetConfig"/>
   </div>
 </template>
@@ -111,6 +123,8 @@ import SaveBar from "@/vue/utils/SaveBar.vue";
 import InputSlider from "@/vue/form/InputSlider.vue";
 import countdownSound from "@assets/sounds/countdown.mp3";
 import {PlayerDevice} from "@/objects/fleet/Player.ts";
+import ParameterPart from "@/vue/templates/ParameterPart.vue";
+import {Utils} from "@/objects/utils/Utils.ts";
 
 const {t, availableLocales} = useI18n();
 const alerts = inject<AlertProvider>("alertProvider");
@@ -253,171 +267,164 @@ function runSound() {
 </script>
 
 <style scoped lang="scss">
+.user-info {
+  height: 100%;
+  //width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+
+  .username {
+    display: flex;
+    align-items: center;
+    gap: 42px;
+
+    .user-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 6px;
+
+      p {
+        user-select: none;
+        text-align: center;
+        margin-top: 4px;
+        font-size: 48px;
+        color: white;
+      }
+    }
+
+    p {
+      font-size: 25px;
+    }
+  }
+}
+
+button {
+  all: unset;
+  cursor: pointer;
+  height: 100%;
+  background: linear-gradient(270deg, rgba(212, 50, 50, 0.20) 0%, rgba(212, 50, 50, 0.00) 108.45%);
+  padding: 0 16px;
+  white-space: nowrap;
+}
+
 .config-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  height: 100%;
+  gap: 40px;
+  width: 100%;
   position: relative;
-  overflow: hidden;
+  margin-bottom: 40px;
 
-  p.page-title {
-    text-align: center;
-    height: 100%;
+  .input-section {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: BrushTip, sans-serif;
-    line-height: 48px;
-    font-size: 45px;
-    margin-top: 8px;
-  }
+    flex-direction: column;
+    gap: 8px;
 
-  .config-content {
-    display: flex;
-    height: calc(100% - 170px); // Minus header height
-    max-height: 400px;
-    box-sizing: border-box;
-    gap: 14px;
+    .sound-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 26px;
 
-    .side-content {
-      width: 100%;
-      height: 100%;
-      background: var(--secondary-background);
-      gap: 20px;
-      border-radius: 5px;
-      padding: 16px 8px;
-
-      .input-section {
+      button {
+        all: unset;
         display: flex;
-        flex-direction: column;
-        gap: 8px;
-
-        .sound-wrapper {
-          display: flex;
-          align-items: center;
-          gap: 26px;
-
-          button {
-            all: unset;
-            display: flex;
-            align-self: end;
-            align-items: center;
-            height: auto;
-            gap: 12px;
-            border-radius: 5px;
-            background: rgba(50, 212, 153, 0.05);
-            padding: 4px 12px;
-            cursor: pointer;
-          }
-        }
-      }
-
-      .dev-mode-wrapper {
-        display: flex;
+        align-self: end;
         align-items: center;
+        height: auto;
         gap: 12px;
-      }
-
-      h2 {
-        font-family: BrushTip, sans-serif;
-        color: var(--primary);
-        font-size: 25px;
-        text-align: center;
-      }
-
-      &.inputs {
-        overflow: visible;
-
-        .content-wrapper {
-          display: flex;
-          gap: 12px;
-          width: 100%;
-          box-sizing: border-box;
-
-          .side-content {
-            box-sizing: border-box;
-            width: 50%;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-          }
-        }
-
-        .dev-mode-wrapper p {
-          cursor: pointer;
-        }
-
-        input[type="checkbox"] {
-          appearance: none;
-          border: 1px solid var(--primary);
-          border-radius: 4px;
-          width: 20px;
-          height: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          &:before {
-            content: "";
-            width: 10px;
-            transform: scale(0);
-            height: 10px;
-            background: var(--primary-text);
-            clip-path: polygon(
-                    14% 44%,
-                    0 65%,
-                    50% 100%,
-                    100% 16%,
-                    80% 0%,
-                    43% 62%
-            );
-            transform-origin: bottom left;
-          }
-
-          &:checked {
-            background: var(--primary);
-            border: 2px solid var(--primary);
-
-            &:before {
-              transform: scale(1);
-            }
-          }
-        }
-      }
-
-      &.credits {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 400px;
-
-        p {
-          font-size: 16px;
-          text-align: center;
-
-          a {
-            color: var(--primary);
-            cursor: pointer;
-
-            &:hover {
-              text-decoration: underline var(--primary);
-            }
-          }
-
-          &.light {
-            color: var(--secondary-text);
-          }
-        }
-
-        .social-wrapper {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
+        border-radius: 5px;
+        background: rgba(50, 212, 153, 0.05);
+        padding: 4px 12px;
+        cursor: pointer;
       }
     }
+
+    .dev-mode-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+  }
+
+  input[type="checkbox"] {
+    appearance: none;
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:before {
+      content: "";
+      width: 10px;
+      transform: scale(0);
+      height: 10px;
+      background: var(--primary-text);
+      clip-path: polygon(
+              14% 44%,
+              0 65%,
+              50% 100%,
+              100% 16%,
+              80% 0%,
+              43% 62%
+      );
+      transform-origin: bottom left;
+    }
+
+    &:checked {
+      background: var(--primary);
+      border: 2px solid var(--primary);
+
+      &:before {
+        transform: scale(1);
+      }
+    }
+  }
+
+  .dev-mode-wrapper p {
+    cursor: pointer;
+  }
+}
+
+.credits {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+
+  p {
+    font-size: 16px;
+    text-align: center;
+
+    a {
+      color: var(--primary);
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline var(--primary);
+      }
+    }
+
+    &.light {
+      color: var(--secondary-text);
+    }
+  }
+
+  .social-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 }
 </style>

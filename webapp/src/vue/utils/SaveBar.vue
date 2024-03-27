@@ -36,7 +36,7 @@ const emits = defineEmits(['save', 'cancel'])
   height: 24px;
   background-color: var(--secondary-background);
   border-radius: 8px;
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   left: 50%;
   transform: translate(-50%, 0);

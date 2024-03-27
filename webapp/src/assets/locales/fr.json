@@ -66,12 +66,18 @@
       "label": "Plateforme"
     },
     "devmode": "Activer le mode développeur",
+    "disconnect": "Se déconnecter",
     "lang": {
       "label": "Langue"
     },
     "name": {
       "label": "Pseudonyme",
       "placeholder": "Pseudonyme"
+    },
+    "part": {
+      "audio": "Audio",
+      "developer": "Développeur",
+      "general": "Général"
     },
     "savebar": {
       "cancel": "Annuler les modifications",
@@ -84,7 +90,8 @@
     },
     "sound": {
       "check": "Activer/Désactiver le décompte sonore",
-      "label": "Décompte sonore"
+      "label": "Décompte sonore",
+      "test": "tester"
     },
     "subtitle": "Options de préférence",
     "title": "Paramètres"
