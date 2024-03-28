@@ -49,9 +49,7 @@ defineProps({
 
   &.is-player{
     border: 1px solid var(--primary);
-    background: rgba(50, 212, 153, 0.10);
-
-
+    //background: rgba(50, 212, 153, 0.10);
   }
 
   .content {
@@ -60,7 +58,7 @@ defineProps({
     gap: 15px;
 
     &.username {
-      width: 200px;
+      width: 250px;
 
       .user-icon {
         border-radius: 50%;
