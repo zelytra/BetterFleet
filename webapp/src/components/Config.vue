@@ -18,7 +18,7 @@
         </div>
       </template>
       <template #left-content>
-        <button>
+        <button @click="keycloakStore.keycloak.logout()">
           {{ t('config.disconnect') }}
         </button>
       </template>
@@ -125,6 +125,7 @@ import countdownSound from "@assets/sounds/countdown.mp3";
 import {PlayerDevice} from "@/objects/fleet/Player.ts";
 import ParameterPart from "@/vue/templates/ParameterPart.vue";
 import {Utils} from "@/objects/utils/Utils.ts";
+import {keycloakStore} from "@/objects/stores/LoginStates.ts";
 
 const {t, availableLocales} = useI18n();
 const alerts = inject<AlertProvider>("alertProvider");

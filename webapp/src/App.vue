@@ -73,6 +73,7 @@ onMounted(() => {
     username: "",
     device: PlayerDevice.MICROSOFT
   });
+  console.log(window.location)
 });
 
 window.onbeforeunload = () => {

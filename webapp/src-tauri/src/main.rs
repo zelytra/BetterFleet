@@ -12,6 +12,7 @@ use crate::window_interaction::{set_focus_to_window, click_in_window_proportiona
 use std::ffi::CString;
 use std::ptr::null_mut;
 use winapi::um::winuser::FindWindowA;
+use tauri::Manager;
 
 mod fetch_informations;
 mod api;
@@ -40,6 +41,13 @@ async fn main() {
             get_last_updated_server_ip,
             rise_anchor
         ])
+        .setup(|app| {
+            //let location = std::env::var("VITE_TAURI_LOCATION").unwrap_or_else(|_| "".to_string());
+            //println!("{:?}", location);
+            //let window = app.get_window("main").unwrap();
+            //let _ = window.eval(&format!("window.location.replace('{}')", location)).unwrap();
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
