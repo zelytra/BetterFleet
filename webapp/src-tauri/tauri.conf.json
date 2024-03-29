@@ -18,6 +18,15 @@
         "execute": true,
         "sidecar": true,
         "open": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "http://localhost/*",
+          "https://pre-prod.betterfleet.fr/*",
+          "https://betterfleet.fr/*"
+        ]
       }
     },
     "bundle": {
@@ -57,7 +66,16 @@
       }
     },
     "security": {
-      "csp": null
+      "csp": null,
+      "dangerousRemoteDomainIpcAccess": [
+        {
+          "domain": "localhost",
+          "windows": [
+            "main"
+          ],
+          "enableTauriAPI": true
+        }
+      ]
     },
     "updater": {
       "active": true,
