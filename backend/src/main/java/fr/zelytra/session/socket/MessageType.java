@@ -11,4 +11,5 @@ public enum MessageType {
     OUTDATED_CLIENT,
     SESSION_NOT_FOUND,
     KEEP_ALIVE,
+    CONNECTION_REFUSED,
 }

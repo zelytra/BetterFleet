@@ -1,7 +1,11 @@
 package fr.zelytra.session;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -11,6 +15,7 @@ import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.SocketMessage;
 import io.quarkus.logging.Log;
+import io.quarkus.security.Authenticated;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.websocket.*;
@@ -19,9 +24,14 @@ import jakarta.websocket.server.ServerEndpoint;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
-@ServerEndpoint(value = "/sessions/{sessionId}") // WebSocket endpoint
+// WebSocket endpoint
+@ServerEndpoint(value = "/sessions/{token}/{sessionId}")
 @ApplicationScoped
 public class SessionSocket {
 
@@ -31,6 +41,9 @@ public class SessionSocket {
 
     @ConfigProperty(name = "app.version")
     String appVersion;
+
+    @ConfigProperty(name = "quarkus.oidc.auth-server-url")
+    String realmURL;
 
     @Inject
     SessionManager sessionManager;
@@ -58,7 +71,7 @@ public class SessionSocket {
 
 
     @OnMessage
-    public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId) throws IOException {
+    public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId, @PathParam("token") String token) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -73,7 +86,7 @@ public class SessionSocket {
         switch (socketMessage.messageType()) {
             case CONNECT -> {
                 Player player = objectMapper.convertValue(socketMessage.data(), Player.class);
-                handleConnectMessage(player, session, sessionId);
+                handleConnectMessage(player, session, sessionId, token);
             }
             case UPDATE -> {
                 Player player = objectMapper.convertValue(socketMessage.data(), Player.class);
@@ -136,11 +149,18 @@ public class SessionSocket {
     }
 
     // Extracted method to handle CONNECT messages
-    private void handleConnectMessage(Player player, Session session, String sessionId) {
+    private void handleConnectMessage(Player player, Session session, String sessionId, String token) throws IOException {
         // Cancel the timeout task since we've received the message
         Future<?> timeoutTask = sessionTimeoutTasks.remove(session.getId());
         if (timeoutTask != null) {
             timeoutTask.cancel(true);
+        }
+
+        if (!isTokenValid(token)) {
+            Log.info("Invalid token, session will be closed");
+            sessionManager.sendDataToPlayer(session, MessageType.CONNECTION_REFUSED, null);
+            session.close();
+            return;
         }
 
         // Refuse connection from client with different version
@@ -215,6 +235,21 @@ public class SessionSocket {
             Log.info("[" + player.getUsername() + "] Disconnected");
         } else {
             Log.warn("[UNDEFINED PLAYER] Disconnected");
+        }
+    }
+
+    private boolean isTokenValid(String token) {
+        try {
+            URL url = new URL(realmURL + "/protocol/openid-connect/userinfo");
+
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "bearer " + token);
+
+            return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
+        } catch (IOException e) {
+            Log.info(e);
+            return false;
         }
     }
 }
