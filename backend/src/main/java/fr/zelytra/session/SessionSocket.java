@@ -11,6 +11,8 @@ import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.SocketMessage;
 import io.quarkus.logging.Log;
+import io.smallrye.jwt.auth.principal.DefaultJWTTokenParser;
+import io.smallrye.jwt.auth.principal.JWTAuthContextInfo;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.websocket.*;
@@ -19,8 +21,6 @@ import jakarta.websocket.server.ServerEndpoint;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.concurrent.*;
 
 // WebSocket endpoint
@@ -43,6 +43,11 @@ public class SessionSocket {
 
     @Inject
     ExecutorService sqlExecutor;
+
+    @Inject
+    JWTAuthContextInfo contextInfo;
+
+    private final DefaultJWTTokenParser parser = new DefaultJWTTokenParser();
 
     @OnOpen
     public void onOpen(Session session) {
@@ -233,14 +238,9 @@ public class SessionSocket {
 
     private boolean isTokenValid(String token) {
         try {
-            URL url = new URL(realmURL + "/protocol/openid-connect/userinfo");
-
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Authorization", "bearer " + token);
-
-            return connection.getResponseCode() == HttpURLConnection.HTTP_OK;
-        } catch (IOException e) {
+            parser.parse(token, contextInfo);
+            return true;
+        } catch (Exception e) {
             Log.info(e);
             return false;
         }

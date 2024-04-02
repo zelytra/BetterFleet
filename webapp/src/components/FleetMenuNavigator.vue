@@ -13,7 +13,6 @@
 
 <script setup lang="ts">
 import Header from "@/components/global/Header.vue";
-import {useI18n} from "vue-i18n";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalKey} from "@/objects/stores/LocalStore.ts";
 import {onMounted, onUnmounted, watch} from "vue";
@@ -25,7 +24,6 @@ import {Utils} from "@/objects/utils/Utils.ts";
 import router from "@/router";
 import {HTTPAxios} from "@/objects/utils/HTTPAxios.ts";
 
-const {t} = useI18n();
 const tokenRefresher = setInterval(() => {
   HTTPAxios.updateToken();
 }, 1000)
