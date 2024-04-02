@@ -1,5 +1,7 @@
 import {reactive} from 'vue'
 import Keycloak, {KeycloakConfig} from "keycloak-js";
+import {HTTPAxios} from "@/objects/utils/HTTPAxios.ts";
+import {UserStore} from "@/objects/stores/UserStore.ts";
 
 export interface KeycloakUser {
   username: string
@@ -8,7 +10,7 @@ export interface KeycloakUser {
 let initOptions: KeycloakConfig = {
   url: import.meta.env.VITE_KEYCLOAK_HOST,
   realm: 'Betterfleet',
-  clientId: 'application'
+  clientId: 'application',
 }
 
 export const keycloakStore = reactive({
@@ -24,12 +26,17 @@ export const keycloakStore = reactive({
     }).then((auth: boolean) => {
       this.isAuthenticated = auth;
       if (auth) {
-        this.keycloak.loadUserInfo().then((userInfo:any) => {
+        this.keycloak.loadUserInfo().then((userInfo: any) => {
           console.log(userInfo)
-          this.user.username = userInfo.name
+          this.user.username = userInfo.preferred_username;
+          UserStore.player.username = this.user.username;
         })
       }
     })
+
+    this.keycloak.onTokenExpired = () => {
+      HTTPAxios.updateToken();
+    }
   },
   loginUser(redirectionUrl: string) {
     if (!keycloakStore.isAuthenticated || !keycloakStore.keycloak.authenticated) {

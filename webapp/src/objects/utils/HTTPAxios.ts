@@ -1,9 +1,10 @@
 import axios from "axios";
+import {keycloakStore} from "@/objects/stores/LoginStates.ts";
 
 export class HTTPAxios {
     private readonly json: any;
     private readonly path: string;
-    private readonly header = {
+    private static readonly header = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, DELETE',
         'Authorization': ''
@@ -22,7 +23,7 @@ export class HTTPAxios {
         });
 
         this.axios.interceptors.request.use(async config => {
-            config.headers.set(this.header)
+            config.headers.set(HTTPAxios.header)
             return config;
         }, error => {
             return Promise.reject(error);
@@ -48,5 +49,12 @@ export class HTTPAxios {
     async patch() {
         const urlPath = this.url + this.path;
         return await this.axios.patch(urlPath, this.json);
+    }
+
+    public static async updateToken() {
+        await keycloakStore.keycloak.updateToken(60).then((refresh: boolean) => {
+            if (refresh) console.debug("Token was successfully refreshed");
+        });
+        HTTPAxios.header.Authorization = 'Bearer ' + keycloakStore.keycloak.token;
     }
 }

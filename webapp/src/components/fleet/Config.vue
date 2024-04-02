@@ -10,7 +10,7 @@
                 :style="{ backgroundColor: Utils.generateRandomColor() }"
             >
               <p>
-                {{ UserStore.player.username.charAt(0) }}
+                {{ UserStore.player.username.charAt(0).toUpperCase() }}
               </p>
             </div>
             <p>{{ UserStore.player.username }}</p>
@@ -24,11 +24,6 @@
       </template>
     </BannerTemplate>
     <ParameterPart :title="t('config.part.general')">
-      <InputText
-          v-model:input-value="username"
-          :placeholder="t('config.name.placeholder')"
-          :label="t('config.name.label')"
-      />
       <SingleSelect
           :label="t('config.lang.label')"
           v-model:data="langOptions"
@@ -47,7 +42,7 @@
               :lock="!activeSound"
           />
           <button @click="runSound()">
-            <img src="@/assets/icons/sound.svg" alt="sound icon"/>
+            <img src="../../assets/icons/sound.svg" alt="sound icon"/>
             <p>{{ t("config.sound.test") }}</p>
           </button>
         </div>
@@ -87,10 +82,10 @@
         <div class="social-wrapper">
           <p>{{ t("credits.socials") }}</p>
           <a href="https://discord.gg/sHPp5CPxf2" target="_blank"
-          ><img src="@/assets/icons/discord.svg"
+          ><img src="../../assets/icons/discord.svg"
           /></a>
           <a href="https://github.com/zelytra/BetterFleet" target="_blank"
-          ><img src="@/assets/icons/github.svg"
+          ><img src="../../assets/icons/github.svg"
           /></a>
         </div>
         <p class="light">
@@ -110,13 +105,13 @@ import SingleSelect from "@/vue/form/SingleSelect.vue";
 import {SingleSelectInterface} from "@/vue/form/Inputs.ts";
 import {inject, onMounted, ref,} from "vue";
 
-import fr from "@/assets/icons/locales/fr.svg";
-import de from "@/assets/icons/locales/de.svg";
-import es from "@/assets/icons/locales/es.svg";
-import en from "@/assets/icons/locales/en.svg";
-import xbox from "@/assets/icons/xbox.svg";
-import microsoft from "@/assets/icons/microsoft.svg";
-import playstation from "@/assets/icons/playstation.svg";
+import fr from "@assets/icons/locales/fr.svg";
+import de from "@assets/icons/locales/de.svg";
+import es from "@assets/icons/locales/es.svg";
+import en from "@assets/icons/locales/en.svg";
+import xbox from "@assets/icons/xbox.svg";
+import microsoft from "@assets/icons/microsoft.svg";
+import playstation from "@assets/icons/playstation.svg";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
 import SaveBar from "@/vue/utils/SaveBar.vue";

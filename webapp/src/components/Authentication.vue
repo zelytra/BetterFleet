@@ -33,7 +33,7 @@ function authUser() {
 }
 
 function leavePage(){
-  router.push("/")
+  router.push("/fleet/home")
 }
 </script>
 

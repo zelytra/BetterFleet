@@ -40,7 +40,6 @@ services:
       - "2604:8080"
     volumes:
       - ./keycloak/config:/opt/keycloak/data/import
-      - ./keycloak/vault:/var/keycloak/vault
       - /etc/localtime:/etc/localtime:ro
     command: start --import-realm
     environment:

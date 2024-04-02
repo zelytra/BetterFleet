@@ -16,7 +16,7 @@ import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
 import {invoke} from '@tauri-apps/api/tauri';
 import {PlayerStates} from "@/objects/fleet/Player.ts";
 import {onBeforeRouteLeave} from "vue-router";
-import countdownSound from "@/assets/sounds/countdown.mp3"
+import countdownSound from "@assets/sounds/countdown.mp3"
 
 const delta = ref<LocalTime>(LocalTime.now());
 const {t} = useI18n();
