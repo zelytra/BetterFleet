@@ -23,9 +23,8 @@
         "all": true,
         "request": true,
         "scope": [
-          "http://localhost/*",
-          "https://pre-prod.betterfleet.fr/*",
-          "https://betterfleet.fr/*"
+          "http://**",
+          "https://**"
         ]
       }
     },
@@ -94,7 +93,8 @@
         "height": 700,
         "resizable": true,
         "title": "BetterFleet",
-        "width": 1250
+        "width": 1250,
+        "transparent": true
       }
     ]
   }

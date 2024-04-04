@@ -10,10 +10,8 @@ import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.SocketMessage;
+import fr.zelytra.session.socket.security.SocketSecurityEntity;
 import io.quarkus.logging.Log;
-import io.smallrye.jwt.auth.principal.DefaultJWTTokenParser;
-import io.smallrye.jwt.auth.principal.JWTAuthContextInfo;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
@@ -25,7 +23,6 @@ import java.util.concurrent.*;
 
 // WebSocket endpoint
 @ServerEndpoint(value = "/sessions/{token}/{sessionId}")
-@ApplicationScoped
 public class SessionSocket {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -43,11 +40,6 @@ public class SessionSocket {
 
     @Inject
     ExecutorService sqlExecutor;
-
-    @Inject
-    JWTAuthContextInfo contextInfo;
-
-    private final DefaultJWTTokenParser parser = new DefaultJWTTokenParser();
 
     @OnOpen
     public void onOpen(Session session) {
@@ -147,19 +139,22 @@ public class SessionSocket {
     }
 
     // Extracted method to handle CONNECT messages
-    private void handleConnectMessage(Player player, Session session, String sessionId, String token) throws IOException {
+    public void handleConnectMessage(Player player, Session session, String sessionId, String token) throws IOException {
         // Cancel the timeout task since we've received the message
         Future<?> timeoutTask = sessionTimeoutTasks.remove(session.getId());
         if (timeoutTask != null) {
             timeoutTask.cancel(true);
         }
 
-        if (!isTokenValid(token)) {
+        // Checking security
+        SocketSecurityEntity socketSecurity = SocketSecurityEntity.websocketUser.get(token);
+        if (socketSecurity == null || !socketSecurity.isValid()) {
             Log.info("Invalid token, session will be closed");
             sessionManager.sendDataToPlayer(session, MessageType.CONNECTION_REFUSED, null);
             session.close();
             return;
         }
+        SocketSecurityEntity.websocketUser.remove(token);
 
         // Refuse connection from client with different version
         if (player.getClientVersion() == null || !player.getClientVersion().equalsIgnoreCase(appVersion)) {
@@ -233,16 +228,6 @@ public class SessionSocket {
             Log.info("[" + player.getUsername() + "] Disconnected");
         } else {
             Log.warn("[UNDEFINED PLAYER] Disconnected");
-        }
-    }
-
-    private boolean isTokenValid(String token) {
-        try {
-            parser.parse(token, contextInfo);
-            return true;
-        } catch (Exception e) {
-            Log.info(e);
-            return false;
         }
     }
 }

@@ -14,7 +14,6 @@
   "dependencies": {
     "@js-joda/core": "^5.6.2",
     "@tauri-apps/api": "^1.5.3",
-    "axios": "^1.6.8",
     "vue": "^3.4.21",
     "vue-i18n": "^9.10.2",
     "keycloak-js": "^20.0.3"

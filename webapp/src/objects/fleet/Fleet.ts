@@ -6,7 +6,8 @@ import {i18n} from "@/objects/i18n";
 import {Player} from "@/objects/fleet/Player.ts";
 import {SotServer} from "@/objects/fleet/SotServer.ts";
 import {LocalTime} from "@js-joda/core";
-import {keycloakStore} from "@/objects/stores/LoginStates.ts";
+import {HTTPAxios} from "@/objects/utils/HTTPAxios.ts";
+import {ResponseType} from "@tauri-apps/api/http";
 
 const {t} = i18n.global;
 
@@ -43,7 +44,7 @@ export class Fleet {
     }
   }
 
-  joinSession(sessionId: string) {
+  async joinSession(sessionId: string) {
     if (this.socket && this.socket.readyState >= 2) {
       this.socket.close();
     }
@@ -51,8 +52,12 @@ export class Fleet {
     UserStore.player.isReady = false;
     UserStore.player.isMaster = false;
 
-    this.socket = new WebSocket(
-      UserStore.player.serverHostName + "/" + keycloakStore.keycloak.token + "/" + sessionId,);
+    await new HTTPAxios("socket/register", null).get(ResponseType.Text).then((response) => {
+      this.socket = new WebSocket(
+        UserStore.player.serverHostName + "/" + response.data + "/" + sessionId);
+    })
+
+    if (!this.socket) return;
 
     // Send player data to backend for initialization
     this.socket.onopen = () => {
@@ -221,7 +226,3 @@ export class Fleet {
     return this.players.filter((player) => player.isMaster);
   }
 }
-
-
-
-
