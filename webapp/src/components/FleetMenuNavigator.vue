@@ -88,7 +88,7 @@ onUnmounted(() => {
 });
 
 watch(() => UserStore.player.countDown, () => {
-  router.push("/fleet")
+  router.push("/fleet/session")
 })
 </script>
 
