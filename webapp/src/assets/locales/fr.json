@@ -167,6 +167,7 @@
       }
     },
     "contributor": {
+      "alpha_tester": "Alpha-Testeur",
       "designer": "Designer",
       "developer": "Développeur",
       "translator": "Traducteur"

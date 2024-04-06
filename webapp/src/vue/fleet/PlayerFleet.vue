@@ -125,6 +125,7 @@ onMounted(() => {
           position: absolute;
           top: 50%;
           left: 80px;
+          white-space: nowrap;
           transform: translate(-50%,-50%);
           z-index: 99;
           background: var(--primary);
