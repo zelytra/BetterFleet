@@ -166,6 +166,11 @@
         "title": "Entrez un code de session"
       }
     },
+    "contributor": {
+      "designer": "Designer",
+      "developer": "Développeur",
+      "translator": "Traducteur"
+    },
     "countdown": "La recherche commence dans...",
     "id": "Code de session",
     "idCopy": "Copié !",
