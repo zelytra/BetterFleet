@@ -3,7 +3,7 @@
     <BannerTemplate>
       <template #content>
         <div class="header-content">
-          <img src="@/assets/icons/sot.svg"/>
+          <img src="../../../assets/icons/sot.svg"/>
           <div class="title-content">
             <p>{{ session.sessionName }}</p>
             <div class="id-wrapper">
@@ -13,7 +13,7 @@
                     session.sessionId.toUpperCase()
                   }}</span>
               </p>
-              <img src="@/assets/icons/clipboard.svg" alt="copy-button"
+              <img src="../../../assets/icons/clipboard.svg" alt="copy-button"
                    @click="copyIdToClipboard(session.sessionId.toUpperCase())"/>
               <transition>
                 <p v-if="displayIdCopy">{{ t('session.idCopy') }}</p>
@@ -121,7 +121,7 @@ import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
-import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
+import SessionCountdown from "@/components/fleet/session/SessionCountdown.vue";
 import ServerContainer from "@/vue/templates/ServerContainer.vue";
 import ConfirmationModal from "@/vue/form/ConfirmationModal.vue";
 

@@ -18,6 +18,14 @@
         "execute": true,
         "sidecar": true,
         "open": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": [
+          "http://**",
+          "https://**"
+        ]
       }
     },
     "bundle": {
@@ -57,7 +65,16 @@
       }
     },
     "security": {
-      "csp": null
+      "csp": null,
+      "dangerousRemoteDomainIpcAccess": [
+        {
+          "domain": "localhost",
+          "windows": [
+            "main"
+          ],
+          "enableTauriAPI": true
+        }
+      ]
     },
     "updater": {
       "active": true,
@@ -76,7 +93,8 @@
         "height": 700,
         "resizable": true,
         "title": "BetterFleet",
-        "width": 1250
+        "width": 1250,
+        "transparent": true
       }
     ]
   }

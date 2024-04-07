@@ -7,12 +7,55 @@ services:
     ports:
       - "2600:5432"
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - /psql-data/app:/var/lib/postgresql/data
+      - ./psql-data/app:/var/lib/postgresql/data
       - /etc/localtime:/etc/localtime:ro
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: BetterFleet
       PGDATA: /var/lib/postgresql/data
+    restart: unless-stopped
+
+  postgres-auth:
+    image: postgres:14.2-alpine
+    container_name: betterfleet-postgres-auth
+    ports:
+      - "2603:5432"
+    volumes:
+      - ./psql-data/auth:/var/lib/postgresql/data/pgdata
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: Keycloak
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: betterfleet-keycloak
+    depends_on:
+      - postgres-auth
+    ports:
+      - "2604:8080"
+    volumes:
+      - ./keycloak/config:/opt/keycloak/data/import
+      - /etc/localtime:/etc/localtime:ro
+    command: start --import-realm
+    environment:
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres-auth
+      PROXY_ADDRESS_FORWARDING: "true"
+      KC_PROXY: edge
+      MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID}
+      MICROSOFT_CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET}
+      KC_DB_URL_DATABASE: Keycloak
+      KC_VAULT_FILE: /var/keycloak/vault
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
+      KC_OVERRIDE: "false"
     restart: unless-stopped

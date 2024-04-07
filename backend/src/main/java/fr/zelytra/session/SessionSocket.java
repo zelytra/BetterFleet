@@ -10,8 +10,8 @@ import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.SocketMessage;
+import fr.zelytra.session.socket.security.SocketSecurityEntity;
 import io.quarkus.logging.Log;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
@@ -21,8 +21,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.io.IOException;
 import java.util.concurrent.*;
 
-@ServerEndpoint(value = "/sessions/{sessionId}") // WebSocket endpoint
-@ApplicationScoped
+// WebSocket endpoint
+@ServerEndpoint(value = "/sessions/{token}/{sessionId}")
 public class SessionSocket {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -31,6 +31,9 @@ public class SessionSocket {
 
     @ConfigProperty(name = "app.version")
     String appVersion;
+
+    @ConfigProperty(name = "quarkus.oidc.auth-server-url")
+    String realmURL;
 
     @Inject
     SessionManager sessionManager;
@@ -58,7 +61,7 @@ public class SessionSocket {
 
 
     @OnMessage
-    public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId) throws IOException {
+    public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId, @PathParam("token") String token) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -73,7 +76,7 @@ public class SessionSocket {
         switch (socketMessage.messageType()) {
             case CONNECT -> {
                 Player player = objectMapper.convertValue(socketMessage.data(), Player.class);
-                handleConnectMessage(player, session, sessionId);
+                handleConnectMessage(player, session, sessionId, token);
             }
             case UPDATE -> {
                 Player player = objectMapper.convertValue(socketMessage.data(), Player.class);
@@ -136,12 +139,22 @@ public class SessionSocket {
     }
 
     // Extracted method to handle CONNECT messages
-    private void handleConnectMessage(Player player, Session session, String sessionId) {
+    public void handleConnectMessage(Player player, Session session, String sessionId, String token) throws IOException {
         // Cancel the timeout task since we've received the message
         Future<?> timeoutTask = sessionTimeoutTasks.remove(session.getId());
         if (timeoutTask != null) {
             timeoutTask.cancel(true);
         }
+
+        // Checking security
+        SocketSecurityEntity socketSecurity = SocketSecurityEntity.websocketUser.get(token);
+        if (socketSecurity == null || !socketSecurity.isValid()) {
+            Log.info("Invalid token, session will be closed");
+            sessionManager.sendDataToPlayer(session, MessageType.CONNECTION_REFUSED, null);
+            session.close();
+            return;
+        }
+        SocketSecurityEntity.websocketUser.remove(token);
 
         // Refuse connection from client with different version
         if (player.getClientVersion() == null || !player.getClientVersion().equalsIgnoreCase(appVersion)) {
