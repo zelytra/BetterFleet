@@ -65,10 +65,6 @@ defineProps({
     required: true
   }
 })
-
-onMounted(() => {
-  console.log(contributor.value)
-})
 </script>
 
 <style scoped lang="scss">

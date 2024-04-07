@@ -254,7 +254,6 @@ function getDeviceImgUrl(iconName: string): string {
 }
 
 function runSound() {
-  console.log(volume.value)
   if (sound.paused) {
     sound.volume = volume.value / 100;
     sound.play()

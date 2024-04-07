@@ -27,7 +27,6 @@ export const keycloakStore = reactive({
       this.isAuthenticated = auth;
       if (auth) {
         this.keycloak.loadUserInfo().then((userInfo: any) => {
-          console.log(userInfo)
           this.user.username = userInfo.preferred_username;
           UserStore.player.username = this.user.username;
         })
