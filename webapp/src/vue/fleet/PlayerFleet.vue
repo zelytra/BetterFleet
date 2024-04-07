@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, PropType, ref} from "vue";
+import {PropType, ref} from "vue";
 import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {useI18n} from "vue-i18n";
 import {Utils} from "@/objects/utils/Utils.ts";
