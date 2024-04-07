@@ -75,6 +75,7 @@ defineProps({
   background: var(--primary-background-static);
   padding: 8px 13px;
   border-radius: 5px;
+  position: relative;
 
   &.is-player {
     border: 1px solid var(--primary);
@@ -137,6 +138,10 @@ defineProps({
 
       &.status {
         color: var(--primary);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
 
         &.offline {
           color: var(--secondary-text);
