@@ -3,7 +3,6 @@ package fr.zelytra.session.server;
 import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.Player;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -21,9 +20,6 @@ public class SotServer {
     private String hash;
     private String color;
     private List<Player> connectedPlayers;
-
-    @ConfigProperty(name = "proxy.check.api.key")
-    String proxyApiKey;
 
     public SotServer() {
     }

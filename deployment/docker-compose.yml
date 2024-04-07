@@ -31,6 +31,7 @@ services:
       DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       KEYCLOAK_HOST: ${PUBLIC_KEYCLOAK_HOSTNAME}
+      PROXY_CHECK_API_KEY: ${PROXY_CHECK_API_KEY}
     restart: unless-stopped
 
   frontend:

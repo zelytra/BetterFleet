@@ -28,12 +28,13 @@ public class SessionSocket {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     public static final ConcurrentMap<String, Future<?>> sessionTimeoutTasks = new ConcurrentHashMap<>();
     private static final int RISE_ANCHOR_TIMER = 3; // in seconds
+    public static String PROXY_API_KEY = "";
 
     @ConfigProperty(name = "app.version")
     String appVersion;
 
-    @ConfigProperty(name = "quarkus.oidc.auth-server-url")
-    String realmURL;
+    @ConfigProperty(name = "proxy.check.api.key")
+    String proxyApiKey;
 
     @Inject
     SessionManager sessionManager;
@@ -87,6 +88,7 @@ public class SessionSocket {
             case KEEP_ALIVE -> {
             }
             case JOIN_SERVER -> {
+                PROXY_API_KEY = proxyApiKey;
                 SotServer sotServer = objectMapper.convertValue(socketMessage.data(), SotServer.class);
                 handleJoinServerMessage(session, sotServer);
             }
@@ -229,5 +231,9 @@ public class SessionSocket {
         } else {
             Log.warn("[UNDEFINED PLAYER] Disconnected");
         }
+    }
+
+    public String getProxyApiKey() {
+        return proxyApiKey;
     }
 }
