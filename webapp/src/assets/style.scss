@@ -37,6 +37,7 @@ html, body {
 #app {
   background: var(--primary-background);
   height: calc(100%);
+  position: relative;
 }
 
 ::-webkit-scrollbar {

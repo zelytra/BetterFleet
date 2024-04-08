@@ -52,6 +52,7 @@ const emits = defineEmits(['onConfirm']);
   justify-content: space-between;
   align-items: center;
   gap: 18px;
+  background: #0F1013;
 
   .content {
     display: flex;
@@ -63,6 +64,7 @@ const emits = defineEmits(['onConfirm']);
     text-align: center;
 
     h2 {
+      margin-top: 12px;
       &.warning {
         color: var(--warning);
       }

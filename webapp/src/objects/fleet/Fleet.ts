@@ -55,6 +55,12 @@ export class Fleet {
     await new HTTPAxios("socket/register", null).get(ResponseType.Text).then((response) => {
       this.socket = new WebSocket(
         UserStore.player.serverHostName + "/" + response.data + "/" + sessionId);
+    }).catch(()=>{
+      alertProvider.sendAlert({
+        content: t('alert.websocketAuthFailed.content'),
+        title: t('alert.websocketAuthFailed.title'),
+        type: AlertType.ERROR
+      })
     })
 
     if (!this.socket) return;

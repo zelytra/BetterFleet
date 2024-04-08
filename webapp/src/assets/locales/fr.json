@@ -4,6 +4,10 @@
       "content": "La requête est corrompue ou incorrecte",
       "title": "Mauvaise requête"
     },
+    "emptySession": {
+      "content": "Le champ id est vide merci de renseigner une valeur",
+      "title": "ID de la session vide"
+    },
     "error": {
       "content": "Une erreur est survenue",
       "title": "Erreur"
@@ -58,6 +62,10 @@
         "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
         "title": "Format de pseudo invalide"
       }
+    },
+    "websocketAuthFailed": {
+      "content": "L'authentification du websocket à echoué",
+      "title": "Echec de l'autentification"
     }
   },
   "appName": "Better Fleet",
@@ -103,6 +111,10 @@
     "details": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
     "developed": "Développé par",
     "socials": "Retrouvez-nous ici :",
+    "sot": {
+      "thanks": "Nous aimerions remercier",
+      "use": "de nous permettre d'utiliser la police et les bannieres de leur jeu"
+    },
     "title": "Informations"
   },
   "firstLogin": {
