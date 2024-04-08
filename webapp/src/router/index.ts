@@ -5,7 +5,6 @@ import config from "@/assets/icons/config.svg"
 import sot from "@/assets/icons/logo.svg"
 import Fleet from "@/components/fleet/Fleet.vue";
 import Config from "@/components/fleet/Config.vue";
-import i18n from "@/objects/i18n";
 import {keycloakStore} from "@/objects/stores/LoginStates.ts";
 import Authentication from "@/components/Authentication.vue";
 import FleetMenuNavigator from "@/components/FleetMenuNavigator.vue";
@@ -19,8 +18,6 @@ declare module 'vue-router' {
     displayInNav: boolean
   }
 }
-
-const {t} = i18n.global;
 
 export const routes = [
   {
@@ -46,7 +43,7 @@ export const routes = [
         component: Home,
         meta: {
           icon: sot,
-          tooltip: t('tooltips.navbar.home'),
+          tooltip: 'home',
           requiresAuth: true,
           displayInNav: true
         }
@@ -57,7 +54,7 @@ export const routes = [
         component: Fleet,
         meta: {
           icon: fleet,
-          tooltip: t('tooltips.navbar.fleet'),
+          tooltip: 'fleet',
           requiresAuth: true,
           displayInNav: true
         }
@@ -68,7 +65,7 @@ export const routes = [
         component: Config,
         meta: {
           icon: config,
-          tooltip: t('tooltips.navbar.config'),
+          tooltip: 'config',
           requiresAuth: true,
           displayInNav: true
         }
