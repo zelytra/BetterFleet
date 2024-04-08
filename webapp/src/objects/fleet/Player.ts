@@ -20,17 +20,18 @@ export interface Player extends Preferences {
   status: PlayerStates;
   isReady: boolean;
   isMaster: boolean;
-  device: PlayerDevice
+  device: PlayerDevice;
   fleet?: Fleet;
   sessionId?: string;
   serverHostName?: string;
   countDown?: SessionRunner;
   server?: SotServer;
-  clientVersion?: string
+  clientVersion?: string;
 }
 
 export interface Preferences {
   lang?: string;
-  soundEnable: boolean
-  soundLevel: number
+  soundEnable: boolean;
+  soundLevel: number;
+  macroEnable:boolean;
 }

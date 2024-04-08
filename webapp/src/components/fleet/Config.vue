@@ -32,6 +32,10 @@
           :label="t('config.device.label')"
           v-model:data="deviceOptions"
       />
+      <div class="checkbox-wrapper">
+        <input type="checkbox" v-model="activeMacro"/>
+        <p @click="activeMacro = !activeMacro">{{ t("config.macro.check") }}</p>
+      </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.audio')">
       <div class="input-section">
@@ -46,7 +50,7 @@
             <p>{{ t("config.sound.test") }}</p>
           </button>
         </div>
-        <div class="dev-mode-wrapper">
+        <div class="checkbox-wrapper">
           <input type="checkbox" v-model="activeSound"/>
           <p @click="activeSound = !activeSound">{{ t("config.sound.check") }}</p>
         </div>
@@ -60,7 +64,7 @@
             :label="t('config.server.label')"
             :lock="!devMode"
         />
-        <div class="dev-mode-wrapper">
+        <div class="checkbox-wrapper">
           <input type="checkbox" v-model="devMode"/>
           <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
         </div>
@@ -135,6 +139,7 @@ const deviceOptions = ref<SingleSelectInterface>({data: []});
 const devMode = ref<boolean>(false);
 const volume = ref<number>(50);
 const activeSound = ref<boolean>(true)
+const activeMacro = ref<boolean>(true)
 const hostName = ref<string>(UserStore.player.serverHostName!)
 const username = ref<string>(UserStore.player.username);
 
@@ -200,6 +205,7 @@ function resetConfig() {
 
   volume.value = UserStore.player.soundLevel;
   activeSound.value = UserStore.player.soundEnable;
+  activeMacro.value = UserStore.player.macroEnable;
 }
 
 function onSave() {
@@ -207,6 +213,7 @@ function onSave() {
   UserStore.player.device = deviceOptions.value.selectedValue!.id as PlayerDevice;
   UserStore.player.soundLevel = volume.value;
   UserStore.player.soundEnable = activeSound.value;
+  UserStore.player.macroEnable = activeMacro.value;
   if (username.value.length == 0 || username.value.length >= 16) {
     alerts!.sendAlert({
       content: t('alert.username.length.content'),
@@ -229,6 +236,7 @@ function isConfigDifferent(): boolean {
   if (langOptions.value.selectedValue && UserStore.player.lang != langOptions.value.selectedValue!.id) return true;
   if (volume.value != UserStore.player.soundLevel) return true;
   if (activeSound.value != UserStore.player.soundEnable) return true;
+  if (activeMacro.value != UserStore.player.macroEnable) return true;
   return deviceOptions.value.selectedValue != undefined && UserStore.player.device != deviceOptions.value.selectedValue!.id;
 }
 
@@ -345,13 +353,12 @@ button {
         cursor: pointer;
       }
     }
+  }
 
-    .dev-mode-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
+  .checkbox-wrapper{
+    display: flex;
+    align-items: center;
+    gap: 12px;
   }
 
   input[type="checkbox"] {
