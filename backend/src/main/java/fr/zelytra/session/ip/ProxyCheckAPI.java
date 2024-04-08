@@ -1,5 +1,6 @@
 package fr.zelytra.session.ip;
 
+import fr.zelytra.session.SessionSocket;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.json.JSONObject;
@@ -8,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Objects;
 
 /**
  * Class retrieving data from ProxyChecker api
@@ -25,23 +27,21 @@ public class ProxyCheckAPI {
     private final StringBuilder finalUrl = new StringBuilder();
     private String ip;
 
-    public ProxyCheckAPI(){
+    public ProxyCheckAPI() {
     }
 
     public ProxyCheckAPI(String ip) {
         this.ip = ip;
-        finalUrl.append(apiURL).append(ip).append("?").append(requestPathParam);
-    }
-
-    public ProxyCheckAPI(String ip, String apiKey) {
-        this.ip = ip;
         finalUrl.append(apiURL)
                 .append(this.getIp())
                 .append("?")
-                .append(requestPathParam)
-                .append("&")
-                .append(tokenParam)
-                .append(apiKey);
+                .append(requestPathParam);
+
+        if (!SessionSocket.PROXY_API_KEY.isEmpty()) {
+            finalUrl.append("&")
+                    .append(tokenParam)
+                    .append(SessionSocket.PROXY_API_KEY);
+        }
     }
 
     public String retrieveCountry() {
@@ -65,6 +65,12 @@ public class ProxyCheckAPI {
 
                 StringBuilder location = new StringBuilder();
                 JSONObject jsonResponse = new JSONObject(response.toString());
+
+                if(!Objects.equals(jsonResponse.getString("status"), "ok")){
+                    Log.warn("The proxy checker has reach is free limit, please provide a token or change the bill plan of your token api");
+                    return "";
+                }
+
                 JSONObject ipJsonObject = jsonResponse.getJSONObject(this.getIp());
 
                 location.append(ipJsonObject.getString("continent")).append(" - ");
