@@ -73,12 +73,6 @@
                 {{ session.stats.tryAmount }}
               </p>
             </div>
-            <div class="information-data">
-              <h3>{{ t("session.informations.success") }}</h3>
-              <p>
-                {{ session.stats.successPrediction != 0 ? session.stats.successPrediction : 'Unknown' }}
-              </p>
-            </div>
           </div>
           <button class="session-status" @click="leaveConfirmation=true">
             <p>{{ t("session.leave") }}</p>
