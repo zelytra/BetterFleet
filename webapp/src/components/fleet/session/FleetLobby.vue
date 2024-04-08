@@ -73,12 +73,6 @@
                 {{ session.stats.tryAmount }}
               </p>
             </div>
-            <div class="information-data">
-              <h3>{{ t("session.informations.success") }}</h3>
-              <p>
-                {{ session.stats.successPrediction != 0 ? session.stats.successPrediction : 'Unknown' }}
-              </p>
-            </div>
           </div>
           <button class="session-status" @click="leaveConfirmation=true">
             <p>{{ t("session.leave") }}</p>
@@ -191,7 +185,7 @@ function getFilteredPlayerList() {
 
 function getFilteredSotServer() {
   return new Map([...props.session.servers].sort((a, b) => {
-    return a[1].connectedPlayers.length - b[1].connectedPlayers.length
+    return b[1].connectedPlayers.length - a[1].connectedPlayers.length
   }))
 }
 

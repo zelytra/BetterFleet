@@ -8,6 +8,15 @@
     </div>
     <div class="card user-card" v-else>
       <h1>{{ t('login.succeed') }}</h1>
+      <div
+          v-if="UserStore.player.username"
+          class="user-icon"
+          :style="{ backgroundColor: Utils.generateRandomColor() }"
+      >
+        <p>
+          {{ UserStore.player.username.charAt(0).toUpperCase() }}
+        </p>
+      </div>
       <p>{{ t('login.userWelcome') }} <strong>{{ keycloakStore.user.username }}</strong> !</p>
       <div class="action-wrapper">
         <PirateButton :label="t('login.continue')" @on-button-click="leavePage()"/>
@@ -23,6 +32,8 @@ import {keycloakStore} from "@/objects/stores/LoginStates.ts";
 import {useI18n} from "vue-i18n";
 import PirateButton from "@/vue/form/PirateButton.vue";
 import router from "@/router";
+import {UserStore} from "@/objects/stores/UserStore";
+import {Utils} from "@/objects/utils/Utils";
 
 const {t} = useI18n();
 
@@ -97,7 +108,7 @@ section.auth-page {
       height: 450px;
       background: url("@assets/backgrounds/user-card.svg") no-repeat;
       background-size: 100% 100%;
-      gap: 60px;
+      gap: 25px;
 
       h1 {
         font-family: BrushTip, sans-serif;
@@ -126,6 +137,23 @@ section.auth-page {
         }
       }
 
+      .user-icon {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 6px;
+
+        p {
+          user-select: none;
+          text-align: center;
+          margin-top: 6px;
+          font-size: 90px;
+          color: white;
+        }
+      }
 
     }
   }

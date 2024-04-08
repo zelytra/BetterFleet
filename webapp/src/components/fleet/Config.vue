@@ -88,6 +88,11 @@
           ><img src="../../assets/icons/github.svg"
           /></a>
         </div>
+        <p>
+          {{ t("credits.sot.thanks") }}
+          <a href="https://https://www.seaofthieves.com" target="_blank">Sea Of Thieves</a>
+          {{ t("credits.sot.use") }}
+        </p>
         <p class="light">
           {{ t("credits.details") }}
         </p>

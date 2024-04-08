@@ -13,7 +13,7 @@
     >
       <p>{{ t("session.choice.joinComment") }}</p>
     </SessionCard>
-    <modale-template v-model:is-modal-open="isModalOpen">
+    <modal-template v-model:is-modal-open="isModalOpen">
       <div class="username-wrapper">
         <div class="main-content">
           <h1>{{ t("session.choice.modal.title") }}</h1>
@@ -28,7 +28,7 @@
           <h2>{{ t("session.choice.modal.button") }}</h2>
         </button>
       </div>
-    </modale-template>
+    </modal-template>
   </section>
 </template>
 
@@ -37,8 +37,10 @@ import SessionCard from "@/vue/templates/SessionCard.vue";
 import {useI18n} from "vue-i18n";
 import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {PropType, ref, watch} from "vue";
-import ModaleTemplate from "@/vue/templates/ModalTemplate.vue";
+import ModalTemplate from "@/vue/templates/ModalTemplate.vue";
 import InputText from "@/vue/form/InputText.vue";
+import {AlertType} from "@/vue/alert/Alert.ts";
+import {alertProvider} from "@/main.ts";
 
 const {t} = useI18n();
 const isModalOpen = ref<boolean>(false);
@@ -48,8 +50,16 @@ const props = defineProps({
   session: {type: Object as PropType<Fleet>, required: true},
 });
 
-function joinSession() {
-  props.session.joinSession(sessionId.value);
+async function joinSession() {
+  if (sessionId.value.length == 0) {
+    alertProvider.sendAlert({
+      content: t('alert.emptySession.content'),
+      title: t('alert.emptySession.title'),
+      type: AlertType.WARNING
+    })
+    return;
+  }
+  await props.session.joinSession(sessionId.value);
   isModalOpen.value = false;
 }
 
