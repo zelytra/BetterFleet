@@ -67,9 +67,9 @@ onMounted(() => {
     isReady: false,
     status: PlayerStates.CLOSED,
     username: "",
-    device: PlayerDevice.MICROSOFT
+    device: PlayerDevice.MICROSOFT,
+    macroEnable:true
   });
-
 });
 
 window.onbeforeunload = () => {

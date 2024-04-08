@@ -49,7 +49,9 @@ let updateTimer = setInterval(() => {
           })
           break
         }
-        invoke('rise_anchor');
+        if (UserStore.player.macroEnable) {
+          invoke('rise_anchor');
+        }
         break
       }
       case PlayerStates.CLOSED: {

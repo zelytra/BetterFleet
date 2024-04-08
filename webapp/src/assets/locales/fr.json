@@ -78,6 +78,9 @@
     "lang": {
       "label": "Langue"
     },
+    "macro": {
+      "check": "Activer/Déseactiver la macro de session"
+    },
     "name": {
       "label": "Pseudonyme",
       "placeholder": "Pseudonyme"
