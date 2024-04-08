@@ -11,7 +11,8 @@ export function getStressTestFleet(): Fleet {
       isMaster: true,
       device: PlayerDevice.MICROSOFT,
       soundEnable: true,
-      soundLevel: 1
+      soundLevel: 1,
+      macroEnable:true
     }, {
       username: "Player 2",
       status: PlayerStates.IN_GAME,
@@ -19,7 +20,8 @@ export function getStressTestFleet(): Fleet {
       isMaster: true,
       device: PlayerDevice.XBOX,
       soundEnable: true,
-      soundLevel: 1
+      soundLevel: 1,
+      macroEnable:true
     }, {
       username: "Player 3",
       status: PlayerStates.STARTED,
@@ -27,7 +29,8 @@ export function getStressTestFleet(): Fleet {
       isMaster: true,
       device: PlayerDevice.PLAYSTATION,
       soundEnable: true,
-      soundLevel: 1
+      soundLevel: 1,
+      macroEnable:true
     }, {
       username: "Player 4",
       status: PlayerStates.STARTED,
@@ -35,7 +38,8 @@ export function getStressTestFleet(): Fleet {
       isMaster: true,
       device: PlayerDevice.PLAYSTATION,
       soundEnable: true,
-      soundLevel: 1
+      soundLevel: 1,
+      macroEnable:true
     }, {
       username: "Player 5",
       status: PlayerStates.STARTED,
@@ -43,7 +47,8 @@ export function getStressTestFleet(): Fleet {
       isMaster: true,
       device: PlayerDevice.PLAYSTATION,
       soundEnable: true,
-      soundLevel: 1
+      soundLevel: 1,
+      macroEnable:true
     }
   ]
 
