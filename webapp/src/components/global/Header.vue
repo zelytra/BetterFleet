@@ -6,7 +6,7 @@
           :key="route.name"
           class="router-link"
           :to="route.path"
-          :title="route.meta.tooltip"
+          :title="t('tooltips.navbar.'+route.meta.tooltip)"
       >
         <img
             v-if="route.meta"
@@ -56,9 +56,10 @@ import {routes} from "@/router";
 import {ref} from "vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {Utils} from "@/objects/utils/Utils.ts";
+import {useI18n} from "vue-i18n";
 
 const version = ref(import.meta.env.VITE_VERSION);
-
+const {t} = useI18n()
 </script>
 
 <style scoped lang="scss">
