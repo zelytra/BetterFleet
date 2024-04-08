@@ -111,6 +111,10 @@
     "details": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
     "developed": "Développé par",
     "socials": "Retrouvez-nous ici :",
+    "sot": {
+      "thanks": "Nous aimerions remercier",
+      "use": "de nous permettre d'utiliser la police et les bannieres de leur jeu"
+    },
     "title": "Informations"
   },
   "firstLogin": {
