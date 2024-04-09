@@ -7,7 +7,7 @@ services:
     ports:
       - "2600:5432"
     volumes:
-      - /psql-data/app:/var/lib/postgresql/data
+      - ./psql-data/app:/var/lib/postgresql/data
       - /etc/localtime:/etc/localtime:ro
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -22,7 +22,7 @@ services:
     ports:
       - "2603:5432"
     volumes:
-      - /psql-data/auth:/var/lib/postgresql/data/pgdata
+      - ./psql-data/auth:/var/lib/postgresql/data/pgdata
       - /etc/localtime:/etc/localtime:ro
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -42,7 +42,7 @@ services:
       - ./keycloak/config:/opt/keycloak/data/import
       - ./keycloak/themes/betterfleet:/opt/keycloak/themes/betterfleet
       - /etc/localtime:/etc/localtime:ro
-    command: start --import-realm --spi-theme-static-max-age=-1 --spi-theme-cache-themes=false --spi-theme-cache-templates=false
+    command: start --import-realm
     environment:
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_RELATIVE_PATH: /auth

@@ -72,6 +72,7 @@ services:
       - "2604:8080"
     volumes:
       - ./keycloak/config:/opt/keycloak/data/import
+      - ./keycloak/themes/betterfleet:/opt/keycloak/themes/betterfleet
       - /etc/localtime:/etc/localtime:ro
     command: start --import-realm
     environment:
