@@ -2,6 +2,7 @@
   "id": "b992645c-a6e4-4cc0-9f13-79eaaf5908b5",
   "realm": "Betterfleet",
   "displayName": "",
+  "loginTheme": "betterfleet",
   "displayNameHtml": "",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",

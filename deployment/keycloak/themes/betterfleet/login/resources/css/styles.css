@@ -1,0 +1,159 @@
+.pf-v5-c-login__container {
+    grid-template-areas: "main";
+    grid-template-columns: 34rem;
+}
+
+#kc-header-wrapper {
+    padding: 62px 10px 20px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.login-pf body {
+    background: radial-gradient(205.44% 98.15% at 50% 50%, #171A21 0%, #0A0C10 100%);
+}
+
+body {
+    position: relative;
+    color: white;
+    font-family: Windlass, sans-serif;
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: "Windlass";
+    src: url("../font/WindlassExtended.ttf");
+}
+
+img.background.top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10%;
+}
+
+img.background.bottom {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10%;
+}
+
+img.background.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    transform: translate(-50%, -50%);
+    width: 50%;
+}
+
+img.background.logo {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.main {
+    background: url("../img/card-background.svg") no-repeat 100% 100%;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+h1.title {
+    font-size: 25px;
+    position: relative;
+    text-align: center;
+
+    &:after {
+        display: flex;
+        position: absolute;
+        content: '';
+        bottom: -15px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        background: url("../img/title-underline.svg") no-repeat;
+        width: 208px;
+        height: 15px;
+    }
+}
+
+#kc-form-login, #kc-register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bf-form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.input-wrapper {
+    position: relative;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    min-width: 250px;
+}
+
+.input-wrapper input[type="text"], .input-wrapper input[type="password"] {
+    all: unset;
+    width: 100%;
+}
+
+.pf-c-form-control {
+    width: 100%;
+}
+
+#kc-form-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#kc-form-options a {
+    color: #32D499;
+}
+
+#input-error, .input-error {
+    color: #D43232;
+}
+
+input[type="submit"] {
+    all: unset;
+    background: url("../img/button.svg") 0 0/100% 100% no-repeat;
+    padding: 20px 20px;
+    min-width: 264px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+}
+
+#kc-registration {
+    text-align: center;
+    margin-top: 6px;
+}
+
+#kc-registration a {
+    color: #32D499;
+}
+
+.att-required {
+    color: #D43232;
+}
+
+.subtitle {
+    text-align: end;
+}
