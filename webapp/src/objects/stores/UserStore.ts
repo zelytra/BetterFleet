@@ -18,7 +18,7 @@ export const UserStore = reactive({
         ...readPlayer,
         lang: readPlayer.lang || browserLang,
         device: readPlayer.device || PlayerDevice.MICROSOFT,
-        username: readPlayer.username || keycloakStore.user.username,
+        username: keycloakStore.user.username,
         soundEnable: readPlayer.soundEnable !== undefined ? readPlayer.soundEnable : true,
         macroEnable: readPlayer.macroEnable !== undefined ? readPlayer.macroEnable : true,
         soundLevel: readPlayer.soundLevel || 30,
