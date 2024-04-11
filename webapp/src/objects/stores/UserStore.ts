@@ -24,7 +24,8 @@ export const UserStore = reactive({
         soundLevel: readPlayer.soundLevel || 30,
         serverHostName: readPlayer.serverHostName || import.meta.env.VITE_SOCKET_HOST,
         clientVersion: readPlayer.clientVersion || import.meta.env.VITE_VERSION,
-        fleet: new Fleet()
+        fleet: new Fleet(),
+        server: undefined
       };
 
       //@ts-ignore I18N typescript implementation

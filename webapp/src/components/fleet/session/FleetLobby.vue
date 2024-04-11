@@ -39,12 +39,14 @@
             return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
           })"
               :player="player"
+              @click.right.prevent="openContextMenu($event,player)"
           />
         </ServerContainer>
         <PlayerFleet
             v-for="player in getFilteredPlayerList()"
             :player="player"
             class="player-fleet-card"
+            @click.right.prevent="openContextMenu($event,player)"
         />
       </div>
       <div class="lobby-details">
@@ -105,6 +107,11 @@
         confirm-class="important"
         title-class="important"
     />
+    <MasterContextMenu
+        ref="contextMenu"
+        v-model:display="displayContextMenu"
+        :menu="masterContextMenu"
+    />
   </section>
 </template>
 
@@ -118,11 +125,32 @@ import {UserStore} from "@/objects/stores/UserStore.ts";
 import SessionCountdown from "@/components/fleet/session/SessionCountdown.vue";
 import ServerContainer from "@/vue/templates/ServerContainer.vue";
 import ConfirmationModal from "@/vue/form/ConfirmationModal.vue";
+import MasterContextMenu from "@/vue/context/MasterContextMenu.vue";
+import {ContextMenu, MenuData} from "@/vue/context/ContextMenu.ts";
+import {Player} from "@/objects/fleet/Player.ts";
 
 const {t} = useI18n();
 const displayIdCopy = ref<boolean>(false);
 const launchConfirmation = ref<boolean>(false);
 const leaveConfirmation = ref<boolean>(false);
+const displayContextMenu = ref<boolean>(false);
+const contextMenu = ref();
+const masterContextMenu = ref<ContextMenu>();
+const contextMenuData: MenuData[] = [
+  {
+    display: t('contextMenu.master.promote'),
+    key: "promote",
+    class: "green"
+  }, {
+    display: t('contextMenu.master.demote'),
+    key: "demote",
+    class: "blue"
+  }, {
+    display: t('contextMenu.master.kick'),
+    key: "kick",
+    class: "red"
+  }
+]
 const props = defineProps({
   session: {
     type: Object as PropType<Fleet>,
@@ -193,6 +221,18 @@ function copyIdToClipboard(id: string) {
   navigator.clipboard.writeText(id);
   displayIdCopy.value = true;
   setTimeout(() => displayIdCopy.value = false, 2000);
+}
+
+function openContextMenu(event: any, player: Player) {
+  if (!UserStore.player.isMaster || player.username == UserStore.player.username) {
+    return;
+  }
+  contextMenu.value.setPos(event);
+  masterContextMenu.value = {
+    title: t('contextMenu.master.title') + ": " + player.username,
+    data: contextMenuData
+  }
+  displayContextMenu.value = true;
 }
 </script>
 
