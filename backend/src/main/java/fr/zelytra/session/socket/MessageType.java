@@ -12,4 +12,7 @@ public enum MessageType {
     SESSION_NOT_FOUND,
     KEEP_ALIVE,
     CONNECTION_REFUSED,
+    PROMOTE_PLAYER,
+    KICK_PLAYER,
+    DEMOTE_PLAYER,
 }

@@ -1,10 +1,11 @@
-export interface ContextMenu {
+export interface ContextMenu<T> {
   title: string
-  data: MenuData[]
+  data: MenuData[],
+  metaData: T
 }
 
 export interface MenuData {
   display: string
-  key:string
+  key: string
   class: string
 }

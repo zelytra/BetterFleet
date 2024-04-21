@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.Player;
+import fr.zelytra.session.player.PlayerAction;
 import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.SocketMessage;
@@ -83,6 +84,18 @@ public class SessionSocket {
                 Player player = objectMapper.convertValue(socketMessage.data(), Player.class);
                 handleUpdateMessage(player);
             }
+            case KICK_PLAYER -> {
+                PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
+                handleKick(player);
+            }
+            case PROMOTE_PLAYER -> {
+                PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
+                handlePromote(player, true);
+            }
+            case DEMOTE_PLAYER -> {
+                PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
+                handlePromote(player, false);
+            }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
             case KEEP_ALIVE -> {
@@ -97,6 +110,34 @@ public class SessionSocket {
                 handleLeaveServerMessage(session, sotServer);
             }
             default -> Log.info("Unhandled message type: " + socketMessage.messageType());
+        }
+    }
+
+    private void handleKick(PlayerAction player) {
+        SessionManager manager = sessionManager;
+        Fleet fleet = manager.getFleetByPlayerName(player.username());
+        Player foundedPlayer = manager.getPlayerFromUsername(player.username());
+
+        if (foundedPlayer != null) {
+            Log.info("[" + fleet.getSessionId() + "] " + player.username() + " has been kicked from the session");
+            manager.leaveSession(foundedPlayer);
+        } else {
+            Log.warn("[" + fleet.getSessionId() + "] " + player.username() + " cannot be kicked, not found");
+        }
+
+    }
+
+    private void handlePromote(PlayerAction player, boolean master) {
+        SessionManager manager = sessionManager;
+        Fleet fleet = manager.getFleetByPlayerName(player.username());
+        Player foundedPlayer = manager.getPlayerFromUsername(player.username());
+
+        if (foundedPlayer != null) {
+            Log.info("[" + fleet.getSessionId() + "] " + player.username() + " has been " + (master ? "promoted" : "demoted"));
+            foundedPlayer.setMaster(master);
+            sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        } else {
+            Log.warn("[" + fleet.getSessionId() + "] " + player.username() + " cannot be " + (master ? "promoted" : "demoted") + ", not found");
         }
     }
 

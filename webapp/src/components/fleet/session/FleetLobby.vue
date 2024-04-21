@@ -111,6 +111,7 @@
         ref="contextMenu"
         v-model:display="displayContextMenu"
         :menu="masterContextMenu"
+        @action="onContextAction"
     />
   </section>
 </template>
@@ -128,6 +129,7 @@ import ConfirmationModal from "@/vue/form/ConfirmationModal.vue";
 import MasterContextMenu from "@/vue/context/MasterContextMenu.vue";
 import {ContextMenu, MenuData} from "@/vue/context/ContextMenu.ts";
 import {Player} from "@/objects/fleet/Player.ts";
+import {WebSocketMessageType} from "@/objects/fleet/WebSocet.ts";
 
 const {t} = useI18n();
 const displayIdCopy = ref<boolean>(false);
@@ -135,7 +137,7 @@ const launchConfirmation = ref<boolean>(false);
 const leaveConfirmation = ref<boolean>(false);
 const displayContextMenu = ref<boolean>(false);
 const contextMenu = ref();
-const masterContextMenu = ref<ContextMenu>();
+const masterContextMenu = ref<ContextMenu<string>>();
 const contextMenuData: MenuData[] = [
   {
     display: t('contextMenu.master.promote'),
@@ -224,15 +226,52 @@ function copyIdToClipboard(id: string) {
 }
 
 function openContextMenu(event: any, player: Player) {
+
   if (!UserStore.player.isMaster || player.username == UserStore.player.username) {
     return;
   }
+
   contextMenu.value.setPos(event);
   masterContextMenu.value = {
     title: t('contextMenu.master.title') + ": " + player.username,
-    data: contextMenuData
+    data: contextMenuData,
+    metaData: player.username
   }
   displayContextMenu.value = true;
+}
+
+function onContextAction(action: string) {
+  console.log(action)
+  if (!props.session) {
+    return;
+  }
+  switch (action) {
+    case "promote": {
+      props.session.playerAction(
+          {
+            sessionId: props.session.sessionId,
+            username: masterContextMenu.value!.metaData
+          }, WebSocketMessageType.PROMOTE_PLAYER)
+      break
+    }
+    case "demote": {
+      props.session.playerAction(
+          {
+            sessionId: props.session.sessionId,
+            username: masterContextMenu.value!.metaData
+          }, WebSocketMessageType.DEMOTE_PLAYER)
+      break
+    }
+    case "kick": {
+      props.session.playerAction(
+          {
+            sessionId: props.session.sessionId,
+            username: masterContextMenu.value!.metaData
+          }, WebSocketMessageType.KICK_PLAYER)
+      break
+    }
+  }
+  displayContextMenu.value = false
 }
 </script>
 

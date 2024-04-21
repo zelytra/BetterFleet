@@ -28,7 +28,7 @@ const posTop = ref<number>(0);
 const display = defineModel('display')
 
 defineProps({
-  menu: {type: Object as PropType<ContextMenu>, required: false},
+  menu: {type: Object as PropType<ContextMenu<string>>, required: false},
 });
 
 const emits = defineEmits<{
