@@ -137,6 +137,15 @@ public class SessionManager {
             Log.info("[" + fleet.getSessionId() + "] Has been disbanded");
         }
 
+        //Close the socket if not yet closed
+        if (player.getSocket().isOpen()) {
+            try {
+                player.getSocket().close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
     /**
@@ -276,6 +285,18 @@ public class SessionManager {
         broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
+    @Lock(value = Lock.Type.READ, time = 200)
+    @Nullable
+    public Player getPlayerFromUsername(String username) {
+        Fleet fleet = this.getFleetByPlayerName(username);
+        for (Player playerInList : fleet.getPlayers()) {
+            if (playerInList.getUsername().equalsIgnoreCase(username)) {
+                return playerInList;
+            }
+        }
+        return null;
+    }
+
     @Lock(value = Lock.Type.WRITE, time = 200)
     public void playerLeaveSotServer(Player player, SotServer server) {
         SotServer findedSotServer = getServerFromHashing(server);
@@ -381,7 +402,7 @@ public class SessionManager {
         });
     }
 
-    public  <T> String formatMessage(MessageType messageType, T data) {
+    public <T> String formatMessage(MessageType messageType, T data) {
         SocketMessage<T> message = new SocketMessage<>(messageType, data);
 
         ObjectMapper objectMapper = new ObjectMapper();

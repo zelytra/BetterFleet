@@ -1,4 +1,3 @@
-import {UserStore} from "@/objects/stores/UserStore.ts";
 import contribFile from "@/assets/contributors/contributors.json"
 
 export interface Contributor {
@@ -19,8 +18,8 @@ export class ContributorProvider {
 
   private static readonly contributors:Contributor = contribFile as Contributor;
 
-  public static getPlayerContrib(): ContributorType | null {
-    const playerUsernameLower = UserStore.player.username.toLowerCase();
+  public static getPlayerContrib(username:string): ContributorType | null {
+    const playerUsernameLower = username.toLowerCase();
     const roles: Record<ContributorType, keyof Contributor> = {
       [ContributorType.DEVELOPER]: 'developers',
       [ContributorType.TRANSLATOR]: 'translators',

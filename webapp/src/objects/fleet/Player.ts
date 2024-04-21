@@ -33,5 +33,10 @@ export interface Preferences {
   lang?: string;
   soundEnable: boolean;
   soundLevel: number;
-  macroEnable:boolean;
+  macroEnable: boolean;
+}
+
+export interface ActionPlayer {
+  username: string
+  sessionId: string
 }

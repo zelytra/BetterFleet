@@ -8,7 +8,7 @@
   font-family: Windlass, sans-serif;
   font-weight: 400;
 
-  scrollbar-color: var(--primary)  rgba(50, 212, 153, 0.10);
+  scrollbar-color: var(--primary) rgba(50, 212, 153, 0.10);
   scrollbar-width: thin;
   color: var(--primary-text);
   user-select: none;
@@ -25,6 +25,15 @@ body {
   --important: #D43232;
   --warning: #D49332;
   --information: #32D499;
+
+  --green: #32D49933;
+  --green-hover: #32D49980;
+
+  --red: #D4323233;
+  --red-hover: #D4323280;
+
+  --blue: #286AA833;
+  --blue-hover: #286AA880;
 }
 
 html, body {

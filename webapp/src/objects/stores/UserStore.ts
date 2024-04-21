@@ -18,13 +18,14 @@ export const UserStore = reactive({
         ...readPlayer,
         lang: readPlayer.lang || browserLang,
         device: readPlayer.device || PlayerDevice.MICROSOFT,
-        username: readPlayer.username || keycloakStore.user.username,
+        username: keycloakStore.user.username,
         soundEnable: readPlayer.soundEnable !== undefined ? readPlayer.soundEnable : true,
         macroEnable: readPlayer.macroEnable !== undefined ? readPlayer.macroEnable : true,
         soundLevel: readPlayer.soundLevel || 30,
         serverHostName: readPlayer.serverHostName || import.meta.env.VITE_SOCKET_HOST,
         clientVersion: readPlayer.clientVersion || import.meta.env.VITE_VERSION,
-        fleet: new Fleet()
+        fleet: new Fleet(),
+        server: undefined
       };
 
       //@ts-ignore I18N typescript implementation

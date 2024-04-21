@@ -107,6 +107,14 @@
     "subtitle": "Options de préférence",
     "title": "Paramètres"
   },
+  "contextMenu": {
+    "master": {
+      "demote": "Retirer master",
+      "kick": "Expulser",
+      "promote": "Assigner Master",
+      "title": "Utilisateur"
+    }
+  },
   "credits": {
     "and": "et",
     "description": "Better Fleet a été développé dans le but de faciliter la création d'alliances sur Sea of Thieves",

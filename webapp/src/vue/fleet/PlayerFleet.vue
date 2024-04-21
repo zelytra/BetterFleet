@@ -57,14 +57,14 @@ import {UserStore} from "@/objects/stores/UserStore.ts";
 import {ContributorProvider, ContributorType} from "@/objects/fleet/Contributor.ts";
 
 const {t} = useI18n()
-const contributor = ref<ContributorType | null>(ContributorProvider.getPlayerContrib());
-const displayContrib = ref<boolean>(false)
-defineProps({
+const displayContrib = ref<boolean>(false);
+const props = defineProps({
   player: {
     type: Object as PropType<Player>,
     required: true
   }
 })
+const contributor = ref<ContributorType | null>(ContributorProvider.getPlayerContrib(props.player.username));
 </script>
 
 <style scoped lang="scss">

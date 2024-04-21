@@ -3,7 +3,7 @@ import {WebSocketMessage, WebSocketMessageType} from "@/objects/fleet/WebSocet.t
 import {AlertType} from "@/vue/alert/Alert.ts";
 import {alertProvider} from "@/main.ts";
 import {i18n} from "@/objects/i18n";
-import {Player} from "@/objects/fleet/Player.ts";
+import {ActionPlayer, Player} from "@/objects/fleet/Player.ts";
 import {SotServer} from "@/objects/fleet/SotServer.ts";
 import {LocalTime} from "@js-joda/core";
 import {HTTPAxios} from "@/objects/utils/HTTPAxios.ts";
@@ -55,7 +55,7 @@ export class Fleet {
     await new HTTPAxios("socket/register", null).get(ResponseType.Text).then((response) => {
       this.socket = new WebSocket(
         UserStore.player.serverHostName + "/" + response.data + "/" + sessionId);
-    }).catch(()=>{
+    }).catch(() => {
       alertProvider.sendAlert({
         content: t('alert.websocketAuthFailed.content'),
         title: t('alert.websocketAuthFailed.title'),
@@ -167,6 +167,15 @@ export class Fleet {
     const message: WebSocketMessage = {
       data: UserStore.player,
       messageType: WebSocketMessageType.UPDATE,
+    };
+    this.socket.send(JSON.stringify(message));
+  }
+
+  playerAction(playerToExecute: ActionPlayer, actionType: WebSocketMessageType): void {
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: playerToExecute,
+      messageType: actionType,
     };
     this.socket.send(JSON.stringify(message));
   }
