@@ -11,7 +11,6 @@
     <Comparaison/>
     <Separator/>
     <Download/>
-    <FooterVue/>
   </div>
 </template>
 
