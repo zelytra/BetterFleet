@@ -45,66 +45,66 @@
     "now": "Descargar ahora"
   },
   "faq": {
-    "more": "Si vous rencontrez un problème ou que vous ne parvenez pas à résoudre le problème. Rendez-vous sur notre",
+    "more": "Si encuentra algún problema o no puede resolverlo. Visita nuestro",
     "question": {
       "download": {
-        "title": "Comment téléchergé BetterFleet ?",
-        "content1": "Rendez-vous sur notre site officiel :",
-        "content2": "Cliquez sur le bouton \"Télécharger\".",
-        "content3": "Suivez les instructions à l'écran pour compléter l'installation.",
-        "content4": "Et voilà ! Après ces étapes, BetterFleet sera installé sur votre appareil."
+        "title": "¿Cómo descargar BetterFleet?",
+        "content1": "Visita nuestro sitio web oficial:",
+        "content2": "Haga clic en el botón \"Descargar\".",
+        "content3": "Siga las instrucciones en la pantalla para completar la instalación.",
+        "content4": "¡Y ahí lo tienes! Después de estos pasos, BetterFleet se instalará en su dispositivo."
       },
       "update": {
-        "title": "Comment mettre à jours BetterFleet ?",
-        "content1": "Lorsqu'une mise à jour de BetterFleet est disponible, une fenêtre pop-up apparaîtra automatiquement au lancement de l'application. Vous n'aurez qu'à cliquer sur \"Oui\" pour lancer la mise à jour. L'application se mettra à jour automatiquement et redémarrera une fois la mise à jour terminée. Suivez simplement ces instructions pour toujours bénéficier de la dernière version de BetterFleet."
+        "title": "¿Cómo actualizar BetterFleet?",
+        "content1": "Cuando haya una actualización de BetterFleet disponible, aparecerá automáticamente una ventana emergente al iniciar la aplicación. Sólo tendrás que pulsar en “Sí” para iniciar la actualización. La aplicación se actualizará automáticamente y se reiniciará una vez que se complete la actualización. Simplemente sigue estas instrucciones para tener siempre la última versión de BetterFleet."
       },
       "eac": {
-        "title": "Il y a t'il des risque avec l'EAC(Easy Anti-Cheat) ?",
-        "content1": "Notre application est conçue pour simuler un clic de souris, reproduisant ainsi l'action d'un utilisateur qui utiliserait physiquement une souris. Cette méthode est indétectable par les systèmes comme Easy Anti-Cheat (EAC), car notre technique ne constitue pas une macro à proprement parler. EAC se concentre principalement sur la détection de manipulations de la mémoire vive (RAM) et non sur l'utilisation de simulateurs de clics.",
-        "content2": "De plus, le clic n'est jamais exécuté dans le jeu lui-même mais uniquement dans les menus, ce qui reste conforme aux Termes de Service (TOS) du jeu et de Xbox. Les TOS sont rédigés de manière assez large pour couvrir un maximum de situations d'un point de vue juridique.",
-        "content3": "Il est essentiel de comprendre que l'utilisation de notre simulateur comporte des risques similaires à ceux de toute autre application du même type, comme FleetCreator, notamment en ce qui concerne la détection d'IP, qui reste un point sensible. Utiliser notre application est aussi sûr que d'utiliser des applications similaires, sous réserve de respecter les directives et TOS mentionnés."
+        "title": "¿Existe algún riesgo con EAC (Easy Anti-Cheat)?",
+        "content1": "Nuestra aplicación está diseñada para simular un clic del mouse, replicando así la acción de un usuario que usaría físicamente un mouse. Este método es indetectable por sistemas como Easy Anti-Cheat (EAC), porque nuestra técnica no constituye una macro estrictamente hablando. EAC se centra principalmente en detectar manipulaciones de la memoria de acceso aleatorio (RAM) y no en el uso de simuladores de clic.",
+        "content2": "Además, el clic nunca se realiza en el juego en sí, sino solo en los menús, lo que cumple con los Términos de servicio (TOS) del juego y de Xbox. Los TOS están redactados de forma lo suficientemente amplia como para cubrir tantas situaciones como sea posible desde un punto de vista legal.",
+        "content3": "Es fundamental entender que el uso de nuestro simulador conlleva riesgos similares a los de cualquier otra aplicación del mismo tipo, como FleetCreator, especialmente en lo que respecta a la detección de IP, que sigue siendo un punto sensible. Usar nuestra aplicación es tan seguro como usar aplicaciones similares, siempre que sigas las pautas y los TOS mencionados."
       },
       "edge": {
-        "title": "L'application ne se lance pas/crash, pourquoi ? (Edge)",
-        "content1": "Si vous rencontrez des problèmes pour lancer l'application ou si celle-ci crash après une installation correcte, veuillez suivre ces étapes de dépannage :",
-        "content2": "Assurez-vous que votre système d'exploitation est Windows 10 ou Windows 11.",
-        "content3": "Vérifiez que Microsoft Edge et Microsoft Edge WebView2 sont correctement installés sur votre machine. Ces composants sont essentiels pour le bon fonctionnement de l'application.",
-        "content4": "Si le problème persiste malgré ces vérifications, tentez de réinstaller l'application pour corriger toute installation potentiellement corrompue.",
-        "content5": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée."
+        "title": "La aplicación no se inicia o falla, ¿por qué? (Borde)",
+        "content1": "Si tiene problemas al iniciar la aplicación o si falla después de una instalación adecuada, siga estos pasos de solución de problemas:",
+        "content2": "Asegúrese de que su sistema operativo sea Windows 10 o Windows 11.",
+        "content3": "Verifique que Microsoft Edge y Microsoft Edge WebView2 estén instalados correctamente en su máquina. Estos componentes son esenciales para el correcto funcionamiento de la aplicación.",
+        "content4": "Si el problema persiste a pesar de estas comprobaciones, intente reinstalar la aplicación para corregir cualquier instalación potencialmente corrupta.",
+        "content5": "Si después de estos pasos la aplicación aún no funciona, no dudes en contactarnos en nuestro servidor de Discord para obtener asistencia más personalizada."
       },
       "security": {
-        "title": "L'application est-elle sécurisé ?",
-        "content1": "Oui, notre application est conçue avec la sécurité des utilisateurs comme priorité absolue. Voici les mesures que nous avons mises en place pour garantir une utilisation sûre :",
-        "content2": "Authentification renforcée : Nous avons intégré une surcouche d'authentification pour renforcer la sécurité des comptes utilisateurs.",
-        "content3": "Open source : L'application est entièrement open source, offrant une transparence totale sur son utilisation et son fonctionnement. Cela permet à la communauté de vérifier et d'auditer notre code, renforçant ainsi la confiance dans notre produit.",
-        "content4": "Maintenance proactive : Nos développeurs s'engagent à maintenir l'application en condition de sécurité optimale. Cela comprend la mise à jour régulière des dépendances et le suivi continu des potentielles failles de sécurité pour prévenir tout risque.",
-        "content5": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs."
+        "title": "¿La aplicación es segura?",
+        "content1": "Sí, nuestra aplicación está diseñada teniendo como máxima prioridad la seguridad del usuario. Estas son las medidas que hemos implementado para garantizar un uso seguro:",
+        "content2": "Autenticación reforzada: Hemos integrado una superposición de autenticación para fortalecer la seguridad de las cuentas de usuario.",
+        "content3": "Código abierto: La aplicación es completamente de código abierto, proporcionando total transparencia sobre su uso y funcionamiento. Esto permite a la comunidad verificar y auditar nuestro código, generando confianza en nuestro producto.",
+        "content4": "Mantenimiento proactivo: Nuestros desarrolladores se comprometen a mantener la aplicación en óptimas condiciones de seguridad. Esto incluye actualizar periódicamente las dependencias y monitorear continuamente las posibles vulnerabilidades de seguridad para evitar cualquier riesgo.",
+        "content5": "Estos esfuerzos conjuntos contribuyen a una plataforma confiable y segura para todos nuestros usuarios."
       },
       "bug": {
-        "title": "Je recontre des problème/bug, comment les rapporter ?",
-        "content1": "Si vous rencontrez des problèmes ou des bugs avec notre application, nous vous encourageons à nous le signaler afin que nous puissions travailler à améliorer votre expérience. Voici comment vous pouvez nous contacter :",
-        "content2": "Discord : Rejoignez notre serveur Discord et partagez votre problème dans le canal dédié au support. Notre équipe est toujours prête à vous aider et à répondre à vos questions en temps réel.",
-        "content3": "GitHub : Si vous êtes familier avec GitHub, vous pouvez également ouvrir une \"issue\" sur notre dépôt GitHub. Cela nous permet de suivre les problèmes de manière structurée et d'assurer un suivi transparent et efficace.",
-        "content4": "Nous apprécions vos retours et nous engageons à résoudre les problèmes signalés dans les meilleurs délais."
+        "title": "Encuentro problemas/errores, ¿cómo los informo?",
+        "content1": "Si experimenta algún problema o error con nuestra aplicación, le recomendamos que nos lo informe para que podamos trabajar para mejorar su experiencia. Así es como puede contactarnos:",
+        "content2": "Discord: únete a nuestro servidor Discord y comparte tu problema en el canal de soporte dedicado. Nuestro equipo está siempre listo para ayudarte y responder tus preguntas en tiempo real.",
+        "content3": "GitHub: si está familiarizado con GitHub, también puede abrir una incidencia en nuestro repositorio de GitHub. Esto nos permite realizar un seguimiento de los problemas de forma estructurada y garantizar un seguimiento transparente y eficiente.",
+        "content4": "Apreciamos sus comentarios y nos comprometemos a resolver los problemas informados lo más rápido posible."
       },
       "data": {
-        "title": "Que fait-on des données utilisateur ?",
-        "content1": "La confidentialité et la sécurité des données de nos utilisateurs sont de la plus haute importance pour nous. Voici notre politique en matière de gestion des données utilisateur :",
-        "content2": "Utilisation des données : Nous n'utilisons que le nom d'utilisateur et l'adresse email pour les besoins de l'application. Aucune autre donnée personnelle n'est collectée.",
-        "content3": "Sécurité et chiffrement : Les données collectées sont chiffrées et stockées de manière sécurisée pour prévenir tout accès non autorisé.",
-        "content4": "Cookies et revente : Nous n'utilisons aucun cookie pour suivre les utilisateurs, et nous ne vendons ni ne partageons vos informations avec des tiers.",
-        "content5": "Données anonymes et statistiques : Pour l'amélioration continue de notre application, nous utilisons des données anonymisées à des fins statistiques. Ces données ne permettent en aucun cas d'identifier personnellement les utilisateurs.",
-        "content6": "Nous nous engageons à maintenir la transparence et à respecter la vie privée de nos utilisateurs en toutes circonstances."
+        "title": "¿Qué hacemos con los datos de los usuarios?",
+        "content1": "La privacidad y seguridad de los datos de nuestros usuarios es de suma importancia para nosotros. Esta es nuestra política sobre la gestión de datos de los usuarios:",
+        "content2": "Uso de datos: Sólo utilizamos el nombre de usuario y la dirección de correo electrónico para los fines de la aplicación. No se recopilan otros datos personales.",
+        "content3": "Seguridad y cifrado: los datos recopilados se cifran y almacenan de forma segura para evitar el acceso no autorizado.",
+        "content4": "Cookies y reventa: no utilizamos cookies para rastrear a los usuarios y no vendemos ni compartimos su información con terceros.",
+        "content5": "Datos anónimos y estadísticos: Para la mejora continua de nuestra aplicación, utilizamos datos anónimos con fines estadísticos. Estos datos no permiten de ningún modo identificar personalmente a los usuarios.",
+        "content6": "Estamos comprometidos a mantener la transparencia y respetar la privacidad de nuestros usuarios en todas las circunstancias."
       },
       "console": {
-        "title": "Il y a t-il un intérret pour les joueurs console ?",
-        "content1": "Absolument ! Nous avons développé des fonctionnalités spécifiques pour améliorer l'expérience des joueurs sur console Xbox et PlayStation. Voici ce que nous avons mis en place :",
-        "content2": "Décompte sonore : Nous avons intégré un décompte sonore lors du lancement des timers. Cette fonction permet aux joueurs de savoir exactement quand cliquer, sans avoir besoin que le chef d'alliance donne des instructions vocales. Cela rend les sessions de jeu plus fluides et moins dépendantes de la communication vocale.",
-        "content3": "Indication visuelle du type de plateforme : Nous avons ajouté une icône qui permet aux joueurs de savoir si leurs coéquipiers utilisent une console. Cette fonctionnalité favorise une meilleure coordination et compréhension entre les joueurs de différentes plateformes.",
-        "content4": "Ces améliorations sont conçues pour rendre l'expérience de jeu plus intuitive et accessible pour les joueurs sur console, assurant ainsi une intégration harmonieuse au sein de communautés de jeu mixtes."
+        "title": "¿Hay algún interés para los jugadores de consolas?",
+        "content1": "Absolutamente ! Hemos desarrollado funciones específicas para mejorar la experiencia de los jugadores en las consolas Xbox y PlayStation. Esto es lo que implementamos:",
+        "content2": "Cuenta atrás sonora: Hemos integrado una cuenta atrás sonora al iniciar los temporizadores. Esta característica permite a los jugadores saber exactamente cuándo hacer clic, sin necesidad de que el líder de la alianza dé instrucciones de voz. Esto hace que las sesiones de juego sean más fluidas y menos dependientes de la comunicación por voz.",
+        "content3": "Indicación visual del tipo de plataforma: agregamos un ícono que permite a los jugadores saber si sus compañeros de equipo están usando una consola. Esta característica promueve una mejor coordinación y comprensión entre jugadores en diferentes plataformas.",
+        "content4": "Estas mejoras están diseñadas para hacer que la experiencia de juego sea más intuitiva y accesible para los jugadores de consola, asegurando una integración perfecta dentro de comunidades de juego mixtas."
       }
     },
-    "title": "F.A.Q"
+    "title": "Preguntas frecuentes"
   },
   "footer": {
     "content": "Únase a nuestra aventura global: su pasión, nuestra tecnología. Juntos, transformemos el juego, impulsado por la comunidad y la innovación abierta.",
