@@ -5,8 +5,8 @@
       "title": "Bad query"
     },
     "emptySession": {
-      "content": "The field id is empty please enter a value",
-      "title": "Empty session ID"
+      "content": "Please enter a Session ID",
+      "title": "Empty Session ID"
     },
     "error": {
       "content": "An error has occurred",
@@ -64,7 +64,7 @@
       }
     },
     "websocketAuthFailed": {
-      "content": "Websocket authentication failed",
+      "content": "WebSocket authentication failed",
       "title": "Authentication failed"
     }
   },
@@ -74,12 +74,12 @@
       "label": "Platform"
     },
     "devmode": "Enable developer mode",
-    "disconnect": "Sign out",
+    "disconnect": "Disconnect",
     "lang": {
       "label": "Language"
     },
     "macro": {
-      "check": "Toggle session macro"
+      "check": "Enable/Disable auto launch"
     },
     "name": {
       "label": "Username",
@@ -102,16 +102,16 @@
     "sound": {
       "check": "Enable/Disable audio countdown",
       "label": "Audio countdown",
-      "test": "test"
+      "test": "Test"
     },
     "subtitle": "Preference options",
     "title": "Settings"
   },
   "contextMenu": {
     "master": {
-      "demote": "Remove master",
+      "demote": "Demote",
       "kick": "Kick",
-      "promote": "Assign Master",
+      "promote": "Promote to session master",
       "title": "User"
     }
   },
@@ -123,8 +123,8 @@
     "developed": "Developed by",
     "socials": "Find us here :",
     "sot": {
-      "thanks": "We would like to thank",
-      "use": "allow us to use the font and banners of their game"
+      "thanks": "We would like to render unto",
+      "use": "that which belongs to pirates for, as you may notice, we use the font and banners from the game !"
     },
     "title": "Information"
   },
@@ -154,10 +154,10 @@
   },
   "login": {
     "continue": "Continue",
-    "description": "Welcome to Better Fleet! We are happy to have you here. In order for you to be able to fully use the app, it is necessary to log in to your account or create one!",
-    "disconnect": "Not your account? ",
+    "description": "Welcome to Better Fleet ! We are thrilled to have you figure among us. In order to access the application, please log in to your account or create one !",
+    "disconnect": "This is not your account ?",
     "loginButton": "Sign in",
-    "succeed": "Login Successful!",
+    "succeed": "Login Successful !",
     "userWelcome": "Welcome",
     "welcome": "Welcome to"
   },
@@ -172,7 +172,7 @@
       "leave": {
         "cancel": "Cancel",
         "confirm": "Leave the session",
-        "content": "Are you sure you want to leave the session?",
+        "content": "Are you sure you want to leave the session ?",
         "title": "LEAVE THE SESSION"
       }
     }
