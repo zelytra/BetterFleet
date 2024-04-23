@@ -114,14 +114,14 @@ const contributor = ref<ContributorType | null>(ContributorProvider.getPlayerCon
         position: relative;
 
         img.contributor {
-          width: 24px;
+          width: 32px;
           position: relative;
         }
 
         span {
           position: absolute;
           top: 50%;
-          left: 80px;
+          left: 90px;
           white-space: nowrap;
           transform: translate(-50%,-50%);
           z-index: 99;
