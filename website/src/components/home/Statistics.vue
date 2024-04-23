@@ -32,10 +32,10 @@ const onlinePlayer = ref<number>(0);
 const {t} = useI18n();
 
 onMounted(() => {
-  new HTTPAxios("/stats/all", null).get().then((response: AxiosResponse) => {
+  new HTTPAxios("stats/all", null).get().then((response: AxiosResponse) => {
     stats.value = response.data as Stats;
   })
-  new HTTPAxios("/stats/online-users", null).get().then((response: AxiosResponse) => {
+  new HTTPAxios("stats/online-users", null).get().then((response: AxiosResponse) => {
     onlinePlayer.value = response.data as number;
   })
 })

@@ -3,7 +3,7 @@
     <BannerTemplate>
       <template #content>
         <div class="header-content">
-          <img src="@/assets/icons/sot.svg"/>
+          <img src="../../../assets/icons/sot.svg"/>
           <div class="title-content">
             <p>{{ session.sessionName }}</p>
             <div class="id-wrapper">
@@ -13,7 +13,7 @@
                     session.sessionId.toUpperCase()
                   }}</span>
               </p>
-              <img src="@/assets/icons/clipboard.svg" alt="copy-button"
+              <img src="../../../assets/icons/clipboard.svg" alt="copy-button"
                    @click="copyIdToClipboard(session.sessionId.toUpperCase())"/>
               <transition>
                 <p v-if="displayIdCopy">{{ t('session.idCopy') }}</p>
@@ -32,19 +32,21 @@
     <div class="lobby-content">
       <div class="player-table">
         <ServerContainer v-if="computedSession.servers.size > 0" v-for="[hash,server] of getFilteredSotServer()"
-                         :server="hash.toUpperCase()+' | '+server.location" :color="server.color"
+                         :server="hash.toUpperCase()+(!server.location?'':' | '+server.location)" :color="server.color"
                          :player-count="server.connectedPlayers.length">
           <PlayerFleet
               v-for="player in server.connectedPlayers.sort((a, b) => {
             return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
           })"
               :player="player"
+              @click.right.prevent="openContextMenu($event,player)"
           />
         </ServerContainer>
         <PlayerFleet
             v-for="player in getFilteredPlayerList()"
             :player="player"
             class="player-fleet-card"
+            @click.right.prevent="openContextMenu($event,player)"
         />
       </div>
       <div class="lobby-details">
@@ -71,12 +73,6 @@
               <h3>{{ t("session.informations.tryNumber") }}</h3>
               <p>
                 {{ session.stats.tryAmount }}
-              </p>
-            </div>
-            <div class="information-data">
-              <h3>{{ t("session.informations.success") }}</h3>
-              <p>
-                {{ session.stats.successPrediction != 0 ? session.stats.successPrediction : 'Unknown' }}
               </p>
             </div>
           </div>
@@ -111,6 +107,12 @@
         confirm-class="important"
         title-class="important"
     />
+    <MasterContextMenu
+        ref="contextMenu"
+        v-model:display="displayContextMenu"
+        :menu="masterContextMenu"
+        @action="onContextAction"
+    />
   </section>
 </template>
 
@@ -121,14 +123,36 @@ import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import {useI18n} from "vue-i18n";
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
-import SessionCountdown from "@/components/fleet/SessionCountdown.vue";
+import SessionCountdown from "@/components/fleet/session/SessionCountdown.vue";
 import ServerContainer from "@/vue/templates/ServerContainer.vue";
 import ConfirmationModal from "@/vue/form/ConfirmationModal.vue";
+import MasterContextMenu from "@/vue/context/MasterContextMenu.vue";
+import {ContextMenu, MenuData} from "@/vue/context/ContextMenu.ts";
+import {Player} from "@/objects/fleet/Player.ts";
+import {WebSocketMessageType} from "@/objects/fleet/WebSocet.ts";
 
 const {t} = useI18n();
 const displayIdCopy = ref<boolean>(false);
 const launchConfirmation = ref<boolean>(false);
 const leaveConfirmation = ref<boolean>(false);
+const displayContextMenu = ref<boolean>(false);
+const contextMenu = ref();
+const masterContextMenu = ref<ContextMenu<string>>();
+const contextMenuData: MenuData[] = [
+  {
+    display: t('contextMenu.master.promote'),
+    key: "promote",
+    class: "green"
+  }, {
+    display: t('contextMenu.master.demote'),
+    key: "demote",
+    class: "blue"
+  }, {
+    display: t('contextMenu.master.kick'),
+    key: "kick",
+    class: "red"
+  }
+]
 const props = defineProps({
   session: {
     type: Object as PropType<Fleet>,
@@ -191,7 +215,7 @@ function getFilteredPlayerList() {
 
 function getFilteredSotServer() {
   return new Map([...props.session.servers].sort((a, b) => {
-    return a[1].connectedPlayers.length - b[1].connectedPlayers.length
+    return b[1].connectedPlayers.length - a[1].connectedPlayers.length
   }))
 }
 
@@ -199,6 +223,55 @@ function copyIdToClipboard(id: string) {
   navigator.clipboard.writeText(id);
   displayIdCopy.value = true;
   setTimeout(() => displayIdCopy.value = false, 2000);
+}
+
+function openContextMenu(event: any, player: Player) {
+
+  if (!UserStore.player.isMaster || player.username == UserStore.player.username) {
+    return;
+  }
+
+  contextMenu.value.setPos(event);
+  masterContextMenu.value = {
+    title: t('contextMenu.master.title') + ": " + player.username,
+    data: contextMenuData,
+    metaData: player.username
+  }
+  displayContextMenu.value = true;
+}
+
+function onContextAction(action: string) {
+  console.log(action)
+  if (!props.session) {
+    return;
+  }
+  switch (action) {
+    case "promote": {
+      props.session.playerAction(
+          {
+            sessionId: props.session.sessionId,
+            username: masterContextMenu.value!.metaData
+          }, WebSocketMessageType.PROMOTE_PLAYER)
+      break
+    }
+    case "demote": {
+      props.session.playerAction(
+          {
+            sessionId: props.session.sessionId,
+            username: masterContextMenu.value!.metaData
+          }, WebSocketMessageType.DEMOTE_PLAYER)
+      break
+    }
+    case "kick": {
+      props.session.playerAction(
+          {
+            sessionId: props.session.sessionId,
+            username: masterContextMenu.value!.metaData
+          }, WebSocketMessageType.KICK_PLAYER)
+      break
+    }
+  }
+  displayContextMenu.value = false
 }
 </script>
 

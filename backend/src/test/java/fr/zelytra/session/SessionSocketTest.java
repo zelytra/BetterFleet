@@ -4,6 +4,7 @@ import fr.zelytra.session.client.BetterFleetClient;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.socket.MessageType;
+import fr.zelytra.session.socket.security.SocketSecurityEntity;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -50,18 +51,22 @@ class SessionSocketTest {
     void setup() throws URISyntaxException, DeploymentException, IOException {
         Mockito.doReturn(null).when(executorService).submit(any(Runnable.class));
         String sessionId = sessionManager.createSession();
-        this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + sessionId);
+        SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
+        this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/" + sessionId);
         betterFleetClient = new BetterFleetClient();
         ContainerProvider.getWebSocketContainer().connectToServer(betterFleetClient, uri);
     }
 
     @Test
-    void stressTest() throws IOException, InterruptedException, EncodeException, DeploymentException {
+    void stressTest() throws IOException, InterruptedException, EncodeException, DeploymentException, URISyntaxException {
         List<Player> fakePlayers = generateFakePlayer(50);
         String fleetId = "";
         for (Player player : fakePlayers) {
 
             BetterFleetClient playerClient = new BetterFleetClient();
+            SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
+            URI uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/" + fleetId);
+
             ContainerProvider.getWebSocketContainer().connectToServer(playerClient, uri);
             playerClient.sendMessage(MessageType.CONNECT, player);
 

@@ -9,6 +9,7 @@ import fr from "@/assets/locales/fr.json";
 import es from "@/assets/locales/es.json";
 import de from "@/assets/locales/de.json";
 import {AlertProvider} from "@/vue/alert/Alert.ts";
+import {keycloakStore} from "@/objects/stores/LoginStates.ts";
 
 export const i18n = createI18n({
   legacy: false, // you must set `false`, to use Composition API
@@ -18,6 +19,7 @@ export const i18n = createI18n({
 });
 
 const app = createApp(App);
+keycloakStore.init(window.location.origin);
 const alertProvider = reactive(new AlertProvider());
 app.provide("alertProvider", alertProvider);
 app.directive("click-outside", {

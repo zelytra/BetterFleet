@@ -1,4 +1,10 @@
-![image](/webapp/src/assets/banners/banner.png)
+[![image](/webapp/src/assets/banners/banner.png)](https://betterfleet.fr/)
+![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+[![Tauri](https://img.shields.io/badge/tauri-%2324C8DB.svg?style=for-the-badge&logo=tauri&logoColor=%23FFFFFF)](https://tauri.app/)
+[![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/zelytra)
+[![Crowdin](https://img.shields.io/badge/Crowdin-2E3340.svg?style=for-the-badge&logo=Crowdin&logoColor=white)](https://translate.betterfleet.fr)
+
+[![Translation](https://badges.crowdin.net/betterfleet/localized.svg)](https://translate.betterfleet.fr)
 
 # BetterFleet
 
@@ -27,7 +33,7 @@ players looking to improve their gaming experience.
 
 | Feature                               | BetterFleet                 | FleetCreator                |
 |---------------------------------------|-----------------------------|-----------------------------|
-| Speed                                 | :question: (Need benchmark) | :question: (Need benchmark) |
+| Speed*                                | ~5sec detection, fast UI    | ~20 sec detection, slow UI  |
 | Ad free                               | :white_check_mark:          | :x:                         |
 | Complete free access                  | :white_check_mark:          | :x:                         |
 | UX friendly                           | :white_check_mark:          | :x:                         |
@@ -35,9 +41,10 @@ players looking to improve their gaming experience.
 | IPv6 support                          | :white_check_mark:          | :x:                         |
 | Automatic click between the same crew | :white_check_mark:          | :x:                         |
 | Size of file                          | <20MB                       | >200MB                      |
-| No memory leak                        | :white_check_mark:          | :warning:*                  |
+| No memory leak**                      | :white_check_mark:          | :warning:                   |
 
-\* FleetCreator has been observed to consume 8GB of RAM after 10 hours of usage, indicating a possible memory leak.
+\* Comparison benchmark [spreadsheet](https://docs.google.com/spreadsheets/d/12ETC_1stmQ0MtDgxDIbpUkCQvMW4dVE_4f6FLz92RlA/edit?usp=sharing)\
+\** FleetCreator has been observed to consume 8GB of RAM after 10 hours of usage, indicating a possible memory leak.
 
 ---
 
@@ -59,7 +66,7 @@ players looking to improve their gaming experience.
 - **Translator/proofreader:** [Ichabodt](https://github.com/Ichabodt)
 
 We thank everyone who contributes to making BetterFleet better every day. If you would like to contribute to the
-project, feel free to fork the repository and submit your pull requests.
+project, feel free to fork the repository and submit your pull requests or you can also help translate our project with [our crowdin](https://translate.betterfleet.fr).
 
 ---
 

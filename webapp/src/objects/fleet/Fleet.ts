@@ -3,9 +3,11 @@ import {WebSocketMessage, WebSocketMessageType} from "@/objects/fleet/WebSocet.t
 import {AlertType} from "@/vue/alert/Alert.ts";
 import {alertProvider} from "@/main.ts";
 import {i18n} from "@/objects/i18n";
-import {Player} from "@/objects/fleet/Player.ts";
+import {ActionPlayer, Player} from "@/objects/fleet/Player.ts";
 import {SotServer} from "@/objects/fleet/SotServer.ts";
 import {LocalTime} from "@js-joda/core";
+import {HTTPAxios} from "@/objects/utils/HTTPAxios.ts";
+import {ResponseType} from "@tauri-apps/api/http";
 
 const {t} = i18n.global;
 
@@ -42,7 +44,7 @@ export class Fleet {
     }
   }
 
-  joinSession(sessionId: string) {
+  async joinSession(sessionId: string) {
     if (this.socket && this.socket.readyState >= 2) {
       this.socket.close();
     }
@@ -50,9 +52,18 @@ export class Fleet {
     UserStore.player.isReady = false;
     UserStore.player.isMaster = false;
 
-    this.socket = new WebSocket(
-      UserStore.player.serverHostName + "/" + sessionId,
-    );
+    await new HTTPAxios("socket/register", null).get(ResponseType.Text).then((response) => {
+      this.socket = new WebSocket(
+        UserStore.player.serverHostName + "/" + response.data + "/" + sessionId);
+    }).catch(() => {
+      alertProvider.sendAlert({
+        content: t('alert.websocketAuthFailed.content'),
+        title: t('alert.websocketAuthFailed.title'),
+        type: AlertType.ERROR
+      })
+    })
+
+    if (!this.socket) return;
 
     // Send player data to backend for initialization
     this.socket.onopen = () => {
@@ -91,6 +102,14 @@ export class Fleet {
         case WebSocketMessageType.SESSION_NOT_FOUND: {
           alertProvider.sendAlert({
             content: t('alert.sessionNotFound.content'),
+            title: t('alert.sessionNotFound.title'),
+            type: AlertType.ERROR
+          })
+          break
+        }
+        case WebSocketMessageType.CONNECTION_REFUSED: {
+          alertProvider.sendAlert({
+            content: "REFUSED",
             title: t('alert.sessionNotFound.title'),
             type: AlertType.ERROR
           })
@@ -152,6 +171,15 @@ export class Fleet {
     this.socket.send(JSON.stringify(message));
   }
 
+  playerAction(playerToExecute: ActionPlayer, actionType: WebSocketMessageType): void {
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: playerToExecute,
+      messageType: actionType,
+    };
+    this.socket.send(JSON.stringify(message));
+  }
+
   runCountDown() {
     if (!this.socket) return;
     const message: WebSocketMessage = {
@@ -193,7 +221,7 @@ export class Fleet {
     return this.players.filter((player) => player.isReady);
   }
 
-  sendKeepAlive(){
+  sendKeepAlive() {
     if (!this.socket) return;
     const message: WebSocketMessage = {
       data: null,
@@ -213,7 +241,3 @@ export class Fleet {
     return this.players.filter((player) => player.isMaster);
   }
 }
-
-
-
-

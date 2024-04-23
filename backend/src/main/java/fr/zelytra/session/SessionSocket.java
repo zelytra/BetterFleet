@@ -7,11 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.Player;
+import fr.zelytra.session.player.PlayerAction;
 import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.SocketMessage;
+import fr.zelytra.session.socket.security.SocketSecurityEntity;
 import io.quarkus.logging.Log;
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
@@ -21,16 +22,20 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.io.IOException;
 import java.util.concurrent.*;
 
-@ServerEndpoint(value = "/sessions/{sessionId}") // WebSocket endpoint
-@ApplicationScoped
+// WebSocket endpoint
+@ServerEndpoint(value = "/sessions/{token}/{sessionId}")
 public class SessionSocket {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     public static final ConcurrentMap<String, Future<?>> sessionTimeoutTasks = new ConcurrentHashMap<>();
     private static final int RISE_ANCHOR_TIMER = 3; // in seconds
+    public static String PROXY_API_KEY = "";
 
     @ConfigProperty(name = "app.version")
     String appVersion;
+
+    @ConfigProperty(name = "proxy.check.api.key")
+    String proxyApiKey;
 
     @Inject
     SessionManager sessionManager;
@@ -58,7 +63,7 @@ public class SessionSocket {
 
 
     @OnMessage
-    public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId) throws IOException {
+    public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId, @PathParam("token") String token) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
@@ -73,17 +78,30 @@ public class SessionSocket {
         switch (socketMessage.messageType()) {
             case CONNECT -> {
                 Player player = objectMapper.convertValue(socketMessage.data(), Player.class);
-                handleConnectMessage(player, session, sessionId);
+                handleConnectMessage(player, session, sessionId, token);
             }
             case UPDATE -> {
                 Player player = objectMapper.convertValue(socketMessage.data(), Player.class);
                 handleUpdateMessage(player);
+            }
+            case KICK_PLAYER -> {
+                PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
+                handleKick(player);
+            }
+            case PROMOTE_PLAYER -> {
+                PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
+                handlePromote(player, true);
+            }
+            case DEMOTE_PLAYER -> {
+                PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
+                handlePromote(player, false);
             }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
             case KEEP_ALIVE -> {
             }
             case JOIN_SERVER -> {
+                PROXY_API_KEY = proxyApiKey;
                 SotServer sotServer = objectMapper.convertValue(socketMessage.data(), SotServer.class);
                 handleJoinServerMessage(session, sotServer);
             }
@@ -92,6 +110,34 @@ public class SessionSocket {
                 handleLeaveServerMessage(session, sotServer);
             }
             default -> Log.info("Unhandled message type: " + socketMessage.messageType());
+        }
+    }
+
+    private void handleKick(PlayerAction player) {
+        SessionManager manager = sessionManager;
+        Fleet fleet = manager.getFleetByPlayerName(player.username());
+        Player foundedPlayer = manager.getPlayerFromUsername(player.username());
+
+        if (foundedPlayer != null) {
+            Log.info("[" + fleet.getSessionId() + "] " + player.username() + " has been kicked from the session");
+            manager.leaveSession(foundedPlayer);
+        } else {
+            Log.warn("[" + fleet.getSessionId() + "] " + player.username() + " cannot be kicked, not found");
+        }
+
+    }
+
+    private void handlePromote(PlayerAction player, boolean master) {
+        SessionManager manager = sessionManager;
+        Fleet fleet = manager.getFleetByPlayerName(player.username());
+        Player foundedPlayer = manager.getPlayerFromUsername(player.username());
+
+        if (foundedPlayer != null) {
+            Log.info("[" + fleet.getSessionId() + "] " + player.username() + " has been " + (master ? "promoted" : "demoted"));
+            foundedPlayer.setMaster(master);
+            sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        } else {
+            Log.warn("[" + fleet.getSessionId() + "] " + player.username() + " cannot be " + (master ? "promoted" : "demoted") + ", not found");
         }
     }
 
@@ -136,12 +182,22 @@ public class SessionSocket {
     }
 
     // Extracted method to handle CONNECT messages
-    private void handleConnectMessage(Player player, Session session, String sessionId) {
+    public void handleConnectMessage(Player player, Session session, String sessionId, String token) throws IOException {
         // Cancel the timeout task since we've received the message
         Future<?> timeoutTask = sessionTimeoutTasks.remove(session.getId());
         if (timeoutTask != null) {
             timeoutTask.cancel(true);
         }
+
+        // Checking security
+        SocketSecurityEntity socketSecurity = SocketSecurityEntity.websocketUser.get(token);
+        if (socketSecurity == null || !socketSecurity.isValid()) {
+            Log.info("Invalid token, session will be closed");
+            sessionManager.sendDataToPlayer(session, MessageType.CONNECTION_REFUSED, null);
+            session.close();
+            return;
+        }
+        SocketSecurityEntity.websocketUser.remove(token);
 
         // Refuse connection from client with different version
         if (player.getClientVersion() == null || !player.getClientVersion().equalsIgnoreCase(appVersion)) {
@@ -216,5 +272,9 @@ public class SessionSocket {
         } else {
             Log.warn("[UNDEFINED PLAYER] Disconnected");
         }
+    }
+
+    public String getProxyApiKey() {
+        return proxyApiKey;
     }
 }

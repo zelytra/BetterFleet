@@ -4,12 +4,28 @@ updates:
     directory: "/webapp" # Location of package manifests
     schedule:
       interval: "weekly"
+    groups:
+      npm:
+        applies-to: version-updates
+        patterns:
+        - "*"
   - package-ecosystem: "maven" # See documentation for possible values
     directory: "/backend" # Location of package manifests
     schedule:
       interval: "weekly"
+    groups:
+      npm:
+        applies-to: version-updates
+        patterns:
+        - "*"
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/website" # Location of package manifests
     schedule:
       interval: "weekly"
+    groups:
+      npm:
+        applies-to: version-updates
+        patterns:
+        - "*"
+    
 

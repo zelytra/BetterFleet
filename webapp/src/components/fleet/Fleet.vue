@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import FleetSessionChoice from "@/components/fleet/FleetSessionChoice.vue";
-import FleetLobby from "@/components/fleet/FleetLobby.vue";
+import FleetSessionChoice from "@/components/fleet/session/FleetSessionChoice.vue";
+import FleetLobby from "@/components/fleet/session/FleetLobby.vue";
 import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 </script>

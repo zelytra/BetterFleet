@@ -8,7 +8,10 @@ use serde::Serialize;
 use tauri::State;
 use tokio::sync::RwLock;
 use crate::api::{Api, GameStatus};
-use crate::window_interaction::{set_focus_to_window, send_key};
+use crate::window_interaction::{set_focus_to_window, click_in_window_proportionally};
+use std::ffi::CString;
+use std::ptr::null_mut;
+use winapi::um::winuser::FindWindowA;
 
 mod fetch_informations;
 mod api;
@@ -35,7 +38,7 @@ async fn main() {
             get_server_port,
             get_game_object,
             get_last_updated_server_ip,
-            drop_anchor
+            rise_anchor
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -86,19 +89,25 @@ async fn get_last_updated_server_ip(api: State<'_, Arc<RwLock<Api>>>) -> Result<
 }
 
 #[tauri::command]
-fn drop_anchor() -> bool {
-    if set_focus_to_window("Sea Of Thieves") {
-        // Maybe we shouldn't hardcode a sleep duration, but I don't see any other way to do it
-        sleep(Duration::from_millis(50));
+fn rise_anchor() -> bool {
+    let window_name = "Sea Of Thieves";
+    let window_name_cstring = CString::new(window_name).unwrap();
+    let window_handle = unsafe { FindWindowA(null_mut(), window_name_cstring.as_ptr()) };
 
-        // 2x Left arrow key to focus the button
-        send_key(0x25);
-        sleep(Duration::from_millis(50));
-        send_key(0x25);
+    if window_handle.is_null() {
+        println!("Could not find window with name: {}", window_name);
+    } else {
+        if set_focus_to_window(window_handle) {
+            sleep(Duration::from_millis(50)); // Wait for the window to focus
 
-        sleep(Duration::from_millis(50));
-        send_key(0x0D); // Enter key
-        return true;
+            // Clic at 700;750 on a reference of 1920x1080
+            // This corresponds to the middle of "Rise anchor" button
+            let x_prop = 700.0 / 1920.0;
+            let y_prop = 750.0 / 1080.0;
+
+            click_in_window_proportionally(window_handle, x_prop, y_prop);
+            return true;
+        }
     }
 
     return false;
