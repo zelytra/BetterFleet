@@ -48,28 +48,60 @@
     "more": "Si vous rencontrez un problème ou que vous ne parvenez pas à résoudre le problème. Rendez-vous sur notre",
     "question": {
       "download": {
-        "title": "Comment téléchergé BetterFleet ?"
+        "title": "Comment téléchergé BetterFleet ?",
+        "content1": "Rendez-vous sur notre site officiel :",
+        "content2": "Cliquez sur le bouton \"Télécharger\".",
+        "content3": "Suivez les instructions à l'écran pour compléter l'installation.",
+        "content4": "Et voilà ! Après ces étapes, BetterFleet sera installé sur votre appareil."
       },
       "update": {
-        "title": "Comment mettre à jours BetterFleet ?"
+        "title": "Comment mettre à jours BetterFleet ?",
+        "content1": "Lorsqu'une mise à jour de BetterFleet est disponible, une fenêtre pop-up apparaîtra automatiquement au lancement de l'application. Vous n'aurez qu'à cliquer sur \"Oui\" pour lancer la mise à jour. L'application se mettra à jour automatiquement et redémarrera une fois la mise à jour terminée. Suivez simplement ces instructions pour toujours bénéficier de la dernière version de BetterFleet."
       },
       "eac": {
-        "title": "Il y a t'il des risque avec l'EAC(Easy Anti-Cheat) ?"
+        "title": "Il y a t'il des risque avec l'EAC(Easy Anti-Cheat) ?",
+        "content1": "Notre application est conçue pour simuler un clic de souris, reproduisant ainsi l'action d'un utilisateur qui utiliserait physiquement une souris. Cette méthode est indétectable par les systèmes comme Easy Anti-Cheat (EAC), car notre technique ne constitue pas une macro à proprement parler. EAC se concentre principalement sur la détection de manipulations de la mémoire vive (RAM) et non sur l'utilisation de simulateurs de clics.",
+        "content2": "De plus, le clic n'est jamais exécuté dans le jeu lui-même mais uniquement dans les menus, ce qui reste conforme aux Termes de Service (TOS) du jeu et de Xbox. Les TOS sont rédigés de manière assez large pour couvrir un maximum de situations d'un point de vue juridique.",
+        "content3": "Il est essentiel de comprendre que l'utilisation de notre simulateur comporte des risques similaires à ceux de toute autre application du même type, comme FleetCreator, notamment en ce qui concerne la détection d'IP, qui reste un point sensible. Utiliser notre application est aussi sûr que d'utiliser des applications similaires, sous réserve de respecter les directives et TOS mentionnés."
       },
       "edge": {
-        "title": "L'application ne se lance pas/crash, pourquoi ? (Edge)"
+        "title": "L'application ne se lance pas/crash, pourquoi ? (Edge)",
+        "content1": "Si vous rencontrez des problèmes pour lancer l'application ou si celle-ci crash après une installation correcte, veuillez suivre ces étapes de dépannage :",
+        "content2": "Assurez-vous que votre système d'exploitation est Windows 10 ou Windows 11.",
+        "content3": "Vérifiez que Microsoft Edge et Microsoft Edge WebView2 sont correctement installés sur votre machine. Ces composants sont essentiels pour le bon fonctionnement de l'application.",
+        "content4": "Si le problème persiste malgré ces vérifications, tentez de réinstaller l'application pour corriger toute installation potentiellement corrompue.",
+        "content5": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée."
       },
       "security": {
-        "title": "L'application est-elle sécurisé ?"
+        "title": "L'application est-elle sécurisé ?",
+        "content1": "Oui, notre application est conçue avec la sécurité des utilisateurs comme priorité absolue. Voici les mesures que nous avons mises en place pour garantir une utilisation sûre :",
+        "content2": "Authentification renforcée : Nous avons intégré une surcouche d'authentification pour renforcer la sécurité des comptes utilisateurs.",
+        "content3": "Open source : L'application est entièrement open source, offrant une transparence totale sur son utilisation et son fonctionnement. Cela permet à la communauté de vérifier et d'auditer notre code, renforçant ainsi la confiance dans notre produit.",
+        "content4": "Maintenance proactive : Nos développeurs s'engagent à maintenir l'application en condition de sécurité optimale. Cela comprend la mise à jour régulière des dépendances et le suivi continu des potentielles failles de sécurité pour prévenir tout risque.",
+        "content5": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs."
       },
       "bug": {
-        "title": "Je recontre des problème/bug, comment les rapporter ?"
+        "title": "Je recontre des problème/bug, comment les rapporter ?",
+        "content1": "Si vous rencontrez des problèmes ou des bugs avec notre application, nous vous encourageons à nous le signaler afin que nous puissions travailler à améliorer votre expérience. Voici comment vous pouvez nous contacter :",
+        "content2": "Discord : Rejoignez notre serveur Discord et partagez votre problème dans le canal dédié au support. Notre équipe est toujours prête à vous aider et à répondre à vos questions en temps réel.",
+        "content3": "GitHub : Si vous êtes familier avec GitHub, vous pouvez également ouvrir une \"issue\" sur notre dépôt GitHub. Cela nous permet de suivre les problèmes de manière structurée et d'assurer un suivi transparent et efficace.",
+        "content4": "Nous apprécions vos retours et nous engageons à résoudre les problèmes signalés dans les meilleurs délais."
       },
       "data": {
-        "title": "Que fait-on des données utilisateur ?"
+        "title": "Que fait-on des données utilisateur ?",
+        "content1": "La confidentialité et la sécurité des données de nos utilisateurs sont de la plus haute importance pour nous. Voici notre politique en matière de gestion des données utilisateur :",
+        "content2": "Utilisation des données : Nous n'utilisons que le nom d'utilisateur et l'adresse email pour les besoins de l'application. Aucune autre donnée personnelle n'est collectée.",
+        "content3": "Sécurité et chiffrement : Les données collectées sont chiffrées et stockées de manière sécurisée pour prévenir tout accès non autorisé.",
+        "content4": "Cookies et revente : Nous n'utilisons aucun cookie pour suivre les utilisateurs, et nous ne vendons ni ne partageons vos informations avec des tiers.",
+        "content5": "Données anonymes et statistiques : Pour l'amélioration continue de notre application, nous utilisons des données anonymisées à des fins statistiques. Ces données ne permettent en aucun cas d'identifier personnellement les utilisateurs.",
+        "content6": "Nous nous engageons à maintenir la transparence et à respecter la vie privée de nos utilisateurs en toutes circonstances."
       },
       "console": {
-        "title": "Il y a t-il un intérret pour les joueurs console ?"
+        "title": "Il y a t-il un intérret pour les joueurs console ?",
+        "content1": "Absolument ! Nous avons développé des fonctionnalités spécifiques pour améliorer l'expérience des joueurs sur console Xbox et PlayStation. Voici ce que nous avons mis en place :",
+        "content2": "Décompte sonore : Nous avons intégré un décompte sonore lors du lancement des timers. Cette fonction permet aux joueurs de savoir exactement quand cliquer, sans avoir besoin que le chef d'alliance donne des instructions vocales. Cela rend les sessions de jeu plus fluides et moins dépendantes de la communication vocale.",
+        "content3": "Indication visuelle du type de plateforme : Nous avons ajouté une icône qui permet aux joueurs de savoir si leurs coéquipiers utilisent une console. Cette fonctionnalité favorise une meilleure coordination et compréhension entre les joueurs de différentes plateformes.",
+        "content4": "Ces améliorations sont conçues pour rendre l'expérience de jeu plus intuitive et accessible pour les joueurs sur console, assurant ainsi une intégration harmonieuse au sein de communautés de jeu mixtes."
       }
     },
     "title": "F.A.Q"

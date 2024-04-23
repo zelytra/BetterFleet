@@ -43,7 +43,7 @@ defineProps({
       }
     }
 
-    max-height: 300px;
+    max-height: 500px;
   }
 
   .header {
@@ -58,7 +58,7 @@ defineProps({
     height: 44px;
     position: relative;
 
-    h1{
+    h1 {
       font-size: 19px;
     }
 
@@ -73,18 +73,21 @@ defineProps({
       transform: rotate(-90deg);
     }
 
-    img[alt="link"]{
+    img[alt="link"] {
       width: 22px;
     }
   }
 
   .content {
     width: 100%;
-    padding: 24px;
+    padding: 24px 24px 54px 24px;
     box-sizing: border-box;
     background: var(--secondary-background);
     position: relative;
     min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
     p.see-more {
       position: absolute;
