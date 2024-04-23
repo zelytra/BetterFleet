@@ -4,6 +4,10 @@
       "content": "Die Abfrage ist beschädigt oder falsch",
       "title": "Schlechte Abfrage"
     },
+    "emptySession": {
+      "content": "Das ID-Feld ist leer. Bitte geben Sie einen Wert ein",
+      "title": "Leere Sitzungs-ID"
+    },
     "error": {
       "content": "Ein Fehler ist aufgetreten",
       "title": "Fehler"
@@ -58,6 +62,10 @@
         "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
         "title": "Mauvais format de pseudo"
       }
+    },
+    "websocketAuthFailed": {
+      "content": "Die Websocket-Authentifizierung ist fehlgeschlagen",
+      "title": "Authentifizierung fehlgeschlagen"
     }
   },
   "appName": "Bessere Flotte",
@@ -66,12 +74,21 @@
       "label": "Plattformen"
     },
     "devmode": "Aktivieren Sie den Entwicklermodus",
+    "disconnect": "Abmelden",
     "lang": {
       "label": "Sprache"
+    },
+    "macro": {
+      "check": "Sitzungsmakro aktivieren/deaktivieren"
     },
     "name": {
       "label": "Nutzername",
       "placeholder": "Nutzername"
+    },
+    "part": {
+      "audio": "Audio",
+      "developer": "Entwickler",
+      "general": "Allgemein"
     },
     "savebar": {
       "cancel": "Änderungen verwerfen",
@@ -84,10 +101,19 @@
     },
     "sound": {
       "check": "Audio-Countdown aktivieren/deaktivieren",
-      "label": "Tonanzahl"
+      "label": "Tonanzahl",
+      "test": "prüfen"
     },
     "subtitle": "Präferenzoptionen",
     "title": "Einstellungen"
+  },
+  "contextMenu": {
+    "master": {
+      "demote": "Master entfernen",
+      "kick": "Vertreiben",
+      "promote": "Master zuweisen",
+      "title": "Benutzer"
+    }
   },
   "credits": {
     "and": "und",
@@ -96,6 +122,10 @@
     "details": "Better Fleet ist eine nicht offizielle Drittanbieteranwendung, die nichts mit dem Entwicklungsteam von Sea Of Thieves zu tun hat. Die Verwendung ist rein äußerlich und hat keinen Einfluss auf das Spielerlebnis!",
     "developed": "Entwickelt von",
     "socials": "Finden Sie uns hier:",
+    "sot": {
+      "thanks": "Wir möchten uns bedanken",
+      "use": "um uns die Nutzung der Schriftart und Banner ihres Spiels zu ermöglichen"
+    },
     "title": "Information"
   },
   "firstLogin": {
@@ -121,6 +151,15 @@
     "en": "English",
     "es": "Español",
     "fr": "Français"
+  },
+  "login": {
+    "continue": "Weitermachen",
+    "description": "Willkommen bei Better Fleet! Wir freuen uns, Sie bei uns zu haben. Damit Sie die Anwendung vollständig nutzen können, ist es notwendig, sich bei Ihrem Konto anzumelden oder eins zu erstellen!",
+    "disconnect": "Das ist nicht Ihr Konto? ",
+    "loginButton": "Einloggen",
+    "succeed": "Erfolgreiche Verbindung!",
+    "userWelcome": "Willkommen",
+    "welcome": "Willkommen zu"
   },
   "modal": {
     "confirm": {
@@ -149,6 +188,12 @@
         "comment": "Jede Sitzung ist privat und erfordert einen Identifikationscode. Fragen Sie den Moderator der Sitzung, an der Sie teilnehmen möchten!",
         "title": "Geben Sie eine Sitzungs-ID ein"
       }
+    },
+    "contributor": {
+      "alpha_tester": "Alpha-Tester",
+      "designer": "Benennen",
+      "developer": "Entwickler",
+      "translator": "Übersetzer"
     },
     "countdown": "Die Forschung beginnt in...",
     "id": "Session-ID",

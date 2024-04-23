@@ -4,6 +4,10 @@
       "content": "La consulta está corrupta o es incorrecta.",
       "title": "Mala consulta"
     },
+    "emptySession": {
+      "content": "El campo de identificación está vacío, ingrese un valor",
+      "title": "ID de sesión vacía"
+    },
     "error": {
       "content": "Ha ocurrido un error",
       "title": "Error"
@@ -58,6 +62,10 @@
         "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
         "title": "Mauvais format de pseudo"
       }
+    },
+    "websocketAuthFailed": {
+      "content": "Error de autenticación de Websocket",
+      "title": "Error de autenticación"
     }
   },
   "appName": "Mejor flota",
@@ -66,16 +74,25 @@
       "label": "Plataformas"
     },
     "devmode": "Habilitar el modo desarrollador",
+    "disconnect": "Desconectarse",
     "lang": {
       "label": "Idioma"
+    },
+    "macro": {
+      "check": "Activar/Desactivar macro de sesión"
     },
     "name": {
       "label": "Nombre de usuario",
       "placeholder": "Nombre de usuario"
     },
+    "part": {
+      "audio": "Audio",
+      "developer": "Desarrollador",
+      "general": "General"
+    },
     "savebar": {
       "cancel": "Descartar los cambios",
-      "content": "¡Salto, salto, salto! ¡Vi que hiciste algunos cambios! ",
+      "content": "¡Salto, salto, salto! ¡Vi que hiciste algunos cambios!",
       "save": "Ahorrar"
     },
     "server": {
@@ -84,10 +101,19 @@
     },
     "sound": {
       "check": "Activar/desactivar la cuenta atrás de audio",
-      "label": "Conteo de sonidos"
+      "label": "Conteo de sonidos",
+      "test": "prueba"
     },
     "subtitle": "Opciones de preferencia",
     "title": "Configuraciones"
+  },
+  "contextMenu": {
+    "master": {
+      "demote": "Eliminar maestro",
+      "kick": "Expulsar",
+      "promote": "Asignar maestro",
+      "title": "Usuario"
+    }
   },
   "credits": {
     "and": "y",
@@ -96,6 +122,10 @@
     "details": "Better Fleet es una aplicación de terceros no oficial y no relacionada con el equipo de desarrollo de Sea Of Thieves. ¡Su uso es puramente externo y no tiene ningún impacto en la experiencia de juego!",
     "developed": "Desarrollado por",
     "socials": "Encuéntranos aquí:",
+    "sot": {
+      "thanks": "Nos gustaría agradecer",
+      "use": "para permitirnos usar la fuente y los banners de su juego"
+    },
     "title": "Información"
   },
   "firstLogin": {
@@ -121,6 +151,15 @@
     "en": "English",
     "es": "Español",
     "fr": "Français"
+  },
+  "login": {
+    "continue": "seguir",
+    "description": "¡Bienvenidos a Mejor Flota! Estamos encantados de tenerte entre nosotros. Para poder utilizar la aplicación por completo, es necesario iniciar sesión en su cuenta o crear una.",
+    "disconnect": "¿Esta no es tu cuenta? ",
+    "loginButton": "Conectarse",
+    "succeed": "¡Conexión exitosa!",
+    "userWelcome": "Bienvenido",
+    "welcome": "Bienvenido a"
   },
   "modal": {
     "confirm": {
@@ -149,6 +188,12 @@
         "comment": "Cada sesión es privada y requiere un código de identificación. ¡Pregúntale al anfitrión de la sesión a la que deseas unirte!",
         "title": "Ingrese una ID de sesión"
       }
+    },
+    "contributor": {
+      "alpha_tester": "Probador alfa",
+      "designer": "Designado",
+      "developer": "Desarrollador",
+      "translator": "Traductor"
     },
     "countdown": "La investigación comienza en...",
     "id": "ID de sesión",

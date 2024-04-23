@@ -4,6 +4,10 @@
       "content": "The query is corrupted or incorrect",
       "title": "Bad query"
     },
+    "emptySession": {
+      "content": "Please enter a Session ID",
+      "title": "Empty Session ID"
+    },
     "error": {
       "content": "An error has occurred",
       "title": "Error"
@@ -58,6 +62,10 @@
         "content": "Your username cannot be empty or go over 16 characters",
         "title": "Invalid username format"
       }
+    },
+    "websocketAuthFailed": {
+      "content": "WebSocket authentication failed",
+      "title": "Authentication failed"
     }
   },
   "appName": "Better Fleet",
@@ -66,12 +74,21 @@
       "label": "Platform"
     },
     "devmode": "Enable developer mode",
+    "disconnect": "Disconnect",
     "lang": {
       "label": "Language"
+    },
+    "macro": {
+      "check": "Enable/Disable auto launch"
     },
     "name": {
       "label": "Username",
       "placeholder": "Username"
+    },
+    "part": {
+      "audio": "Audio",
+      "developer": "Developer",
+      "general": "General"
     },
     "savebar": {
       "cancel": "Cancel modifications",
@@ -84,10 +101,19 @@
     },
     "sound": {
       "check": "Enable/Disable audio countdown",
-      "label": "Audio countdown"
+      "label": "Audio countdown",
+      "test": "Test"
     },
     "subtitle": "Preference options",
     "title": "Settings"
+  },
+  "contextMenu": {
+    "master": {
+      "demote": "Demote",
+      "kick": "Kick",
+      "promote": "Promote to session master",
+      "title": "User"
+    }
   },
   "credits": {
     "and": "and",
@@ -96,6 +122,10 @@
     "details": "Better Fleet is a non-official third party application unrelated to the development team of Sea Of Thieves. Its use is purely external and has no impact on gameplay experience !",
     "developed": "Developed by",
     "socials": "Find us here :",
+    "sot": {
+      "thanks": "We would like to render unto",
+      "use": "that which belongs to pirates for, as you may notice, we use the font and banners from the game !"
+    },
     "title": "Information"
   },
   "firstLogin": {
@@ -122,6 +152,15 @@
     "es": "Español",
     "fr": "Français"
   },
+  "login": {
+    "continue": "Continue",
+    "description": "Welcome to Better Fleet ! We are thrilled to have you figure among us. In order to access the application, please log in to your account or create one !",
+    "disconnect": "This is not your account ?",
+    "loginButton": "Sign in",
+    "succeed": "Login Successful !",
+    "userWelcome": "Welcome",
+    "welcome": "Welcome to"
+  },
   "modal": {
     "confirm": {
       "launch": {
@@ -133,7 +172,7 @@
       "leave": {
         "cancel": "Cancel",
         "confirm": "Leave the session",
-        "content": "Are you sure you want to leave the session?",
+        "content": "Are you sure you want to leave the session ?",
         "title": "LEAVE THE SESSION"
       }
     }
@@ -149,6 +188,12 @@
         "comment": "Every session is private and requires an identification code. Ask it to the host of the session you wish to join !",
         "title": "Enter a Session ID"
       }
+    },
+    "contributor": {
+      "alpha_tester": "Alpha-Tester",
+      "designer": "Designer",
+      "developer": "Developer",
+      "translator": "Translator"
     },
     "countdown": "The research begins in...",
     "id": "Session ID",

@@ -5,8 +5,8 @@
       "title": "Mauvaise requête"
     },
     "emptySession": {
-      "content": "Le champ id est vide merci de renseigner une valeur",
-      "title": "ID de la session vide"
+      "content": "Veuillez entrer un code de session",
+      "title": "Code de session vide"
     },
     "error": {
       "content": "Une erreur est survenue",
@@ -64,8 +64,8 @@
       }
     },
     "websocketAuthFailed": {
-      "content": "L'authentification du websocket à echoué",
-      "title": "Echec de l'autentification"
+      "content": "L'authentification au WebSocket a échoué",
+      "title": "Échec de l'authentification"
     }
   },
   "appName": "Better Fleet",
@@ -79,7 +79,7 @@
       "label": "Langue"
     },
     "macro": {
-      "check": "Activer/Déseactiver la macro de session"
+      "check": "Activer/Désactiver le lancement automatique"
     },
     "name": {
       "label": "Pseudonyme",
@@ -102,16 +102,16 @@
     "sound": {
       "check": "Activer/Désactiver le décompte sonore",
       "label": "Décompte sonore",
-      "test": "tester"
+      "test": "Tester"
     },
     "subtitle": "Options de préférence",
     "title": "Paramètres"
   },
   "contextMenu": {
     "master": {
-      "demote": "Retirer master",
+      "demote": "Rétrograder",
       "kick": "Expulser",
-      "promote": "Assigner Master",
+      "promote": "Promouvoir en maître de session",
       "title": "Utilisateur"
     }
   },
@@ -123,8 +123,8 @@
     "developed": "Développé par",
     "socials": "Retrouvez-nous ici :",
     "sot": {
-      "thanks": "Nous aimerions remercier",
-      "use": "de nous permettre d'utiliser la police et les bannieres de leur jeu"
+      "thanks": "Nous tenons à rendre à",
+      "use": "ce qui appartient aux pirates car, vous pouvez le constater, nous utilisons la police et les bannières du jeu !"
     },
     "title": "Informations"
   },
@@ -154,8 +154,8 @@
   },
   "login": {
     "continue": "Continuer",
-    "description": "Bienvenue sur Better Fleet ! Nous sommes ravis de vous compter parmi nous. Pour que vous puissiez utiliser pleinement l'application, il est nécessaire de vous connecter à votre compte ou bien en créer un !",
-    "disconnect": "Ce n’est pas votre compte ? ",
+    "description": "Bienvenue sur Better Fleet ! Nous sommes ravis de vous compter parmi nous. Afin d'utiliser l'application, merci de vous connecter à votre compte ou d'en créer un !",
+    "disconnect": "Ce n’est pas votre compte ?",
     "loginButton": "Se connecter",
     "succeed": "Connexion réussie !",
     "userWelcome": "Bienvenue",
