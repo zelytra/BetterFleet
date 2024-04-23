@@ -4,6 +4,10 @@
       "content": "The query is corrupted or incorrect",
       "title": "Bad query"
     },
+    "emptySession": {
+      "content": "The field id is empty please enter a value",
+      "title": "Empty session ID"
+    },
     "error": {
       "content": "An error has occurred",
       "title": "Error"
@@ -58,6 +62,10 @@
         "content": "Your username cannot be empty or go over 16 characters",
         "title": "Invalid username format"
       }
+    },
+    "websocketAuthFailed": {
+      "content": "Websocket authentication failed",
+      "title": "Authentication failed"
     }
   },
   "appName": "Better Fleet",
@@ -69,6 +77,9 @@
     "disconnect": "Sign out",
     "lang": {
       "label": "Language"
+    },
+    "macro": {
+      "check": "Toggle session macro"
     },
     "name": {
       "label": "Username",
@@ -96,6 +107,14 @@
     "subtitle": "Preference options",
     "title": "Settings"
   },
+  "contextMenu": {
+    "master": {
+      "demote": "Remove master",
+      "kick": "Kick",
+      "promote": "Assign Master",
+      "title": "User"
+    }
+  },
   "credits": {
     "and": "and",
     "description": "Better Fleet was developed in order to facilitate the formation of alliances on Sea of Thieves",
@@ -103,6 +122,10 @@
     "details": "Better Fleet is a non-official third party application unrelated to the development team of Sea Of Thieves. Its use is purely external and has no impact on gameplay experience !",
     "developed": "Developed by",
     "socials": "Find us here :",
+    "sot": {
+      "thanks": "We would like to thank",
+      "use": "allow us to use the font and banners of their game"
+    },
     "title": "Information"
   },
   "firstLogin": {
@@ -128,6 +151,15 @@
     "en": "English",
     "es": "Español",
     "fr": "Français"
+  },
+  "login": {
+    "continue": "Continue",
+    "description": "Welcome to Better Fleet! We are happy to have you here. In order for you to be able to fully use the app, it is necessary to log in to your account or create one!",
+    "disconnect": "Not your account? ",
+    "loginButton": "Sign in",
+    "succeed": "Login Successful!",
+    "userWelcome": "Welcome",
+    "welcome": "Welcome to"
   },
   "modal": {
     "confirm": {
@@ -156,6 +188,12 @@
         "comment": "Every session is private and requires an identification code. Ask it to the host of the session you wish to join !",
         "title": "Enter a Session ID"
       }
+    },
+    "contributor": {
+      "alpha_tester": "Alpha-Tester",
+      "designer": "Designer",
+      "developer": "Developer",
+      "translator": "Translator"
     },
     "countdown": "The research begins in...",
     "id": "Session ID",
