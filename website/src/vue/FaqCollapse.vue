@@ -2,7 +2,7 @@
   <div class="collapse-container" :id="id" @click="deploy = !deploy" :class="{deploy:deploy}">
     <div class="header">
       <h1>{{ title }}</h1>
-      <img src="@/assets/icons/link.svg" alt="link"/>
+      <img src="@/assets/icons/link.svg" alt="link" @click.prevent="copyLink()"/>
       <img src="@/assets/icons/arrow.svg" alt="arrow"/>
     </div>
     <div class="content">
@@ -14,13 +14,23 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 const {t} = useI18n()
 const deploy = ref<boolean>(false)
-defineProps({
+const props = defineProps({
   title: String,
   id: String
+})
+
+function copyLink() {
+  navigator.clipboard.writeText(window.location.host + "/support#" + props.id);
+}
+
+onMounted(() => {
+  if (window.location.href.includes("#" + props.id)) {
+    deploy.value = true;
+  }
 })
 </script>
 
