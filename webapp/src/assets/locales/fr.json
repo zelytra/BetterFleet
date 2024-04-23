@@ -4,6 +4,10 @@
       "content": "La requête est corrompue ou incorrecte",
       "title": "Mauvaise requête"
     },
+    "emptySession": {
+      "content": "Le champ id est vide merci de renseigner une valeur",
+      "title": "ID de la session vide"
+    },
     "error": {
       "content": "Une erreur est survenue",
       "title": "Erreur"
@@ -58,6 +62,10 @@
         "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
         "title": "Format de pseudo invalide"
       }
+    },
+    "websocketAuthFailed": {
+      "content": "L'authentification du websocket à echoué",
+      "title": "Echec de l'autentification"
     }
   },
   "appName": "Better Fleet",
@@ -69,6 +77,9 @@
     "disconnect": "Se déconnecter",
     "lang": {
       "label": "Langue"
+    },
+    "macro": {
+      "check": "Activer/Déseactiver la macro de session"
     },
     "name": {
       "label": "Pseudonyme",
@@ -96,6 +107,14 @@
     "subtitle": "Options de préférence",
     "title": "Paramètres"
   },
+  "contextMenu": {
+    "master": {
+      "demote": "Retirer master",
+      "kick": "Expulser",
+      "promote": "Assigner Master",
+      "title": "Utilisateur"
+    }
+  },
   "credits": {
     "and": "et",
     "description": "Better Fleet a été développé dans le but de faciliter la création d'alliances sur Sea of Thieves",
@@ -103,6 +122,10 @@
     "details": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
     "developed": "Développé par",
     "socials": "Retrouvez-nous ici :",
+    "sot": {
+      "thanks": "Nous aimerions remercier",
+      "use": "de nous permettre d'utiliser la police et les bannieres de leur jeu"
+    },
     "title": "Informations"
   },
   "firstLogin": {
@@ -128,6 +151,15 @@
     "en": "English",
     "es": "Español",
     "fr": "Français"
+  },
+  "login": {
+    "continue": "Continuer",
+    "description": "Bienvenue sur Better Fleet ! Nous sommes ravis de vous compter parmi nous. Pour que vous puissiez utiliser pleinement l'application, il est nécessaire de vous connecter à votre compte ou bien en créer un !",
+    "disconnect": "Ce n’est pas votre compte ? ",
+    "loginButton": "Se connecter",
+    "succeed": "Connexion réussie !",
+    "userWelcome": "Bienvenue",
+    "welcome": "Bienvenue sur"
   },
   "modal": {
     "confirm": {
@@ -156,6 +188,12 @@
         "comment": "Chaque session est privée et requiert un code. Demandez-le à l'hôte de la session que vous souhaitez rejoindre !",
         "title": "Entrez un code de session"
       }
+    },
+    "contributor": {
+      "alpha_tester": "Alpha-Testeur",
+      "designer": "Designer",
+      "developer": "Développeur",
+      "translator": "Traducteur"
     },
     "countdown": "La recherche commence dans...",
     "id": "Code de session",
