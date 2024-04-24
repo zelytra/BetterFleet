@@ -406,8 +406,9 @@ button {
 .credits {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  width: 100%;
   gap: 20px;
 
   p {
