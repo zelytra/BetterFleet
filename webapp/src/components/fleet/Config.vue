@@ -142,6 +142,7 @@ const activeSound = ref<boolean>(true)
 const activeMacro = ref<boolean>(true)
 const hostName = ref<string>(UserStore.player.serverHostName!)
 const username = ref<string>(UserStore.player.username);
+const inputLoading = ref<boolean>(false);
 
 const sound = new Audio(countdownSound);
 
@@ -206,6 +207,7 @@ function resetConfig() {
   volume.value = UserStore.player.soundLevel;
   activeSound.value = UserStore.player.soundEnable;
   activeMacro.value = UserStore.player.macroEnable;
+  inputLoading.value = true;
 }
 
 function onSave() {
@@ -231,6 +233,7 @@ function onSave() {
 }
 
 function isConfigDifferent(): boolean {
+  if (!inputLoading.value) return false;
   if (UserStore.player.username != username.value) return true;
   if (UserStore.player.serverHostName != hostName.value) return true;
   if (langOptions.value.selectedValue && UserStore.player.lang != langOptions.value.selectedValue!.id) return true;
@@ -277,7 +280,6 @@ function runSound() {
 <style scoped lang="scss">
 .user-info {
   height: 100%;
-  //width: 100%;
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
@@ -355,7 +357,7 @@ button {
     }
   }
 
-  .checkbox-wrapper{
+  .checkbox-wrapper {
     display: flex;
     align-items: center;
     gap: 12px;
