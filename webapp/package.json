@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri-dev": "npm run tauri dev",
-    "tauri-build": "npm run tauri build -- --debug"
+    "tauri-build": "npm run tauri build"
   },
   "dependencies": {
     "@js-joda/core": "^5.6.2",
