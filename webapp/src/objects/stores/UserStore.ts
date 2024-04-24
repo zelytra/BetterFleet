@@ -23,7 +23,7 @@ export const UserStore = reactive({
         macroEnable: readPlayer.macroEnable !== undefined ? readPlayer.macroEnable : true,
         soundLevel: readPlayer.soundLevel || 30,
         serverHostName: readPlayer.serverHostName || import.meta.env.VITE_SOCKET_HOST,
-        clientVersion: readPlayer.clientVersion || import.meta.env.VITE_VERSION,
+        clientVersion: import.meta.env.VITE_VERSION,
         fleet: new Fleet(),
         server: undefined
       };
