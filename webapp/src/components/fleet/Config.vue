@@ -70,7 +70,7 @@
         </div>
       </div>
     </ParameterPart>
-    <ParameterPart title="Crédit">
+    <ParameterPart :title="t('credits.title')">
       <div class="side-content credits">
         <p>{{ t("credits.description") }}</p>
         <p>
