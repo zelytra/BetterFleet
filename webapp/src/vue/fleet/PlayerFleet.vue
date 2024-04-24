@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, ref} from "vue";
+import {onUpdated, PropType, ref} from "vue";
 import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {useI18n} from "vue-i18n";
 import {Utils} from "@/objects/utils/Utils.ts";
@@ -65,6 +65,11 @@ const props = defineProps({
   }
 })
 const contributor = ref<ContributorType | null>(ContributorProvider.getPlayerContrib(props.player.username));
+
+onUpdated(() => {
+  contributor.value = ContributorProvider.getPlayerContrib(props.player.username);
+})
+
 </script>
 
 <style scoped lang="scss">
@@ -123,7 +128,7 @@ const contributor = ref<ContributorType | null>(ContributorProvider.getPlayerCon
           top: 50%;
           left: 90px;
           white-space: nowrap;
-          transform: translate(-50%,-50%);
+          transform: translate(-50%, -50%);
           z-index: 99;
           background: var(--primary);
           padding: 4px 8px;
@@ -141,7 +146,7 @@ const contributor = ref<ContributorType | null>(ContributorProvider.getPlayerCon
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%,-50%);
+        transform: translate(-50%, -50%);
 
         &.offline {
           color: var(--secondary-text);
