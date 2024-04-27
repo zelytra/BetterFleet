@@ -24,7 +24,7 @@ const props = defineProps({
 })
 
 function copyLink() {
-  navigator.clipboard.writeText(window.location.host + "/support#" + props.id);
+  navigator.clipboard.writeText("https://" + window.location.host + "/support#" + props.id);
 }
 
 onMounted(() => {
