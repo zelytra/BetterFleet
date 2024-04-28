@@ -45,9 +45,9 @@
     "now": "Descargar ahora"
   },
   "faq": {
-    "copy": "Lien copié",
-    "description": "Vous avez une questions à propos de BetterFleet ? Nous repondons ici aux questions les plus fréquentes",
-    "faq": "F.A.Q",
+    "copy": "Enlace copiado",
+    "description": "¿Tiene alguna pregunta sobre BetterFleet? Aquí respondemos a las preguntas más frecuentes",
+    "faq": "Preguntas frecuentes",
     "more": "Si encuentra algún problema o no puede resolverlo. Visita nuestro",
     "question": {
       "bug": {
@@ -91,8 +91,8 @@
         "content2": "Asegúrese de que su sistema operativo sea Windows 10 o Windows 11.",
         "content3": "Verifique que Microsoft Edge y Microsoft Edge WebView2 estén instalados correctamente en su máquina. Estos componentes son esenciales para el correcto funcionamiento de la aplicación.",
         "content4": "Si el problema persiste a pesar de estas comprobaciones, intente reinstalar la aplicación para corregir cualquier instalación potencialmente corrupta.",
-        "content5": "Si anti virus alors désactiver",
-        "content6": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée.",
+        "content5": "Si es antivirus, desactívelo.",
+        "content6": "Si después de estos pasos la aplicación aún no funciona, no dudes en contactarnos en nuestro servidor de Discord para obtener asistencia más personalizada.",
         "title": "La aplicación no se inicia o falla, ¿por qué? (Borde)"
       },
       "security": {
@@ -100,17 +100,17 @@
         "content2": "Autenticación reforzada: Hemos integrado una superposición de autenticación para fortalecer la seguridad de las cuentas de usuario.",
         "content3": "Código abierto: La aplicación es completamente de código abierto, proporcionando total transparencia sobre su uso y funcionamiento. Esto permite a la comunidad verificar y auditar nuestro código, generando confianza en nuestro producto.",
         "content4": "Mantenimiento proactivo: Nuestros desarrolladores se comprometen a mantener la aplicación en óptimas condiciones de seguridad. Esto incluye actualizar periódicamente las dependencias y monitorear continuamente las posibles vulnerabilidades de seguridad para evitar cualquier riesgo.",
-        "content5": "windows defender blabla",
-        "content6": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs.",
+        "content5": "defensor de windows blabla",
+        "content6": "Estos esfuerzos conjuntos contribuyen a una plataforma confiable y segura para todos nuestros usuarios.",
         "title": "¿La aplicación es segura?"
       },
       "update": {
         "content1": "Cuando haya una actualización de BetterFleet disponible, aparecerá automáticamente una ventana emergente al iniciar la aplicación. Sólo tendrás que pulsar en “Sí” para iniciar la actualización. La aplicación se actualizará automáticamente y se reiniciará una vez que se complete la actualización. Simplemente sigue estas instrucciones para tener siempre la última versión de BetterFleet.",
-        "content2": "si déja lancer alors fermer.",
+        "content2": "Si ya se está ejecutando, cierre.",
         "title": "¿Cómo actualizar BetterFleet?"
       }
     },
-    "title": "Les questions les plus fréquentes"
+    "title": "Las preguntas más frecuentes"
   },
   "footer": {
     "content": "Únase a nuestra aventura global: su pasión, nuestra tecnología. Juntos, transformemos el juego, impulsado por la comunidad y la innovación abierta.",
