@@ -45,66 +45,72 @@
     "now": "jetzt downloaden"
   },
   "faq": {
+    "copy": "Lien copié",
+    "description": "Vous avez une questions à propos de BetterFleet ? Nous repondons ici aux questions les plus fréquentes",
+    "faq": "F.A.Q",
     "more": "Wenn Sie auf ein Problem stoßen oder das Problem nicht lösen können. Besuchen Sie unser",
     "question": {
-      "download": {
-        "title": "Wie lade ich BetterFleet herunter?",
-        "content1": "Besuchen Sie unsere offizielle Website:",
-        "content2": "Klicken Sie auf die Schaltfläche „Herunterladen“.",
-        "content3": "Befolgen Sie die Anweisungen auf dem Bildschirm, um die Installation abzuschließen.",
-        "content4": "Und los geht's! Nach diesen Schritten wird BetterFleet auf Ihrem Gerät installiert."
-      },
-      "update": {
-        "title": "Wie aktualisiere ich BetterFleet?",
-        "content1": "Wenn ein BetterFleet-Update verfügbar ist, wird beim Starten der Anwendung automatisch ein Popup-Fenster angezeigt. Sie müssen lediglich auf „Ja“ klicken, um das Update zu starten. Die App wird automatisch aktualisiert und neu gestartet, sobald die Aktualisierung abgeschlossen ist. Befolgen Sie einfach diese Anweisungen, um immer über die neueste Version von BetterFleet zu verfügen."
-      },
-      "eac": {
-        "title": "Gibt es Risiken bei EAC (Easy Anti-Cheat)?",
-        "content1": "Unsere Anwendung ist darauf ausgelegt, einen Mausklick zu simulieren und so die Aktion eines Benutzers nachzubilden, der physisch eine Maus verwenden würde. Diese Methode ist für Systeme wie Easy Anti-Cheat (EAC) nicht erkennbar, da unsere Technik streng genommen kein Makro darstellt. EAC konzentriert sich in erster Linie auf die Erkennung von RAM-Manipulationen (Random Access Memory) und nicht auf den Einsatz von Klicksimulatoren.",
-        "content2": "Darüber hinaus wird der Klick nie im Spiel selbst, sondern nur in den Menüs ausgeführt, was den Nutzungsbedingungen (TOS) des Spiels und der Xbox entspricht. Die AGB sind weit genug gefasst, um aus rechtlicher Sicht möglichst viele Situationen abzudecken.",
-        "content3": "Es ist wichtig zu verstehen, dass die Verwendung unseres Simulators ähnliche Risiken birgt wie jede andere Anwendung der gleichen Art, wie z. B. FleetCreator, insbesondere im Hinblick auf die IP-Erkennung, die nach wie vor ein sensibler Punkt ist. Die Nutzung unserer App ist genauso sicher wie die Nutzung ähnlicher Apps, sofern Sie die genannten Richtlinien und Nutzungsbedingungen befolgen."
-      },
-      "edge": {
-        "title": "Die Anwendung startet nicht bzw. stürzt nicht ab. Warum? (Rand)",
-        "content1": "Wenn Sie Probleme beim Starten der Anwendung haben oder diese nach der ordnungsgemäßen Installation abstürzt, befolgen Sie bitte diese Schritte zur Fehlerbehebung:",
-        "content2": "Stellen Sie sicher, dass Ihr Betriebssystem Windows 10 oder Windows 11 ist.",
-        "content3": "Stellen Sie sicher, dass Microsoft Edge und Microsoft Edge WebView2 korrekt auf Ihrem Computer installiert sind. Diese Komponenten sind für das ordnungsgemäße Funktionieren der Anwendung unerlässlich.",
-        "content4": "Wenn das Problem trotz dieser Überprüfungen weiterhin besteht, versuchen Sie, die Anwendung neu zu installieren, um eine eventuell beschädigte Installation zu korrigieren.",
-        "content5": "Wenn die Anwendung nach diesen Schritten immer noch nicht funktioniert, zögern Sie nicht, uns auf unserem Discord-Server zu kontaktieren, um weitere persönliche Unterstützung zu erhalten."
-      },
-      "security": {
-        "title": "Ist die Anwendung sicher?",
-        "content1": "Ja, bei der Entwicklung unserer App steht die Benutzersicherheit an erster Stelle. Hier sind die Maßnahmen, die wir ergriffen haben, um eine sichere Nutzung zu gewährleisten:",
-        "content2": "Verstärkte Authentifizierung: Wir haben ein Authentifizierungs-Overlay integriert, um die Sicherheit von Benutzerkonten zu erhöhen.",
-        "content3": "Open Source: Die Anwendung ist vollständig Open Source und bietet vollständige Transparenz über ihre Verwendung und Funktionsweise. Dadurch kann die Community unseren Code verifizieren und prüfen und so Vertrauen in unser Produkt aufbauen.",
-        "content4": "Proaktive Wartung: Unsere Entwickler sind bestrebt, die Anwendung in einem optimalen Sicherheitszustand zu halten. Dazu gehört die regelmäßige Aktualisierung von Abhängigkeiten und die kontinuierliche Überwachung potenzieller Sicherheitslücken, um etwaigen Risiken vorzubeugen.",
-        "content5": "Diese gemeinsamen Bemühungen tragen zu einer zuverlässigen und sicheren Plattform für alle unsere Benutzer bei."
-      },
       "bug": {
-        "title": "Ich stoße auf Probleme/Bugs, wie melde ich diese?",
         "content1": "Wenn bei unserer App Probleme oder Fehler auftreten, empfehlen wir Ihnen, uns diese zu melden, damit wir daran arbeiten können, Ihr Erlebnis zu verbessern. So können Sie uns kontaktieren:",
         "content2": "Discord: Treten Sie unserem Discord-Server bei und teilen Sie Ihr Problem im speziellen Support-Kanal. Unser Team ist immer bereit, Ihnen zu helfen und Ihre Fragen in Echtzeit zu beantworten.",
         "content3": "GitHub: Wenn Sie mit GitHub vertraut sind, können Sie ein Issue auch in unserem GitHub-Repository öffnen. Dadurch können wir Probleme strukturiert verfolgen und eine transparente und effiziente Nachverfolgung gewährleisten.",
-        "content4": "Wir freuen uns über Ihr Feedback und sind bestrebt, gemeldete Probleme so schnell wie möglich zu lösen."
+        "content4": "Wir freuen uns über Ihr Feedback und sind bestrebt, gemeldete Probleme so schnell wie möglich zu lösen.",
+        "title": "Ich stoße auf Probleme/Bugs, wie melde ich diese?"
+      },
+      "console": {
+        "content1": "Absolut ! Wir haben spezielle Funktionen entwickelt, um das Erlebnis für Spieler auf Xbox- und PlayStation-Konsolen zu verbessern. Folgendes haben wir umgesetzt:",
+        "content2": "Sound-Countdown: Wir haben einen Sound-Countdown beim Starten der Timer integriert. Mit dieser Funktion können Spieler genau wissen, wann sie klicken müssen, ohne dass der Anführer der Allianz Sprachanweisungen geben muss. Dadurch werden Spielesitzungen flüssiger und sind weniger auf Sprachkommunikation angewiesen.",
+        "content3": "Visuelle Anzeige des Plattformtyps: Wir haben ein Symbol hinzugefügt, das Spieler darüber informiert, ob ihre Teamkollegen eine Konsole verwenden. Diese Funktion fördert eine bessere Koordination und ein besseres Verständnis zwischen Spielern auf verschiedenen Plattformen.",
+        "content4": "Diese Verbesserungen sollen das Spielerlebnis für Konsolenspieler intuitiver und zugänglicher machen und eine nahtlose Integration in gemischte Gaming-Communitys gewährleisten.",
+        "title": "Besteht Interesse für Konsolenspieler?"
       },
       "data": {
-        "title": "Was machen wir mit Benutzerdaten?",
         "content1": "Der Datenschutz und die Sicherheit der Daten unserer Nutzer sind für uns von größter Bedeutung. Hier ist unsere Richtlinie zur Benutzerdatenverwaltung:",
         "content2": "Datenverwendung: Wir verwenden den Benutzernamen und die E-Mail-Adresse ausschließlich für die Zwecke der Bewerbung. Weitere personenbezogene Daten werden nicht erhoben.",
         "content3": "Sicherheit und Verschlüsselung: Die erfassten Daten werden verschlüsselt und sicher gespeichert, um unbefugten Zugriff zu verhindern.",
         "content4": "Cookies und Weiterverkauf: Wir verwenden keine Cookies, um Benutzer zu verfolgen, und wir verkaufen oder geben Ihre Daten nicht an Dritte weiter.",
         "content5": "Anonyme und statistische Daten: Zur kontinuierlichen Verbesserung unserer Anwendung nutzen wir anonymisierte Daten zu statistischen Zwecken. Diese Daten ermöglichen keinerlei Rückschlüsse auf die Person der Nutzer.",
-        "content6": "Wir verpflichten uns, Transparenz zu wahren und die Privatsphäre unserer Nutzer unter allen Umständen zu respektieren."
+        "content6": "Wir verpflichten uns, Transparenz zu wahren und die Privatsphäre unserer Nutzer unter allen Umständen zu respektieren.",
+        "title": "Was machen wir mit Benutzerdaten?"
       },
-      "console": {
-        "title": "Besteht Interesse für Konsolenspieler?",
-        "content1": "Absolut ! Wir haben spezielle Funktionen entwickelt, um das Erlebnis für Spieler auf Xbox- und PlayStation-Konsolen zu verbessern. Folgendes haben wir umgesetzt:",
-        "content2": "Sound-Countdown: Wir haben einen Sound-Countdown beim Starten der Timer integriert. Mit dieser Funktion können Spieler genau wissen, wann sie klicken müssen, ohne dass der Anführer der Allianz Sprachanweisungen geben muss. Dadurch werden Spielesitzungen flüssiger und sind weniger auf Sprachkommunikation angewiesen.",
-        "content3": "Visuelle Anzeige des Plattformtyps: Wir haben ein Symbol hinzugefügt, das Spieler darüber informiert, ob ihre Teamkollegen eine Konsole verwenden. Diese Funktion fördert eine bessere Koordination und ein besseres Verständnis zwischen Spielern auf verschiedenen Plattformen.",
-        "content4": "Diese Verbesserungen sollen das Spielerlebnis für Konsolenspieler intuitiver und zugänglicher machen und eine nahtlose Integration in gemischte Gaming-Communitys gewährleisten."
+      "download": {
+        "content1": "Besuchen Sie unsere offizielle Website:",
+        "content2": "Klicken Sie auf die Schaltfläche „Herunterladen“.",
+        "content3": "Befolgen Sie die Anweisungen auf dem Bildschirm, um die Installation abzuschließen.",
+        "content4": "Und los geht's! Nach diesen Schritten wird BetterFleet auf Ihrem Gerät installiert.",
+        "title": "Wie lade ich BetterFleet herunter?"
+      },
+      "eac": {
+        "content1": "Unsere Anwendung ist darauf ausgelegt, einen Mausklick zu simulieren und so die Aktion eines Benutzers nachzubilden, der physisch eine Maus verwenden würde. Diese Methode ist für Systeme wie Easy Anti-Cheat (EAC) nicht erkennbar, da unsere Technik streng genommen kein Makro darstellt. EAC konzentriert sich in erster Linie auf die Erkennung von RAM-Manipulationen (Random Access Memory) und nicht auf den Einsatz von Klicksimulatoren.",
+        "content2": "Darüber hinaus wird der Klick nie im Spiel selbst, sondern nur in den Menüs ausgeführt, was den Nutzungsbedingungen (TOS) des Spiels und der Xbox entspricht. Die AGB sind weit genug gefasst, um aus rechtlicher Sicht möglichst viele Situationen abzudecken.",
+        "content3": "Es ist wichtig zu verstehen, dass die Verwendung unseres Simulators ähnliche Risiken birgt wie jede andere Anwendung der gleichen Art, wie z. B. FleetCreator, insbesondere im Hinblick auf die IP-Erkennung, die nach wie vor ein sensibler Punkt ist. Die Nutzung unserer App ist genauso sicher wie die Nutzung ähnlicher Apps, sofern Sie die genannten Richtlinien und Nutzungsbedingungen befolgen.",
+        "title": "Gibt es Risiken bei EAC (Easy Anti-Cheat)?"
+      },
+      "edge": {
+        "content1": "Wenn Sie Probleme beim Starten der Anwendung haben oder diese nach der ordnungsgemäßen Installation abstürzt, befolgen Sie bitte diese Schritte zur Fehlerbehebung:",
+        "content2": "Stellen Sie sicher, dass Ihr Betriebssystem Windows 10 oder Windows 11 ist.",
+        "content3": "Stellen Sie sicher, dass Microsoft Edge und Microsoft Edge WebView2 korrekt auf Ihrem Computer installiert sind. Diese Komponenten sind für das ordnungsgemäße Funktionieren der Anwendung unerlässlich.",
+        "content4": "Wenn das Problem trotz dieser Überprüfungen weiterhin besteht, versuchen Sie, die Anwendung neu zu installieren, um eine eventuell beschädigte Installation zu korrigieren.",
+        "content5": "Si anti virus alors désactiver",
+        "content6": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée.",
+        "title": "Die Anwendung startet nicht bzw. stürzt nicht ab. Warum? (Rand)"
+      },
+      "security": {
+        "content1": "Ja, bei der Entwicklung unserer App steht die Benutzersicherheit an erster Stelle. Hier sind die Maßnahmen, die wir ergriffen haben, um eine sichere Nutzung zu gewährleisten:",
+        "content2": "Verstärkte Authentifizierung: Wir haben ein Authentifizierungs-Overlay integriert, um die Sicherheit von Benutzerkonten zu erhöhen.",
+        "content3": "Open Source: Die Anwendung ist vollständig Open Source und bietet vollständige Transparenz über ihre Verwendung und Funktionsweise. Dadurch kann die Community unseren Code verifizieren und prüfen und so Vertrauen in unser Produkt aufbauen.",
+        "content4": "Proaktive Wartung: Unsere Entwickler sind bestrebt, die Anwendung in einem optimalen Sicherheitszustand zu halten. Dazu gehört die regelmäßige Aktualisierung von Abhängigkeiten und die kontinuierliche Überwachung potenzieller Sicherheitslücken, um etwaigen Risiken vorzubeugen.",
+        "content5": "windows defender blabla",
+        "content6": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs.",
+        "title": "Ist die Anwendung sicher?"
+      },
+      "update": {
+        "content1": "Wenn ein BetterFleet-Update verfügbar ist, wird beim Starten der Anwendung automatisch ein Popup-Fenster angezeigt. Sie müssen lediglich auf „Ja“ klicken, um das Update zu starten. Die App wird automatisch aktualisiert und neu gestartet, sobald die Aktualisierung abgeschlossen ist. Befolgen Sie einfach diese Anweisungen, um immer über die neueste Version von BetterFleet zu verfügen.",
+        "content2": "si déja lancer alors fermer.",
+        "title": "Wie aktualisiere ich BetterFleet?"
       }
     },
-    "title": "FAQs"
+    "title": "Les questions les plus fréquentes"
   },
   "footer": {
     "content": "Werden Sie Teil unseres globalen Abenteuers – Ihrer Leidenschaft, unserer Technologie. Lassen Sie uns gemeinsam das Spiel verändern. Unterstützt durch Community und offene Innovation.",
