@@ -11,14 +11,14 @@ import java.util.stream.Collectors;
 public class Fleet {
 
     private String sessionId;
-    private String sessionName;
+    private int sessionName;
     private List<Player> players;
     private final Map<String, SotServer> servers;
     private FleetStats stats;
 
     public Fleet() {
         this.sessionId = UUID.randomUUID().toString().substring(0, 7).toUpperCase();
-        this.sessionName = "A session name"; //TODO
+        this.sessionName = (int) (Math.random() * 100);
         this.players = new ArrayList<>();
         this.servers = new HashMap<>();
         this.stats = new FleetStats(0, 0);
@@ -41,11 +41,11 @@ public class Fleet {
         this.sessionId = sessionId;
     }
 
-    public String getSessionName() {
+    public int getSessionName() {
         return sessionName;
     }
 
-    public void setSessionName(String sessionName) {
+    public void setSessionName(int sessionName) {
         this.sessionName = sessionName;
     }
 
