@@ -15,7 +15,7 @@ hr{
   border: none;
   z-index: 999;
   opacity: 1;
-  margin-top: -17px;
+  margin-top: -19px;
   margin-bottom: -20px;
   position: relative;
 }

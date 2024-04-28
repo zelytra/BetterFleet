@@ -2,11 +2,16 @@
   <div class="collapse-container" :id="id" @click="deploy = !deploy" :class="{deploy:deploy}">
     <div class="header">
       <h1>{{ title }}</h1>
-      <img src="@/assets/icons/link.svg" alt="link" @click.prevent="copyLink()"/>
+      <div class="copy-wrapper">
+        <img src="@/assets/icons/link.svg" alt="link" @click.stop="copyLink"/>
+        <p class="copy" v-if="displayCopy">{{ t('faq.copy') }}</p>
+      </div>
       <img src="@/assets/icons/arrow.svg" alt="arrow"/>
     </div>
     <div class="content">
-      <slot/>
+      <div class="custom-content">
+        <slot/>
+      </div>
       <p class="see-more">{{ t('faq.more') }} <a href="http://discord.betterfleet.fr" target="_blank">Discord</a></p>
     </div>
   </div>
@@ -18,6 +23,7 @@ import {onMounted, ref} from "vue";
 
 const {t} = useI18n()
 const deploy = ref<boolean>(false)
+const displayCopy = ref<boolean>(false);
 const props = defineProps({
   title: String,
   id: String
@@ -25,6 +31,10 @@ const props = defineProps({
 
 function copyLink() {
   navigator.clipboard.writeText("https://" + window.location.host + "/support#" + props.id);
+  displayCopy.value = true;
+  setTimeout(() => {
+    displayCopy.value = false;
+  }, 1000)
 }
 
 onMounted(() => {
@@ -46,7 +56,7 @@ onMounted(() => {
 
   &.deploy {
     .header {
-      background: var(--primary);
+      background-color: #32D49980;
 
       img[alt="arrow"] {
         transform: rotate(0);
@@ -73,7 +83,7 @@ onMounted(() => {
     }
 
     &:hover {
-      background: var(--primary);
+      background-color: #32D49980;
     }
 
     img[alt="arrow"] {
@@ -86,11 +96,27 @@ onMounted(() => {
     img[alt="link"] {
       width: 22px;
     }
+
+    .copy-wrapper {
+      display: flex;
+      position: relative;
+
+      p.copy {
+        background: var(--primary);
+        padding: 4px;
+        border-radius: 5px;
+        position: absolute;
+        top: 50%;
+        left: 25px;
+        transform: translate(0,-50%);
+        white-space: nowrap;
+      }
+    }
   }
 
   .content {
     width: 100%;
-    padding: 24px 24px 54px 24px;
+    padding: 12px 12px 54px 12px;
     box-sizing: border-box;
     background: var(--secondary-background);
     position: relative;
@@ -98,6 +124,16 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 12px;
+
+    .custom-content {
+      background: #202228;
+      padding: 12px;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
 
     p.see-more {
       position: absolute;
