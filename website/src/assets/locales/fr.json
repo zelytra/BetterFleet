@@ -65,15 +65,15 @@
         "content3": "Il est essentiel de comprendre que l'utilisation de notre simulateur comporte des risques similaires à ceux de toute autre application du même type, comme FleetCreator, notamment en ce qui concerne la détection d'IP, qui reste un point sensible. Utiliser notre application est aussi sûr que d'utiliser des applications similaires, sous réserve de respecter les directives et TOS mentionnés."
       },
       "edge": {
-        "title": "Pourquoi mon application crash et/ou ne se lance pas ? (Edge)",
+        "title": "Pourquoi mon application crash et/ou ne se lance pas ?",
         "content1": "Si vous rencontrez des problèmes pour lancer l'application ou si celle-ci crash après une installation correcte, veuillez suivre ces étapes de dépannage :",
         "content2": "Assurez-vous que votre système d'exploitation est Windows 10 ou Windows 11.",
         "content3": "Vérifiez que Microsoft Edge et Microsoft Edge WebView2 sont correctement installés sur votre machine. Ces composants sont essentiels pour le bon fonctionnement de l'application.",
-        "content4": "Si le problème persiste malgré ces vérifications, tentez de réinstaller l'application pour corriger toute installation potentiellement corrompue.",
+        "content4": "Si le problème persiste malgré ces vérifications, tentez de réinstaller l'application afin de corriger toute corruption potentielle.",
         "content5": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée."
       },
       "security": {
-        "title": "L'application est-elle sécurisé ?",
+        "title": "L'application est-elle sécurisée ?",
         "content1": "Oui, notre application est conçue avec la sécurité des utilisateurs comme priorité absolue. Voici les mesures que nous avons mises en place pour garantir une utilisation sûre :",
         "content2": "Authentification renforcée : Nous avons intégré une surcouche d'authentification pour renforcer la sécurité des comptes utilisateurs.",
         "content3": "Open source : L'application est entièrement open source, offrant une transparence totale sur son utilisation et son fonctionnement. Cela permet à la communauté de vérifier et d'auditer notre code, renforçant ainsi la confiance dans notre produit.",
@@ -81,15 +81,15 @@
         "content5": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs."
       },
       "bug": {
-        "title": "Je recontre des problème/bug, comment les rapporter ?",
-        "content1": "Si vous rencontrez des problèmes ou des bugs avec notre application, nous vous encourageons à nous le signaler afin que nous puissions travailler à améliorer votre expérience. Voici comment vous pouvez nous contacter :",
+        "title": "Comment rapporter un problème ou un bug ?",
+        "content1": "Si vous rencontrez des problèmes ou des bugs, nous vous encourageons à nous le signaler afin que nous puissions travailler à améliorer votre expérience. Voici comment vous pouvez nous contacter :",
         "content2": "Discord : Rejoignez notre serveur Discord et partagez votre problème dans le canal dédié au support. Notre équipe est toujours prête à vous aider et à répondre à vos questions en temps réel.",
         "content3": "GitHub : Si vous êtes familier avec GitHub, vous pouvez également ouvrir une \"issue\" sur notre dépôt GitHub. Cela nous permet de suivre les problèmes de manière structurée et d'assurer un suivi transparent et efficace.",
-        "content4": "Nous apprécions vos retours et nous engageons à résoudre les problèmes signalés dans les meilleurs délais."
+        "content4": "Nous apprécions vos retours et nous nous engageons à résoudre les problèmes signalés dans les meilleurs délais."
       },
       "data": {
-        "title": "Que fait-on des données utilisateur ?",
-        "content1": "La confidentialité et la sécurité des données de nos utilisateurs sont de la plus haute importance pour nous. Voici notre politique en matière de gestion des données utilisateur :",
+        "title": "Que fait-on des données des utilisateurs ?",
+        "content1": "La confidentialité et la sécurité des données de nos utilisateurs sont, pour nous, de la plus haute importance. Voici notre politique concernant la gestion des données des utilisateurs :",
         "content2": "Utilisation des données : Nous n'utilisons que le nom d'utilisateur et l'adresse email pour les besoins de l'application. Aucune autre donnée personnelle n'est collectée.",
         "content3": "Sécurité et chiffrement : Les données collectées sont chiffrées et stockées de manière sécurisée pour prévenir tout accès non autorisé.",
         "content4": "Cookies et revente : Nous n'utilisons aucun cookie pour suivre les utilisateurs, et nous ne vendons ni ne partageons vos informations avec des tiers.",
