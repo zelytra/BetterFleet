@@ -45,8 +45,8 @@
     "now": "Download now"
   },
   "faq": {
-    "copy": "Lien copié",
-    "description": "Vous avez une questions à propos de BetterFleet ? Nous repondons ici aux questions les plus fréquentes",
+    "copy": "Link copied",
+    "description": "Got a question about BetterFleet? Here we answer the most relevant questions",
     "faq": "F.A.Q",
     "more": "If you encounter a problem or cannot resolve the problem. Please visit our",
     "question": {
@@ -91,8 +91,8 @@
         "content2": "Make sure your operating system is Windows 10 or Windows 11.",
         "content3": "Make sure Microsoft Edge and Microsoft Edge WebView2 are installed correctly on your machine. These components are essential for the proper functioning of the application.",
         "content4": "If the problem persists, try reinstalling the app to fix any potentially corrupt installations.",
-        "content5": "Si anti virus alors désactiver",
-        "content6": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée.",
+        "content5": "If anti-virus then disable",
+        "content6": "If after these steps, the app still doesn't work, please contact us on our Discord server for more personalized assistance.",
         "title": "App does not start/crash, why? (Edge)"
       },
       "security": {
@@ -101,16 +101,16 @@
         "content3": "Open source: The application is completely open source, offering total transparency about its use and operation. This allows the community to verify and audit our code, strengthening confidence in our product.",
         "content4": "Proactive Maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes updated dependencies and ongoing monitoring of potential security vulnerabilities to prevent risk.",
         "content5": "windows defender blabla",
-        "content6": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs.",
+        "content6": "These joint efforts contribute to a reliable and secure platform for all our users.",
         "title": "Is the app secured?"
       },
       "update": {
         "content1": "When a BetterFleet update is available, a pop-up window will appear automatically when the application starts. You will only have to click \"Yes\" to start the update. The app will automatically update and reboot after the update is complete. Simply follow these instructions to always get the latest version of BetterFleet.",
-        "content2": "si déja lancer alors fermer.",
+        "content2": "if already run then close.",
         "title": "How to update BetterFleet?"
       }
     },
-    "title": "Les questions les plus fréquentes"
+    "title": "Frequently Asked Questions"
   },
   "footer": {
     "content": "Join our global adventure - your passion, our technology. Together, let's transform the game. Powered by community and open innovation.",
