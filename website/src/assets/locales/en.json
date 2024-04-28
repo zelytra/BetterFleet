@@ -45,66 +45,72 @@
     "now": "Download now"
   },
   "faq": {
+    "copy": "Lien copié",
+    "description": "Vous avez une questions à propos de BetterFleet ? Nous repondons ici aux questions les plus fréquentes",
+    "faq": "F.A.Q",
     "more": "If you encounter a problem or cannot resolve the problem. Please visit our",
     "question": {
-      "download": {
-        "title": "How did BetterFleet test?",
-        "content1": "Go to our official website:",
-        "content2": "Click the \"Download\" button.",
-        "content3": "Follow the instructions on the screen to complete the installation.",
-        "content4": "That's it! BetterFleet will be installed on your device."
-      },
-      "update": {
-        "title": "How to update BetterFleet?",
-        "content1": "When a BetterFleet update is available, a pop-up window will appear automatically when the application starts. You will only have to click \"Yes\" to start the update. The app will automatically update and reboot after the update is complete. Simply follow these instructions to always get the latest version of BetterFleet."
-      },
-      "eac": {
-        "title": "Is there any risk with the EAC(Easy Anti-Cheat)?",
-        "content1": "Our application is consistent to simulate a mouse click, reproducing the action of a user who would physically use a mouse. This method is undetectable by systems like Easy Anti-Cheat (EAC), because our technique does not constitute a macro in itself. EAC focuses primarily on detecting RAM manipulation (RAM) and not on the use of click simulators.",
-        "content2": "Also, click is never executed in the game itself but only in the menus, what remains compliant with the Game and Xbox Terms of Service (TOS). The TOS are written in a broad enough way to cover as many situations as possible from a legal point of view.",
-        "content3": "It is essential to understand that using our simulator carries similar risks to any other similar type application, as FleetCreator, especially with respect to IP detection, which remains a sensitive point. Using our application is as much as using similar applications, under the conditions of compliance with the guidelines and TOS specified."
-      },
-      "edge": {
-        "title": "App does not start/crash, why? (Edge)",
-        "content1": "If you have problems running the application or crashing after a proper installation, please follow these troubleshooting steps:",
-        "content2": "Make sure your operating system is Windows 10 or Windows 11.",
-        "content3": "Make sure Microsoft Edge and Microsoft Edge WebView2 are installed correctly on your machine. These components are essential for the proper functioning of the application.",
-        "content4": "If the problem persists, try reinstalling the app to fix any potentially corrupt installations.",
-        "content5": "If after these steps, the app still doesn't work, please contact us on our Discord server for more personalized assistance."
-      },
-      "security": {
-        "title": "Is the app secured?",
-        "content1": "Yes, our application is consistent with user security as the absolute priority. Here are the measures we have put in place to ensure greater use:",
-        "content2": "Strengthened authentication: We have integrated an authentication overlay to strengthen the security of user accounts.",
-        "content3": "Open source: The application is completely open source, offering total transparency about its use and operation. This allows the community to verify and audit our code, strengthening confidence in our product.",
-        "content4": "Proactive Maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes updated dependencies and ongoing monitoring of potential security vulnerabilities to prevent risk.",
-        "content5": "These joint efforts contribute to a reliable and secure platform for all our users."
-      },
       "bug": {
-        "title": "How do I report problems/bugs?",
         "content1": "If you encounter issues or bugs with our app, we encourage you to let us know so that we can work to improve your performance. Here's how you can contact us:",
         "content2": "Discord: Join our Discord server and share your issue in the support channel. Our team is always ready to help you and answer your questions in time.",
         "content3": "GitHub: If you are familiar with GitHub, you can also open an issue on our GitHub era. This allows us to track structural problems and ensure transparent and effective monitoring.",
-        "content4": "We understand your feedback and commit to solving issues in the best of the issues."
+        "content4": "We understand your feedback and commit to solving issues in the best of the issues.",
+        "title": "How do I report problems/bugs?"
+      },
+      "console": {
+        "content1": "Absolutely! We developed special features to improve the experience of Xbox and PlayStation players. Here's what we've put in place:",
+        "content2": "Sound count: We added a sound count when launching the timers. This function allows players to know exactly when to click, without needing the Alliance Leader to give voice instructions. This makes game sessions more fluid and less dependent on voice communication.",
+        "content3": "Platform type visual indication: We added an icon to let players know if their teammates are using a console. This feature promotes better coordination and understanding between players of different platforms.",
+        "content4": "These enhancements are concise to make the game experience more intuitive and accessible to console players, ensuring harmonious integration within mixed gaming communities.",
+        "title": "Is there an integer for console players?"
       },
       "data": {
-        "title": "What do I do with user data?",
         "content1": "Confidentiality and security of our users' data are of the utmost importance to us. Here is our User Data Management Policy:",
         "content2": "Use of data: We only use the username and email address for application purposes. No other personal data is collected.",
         "content3": "Security and Encryption: Data collected is encrypted and stored securely to prevent unauthorized access.",
         "content4": "Cookies and Resell: We do not use cookies to track users, and we do not sell or share your information with third parties.",
         "content5": "Anonymous data and statistics: For the continuous improvement of our application, we use anonymous data for statistical purposes. Under no circumstances do these data allow users to be personally identified.",
-        "content6": "We are committed to maintaining transparency and respecting the privacy of our users in all circumstances."
+        "content6": "We are committed to maintaining transparency and respecting the privacy of our users in all circumstances.",
+        "title": "What do I do with user data?"
       },
-      "console": {
-        "title": "Is there an integer for console players?",
-        "content1": "Absolutely! We developed special features to improve the experience of Xbox and PlayStation players. Here's what we've put in place:",
-        "content2": "Sound count: We added a sound count when launching the timers. This function allows players to know exactly when to click, without needing the Alliance Leader to give voice instructions. This makes game sessions more fluid and less dependent on voice communication.",
-        "content3": "Platform type visual indication: We added an icon to let players know if their teammates are using a console. This feature promotes better coordination and understanding between players of different platforms.",
-        "content4": "These enhancements are concise to make the game experience more intuitive and accessible to console players, ensuring harmonious integration within mixed gaming communities."
+      "download": {
+        "content1": "Go to our official website:",
+        "content2": "Click the \"Download\" button.",
+        "content3": "Follow the instructions on the screen to complete the installation.",
+        "content4": "That's it! BetterFleet will be installed on your device.",
+        "title": "How did BetterFleet test?"
+      },
+      "eac": {
+        "content1": "Our application is consistent to simulate a mouse click, reproducing the action of a user who would physically use a mouse. This method is undetectable by systems like Easy Anti-Cheat (EAC), because our technique does not constitute a macro in itself. EAC focuses primarily on detecting RAM manipulation (RAM) and not on the use of click simulators.",
+        "content2": "Also, click is never executed in the game itself but only in the menus, what remains compliant with the Game and Xbox Terms of Service (TOS). The TOS are written in a broad enough way to cover as many situations as possible from a legal point of view.",
+        "content3": "It is essential to understand that using our simulator carries similar risks to any other similar type application, as FleetCreator, especially with respect to IP detection, which remains a sensitive point. Using our application is as much as using similar applications, under the conditions of compliance with the guidelines and TOS specified.",
+        "title": "Is there any risk with the EAC(Easy Anti-Cheat)?"
+      },
+      "edge": {
+        "content1": "If you have problems running the application or crashing after a proper installation, please follow these troubleshooting steps:",
+        "content2": "Make sure your operating system is Windows 10 or Windows 11.",
+        "content3": "Make sure Microsoft Edge and Microsoft Edge WebView2 are installed correctly on your machine. These components are essential for the proper functioning of the application.",
+        "content4": "If the problem persists, try reinstalling the app to fix any potentially corrupt installations.",
+        "content5": "Si anti virus alors désactiver",
+        "content6": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée.",
+        "title": "App does not start/crash, why? (Edge)"
+      },
+      "security": {
+        "content1": "Yes, our application is consistent with user security as the absolute priority. Here are the measures we have put in place to ensure greater use:",
+        "content2": "Strengthened authentication: We have integrated an authentication overlay to strengthen the security of user accounts.",
+        "content3": "Open source: The application is completely open source, offering total transparency about its use and operation. This allows the community to verify and audit our code, strengthening confidence in our product.",
+        "content4": "Proactive Maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes updated dependencies and ongoing monitoring of potential security vulnerabilities to prevent risk.",
+        "content5": "windows defender blabla",
+        "content6": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs.",
+        "title": "Is the app secured?"
+      },
+      "update": {
+        "content1": "When a BetterFleet update is available, a pop-up window will appear automatically when the application starts. You will only have to click \"Yes\" to start the update. The app will automatically update and reboot after the update is complete. Simply follow these instructions to always get the latest version of BetterFleet.",
+        "content2": "si déja lancer alors fermer.",
+        "title": "How to update BetterFleet?"
       }
     },
-    "title": "F.A.Q"
+    "title": "Les questions les plus fréquentes"
   },
   "footer": {
     "content": "Join our global adventure - your passion, our technology. Together, let's transform the game. Powered by community and open innovation.",
