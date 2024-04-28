@@ -17,6 +17,7 @@
       </FaqCollapse>
       <FaqCollapse id="update" :title="t('faq.question.update.title')">
         <p>{{ t('faq.question.update.content1') }}</p>
+        <p>{{ t('faq.question.update.content2') }}</p>
       </FaqCollapse>
       <FaqCollapse id="EAC" :title="t('faq.question.eac.title')">
         <p>{{ t('faq.question.eac.content1') }}</p>
@@ -29,6 +30,7 @@
           <li>{{ t('faq.question.edge.content2') }}</li>
           <li>{{ t('faq.question.edge.content3') }}</li>
           <li>{{ t('faq.question.edge.content4') }}</li>
+          <li>{{ t('faq.question.edge.content5') }}</li>
         </ul>
         <p>{{ t('faq.question.edge.content5') }}</p>
       </FaqCollapse>
@@ -74,9 +76,6 @@
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
 import FaqCollapse from "@/vue/FaqCollapse.vue";
-import {AppStore} from "@/objects/stores/appStore.ts";
-import {incrementDownload} from "@/objects/Stats.ts";
-import PirateButton from "@/vue/PirateButton.vue";
 import Separator from "@/vue/Separator.vue";
 
 const {t} = useI18n();
