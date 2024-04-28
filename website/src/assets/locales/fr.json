@@ -91,7 +91,8 @@
         "content2": "Assurez-vous que votre système d'exploitation est Windows 10 ou Windows 11.",
         "content3": "Vérifiez que Microsoft Edge et Microsoft Edge WebView2 sont correctement installés sur votre machine. Ces composants sont essentiels pour le bon fonctionnement de l'application.",
         "content4": "Si le problème persiste malgré ces vérifications, tentez de réinstaller l'application pour corriger toute installation potentiellement corrompue.",
-        "content5": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée.",
+        "content5": "Si anti virus alors désactiver",
+        "content6": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée.",
         "title": "L'application ne se lance pas/crash, pourquoi ? (Edge)"
       },
       "security": {
@@ -99,11 +100,13 @@
         "content2": "Authentification renforcée : Nous avons intégré une surcouche d'authentification pour renforcer la sécurité des comptes utilisateurs.",
         "content3": "Open source : L'application est entièrement open source, offrant une transparence totale sur son utilisation et son fonctionnement. Cela permet à la communauté de vérifier et d'auditer notre code, renforçant ainsi la confiance dans notre produit.",
         "content4": "Maintenance proactive : Nos développeurs s'engagent à maintenir l'application en condition de sécurité optimale. Cela comprend la mise à jour régulière des dépendances et le suivi continu des potentielles failles de sécurité pour prévenir tout risque.",
-        "content5": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs.",
+        "content5": "windows defender blabla",
+        "content6": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs.",
         "title": "L'application est-elle sécurisé ?"
       },
       "update": {
         "content1": "Lorsqu'une mise à jour de BetterFleet est disponible, une fenêtre pop-up apparaîtra automatiquement au lancement de l'application. Vous n'aurez qu'à cliquer sur \"Oui\" pour lancer la mise à jour. L'application se mettra à jour automatiquement et redémarrera une fois la mise à jour terminée. Suivez simplement ces instructions pour toujours bénéficier de la dernière version de BetterFleet.",
+        "content2": "si déja lancer alors fermer.",
         "title": "Comment mettre à jours BetterFleet ?"
       }
     },

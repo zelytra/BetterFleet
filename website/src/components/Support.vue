@@ -32,7 +32,7 @@
           <li>{{ t('faq.question.edge.content4') }}</li>
           <li>{{ t('faq.question.edge.content5') }}</li>
         </ul>
-        <p>{{ t('faq.question.edge.content5') }}</p>
+        <p>{{ t('faq.question.edge.content6') }}</p>
       </FaqCollapse>
       <FaqCollapse id="security" :title="t('faq.question.security.title')">
         <p>{{ t('faq.question.security.content1') }}</p>
