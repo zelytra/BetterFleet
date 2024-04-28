@@ -2,7 +2,10 @@
   <div class="collapse-container" :id="id" @click="deploy = !deploy" :class="{deploy:deploy}">
     <div class="header">
       <h1>{{ title }}</h1>
-      <img src="@/assets/icons/link.svg" alt="link" @click.prevent="copyLink()"/>
+      <div class="copy-wrapper">
+        <img src="@/assets/icons/link.svg" alt="link" @click.stop="copyLink"/>
+        <p class="copy" v-if="displayCopy">{{ t('faq.copy') }}</p>
+      </div>
       <img src="@/assets/icons/arrow.svg" alt="arrow"/>
     </div>
     <div class="content">
@@ -20,6 +23,7 @@ import {onMounted, ref} from "vue";
 
 const {t} = useI18n()
 const deploy = ref<boolean>(false)
+const displayCopy = ref<boolean>(false);
 const props = defineProps({
   title: String,
   id: String
@@ -27,6 +31,10 @@ const props = defineProps({
 
 function copyLink() {
   navigator.clipboard.writeText("https://" + window.location.host + "/support#" + props.id);
+  displayCopy.value = true;
+  setTimeout(() => {
+    displayCopy.value = false;
+  }, 1000)
 }
 
 onMounted(() => {
@@ -87,6 +95,22 @@ onMounted(() => {
 
     img[alt="link"] {
       width: 22px;
+    }
+
+    .copy-wrapper {
+      display: flex;
+      position: relative;
+
+      p.copy {
+        background: var(--primary);
+        padding: 4px;
+        border-radius: 5px;
+        position: absolute;
+        top: 50%;
+        left: 25px;
+        transform: translate(0,-50%);
+        white-space: nowrap;
+      }
     }
   }
 

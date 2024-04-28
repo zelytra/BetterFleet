@@ -89,7 +89,7 @@ section {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: center;
     justify-content: center;
     background: no-repeat;
     position: relative;
