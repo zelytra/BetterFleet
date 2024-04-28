@@ -64,6 +64,7 @@ players looking to improve their gaming experience.
 - **Development:** [Zelytra](https://zelytra.fr) & [dadodasyra](https://github.com/dadodasyra)
 - **Design/Graphics:** [ZeTro](https://zetro.fr)
 - **Translator/proofreader:** [Ichabodt](https://github.com/Ichabodt)
+- **Contributor icons:** [Zamao](https://www.behance.net/Zamaostudio)
 
 We thank everyone who contributes to making BetterFleet better every day. If you would like to contribute to the
 project, feel free to fork the repository and submit your pull requests or you can also help translate our project with [our crowdin](https://translate.betterfleet.fr).
