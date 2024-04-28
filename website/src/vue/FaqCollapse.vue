@@ -6,7 +6,9 @@
       <img src="@/assets/icons/arrow.svg" alt="arrow"/>
     </div>
     <div class="content">
-      <slot/>
+      <div class="custom-content">
+        <slot/>
+      </div>
       <p class="see-more">{{ t('faq.more') }} <a href="http://discord.betterfleet.fr" target="_blank">Discord</a></p>
     </div>
   </div>
@@ -46,7 +48,7 @@ onMounted(() => {
 
   &.deploy {
     .header {
-      background: var(--primary);
+      background-color: #32D49980;
 
       img[alt="arrow"] {
         transform: rotate(0);
@@ -73,7 +75,7 @@ onMounted(() => {
     }
 
     &:hover {
-      background: var(--primary);
+      background-color: #32D49980;
     }
 
     img[alt="arrow"] {
@@ -90,7 +92,7 @@ onMounted(() => {
 
   .content {
     width: 100%;
-    padding: 24px 24px 54px 24px;
+    padding: 12px 12px 54px 12px;
     box-sizing: border-box;
     background: var(--secondary-background);
     position: relative;
@@ -98,6 +100,16 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 12px;
+
+    .custom-content {
+      background: #202228;
+      padding: 12px;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
 
     p.see-more {
       position: absolute;
