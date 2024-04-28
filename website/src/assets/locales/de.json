@@ -45,9 +45,9 @@
     "now": "jetzt downloaden"
   },
   "faq": {
-    "copy": "Lien copié",
-    "description": "Vous avez une questions à propos de BetterFleet ? Nous repondons ici aux questions les plus fréquentes",
-    "faq": "F.A.Q",
+    "copy": "Link kopiert",
+    "description": "Haben Sie eine Frage zu BetterFleet? Hier beantworten wir die am häufigsten gestellten Fragen",
+    "faq": "FAQs",
     "more": "Wenn Sie auf ein Problem stoßen oder das Problem nicht lösen können. Besuchen Sie unser",
     "question": {
       "bug": {
@@ -91,8 +91,8 @@
         "content2": "Stellen Sie sicher, dass Ihr Betriebssystem Windows 10 oder Windows 11 ist.",
         "content3": "Stellen Sie sicher, dass Microsoft Edge und Microsoft Edge WebView2 korrekt auf Ihrem Computer installiert sind. Diese Komponenten sind für das ordnungsgemäße Funktionieren der Anwendung unerlässlich.",
         "content4": "Wenn das Problem trotz dieser Überprüfungen weiterhin besteht, versuchen Sie, die Anwendung neu zu installieren, um eine eventuell beschädigte Installation zu korrigieren.",
-        "content5": "Si anti virus alors désactiver",
-        "content6": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée.",
+        "content5": "Wenn Antivirus, dann deaktivieren",
+        "content6": "Wenn die Anwendung nach diesen Schritten immer noch nicht funktioniert, zögern Sie nicht, uns auf unserem Discord-Server zu kontaktieren, um weitere persönliche Unterstützung zu erhalten.",
         "title": "Die Anwendung startet nicht bzw. stürzt nicht ab. Warum? (Rand)"
       },
       "security": {
@@ -100,17 +100,17 @@
         "content2": "Verstärkte Authentifizierung: Wir haben ein Authentifizierungs-Overlay integriert, um die Sicherheit von Benutzerkonten zu erhöhen.",
         "content3": "Open Source: Die Anwendung ist vollständig Open Source und bietet vollständige Transparenz über ihre Verwendung und Funktionsweise. Dadurch kann die Community unseren Code verifizieren und prüfen und so Vertrauen in unser Produkt aufbauen.",
         "content4": "Proaktive Wartung: Unsere Entwickler sind bestrebt, die Anwendung in einem optimalen Sicherheitszustand zu halten. Dazu gehört die regelmäßige Aktualisierung von Abhängigkeiten und die kontinuierliche Überwachung potenzieller Sicherheitslücken, um etwaigen Risiken vorzubeugen.",
-        "content5": "windows defender blabla",
-        "content6": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs.",
+        "content5": "Windows Defender Blabla",
+        "content6": "Diese gemeinsamen Bemühungen tragen zu einer zuverlässigen und sicheren Plattform für alle unsere Benutzer bei.",
         "title": "Ist die Anwendung sicher?"
       },
       "update": {
         "content1": "Wenn ein BetterFleet-Update verfügbar ist, wird beim Starten der Anwendung automatisch ein Popup-Fenster angezeigt. Sie müssen lediglich auf „Ja“ klicken, um das Update zu starten. Die App wird automatisch aktualisiert und neu gestartet, sobald die Aktualisierung abgeschlossen ist. Befolgen Sie einfach diese Anweisungen, um immer über die neueste Version von BetterFleet zu verfügen.",
-        "content2": "si déja lancer alors fermer.",
+        "content2": "Wenn bereits ausgeführt, dann schließen.",
         "title": "Wie aktualisiere ich BetterFleet?"
       }
     },
-    "title": "Les questions les plus fréquentes"
+    "title": "Die am häufigsten gestellten Fragen"
   },
   "footer": {
     "content": "Werden Sie Teil unseres globalen Abenteuers – Ihrer Leidenschaft, unserer Technologie. Lassen Sie uns gemeinsam das Spiel verändern. Unterstützt durch Community und offene Innovation.",
