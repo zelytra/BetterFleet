@@ -90,8 +90,8 @@
         "content1": "Si vous rencontrez des problèmes pour lancer l'application ou si celle-ci crash après une installation correcte, veuillez suivre ces étapes de dépannage :",
         "content2": "Assurez-vous que votre système d'exploitation est Windows 10 ou Windows 11.",
         "content3": "Vérifiez que Microsoft Edge et Microsoft Edge WebView2 sont correctement installés sur votre machine. Ces composants sont essentiels pour le bon fonctionnement de l'application.",
-        "content4": "Si le problème persiste malgré ces vérifications, tentez de réinstaller l'application afin de corriger toute corruption potentielle.",
-        "content5": "Si anti virus alors désactiver",
+        "content4": "Il se peut qu'un conflit existe avec votre antivirus. S'il le permet, excluez Better Fleet de la liste des menaces présentes. Autrement, désactivez votre antivirus et relancez l'application.",
+        "content5": "Si le problème persiste malgré ces vérifications, tentez de réinstaller l'application afin de corriger toute corruption potentielle.",
         "content6": "Si, après ces étapes, l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée.",
         "title": "Pourquoi mon application crash et/ou ne se lance pas ?"
       },
