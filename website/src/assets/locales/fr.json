@@ -105,8 +105,8 @@
         "title": "L'application est-elle sécurisée ?"
       },
       "update": {
-        "content1": "Lorsqu'une mise à jour est disponible, une fenêtre pop-up apparaît au lancement de Better Fleet. Vous n'avez qu'à cliquer sur \"Oui\" pour lancer la mise à jour. L'application installera automatiquement la dernière version et redémarrera une fois la mise à jour terminée.\n\nDans le cas où une mise à jour est disponible alors que Better Fleet est déjà lancé, vous pouvez simplement fermer l'application. La mise à jour vous sera proposée au prochain lancement.",
-        "content2": "si déja lancer alors fermer.",
+        "content1": "Lorsqu'une mise à jour est disponible, une fenêtre pop-up apparaît au lancement de Better Fleet. Vous n'avez qu'à cliquer sur \"Oui\" pour lancer la mise à jour. L'application installera automatiquement la dernière version et redémarrera une fois la mise à jour terminée.",
+        "content2": "Dans le cas où une mise à jour est disponible alors que Better Fleet est déjà lancé, vous pouvez simplement fermer l'application. La mise à jour vous sera proposée au prochain lancement.",
         "title": "Comment mettre à jour Better Fleet ?"
       }
     },
