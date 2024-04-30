@@ -32,9 +32,12 @@
           :label="t('config.device.label')"
           v-model:data="deviceOptions"
       />
-      <div class="checkbox-wrapper">
+      <div class="checkbox-wrapper descriptor">
         <input type="checkbox" v-model="activeMacro"/>
-        <p @click="activeMacro = !activeMacro">{{ t("config.macro.check") }}</p>
+        <div class="label-wrapper">
+          <p @click="activeMacro = !activeMacro">{{ t("config.macro.check") }}</p>
+          <p class="description" @click="activeMacro = !activeMacro">{{ t("config.macro.description") }}</p>
+        </div>
       </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.audio')">
@@ -361,6 +364,20 @@ button {
     display: flex;
     align-items: center;
     gap: 12px;
+
+    &.descriptor {
+      align-items: start;
+    }
+
+    .label-wrapper {
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    p.description {
+      color: var(--secondary-text);
+    }
   }
 
   input[type="checkbox"] {

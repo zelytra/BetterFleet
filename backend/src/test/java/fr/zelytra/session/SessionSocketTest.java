@@ -79,6 +79,10 @@ class SessionSocketTest {
             }
         }
         assertEquals(fakePlayers.size(), sessionManager.getSessions().get(fleetId).getPlayers().size());
+        for (Player player : fakePlayers) {
+            sessionManager.leaveSession(player);
+        }
+        assertNull(sessionManager.getSessions().get(fleetId),"The session should be disbanded");
     }
 
     @Test
