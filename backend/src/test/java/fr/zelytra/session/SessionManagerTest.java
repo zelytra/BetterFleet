@@ -81,6 +81,38 @@ public class SessionManagerTest {
     }
 
     @Test
+    public void joinSession_PlayerConnectedToTwoSessionWithDifferentSocket_PlayerLeaveFistSession() {
+        Session session1 = Mockito.mock();
+        when(session1.getId()).thenReturn("1");
+
+        Session session2 = Mockito.mock();
+        when(session2.getId()).thenReturn("2");
+
+        String sessionId1 = sessionManager.createSession();
+        String sessionId2 = sessionManager.createSession();
+
+        // Player1 with Socket1
+        Player playerSocket1 = new Player();
+        playerSocket1.setUsername("Player 1");
+        playerSocket1.setSocket(session1);
+
+        // Player1 with Socket2
+        Player playerSocket2 = new Player();
+        playerSocket2.setUsername("Player 1");
+        playerSocket2.setSocket(session2);
+
+        sessionManager.joinSession(sessionId1, playerSocket1);
+        sessionManager.joinSession(sessionId2, playerSocket2);
+
+        Fleet fleet1 = sessionManager.getFleetFromId(sessionId1);
+        Fleet fleet2 = sessionManager.getFleetFromId(sessionId2);
+
+        assertNull(fleet1, "Fleet1 should be disbanded");
+        assertNotNull(fleet2, "Fleet2 should exist");
+        assertTrue(fleet2.getPlayers().contains(playerSocket2), "The player should be contain in this session");
+    }
+
+    @Test
     public void joinSession_PlayerConnectedAnywhereJoinNonExistantSession_JoinSessionFalse() {
         Session session = Mockito.mock();
         when(session.getId()).thenReturn("123");
