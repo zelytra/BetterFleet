@@ -81,9 +81,9 @@
         "title": "Comment télécharger Better Fleet ?"
       },
       "eac": {
-        "content1": "Notre application est conçue pour simuler un clic de souris, reproduisant ainsi l'action d'un utilisateur qui utiliserait physiquement une souris. Cette méthode est indétectable par les systèmes comme Easy Anti-Cheat (EAC), car notre technique ne constitue pas une macro à proprement parler. EAC se concentre principalement sur la détection de manipulations de la mémoire vive (RAM) et non sur l'utilisation de simulateurs de clics.",
-        "content2": "De plus, le clic n'est jamais exécuté dans le jeu lui-même mais uniquement dans les menus, ce qui reste conforme aux Termes de Service (TOS) du jeu et de Xbox. Les TOS sont rédigés de manière assez large pour couvrir un maximum de situations d'un point de vue juridique.",
-        "content3": "Il est essentiel de comprendre que l'utilisation de notre simulateur comporte des risques similaires à ceux de toute autre application du même type, comme FleetCreator, notamment en ce qui concerne la détection d'IP, qui reste un point sensible. Utiliser notre application est aussi sûr que d'utiliser des applications similaires, sous réserve de respecter les directives et TOS mentionnés.",
+        "content1": "Better Fleet se rapproche plus d'un journal de bord qu'autre chose. Sa principale fonction automatique simule un simple clic de souris, tout comme le ferait une commande vocale, et ne constitue pas une macro à proprement parler. Les systèmes comme Easy Anti-Cheat (EAC) se concentrent surtout sur les manipulations de mémoire vive (la RAM) et n'ont donc pas de raison de condamner notre méthode.",
+        "content2": "De plus, le clic n'est jamais exécuté en jeu et n'intervient que dans les menus, conformément aux conditions d'utilisation de Sea of Thieves et de Xbox. Ces conditions sont vastes afin de couvrir juridiquement un maximum de situations, mais aucun point ne mentionne notre utilisation spécifique. L'option est toutefois désactivable au bon vouloir de l'utilisateur.",
+        "content3": "Il reste essentiel de comprendre que l'utilisation d'outils tels que Better Fleet et Fleet Creator n'est pas entièrement dénuée de risques, notamment concernant la détection d'IP qui reste un point sensible. Notre application est aussi sûre qu'une autre, mais n'étant ni reconnus de Rare ni de Microsoft, nous dépendons pleinement de leur seule volonté d'agir.",
         "title": "Y a-t-il des risques avec Easy Anti-Cheat ? (EAC)"
       },
       "edge": {
