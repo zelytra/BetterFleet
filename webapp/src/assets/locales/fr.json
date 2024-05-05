@@ -79,7 +79,7 @@
       "label": "Langue"
     },
     "macro": {
-      "check": "Lancement automatique",
+      "check": "Lancement assisté",
       "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte"
     },
     "name": {
