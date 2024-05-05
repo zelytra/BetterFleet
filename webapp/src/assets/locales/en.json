@@ -79,8 +79,8 @@
       "label": "Language"
     },
     "macro": {
-      "check": "Enable/Disable auto launch",
-      "description": "Execution of an automatic click at the end of the count"
+      "check": "Assisted launch",
+      "description": "Automatically clicks on \"Set sail\" at the end of the countdown"
     },
     "name": {
       "label": "Username",
