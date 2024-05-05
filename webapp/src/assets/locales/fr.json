@@ -79,8 +79,8 @@
       "label": "Langue"
     },
     "macro": {
-      "check": "Activer/Désactiver le lancement automatique",
-      "description": "Exécution d'un clique automatique a la fin du décompte"
+      "check": "Lancement automatique",
+      "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte"
     },
     "name": {
       "label": "Pseudonyme",
