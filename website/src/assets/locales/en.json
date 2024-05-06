@@ -1,7 +1,7 @@
 {
   "button": {
     "download": "Download",
-    "downloadApp": "Download application",
+    "downloadApp": "Download the application",
     "downloadHere": "Download here"
   },
   "comparison": {
@@ -13,7 +13,7 @@
     "and": "&",
     "designed": "Assign by",
     "developed": "Powered by",
-    "license": "License"
+    "license": "Licence"
   },
   "descriptions": {
     "globe": "Notre application offre une recherche rapide et visuellement agréable pour Sea of Thieves, vous plongeant dans l'aventure pirate sans délai et avec style.",
@@ -28,7 +28,7 @@
       "title": "Notre plateforme d'échange préféré !"
     },
     "github": {
-      "button": "Github",
+      "button": "GitHub",
       "content": "At the heart of our project is a deep commitment to open source, Reflected by our code accessible to all and our team of active and receptive developers. This philosophy guarantees a constant evolution of our application, driven by transparent collaboration and fruitful exchanges with our community. Player feedback is a cornerstone of our development process, as it allows us to fine-tune and improve our offer, by ensuring that it responds precisely to the needs and desires of our users. Openness to suggestions and ability to adapt quickly to our developers ensure that our application remains at the cutting edge, while cultivating a relationship of trust and mutual respect with our committed community.",
       "nav": "Collaborative Innovation",
       "title": "Our Open Source Engagement for Constant Evolution Application"
@@ -46,7 +46,7 @@
   },
   "faq": {
     "copy": "Link copied",
-    "description": "Got a question about BetterFleet? Here we answer the most relevant questions",
+    "description": "Got a question about Better Fleet? Here we answer the most relevant questions",
     "faq": "F.A.Q",
     "more": "If you encounter a problem or cannot resolve the problem. Please visit our",
     "question": {
@@ -118,26 +118,26 @@
     "github": "If you are a developer and you love sailing on the seas of Sea Of Thieves, come and contribute to the project!",
     "warning": {
       "content": "Better Fleet is an unofficial third-party application unrelated to the Sea of Thieves development team. Its use is external and does not affect the experience in any way!",
-      "title": "Warnings"
+      "title": "Caution"
     }
   },
   "header": {
-    "details": "BetterFleet est actuellement en alpha ! Testez l’application dès maintenant !"
+    "details": "Better Fleet is currently in its beta phase ! Try out the application now !"
   },
-  "name": "BetterFleet",
+  "name": "Better Fleet",
   "nav": {
-    "documentation": "Documentation",
+    "documentation": "Discover",
     "home": "Home",
     "support": "Support"
   },
   "presentation": {
     "content": "Dive into the world of Sea of Thieves with the ultimate tool to forge alliances like never before. Our app is changing how players log in, offering exceptional fluidity and significantly increasing your chances of finding an alliance, far beyond the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, or create links and navigate together becomes a reference accessible with each click.",
-    "title": "BetterFleet"
+    "title": "Better Fleet"
   },
   "stats": {
-    "download": "Téléchargement",
-    "players": "Joueur(s) en ligne",
-    "sessions": "Session(s) ouverte",
+    "download": "Downloads",
+    "players": "Online players",
+    "sessions": "Open sessions",
     "title": "Statistics"
   }
 }
