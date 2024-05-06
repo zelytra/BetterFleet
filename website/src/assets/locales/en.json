@@ -65,10 +65,10 @@
         "title": "Is it worthy of interest for console players?"
       },
       "data": {
-        "content1": "Confidentiality and security of our users' data are of the utmost importance to us. Here is our User Data Management Policy:",
-        "content2": "Use of data: We only use the username and email address for application purposes. No other personal data is collected.",
-        "content3": "Security and Encryption: Data collected is encrypted and stored securely to prevent unauthorized access.",
-        "content4": "Cookies and Resell: We do not use cookies to track users, and we do not sell or share your information with third parties.",
+        "content1": "The confidentiality and security of our users' data are of the utmost importance to us. Here is our policy regarding the management of user data:",
+        "content2": "Data usage: The username and email address are the only required elements for the proper functioning of the application. No other personal data is collected.",
+        "content3": "Security and encryption: The collected data is encrypted and safely stored to prevent any unauthorised access.",
+        "content4": "Cookies and resale: We do not use cookies, and we do not sell nor do we share users' information with third parties.",
         "content5": "Anonymous data and statistics: For the continuous improvement of our application, we use anonymous data for statistical purposes. Under no circumstances do these data allow users to be personally identified.",
         "content6": "We are committed to maintaining transparency and respecting the privacy of our users in all circumstances.",
         "title": "What do I do with user data?"
