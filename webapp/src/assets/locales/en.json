@@ -93,7 +93,7 @@
     },
     "savebar": {
       "cancel": "Cancel modifications",
-      "content": "Hold your horses ! I see you've made some changes !",
+      "content": "Hold on there ! I see you've made some changes !",
       "save": "Save"
     },
     "server": {
@@ -139,7 +139,7 @@
     "title": "What's your name lad ?"
   },
   "home": {
-    "title": "Welcome to the alpha of"
+    "title": "Welcome to the beta of"
   },
   "loading": {
     "loading": "Loading...",
