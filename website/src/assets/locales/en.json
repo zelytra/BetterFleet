@@ -6,7 +6,7 @@
   },
   "comparison": {
     "description": "Better Fleet stands as a performance titan by reducing server search time significantly – displaying a speed 3 to 4 times higher than that of Fleet Creator. When we look at our graph, the green bars, corresponding to Better Fleet, reach inferior values with a consistency that notes an advanced technical optimisation. This means that, concretely, Better Fleet locates the game server with remarkable agility, drastically reducing connection delays. Players can thus expedite a near-instant transition to their favourite virtual worlds, thanks to a concise platform for efficiency and speed. Better Fleet is the guarantee of an uncompromising performance for an unequal user experience.",
-    "subtitle": "A turbocharged connection for triple speed game experience!",
+    "subtitle": "A turbocharged connection for a triple speed gaming experience!",
     "title": "Comparison with Fleet Creator"
   },
   "credits": {
@@ -59,10 +59,10 @@
       },
       "console": {
         "content1": "Absolutely! We developed specific features to improve the experience of Xbox and PlayStation players. Here is what we implemented:",
-        "content2": "Sound count: We added a sound count when launching the timers. This function allows players to know exactly when to click, without needing the Alliance Leader to give voice instructions. This makes game sessions more fluid and less dependent on voice communication.",
-        "content3": "Platform type visual indication: We added an icon to let players know if their teammates are using a console. This feature promotes better coordination and understanding between players of different platforms.",
-        "content4": "These enhancements are concise to make the game experience more intuitive and accessible to console players, ensuring harmonious integration within mixed gaming communities.",
-        "title": "Is there an integer for console players?"
+        "content2": "Audio countdown: We incorporated a sound component to the countdown. This function allows users to know exactly when to set sail, without putting upon the alliance leader to give vocal instructions. This makes sessions run smoothly all the while getting around latency caused by online exchange platforms.",
+        "content3": "Visual indication of the platform used: We added an icon to let users know whether their teammates are on a console. This feature promotes better coordination and understanding between players who use different platforms.",
+        "content4": "These enhancements are designed to make gaming experience more intuitive and accessible for console players, ensuring harmonious integration within mixed gaming communities.",
+        "title": "Is it worthy of interest for console players?"
       },
       "data": {
         "content1": "Confidentiality and security of our users' data are of the utmost importance to us. Here is our User Data Management Policy:",
