@@ -28,7 +28,7 @@
       "title": "Notre plateforme d'échange préférée !"
     },
     "github": {
-      "button": "Github",
+      "button": "GitHub",
       "content": "Au cœur de notre projet se trouve un engagement profond pour l'open source, reflété par notre code accessible à tous et notre équipe de développeurs actifs et réceptifs. Cette philosophie garantit une évolution constante de notre application, propulsée par une collaboration transparente et des échanges fructueux avec notre communauté. Les retours des joueurs sont une pierre angulaire de notre processus de développement, car ils nous permettent de peaufiner et d'améliorer notre offre, en veillant à ce qu'elle réponde précisément aux besoins et aux désirs de nos utilisateurs. L'ouverture aux suggestions et la capacité d'adaptation rapide de nos développeurs assurent que notre application reste à la pointe, tout en cultivant une relation de confiance et de respect mutuel avec notre communauté engagée.",
       "nav": "Innovation Collaborative",
       "title": "Notre Engagement Open Source pour une Application en Constante Évolution"
@@ -118,15 +118,15 @@
     "github": "Vous êtes développeur et vous adorez naviguer sur les mers de Sea of Thieves ? Alors venez contribuer au projet !",
     "warning": {
       "content": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
-      "title": "Avertissements"
+      "title": "Avertissement"
     }
   },
   "header": {
-    "details": "Better Fleet est actuellement en alpha ! Testez l’application dès maintenant !"
+    "details": "Better Fleet est actuellement en bêta ! Testez l’application dès maintenant !"
   },
   "name": "Better Fleet",
   "nav": {
-    "documentation": "Documentation",
+    "documentation": "Découvrir",
     "home": "Accueil",
     "support": "Support"
   },
