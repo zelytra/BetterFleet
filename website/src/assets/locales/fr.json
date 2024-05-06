@@ -70,15 +70,15 @@
         "content3": "Sécurité et chiffrement : Les données collectées sont chiffrées et stockées de manière sécurisée pour prévenir tout accès non autorisé.",
         "content4": "Cookies et revente : Nous n'utilisons aucun cookie, et nous ne vendons ni ne partageons les informations des utilisateurs avec des tiers.",
         "content5": "Données anonymes et statistiques : Pour l'amélioration continue de notre application, nous utilisons des données anonymisées à des fins statistiques. Ces données ne permettent en aucun cas d'identifier personnellement les utilisateurs.",
-        "content6": "Nous nous engageons à maintenir la transparence et à respecter la vie privée de nos utilisateurs en toutes circonstances.",
-        "title": "Que fait-on des données des utilisateurs ?"
+        "content6": "Nous nous engageons à maintenir une certaine transparence et à respecter la vie privée de nos utilisateurs en toute circonstance.",
+        "title": "Que fait-on des données utilisateur ?"
       },
       "download": {
         "content1": "Rendez-vous sur notre site officiel :",
         "content2": "Cliquez sur le bouton \"Télécharger\".",
         "content3": "Suivez les instructions à l'écran pour compléter l'installation.",
         "content4": "Et voilà ! Après ces étapes, Better Fleet sera installé sur votre appareil.",
-        "title": "Comment télécharger Better Fleet ?"
+        "title": "Comment installer Better Fleet ?"
       },
       "eac": {
         "content1": "Better Fleet se rapproche plus d'un journal de bord qu'autre chose. Sa principale fonction automatique simule un simple clic de souris, tout comme le ferait une commande vocale, et ne constitue pas une macro à proprement parler. Les systèmes comme Easy Anti-Cheat (EAC) se concentrent surtout sur les manipulations de mémoire vive (la RAM) et n'ont donc pas de raison de condamner notre méthode.",
