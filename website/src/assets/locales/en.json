@@ -70,18 +70,18 @@
         "content3": "Security and encryption: The collected data is encrypted and safely stored to prevent any unauthorised access.",
         "content4": "Cookies and resale: We do not use cookies, and we do not sell nor do we share users' information with third parties.",
         "content5": "Anonymous data and statistics: For the continuous improvement of our application, we use anonymous data for statistical purposes. Under no circumstances do these data allow users to be personally identified.",
-        "content6": "We are committed to maintaining transparency and respecting the privacy of our users in all circumstances.",
-        "title": "What do I do with user data?"
+        "content6": "We are committed to maintaining a certain level of transparency and respecting the privacy of our users at all times.",
+        "title": "What do we do with user data?"
       },
       "download": {
         "content1": "Go to our official website:",
         "content2": "Click the \"Download\" button.",
-        "content3": "Follow the instructions on the screen to complete the installation.",
-        "content4": "That's it! BetterFleet will be installed on your device.",
-        "title": "How did BetterFleet test?"
+        "content3": "Follow the onscreen instructions to complete the installation.",
+        "content4": "That's it! After these steps, Better Fleet will be installed on your device.",
+        "title": "How do I install Better Fleet?"
       },
       "eac": {
-        "content1": "Our application is consistent to simulate a mouse click, reproducing the action of a user who would physically use a mouse. This method is undetectable by systems like Easy Anti-Cheat (EAC), because our technique does not constitute a macro in itself. EAC focuses primarily on detecting RAM manipulation (RAM) and not on the use of click simulators.",
+        "content1": "Better Fleet ressembles more a logbook than anything else. Its main automatic feature simulates a fairly simple mouse click, just like a voice command would, and does not technically constitute a macro in itself. Systems like Easy Anti-Cheat (EAC) mostly focus on RAM manipulation and therefore have no reason to condemn our method.",
         "content2": "Also, click is never executed in the game itself but only in the menus, what remains compliant with the Game and Xbox Terms of Service (TOS). The TOS are written in a broad enough way to cover as many situations as possible from a legal point of view.",
         "content3": "It is essential to understand that using our simulator carries similar risks to any other similar type application, as FleetCreator, especially with respect to IP detection, which remains a sensitive point. Using our application is as much as using similar applications, under the conditions of compliance with the guidelines and TOS specified.",
         "title": "Is there any risk with the EAC(Easy Anti-Cheat)?"
