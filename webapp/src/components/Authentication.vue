@@ -59,7 +59,7 @@ function authUser() {
 }
 
 function leavePage() {
-  router.push("/fleet/home")
+  router.push("/fleet/session")
 }
 </script>
 
