@@ -6,7 +6,7 @@
   },
   "comparison": {
     "description": "Better Fleet stands as a performance titan by reducing server search time significantly – displaying a speed 3 to 4 times higher than that of Fleet Creator. When we look at our graph, the green bars, corresponding to Better Fleet, reach inferior values with a consistency that notes an advanced technical optimisation. This means that, concretely, Better Fleet locates the game server with remarkable agility, drastically reducing connection delays. Players can thus expedite a near-instant transition to their favourite virtual worlds, thanks to a concise platform for efficiency and speed. Better Fleet is the guarantee of an uncompromising performance for an unequal user experience.",
-    "subtitle": "A turbocharged connection for triple speed game!",
+    "subtitle": "A turbocharged connection for triple speed game experience!",
     "title": "Comparison with Fleet Creator"
   },
   "credits": {
@@ -17,28 +17,28 @@
   },
   "descriptions": {
     "globe": "Better Fleet combines design and efficiency. Inspired by Sea of Thieves artistic direction, you will feel like navigating within an extension of the game at the height of responsiveness.",
-    "hourglass": "Our synchronised auto-click feature implements a perfectly coordinated countdown for every player in the session, ensuring an impressively efficient server research that keeps waiting time to a minimum.",
+    "hourglass": "Our synchronised auto-click feature implements a perfectly coordinated countdown for every player in the session, ensuring an impressively efficient server research that lowers waiting time to a minimum.",
     "key": "Our application ensures the security of users thanks to its open source code, allowing full transparency, and a team of active developers dedicated to regular updates and security maintenance."
   },
   "discover": {
     "discord": {
-      "button": "Rejoindre le discord",
+      "button": "Join the Discord",
       "content": "Our application has grown well beyond a simple interface because it is anchored in a vibrant, committed community on our dedicated Discord server. This dynamic space is the crossroads where players can not only share their experiences, but also actively contribute to development by submitting ideas for improvement. Open and constructive dialogue is encouraged, forging synergy between users and creators. In addition, our Discord server provides robust support for those who want to integrate our application on their side. Whether for technical advice, strategic orientations or customization tips, our members and our support team are always ready to help, ensuring a transparent and successful integration.",
-      "nav": "Our community",
-      "title": "Notre plateforme d'échange préféré !"
+      "nav": "Our Community",
+      "title": "Our favourite exchange platform!"
     },
     "github": {
       "button": "GitHub",
-      "content": "At the heart of our project is a deep commitment to open source, Reflected by our code accessible to all and our team of active and receptive developers. This philosophy guarantees a constant evolution of our application, driven by transparent collaboration and fruitful exchanges with our community. Player feedback is a cornerstone of our development process, as it allows us to fine-tune and improve our offer, by ensuring that it responds precisely to the needs and desires of our users. Openness to suggestions and ability to adapt quickly to our developers ensure that our application remains at the cutting edge, while cultivating a relationship of trust and mutual respect with our committed community.",
+      "content": "At the heart of our project is a deep commitment to open source, reflected by our code accessible to all and our team of active and receptive developers. This philosophy guarantees a constant evolution of our application, driven by transparent collaboration and fruitful exchanges with our community. Player feedback is a cornerstone of our development process, as it allows us to fine-tune and improve our offer, by ensuring that it responds precisely to the needs and desires of our users. Openness to suggestions and ability to adapt quickly to our developers ensure that our application remains at the cutting edge, while cultivating a relationship of trust and mutual respect with our committed community.",
       "nav": "Collaborative Innovation",
-      "title": "Our Open Source Engagement for Constant Evolution Application"
+      "title": "Our open source commitment for an application in constant evolution"
     },
-    "title": "Our Values and Objectives",
+    "title": "Our objectives and values",
     "translation": {
       "button": "Crowdin",
       "content": "Our application embraces diversity and inclusiveness through its i18n based development opening the door to translations in any language by the community itself. This approach ensures that our application can be easily adapted and used by users around the world. reflecting our commitment to breaking language barriers. In addition, we have set up a public Crowdin project, providing an intuitive platform for all those willing to contribute to the translation efforts. This initiative promotes international collaboration, enabling our application to be enriched by the cultural and linguistic nuances of each contributor. Together, we build a truly global, accessible and engaging gaming experience for an ever-expanding international community.",
       "nav": "Participatory Translation",
-      "title": "Uniting Entire World Players with i18n and Crowdin"
+      "title": "Unite players all over the world with i18n and Crowdin"
     }
   },
   "download": {
@@ -46,19 +46,19 @@
   },
   "faq": {
     "copy": "Link copied",
-    "description": "Got a question about Better Fleet? Here we answer the most relevant questions",
-    "faq": "F.A.Q",
-    "more": "If you encounter a problem or cannot resolve the problem. Please visit our",
+    "description": "You have a question about Better Fleet? Here we answer the most frequently asked questions",
+    "faq": "F.A.Q.",
+    "more": "You are facing complications or you cannot find an answer to your problem? Meet us here on our",
     "question": {
       "bug": {
-        "content1": "If you encounter issues or bugs with our app, we encourage you to let us know so that we can work to improve your performance. Here's how you can contact us:",
-        "content2": "Discord: Join our Discord server and share your issue in the support channel. Our team is always ready to help you and answer your questions in time.",
-        "content3": "GitHub: If you are familiar with GitHub, you can also open an issue on our GitHub era. This allows us to track structural problems and ensure transparent and effective monitoring.",
-        "content4": "We understand your feedback and commit to solving issues in the best of the issues.",
-        "title": "How do I report problems/bugs?"
+        "content1": "If you encounter any issue or bugs, we encourage you to bring it to our attention so that we can work on improving your experience. Here is how you can contact us:",
+        "content2": "Discord: Join our Discord server and share your issue in the dedicated support channel. Our team is always ready to help you and answer your questions in real time.",
+        "content3": "GitHub: If you are familiar with GitHub, you can also open an issue on our GitHub repository. This allows us to structurally track problems and ensure transparent and effective monitoring.",
+        "content4": "We appreciate your feedback and are committed to resolving reported issues as quickly as possible.",
+        "title": "How do I report a problem or a bug?"
       },
       "console": {
-        "content1": "Absolutely! We developed special features to improve the experience of Xbox and PlayStation players. Here's what we've put in place:",
+        "content1": "Absolutely! We developed specific features to improve the experience of Xbox and PlayStation players. Here is what we implemented:",
         "content2": "Sound count: We added a sound count when launching the timers. This function allows players to know exactly when to click, without needing the Alliance Leader to give voice instructions. This makes game sessions more fluid and less dependent on voice communication.",
         "content3": "Platform type visual indication: We added an icon to let players know if their teammates are using a console. This feature promotes better coordination and understanding between players of different platforms.",
         "content4": "These enhancements are concise to make the game experience more intuitive and accessible to console players, ensuring harmonious integration within mixed gaming communities.",
