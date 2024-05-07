@@ -5,8 +5,8 @@
       "title": "Bad query"
     },
     "emptySession": {
-      "content": "Please enter a Session ID",
-      "title": "Empty Session ID"
+      "content": "Please enter a session ID",
+      "title": "Empty session ID"
     },
     "error": {
       "content": "An error has occurred",
@@ -41,11 +41,11 @@
       }
     },
     "sessionNotFound": {
-      "content": "Verify your Session ID",
+      "content": "Verify your session ID",
       "title": "Session not found"
     },
     "socket": {
-      "connectionFailed": "The connection to the server failed",
+      "connectionFailed": "Connection lost",
       "random": "The WebSocket closed unexpectedly",
       "title": "An error has occurred with the server"
     },
@@ -64,8 +64,8 @@
       }
     },
     "websocketAuthFailed": {
-      "content": "WebSocket authentication failed",
-      "title": "Authentication failed"
+      "content": "The WebSocket authentication failed",
+      "title": "Connection failed"
     }
   },
   "appName": "Better Fleet",
@@ -93,7 +93,7 @@
     },
     "savebar": {
       "cancel": "Cancel modifications",
-      "content": "Hold on there ! I see you've made some changes !",
+      "content": "Hold on there! I see you've made some changes!",
       "save": "Save"
     },
     "server": {
@@ -120,23 +120,23 @@
     "and": "and",
     "description": "Better Fleet was developed in order to facilitate the formation of alliances on Sea of Thieves",
     "designed": "Designed by",
-    "details": "Better Fleet is a non-official third party application unrelated to the development team of Sea Of Thieves. Its use is purely external and has no impact on gameplay experience !",
+    "details": "Better Fleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience!",
     "developed": "Developed by",
-    "socials": "Find us here :",
+    "socials": "Find us here:",
     "sot": {
       "thanks": "We would like to render unto",
-      "use": "that which belongs to pirates for, as you may notice, we use the font and banners from the game !"
+      "use": "that which belongs to pirates for, as you may notice, we use the font and banners from the game!"
     },
     "title": "Credits"
   },
   "firstLogin": {
     "button": {
-      "description": "Hoist the sails lads, take the helm and head out to sea !",
+      "description": "Hoist the sails lads, take the helm and head out to sea!",
       "title": "Let the journey begin"
     },
     "description": "Please enter your current gamertag to oversee the smooth running of the alliance",
     "tips": "You can change your username at any moment in the settings",
-    "title": "What's your name lad ?"
+    "title": "What's your name lad?"
   },
   "loading": {
     "loading": "Loading...",
@@ -152,10 +152,10 @@
   },
   "login": {
     "continue": "Continue",
-    "description": "Welcome to Better Fleet ! We are thrilled to have you figure among us. In order to access the application, please log in to your account or create one !",
-    "disconnect": "This is not your account ?",
+    "description": "Welcome to Better Fleet! We are thrilled to have you figure among us. In order to access the application, please log in to your account or create one!",
+    "disconnect": "This is not your account?",
     "loginButton": "Sign in",
-    "succeed": "Login Successful !",
+    "succeed": "Login Successful!",
     "userWelcome": "Welcome",
     "welcome": "Welcome to"
   },
@@ -164,38 +164,38 @@
       "launch": {
         "cancel": "Cancel",
         "confirm": "Set sail",
-        "content": "Not all players are ready ! Are you sure you want to set sail ?",
-        "title": "WARNING !"
+        "content": "Not all players are ready! Are you sure you want to set sail?",
+        "title": "WARNING!"
       },
       "leave": {
         "cancel": "Cancel",
         "confirm": "Leave the session",
-        "content": "Are you sure you want to leave the session ?",
+        "content": "Are you sure you want to leave the session?",
         "title": "LEAVE THE SESSION"
       }
     }
   },
   "session": {
     "choice": {
-      "createComment": "Take a bite at freedom and rule on the sea of thieves !",
+      "createComment": "Take a bite at freedom and rule on the sea of thieves!",
       "createSession": "Create a session",
-      "joinComment": "Grab a tankard, come aboard and join the crew !",
+      "joinComment": "Grab a tankard, come aboard and join the crew!",
       "joinSession": "Join a session",
       "modal": {
         "button": "Join the session",
-        "comment": "Every session is private and requires an identification code. Ask it to the host of the session you wish to join !",
-        "title": "Enter a Session ID"
+        "comment": "Each session is private and requires an identification code. Ask it to the host of the session you wish to join!",
+        "title": "Enter a session ID"
       }
     },
     "contributor": {
-      "alpha_tester": "Alpha-Tester",
+      "alpha_tester": "Alpha Tester",
       "designer": "Designer",
       "developer": "Developer",
       "translator": "Translator"
     },
     "countdown": "The research begins in...",
     "id": "Session ID",
-    "idCopy": "Copied !",
+    "idCopy": "Copied!",
     "informations": {
       "success": "Success rate",
       "title": "Information",
