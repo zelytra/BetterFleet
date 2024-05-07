@@ -47,7 +47,7 @@
     "socket": {
       "connectionFailed": "Échec de la connexion au serveur",
       "random": "Le WebSocket s'est fermé de façon inattendue",
-      "title": "Une erreur est survenue avec le serveur"
+      "title": "Connexion perdue"
     },
     "unsupportedMedia": {
       "content": "Le média que vous tentez d'envoyer n'est pas supporté par l'application",
@@ -65,7 +65,7 @@
     },
     "websocketAuthFailed": {
       "content": "L'authentification au WebSocket a échoué",
-      "title": "Échec de l'authentification"
+      "title": "Connexion impossible"
     }
   },
   "appName": "Better Fleet",
