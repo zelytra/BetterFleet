@@ -87,38 +87,38 @@
         "title": "Is there any risk with Easy Anti-Cheat? (EAC)"
       },
       "edge": {
-        "content1": "If you have problems running the application or crashing after a proper installation, please follow these troubleshooting steps:",
+        "content1": "If you have problems running the application or if it crashes after properly installing it, please follow these troubleshooting steps:",
         "content2": "Make sure your operating system is Windows 10 or Windows 11.",
-        "content3": "Make sure Microsoft Edge and Microsoft Edge WebView2 are installed correctly on your machine. These components are essential for the proper functioning of the application.",
-        "content4": "If the problem persists, try reinstalling the app to fix any potentially corrupt installations.",
-        "content5": "If anti-virus then disable",
-        "content6": "If after these steps, the app still doesn't work, please contact us on our Discord server for more personalized assistance.",
-        "title": "App does not start/crash, why? (Edge)"
+        "content3": "Check whether Microsoft Edge and Microsoft Edge WebView2 are correctly installed on your device. These components are essential for the proper functioning of the application.",
+        "content4": "A conflict might occur with your antivirus software. If this one allows it, exclude Better Fleet from the list of present threats. Otherwise, deactivate your software and rerun the application.",
+        "content5": "If the issue still persists despite these checks, try reinstalling the application in order to fix any potential corruption.",
+        "content6": "If after these steps the application is still not working, do not hesitate and meet us on our Discord server for more customised assistance.",
+        "title": "Why does my application crash and/or does not start ?"
       },
       "security": {
-        "content1": "Yes, our application is consistent with user security as the absolute priority. Here are the measures we have put in place to ensure greater use:",
-        "content2": "Strengthened authentication: We have integrated an authentication overlay to strengthen the security of user accounts.",
-        "content3": "Open source: The application is completely open source, offering total transparency about its use and operation. This allows the community to verify and audit our code, strengthening confidence in our product.",
-        "content4": "Proactive Maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes updated dependencies and ongoing monitoring of potential security vulnerabilities to prevent risk.",
-        "content5": "windows defender blabla",
-        "content6": "These joint efforts contribute to a reliable and secure platform for all our users.",
-        "title": "Is the app secured?"
+        "content1": "Yes, our application was designed with user security as the absolute priority. Following are the measures we implemented to ensure safe use:",
+        "content2": "Reinforced authentication: We incorporated an authentication overlay in order to strengthen the security of user accounts.",
+        "content3": "Open source: The application is completely open source, offering total transparency concerning its use and operation. This allows the community to verify and audit our code, therefore strengthening confidence in our product.",
+        "content4": "Proactive maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes regular dependencies updates and continuously monitoring potential security breaches to prevent any risk.",
+        "content5": "Independent approach: As Better Fleet is not licenced by Microsoft, it is subjected to Windows Defender upon installation. Our application is no less secure and we set our sights on adapting to these constraints we cannot quite control.",
+        "content6": "These joint efforts contribute to a reliable and secure platform for every one our users.",
+        "title": "Is the application secure?"
       },
       "update": {
-        "content1": "When a BetterFleet update is available, a pop-up window will appear automatically when the application starts. You will only have to click \"Yes\" to start the update. The app will automatically update and reboot after the update is complete. Simply follow these instructions to always get the latest version of BetterFleet.",
-        "content2": "if already run then close.",
-        "title": "How to update BetterFleet?"
+        "content1": "Whenever an update is available, a pop-up window appears upon launching Better Fleet. You only have to click \"Yes\" to initiate the update. The application will automatically install the latest version and reboot once the update is complete.",
+        "content2": "Should an update be available while Better Fleet is already running, you can simply close the application. You will be offered to do the update at the next launch.",
+        "title": "How do I update Better Fleet?"
       }
     },
     "title": "Frequently Asked Questions"
   },
   "footer": {
-    "content": "Join our global adventure - your passion, our technology. Together, let's transform the game. Powered by community and open innovation.",
-    "discord": "Having trouble? Please contact our team via our server ",
-    "github": "If you are a developer and you love sailing on the seas of Sea Of Thieves, come and contribute to the project!",
+    "content": "Join our worldwide adventure - your passion, our technology. Together, let's transform the game. Powered by the community and open innovation.",
+    "discord": "Are you having trouble? Get immediately in touch with our team on our",
+    "github": "Are you a developer and love to sail on the Sea of Thieves? Then come and contribute to the project!",
     "warning": {
-      "content": "Better Fleet is an unofficial third-party application unrelated to the Sea of Thieves development team. Its use is external and does not affect the experience in any way!",
-      "title": "Caution"
+      "content": "Better Fleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience!",
+      "title": "Disclaimer"
     }
   },
   "header": {
@@ -131,7 +131,7 @@
     "support": "Support"
   },
   "presentation": {
-    "content": "Dive into the world of Sea of Thieves with the ultimate tool to forge alliances like never before. Our app is changing how players log in, offering exceptional fluidity and significantly increasing your chances of finding an alliance, far beyond the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, or create links and navigate together becomes a reference accessible with each click.",
+    "content": "Dive into the world of Sea of Thieves with the ultimate tool designed to forge alliances like never before. Our application revolutionises the way players log in, providing exceptional fluidity and significantly increasing your chances of finding an alliance, far surpassing the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, where bonding and sailing together becomes a reality accessible with every click.",
     "title": "Better Fleet"
   },
   "stats": {
