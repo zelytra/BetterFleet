@@ -16,10 +16,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
-    "sass": "^1.75.0",
+    "sass": "^1.76.0",
     "typescript": "^5.4.5",
-    "vite": "^5.2.10",
+    "vite": "^5.2.11",
     "vue-router": "^4.3.2",
-    "vue-tsc": "^2.0.14"
+    "vue-tsc": "^2.0.16"
   }
 }
