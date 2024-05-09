@@ -54,8 +54,8 @@
       "title": "Session introuvable"
     },
     "socket": {
-      "connectionFailed": "Échec de la connexion au serveur",
-      "random": "Le WebSocket s'est fermé de façon inattendue",
+      "connectionFailed": "Le WebSocket s'est fermé de façon inattendue",
+      "random": "Échec de la connexion au serveur",
       "title": "Connexion perdue"
     },
     "unsupportedMedia": {
