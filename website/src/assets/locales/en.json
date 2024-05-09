@@ -1,137 +1,143 @@
 {
   "button": {
     "download": "Download",
-    "downloadApp": "Download application",
+    "downloadApp": "Download the application",
     "downloadHere": "Download here"
   },
   "comparison": {
-    "description": "Better Fleet stands as a performance titan by reducing server search time significantly – displaying a speed 3 to 4 times higher than that of Fleet Creator. When we look at our graph, the green bars, corresponding to BetterFleet, reach inferior values with a consistency that notes a advanced technical optimization. This means that, concretely, BetterFleet locates the game server with remarkable agility, drastically reducing connection delays. Players can thus expedite a near-instant transition to their favorite virtual worlds, thanks to a concise platform for efficiency and speed. BetterFleet is the assurance of an uncompromising performance for an unequal user experience.",
-    "subtitle": "A turbocharged connection for triple speed game!",
+    "description": "Better Fleet stands as a performance titan by reducing server search time significantly – displaying a speed 3 to 4 times higher than that of Fleet Creator. When we look at our graph, the green bars, corresponding to Better Fleet, reach inferior values with a consistency that notes an advanced technical optimisation. This means that, concretely, Better Fleet locates the game server with remarkable agility, drastically reducing connection delays. Players can thus expedite a near-instant transition to their favourite virtual worlds, thanks to a concise platform for efficiency and speed. Better Fleet is the guarantee of an uncompromising performance for an unequal user experience.",
+    "subtitle": "A turbocharged connection for a triple speed gaming experience!",
     "title": "Comparison with Fleet Creator"
   },
   "credits": {
     "and": "&",
-    "designed": "Assign by",
-    "developed": "Powered by",
-    "license": "License"
+    "designed": "Designed by",
+    "developed": "Developed by",
+    "license": "Licence"
   },
   "descriptions": {
-    "globe": "Notre application offre une recherche rapide et visuellement agréable pour Sea of Thieves, vous plongeant dans l'aventure pirate sans délai et avec style.",
-    "hourglass": "Notre fonctionnalité d'auto-click synchronisée met en œuvre un timer parfaitement coordonné entre tous les joueurs de la session, garantissant une recherche de serveur d'une efficacité redoutable qui réduit le temps d'attente au minimum. Grâce à cette innovation, lancer une partie de Sea of Thieves avec vos amis devient une expérience fluide et synchronisée, vous immergeant directement dans l'action et l'aventure.",
-    "key": "Our application ensures the security of users thanks to its open source code, allowing full transparency, and a team of active developers dedicated to regular updates and maintenance of the security."
+    "globe": "Better Fleet combines design and efficiency. Inspired by Sea of Thieves artistic direction, you will feel like navigating within an extension of the game at the height of responsiveness.",
+    "hourglass": "Our synchronised auto-click feature implements a perfectly coordinated countdown for every player in the session, ensuring an impressively efficient server research that lowers waiting time to a minimum.",
+    "key": "Our application ensures the security of users thanks to its open source code, allowing full transparency, and a team of active developers dedicated to regular updates and security maintenance."
   },
   "discover": {
     "discord": {
-      "button": "Rejoindre le discord",
+      "button": "Join the Discord",
       "content": "Our application has grown well beyond a simple interface because it is anchored in a vibrant, committed community on our dedicated Discord server. This dynamic space is the crossroads where players can not only share their experiences, but also actively contribute to development by submitting ideas for improvement. Open and constructive dialogue is encouraged, forging synergy between users and creators. In addition, our Discord server provides robust support for those who want to integrate our application on their side. Whether for technical advice, strategic orientations or customization tips, our members and our support team are always ready to help, ensuring a transparent and successful integration.",
-      "nav": "Our community",
-      "title": "Notre plateforme d'échange préféré !"
+      "nav": "Our Community",
+      "title": "Our favourite exchange platform!"
     },
     "github": {
-      "button": "Github",
-      "content": "At the heart of our project is a deep commitment to open source, Reflected by our code accessible to all and our team of active and receptive developers. This philosophy guarantees a constant evolution of our application, driven by transparent collaboration and fruitful exchanges with our community. Player feedback is a cornerstone of our development process, as it allows us to fine-tune and improve our offer, by ensuring that it responds precisely to the needs and desires of our users. Openness to suggestions and ability to adapt quickly to our developers ensure that our application remains at the cutting edge, while cultivating a relationship of trust and mutual respect with our committed community.",
+      "button": "GitHub",
+      "content": "At the heart of our project is a deep commitment to open source, reflected by our code accessible to all and our team of active and receptive developers. This philosophy guarantees a constant evolution of our application, driven by transparent collaboration and fruitful exchanges with our community. Player feedback is a cornerstone of our development process, as it allows us to fine-tune and improve our offer, by ensuring that it responds precisely to the needs and desires of our users. Openness to suggestions and ability to adapt quickly to our developers ensure that our application remains at the cutting edge, while cultivating a relationship of trust and mutual respect with our committed community.",
       "nav": "Collaborative Innovation",
-      "title": "Our Open Source Engagement for Constant Evolution Application"
+      "title": "Our open source commitment for an application in constant evolution"
     },
-    "title": "Our Values and Objectives",
+    "title": "Our objectives and values",
     "translation": {
       "button": "Crowdin",
       "content": "Our application embraces diversity and inclusiveness through its i18n based development opening the door to translations in any language by the community itself. This approach ensures that our application can be easily adapted and used by users around the world. reflecting our commitment to breaking language barriers. In addition, we have set up a public Crowdin project, providing an intuitive platform for all those willing to contribute to the translation efforts. This initiative promotes international collaboration, enabling our application to be enriched by the cultural and linguistic nuances of each contributor. Together, we build a truly global, accessible and engaging gaming experience for an ever-expanding international community.",
       "nav": "Participatory Translation",
-      "title": "Uniting Entire World Players with i18n and Crowdin"
+      "title": "Unite players all over the world with i18n and Crowdin"
     }
   },
   "download": {
     "now": "Download now"
   },
   "faq": {
-    "more": "If you encounter a problem or cannot resolve the problem. Please visit our",
+    "copy": "Link copied",
+    "description": "You have a question about Better Fleet? Here we answer the most frequently asked questions",
+    "faq": "F.A.Q.",
+    "more": "You are facing complications or you cannot find an answer to your problem? Meet us here on our",
     "question": {
-      "download": {
-        "title": "How did BetterFleet test?",
-        "content1": "Go to our official website:",
-        "content2": "Click the \"Download\" button.",
-        "content3": "Follow the instructions on the screen to complete the installation.",
-        "content4": "That's it! BetterFleet will be installed on your device."
-      },
-      "update": {
-        "title": "How to update BetterFleet?",
-        "content1": "When a BetterFleet update is available, a pop-up window will appear automatically when the application starts. You will only have to click \"Yes\" to start the update. The app will automatically update and reboot after the update is complete. Simply follow these instructions to always get the latest version of BetterFleet."
-      },
-      "eac": {
-        "title": "Is there any risk with the EAC(Easy Anti-Cheat)?",
-        "content1": "Our application is consistent to simulate a mouse click, reproducing the action of a user who would physically use a mouse. This method is undetectable by systems like Easy Anti-Cheat (EAC), because our technique does not constitute a macro in itself. EAC focuses primarily on detecting RAM manipulation (RAM) and not on the use of click simulators.",
-        "content2": "Also, click is never executed in the game itself but only in the menus, what remains compliant with the Game and Xbox Terms of Service (TOS). The TOS are written in a broad enough way to cover as many situations as possible from a legal point of view.",
-        "content3": "It is essential to understand that using our simulator carries similar risks to any other similar type application, as FleetCreator, especially with respect to IP detection, which remains a sensitive point. Using our application is as much as using similar applications, under the conditions of compliance with the guidelines and TOS specified."
-      },
-      "edge": {
-        "title": "App does not start/crash, why? (Edge)",
-        "content1": "If you have problems running the application or crashing after a proper installation, please follow these troubleshooting steps:",
-        "content2": "Make sure your operating system is Windows 10 or Windows 11.",
-        "content3": "Make sure Microsoft Edge and Microsoft Edge WebView2 are installed correctly on your machine. These components are essential for the proper functioning of the application.",
-        "content4": "If the problem persists, try reinstalling the app to fix any potentially corrupt installations.",
-        "content5": "If after these steps, the app still doesn't work, please contact us on our Discord server for more personalized assistance."
-      },
-      "security": {
-        "title": "Is the app secured?",
-        "content1": "Yes, our application is consistent with user security as the absolute priority. Here are the measures we have put in place to ensure greater use:",
-        "content2": "Strengthened authentication: We have integrated an authentication overlay to strengthen the security of user accounts.",
-        "content3": "Open source: The application is completely open source, offering total transparency about its use and operation. This allows the community to verify and audit our code, strengthening confidence in our product.",
-        "content4": "Proactive Maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes updated dependencies and ongoing monitoring of potential security vulnerabilities to prevent risk.",
-        "content5": "These joint efforts contribute to a reliable and secure platform for all our users."
-      },
       "bug": {
-        "title": "How do I report problems/bugs?",
-        "content1": "If you encounter issues or bugs with our app, we encourage you to let us know so that we can work to improve your performance. Here's how you can contact us:",
-        "content2": "Discord: Join our Discord server and share your issue in the support channel. Our team is always ready to help you and answer your questions in time.",
-        "content3": "GitHub: If you are familiar with GitHub, you can also open an issue on our GitHub era. This allows us to track structural problems and ensure transparent and effective monitoring.",
-        "content4": "We understand your feedback and commit to solving issues in the best of the issues."
-      },
-      "data": {
-        "title": "What do I do with user data?",
-        "content1": "Confidentiality and security of our users' data are of the utmost importance to us. Here is our User Data Management Policy:",
-        "content2": "Use of data: We only use the username and email address for application purposes. No other personal data is collected.",
-        "content3": "Security and Encryption: Data collected is encrypted and stored securely to prevent unauthorized access.",
-        "content4": "Cookies and Resell: We do not use cookies to track users, and we do not sell or share your information with third parties.",
-        "content5": "Anonymous data and statistics: For the continuous improvement of our application, we use anonymous data for statistical purposes. Under no circumstances do these data allow users to be personally identified.",
-        "content6": "We are committed to maintaining transparency and respecting the privacy of our users in all circumstances."
+        "content1": "If you encounter any issue or bugs, we encourage you to bring it to our attention so that we can work on improving your experience. Here is how you can contact us:",
+        "content2": "Discord: Join our Discord server and share your issue in the dedicated support channel. Our team is always ready to help you and answer your questions in real time.",
+        "content3": "GitHub: If you are familiar with GitHub, you can also open an issue on our GitHub repository. This allows us to structurally track problems and ensure transparent and effective monitoring.",
+        "content4": "We appreciate your feedback and are committed to resolving reported issues as quickly as possible.",
+        "title": "How do I report a problem or a bug?"
       },
       "console": {
-        "title": "Is there an integer for console players?",
-        "content1": "Absolutely! We developed special features to improve the experience of Xbox and PlayStation players. Here's what we've put in place:",
-        "content2": "Sound count: We added a sound count when launching the timers. This function allows players to know exactly when to click, without needing the Alliance Leader to give voice instructions. This makes game sessions more fluid and less dependent on voice communication.",
-        "content3": "Platform type visual indication: We added an icon to let players know if their teammates are using a console. This feature promotes better coordination and understanding between players of different platforms.",
-        "content4": "These enhancements are concise to make the game experience more intuitive and accessible to console players, ensuring harmonious integration within mixed gaming communities."
+        "content1": "Absolutely! We developed specific features to improve the experience of Xbox and PlayStation players. Here is what we implemented:",
+        "content2": "Audio countdown: We incorporated a sound component to the countdown. This function allows users to know exactly when to set sail, without putting upon the alliance leader to give vocal instructions. This makes sessions run smoothly all the while getting around latency caused by online exchange platforms.",
+        "content3": "Visual indication of the platform used: We added an icon to let users know whether their teammates are on a console. This feature promotes better coordination and understanding between players who use different platforms.",
+        "content4": "These enhancements are designed to make gaming experience more intuitive and accessible for console players, ensuring harmonious integration within mixed gaming communities.",
+        "title": "Is it worthy of interest for console players?"
+      },
+      "data": {
+        "content1": "The confidentiality and security of our users' data are of the utmost importance to us. Here is our policy regarding the management of user data:",
+        "content2": "Data usage: The username and email address are the only required elements for the proper functioning of the application. No other personal data is collected.",
+        "content3": "Security and encryption: The collected data is encrypted and safely stored to prevent any unauthorised access.",
+        "content4": "Cookies and resale: We do not use cookies, and we do not sell nor do we share users' information with third parties.",
+        "content5": "Anonymous data and statistics: For the continuous improvement of our application, we use anonymous data for statistical purposes. Under no circumstances do these data allow users to be personally identified.",
+        "content6": "We are committed to maintaining a certain level of transparency and respecting the privacy of our users at all times.",
+        "title": "What do we do with user data?"
+      },
+      "download": {
+        "content1": "Go to our official website:",
+        "content2": "Click the \"Download\" button.",
+        "content3": "Follow the onscreen instructions to complete the installation.",
+        "content4": "That's it! After these steps, Better Fleet will be installed on your device.",
+        "title": "How do I install Better Fleet?"
+      },
+      "eac": {
+        "content1": "Better Fleet ressembles more a logbook than anything else. Its main automatic feature simulates a fairly simple mouse click, just like a voice command would, and does not technically constitute a macro in itself. Systems like Easy Anti-Cheat (EAC) mostly focus on RAM manipulation and therefore have no reason to condemn our method.",
+        "content2": "Besides, the click is never executed in game and only occurs in the menu, in accordance with the Sea of Thieves and Xbox terms of service (TOS). These terms are broad enough to juridically cover as many situations as possible, but no point mentions our specific use. The option can however be disabled at the user's discretion.",
+        "content3": "It is still essential to understand that using tools such as Better Fleet and Fleet Creator is not entirely devoid of risks, especially regarding IP detection which remains a sensitive point. Our application is as safe as another, but being neither recognised by Rare nor by Microsoft, we fully depend on their sole decision to take action.",
+        "title": "Is there any risk with Easy Anti-Cheat? (EAC)"
+      },
+      "edge": {
+        "content1": "If you have problems running the application or if it crashes after properly installing it, please follow these troubleshooting steps:",
+        "content2": "Make sure your operating system is Windows 10 or Windows 11.",
+        "content3": "Check whether Microsoft Edge and Microsoft Edge WebView2 are correctly installed on your device. These components are essential for the proper functioning of the application.",
+        "content4": "A conflict might occur with your antivirus software. If this one allows it, exclude Better Fleet from the list of present threats. Otherwise, deactivate your software and rerun the application.",
+        "content5": "If the issue still persists despite these checks, try reinstalling the application in order to fix any potential corruption.",
+        "content6": "If after these steps the application is still not working, do not hesitate and meet us on our Discord server for more customised assistance.",
+        "title": "Why does my application crash and/or does not start ?"
+      },
+      "security": {
+        "content1": "Yes, our application was designed with user security as the absolute priority. Following are the measures we implemented to ensure safe use:",
+        "content2": "Reinforced authentication: We incorporated an authentication overlay in order to strengthen the security of user accounts.",
+        "content3": "Open source: The application is completely open source, offering total transparency concerning its use and operation. This allows the community to verify and audit our code, therefore strengthening confidence in our product.",
+        "content4": "Proactive maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes regular dependencies updates and continuously monitoring potential security breaches to prevent any risk.",
+        "content5": "Independent approach: As Better Fleet is not licenced by Microsoft, it is subjected to Windows Defender upon installation. Our application is no less secure and we set our sights on adapting to these constraints we cannot quite control.",
+        "content6": "These joint efforts contribute to a reliable and secure platform for every one our users.",
+        "title": "Is the application secure?"
+      },
+      "update": {
+        "content1": "Whenever an update is available, a pop-up window appears upon launching Better Fleet. You only have to click \"Yes\" to initiate the update. The application will automatically install the latest version and reboot once the update is complete.",
+        "content2": "Should an update be available while Better Fleet is already running, you can simply close the application. You will be offered to do the update at the next launch.",
+        "title": "How do I update Better Fleet?"
       }
     },
-    "title": "F.A.Q"
+    "title": "Frequently Asked Questions"
   },
   "footer": {
-    "content": "Join our global adventure - your passion, our technology. Together, let's transform the game. Powered by community and open innovation.",
-    "discord": "Having trouble? Please contact our team via our server ",
-    "github": "If you are a developer and you love sailing on the seas of Sea Of Thieves, come and contribute to the project!",
+    "content": "Join our worldwide adventure - your passion, our technology. Together, let's transform the game. Powered by the community and open innovation.",
+    "discord": "Are you having trouble? Get immediately in touch with our team on our",
+    "github": "Are you a developer and love to sail on the Sea of Thieves? Then come and contribute to the project!",
     "warning": {
-      "content": "Better Fleet is an unofficial third-party application unrelated to the Sea of Thieves development team. Its use is external and does not affect the experience in any way!",
-      "title": "Warnings"
+      "content": "Better Fleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience!",
+      "title": "Disclaimer"
     }
   },
   "header": {
-    "details": "BetterFleet est actuellement en alpha ! Testez l’application dès maintenant !"
+    "details": "Better Fleet is currently in its beta phase ! Try out the application now !"
   },
-  "name": "BetterFleet",
+  "name": "Better Fleet",
   "nav": {
-    "documentation": "Documentation",
+    "documentation": "Discover",
     "home": "Home",
     "support": "Support"
   },
   "presentation": {
-    "content": "Dive into the world of Sea of Thieves with the ultimate tool to forge alliances like never before. Our app is changing how players log in, offering exceptional fluidity and significantly increasing your chances of finding an alliance, far beyond the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, or create links and navigate together becomes a reference accessible with each click.",
-    "title": "BetterFleet"
+    "content": "Dive into the world of Sea of Thieves with the ultimate tool designed to forge alliances like never before. Our application revolutionises the way players log in, providing exceptional fluidity and significantly increasing your chances of finding an alliance, far surpassing the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, where bonding and sailing together becomes a reality accessible with every click.",
+    "title": "Better Fleet"
   },
   "stats": {
-    "download": "Téléchargement",
-    "players": "Joueur(s) en ligne",
-    "sessions": "Session(s) ouverte",
+    "download": "Downloads",
+    "players": "Online players",
+    "sessions": "Open sessions",
     "title": "Statistics"
   }
 }
