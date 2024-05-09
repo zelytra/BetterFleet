@@ -45,8 +45,8 @@
       "title": "Session not found"
     },
     "socket": {
-      "connectionFailed": "The WebSocket closed unexpectedly",
-      "random": "Failed to connect to the server",
+      "connectionFailed": "The connection to the server failed",
+      "random": "The WebSocket closed unexpectedly",
       "title": "Connection lost"
     },
     "unsupportedMedia": {
