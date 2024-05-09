@@ -15,8 +15,8 @@
 import Header from "@/components/global/Header.vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalKey} from "@/objects/stores/LocalStore.ts";
-import {onMounted, onUnmounted, watch} from "vue";
-import {PlayerDevice, PlayerStates} from "@/objects/fleet/Player.ts";
+import {onUnmounted, watch} from "vue";
+import {PlayerStates} from "@/objects/fleet/Player.ts";
 import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {invoke} from "@tauri-apps/api/tauri";
 import {RustSotServer} from "@/objects/fleet/SotServer.ts";
