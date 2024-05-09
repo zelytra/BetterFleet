@@ -1,5 +1,5 @@
 <template>
-  <section class="auth-page" @click="()=>{console.log(keycloakStore.isAuthenticated)}">
+  <section class="auth-page">
     <img src="@/assets/icons/full-logo.svg" alt="app logo"/>
     <div class="card login-wrapper" v-if="!keycloakStore.isAuthenticated">
       <h1>{{ t('login.welcome') }} <strong>{{ t('appName') }}</strong></h1>
@@ -34,8 +34,23 @@ import PirateButton from "@/vue/form/PirateButton.vue";
 import router from "@/router";
 import {UserStore} from "@/objects/stores/UserStore";
 import {Utils} from "@/objects/utils/Utils";
+import {onMounted, onUnmounted} from "vue";
 
 const {t} = useI18n();
+
+onMounted(() => {
+  document.addEventListener("keydown", keyPressEvent);
+})
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", keyPressEvent)
+})
+
+function keyPressEvent(event: KeyboardEvent) {
+  if (event.key === "Enter") {
+    leavePage()
+  }
+}
 
 function authUser() {
   if (!keycloakStore.isAuthenticated || !keycloakStore.keycloak.authenticated) {
@@ -43,8 +58,8 @@ function authUser() {
   }
 }
 
-function leavePage(){
-  router.push("/fleet/home")
+function leavePage() {
+  router.push("/fleet/session")
 }
 </script>
 

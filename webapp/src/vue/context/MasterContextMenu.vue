@@ -39,7 +39,7 @@ defineExpose({setPos});
 
 function contextClick(item: string) {
   emits("action", item);
-  display.value = true;
+  display.value = false;
 }
 
 function setPos(event: any) {

@@ -32,9 +32,12 @@
           :label="t('config.device.label')"
           v-model:data="deviceOptions"
       />
-      <div class="checkbox-wrapper">
+      <div class="checkbox-wrapper descriptor">
         <input type="checkbox" v-model="activeMacro"/>
-        <p @click="activeMacro = !activeMacro">{{ t("config.macro.check") }}</p>
+        <div class="label-wrapper">
+          <p @click="activeMacro = !activeMacro">{{ t("config.macro.check") }}</p>
+          <p class="description" @click="activeMacro = !activeMacro">{{ t("config.macro.description") }}</p>
+        </div>
       </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.audio')">
@@ -70,7 +73,7 @@
         </div>
       </div>
     </ParameterPart>
-    <ParameterPart title="Crédit">
+    <ParameterPart :title="t('credits.title')">
       <div class="side-content credits">
         <p>{{ t("credits.description") }}</p>
         <p>
@@ -142,6 +145,7 @@ const activeSound = ref<boolean>(true)
 const activeMacro = ref<boolean>(true)
 const hostName = ref<string>(UserStore.player.serverHostName!)
 const username = ref<string>(UserStore.player.username);
+const inputLoading = ref<boolean>(false);
 
 const sound = new Audio(countdownSound);
 
@@ -206,6 +210,7 @@ function resetConfig() {
   volume.value = UserStore.player.soundLevel;
   activeSound.value = UserStore.player.soundEnable;
   activeMacro.value = UserStore.player.macroEnable;
+  inputLoading.value = true;
 }
 
 function onSave() {
@@ -231,6 +236,7 @@ function onSave() {
 }
 
 function isConfigDifferent(): boolean {
+  if (!inputLoading.value) return false;
   if (UserStore.player.username != username.value) return true;
   if (UserStore.player.serverHostName != hostName.value) return true;
   if (langOptions.value.selectedValue && UserStore.player.lang != langOptions.value.selectedValue!.id) return true;
@@ -277,7 +283,6 @@ function runSound() {
 <style scoped lang="scss">
 .user-info {
   height: 100%;
-  //width: 100%;
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
@@ -355,10 +360,24 @@ button {
     }
   }
 
-  .checkbox-wrapper{
+  .checkbox-wrapper {
     display: flex;
     align-items: center;
     gap: 12px;
+
+    &.descriptor {
+      align-items: start;
+    }
+
+    .label-wrapper {
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    p.description {
+      color: var(--secondary-text);
+    }
   }
 
   input[type="checkbox"] {
@@ -406,8 +425,9 @@ button {
 .credits {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  width: 100%;
   gap: 20px;
 
   p {

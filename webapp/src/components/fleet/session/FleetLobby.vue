@@ -241,7 +241,6 @@ function openContextMenu(event: any, player: Player) {
 }
 
 function onContextAction(action: string) {
-  console.log(action)
   if (!props.session) {
     return;
   }

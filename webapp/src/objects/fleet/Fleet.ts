@@ -139,7 +139,7 @@ export class Fleet {
 
   private handleFleetUpdate(receivedFleet: FleetInterface) {
     this.sessionId = receivedFleet.sessionId;
-    this.sessionName = receivedFleet.sessionName;
+    this.sessionName = t('session.name.' + receivedFleet.sessionName);
     this.players = receivedFleet.players;
     this.servers = new Map(Object.entries(receivedFleet.servers));
     this.stats = receivedFleet.stats;

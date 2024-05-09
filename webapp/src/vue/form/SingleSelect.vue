@@ -66,7 +66,7 @@ function updateData(option: InputData) {
       position: absolute;
       top: 50%;
       right: 10px;
-      transform: translate(-50%, -50%) rotate(-90deg);
+      transform: translate(-50%, -50%) rotate(0deg);
       color: var(--primary);
       animation: all 200ms ease-in-out;
       font-size: 20px;

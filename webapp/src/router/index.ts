@@ -1,8 +1,6 @@
 import {createWebHistory, createRouter} from "vue-router";
-import Home from "@/components/fleet/Home.vue";
 import fleet from "@/assets/icons/navigation.svg"
 import config from "@/assets/icons/config.svg"
-import sot from "@/assets/icons/logo.svg"
 import Fleet from "@/components/fleet/Fleet.vue";
 import Config from "@/components/fleet/Config.vue";
 import {keycloakStore} from "@/objects/stores/LoginStates.ts";
@@ -25,7 +23,6 @@ export const routes = [
     name: "Auth",
     component: Authentication,
     meta: {
-      icon: sot,
       displayInNav: false
     }
   },
@@ -37,17 +34,6 @@ export const routes = [
       displayInNav: false
     },
     children: [
-      {
-        path: "home",
-        name: "Home",
-        component: Home,
-        meta: {
-          icon: sot,
-          tooltip: 'home',
-          requiresAuth: true,
-          displayInNav: true
-        }
-      },
       {
         path: "session",
         name: "Fleet",

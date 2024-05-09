@@ -21,6 +21,8 @@ import jakarta.transaction.Transactional;
 import jakarta.websocket.Session;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
@@ -82,8 +84,9 @@ public class SessionManager {
      */
     @Lock(value = Lock.Type.WRITE, time = 200)
     public Fleet joinSession(String sessionId, Player player) {
+
         // First, leave any session the player might currently be in
-        if (getPlayerFromSessionId(player.getSocket().getId()) != null) {
+        if (getFleetByPlayerName(player.getUsername()) != null) {
             leaveSession(player);
         }
 
@@ -118,7 +121,14 @@ public class SessionManager {
             playerLeaveSotServer(player, sotServer);
         }
 
-        fleet.getPlayers().remove(player);
+        // Remove player from the session player list and connected player list
+        List<Player> playerToRemove = new ArrayList<>();
+        for (Player fleetPlayer : fleet.getPlayers()) {
+            if (fleetPlayer.getUsername().equalsIgnoreCase(player.getUsername())) {
+                playerToRemove.add(fleetPlayer);
+            }
+        }
+        fleet.getPlayers().removeAll(playerToRemove);
         fleet.getServers().forEach((key, value) -> value.getConnectedPlayers().remove(player));
 
         // Check if player was master, then give another user the master role
@@ -128,7 +138,10 @@ public class SessionManager {
             Log.info("[" + fleet.getSessionId() + "] Master as left, giving the role to " + newMaster.getUsername());
         }
 
-        broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        // Broadcast player leave data to the session
+        if (!fleet.getPlayers().isEmpty()) {
+            broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        }
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
 
         // Clean empty session
@@ -138,7 +151,7 @@ public class SessionManager {
         }
 
         //Close the socket if not yet closed
-        if (player.getSocket().isOpen()) {
+        if (player.getSocket() != null && player.getSocket().isOpen()) {
             try {
                 player.getSocket().close();
             } catch (IOException e) {

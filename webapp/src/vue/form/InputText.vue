@@ -49,7 +49,7 @@ function resetInput() {
     justify-content: space-between;
     align-items: center;
     gap: 12px;
-    min-width: 250px;
+    min-width: 300px;
 
     &.disabled {
       cursor: not-allowed;
