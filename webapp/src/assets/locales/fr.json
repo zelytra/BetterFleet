@@ -68,7 +68,7 @@
       "title": "Connexion impossible"
     }
   },
-  "appName": "Better Fleet",
+  "appName": "BetterFleet",
   "config": {
     "device": {
       "label": "Plateforme"
@@ -118,9 +118,9 @@
   },
   "credits": {
     "and": "et",
-    "description": "Better Fleet a été développé dans le but de faciliter la création d'alliances sur Sea of Thieves",
+    "description": "BetterFleet a été développé dans le but de faciliter la création d'alliances sur Sea of Thieves",
     "designed": "Designé par",
-    "details": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
+    "details": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
     "developed": "Développé par",
     "socials": "Retrouvez-nous ici :",
     "sot": {
@@ -152,7 +152,7 @@
   },
   "login": {
     "continue": "Continuer",
-    "description": "Bienvenue sur Better Fleet ! Nous sommes ravis de vous compter parmi nous. Afin d'utiliser l'application, merci de vous connecter à votre compte ou d'en créer un !",
+    "description": "Bienvenue sur BetterFleet ! Nous sommes ravis de vous compter parmi nous. Afin d'utiliser l'application, merci de vous connecter à votre compte ou d'en créer un !",
     "disconnect": "Ce n’est pas votre compte ?",
     "loginButton": "Se connecter",
     "succeed": "Connexion réussie !",

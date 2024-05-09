@@ -68,7 +68,7 @@
       "title": "Connection failed"
     }
   },
-  "appName": "Better Fleet",
+  "appName": "BetterFleet",
   "config": {
     "device": {
       "label": "Platform"
@@ -118,9 +118,9 @@
   },
   "credits": {
     "and": "and",
-    "description": "Better Fleet was developed in order to facilitate the formation of alliances on Sea of Thieves",
+    "description": "BetterFleet was developed in order to facilitate the formation of alliances on Sea of Thieves",
     "designed": "Designed by",
-    "details": "Better Fleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience!",
+    "details": "BetterFleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience!",
     "developed": "Developed by",
     "socials": "Find us here:",
     "sot": {
@@ -152,7 +152,7 @@
   },
   "login": {
     "continue": "Continue",
-    "description": "Welcome to Better Fleet! We are thrilled to have you figure among us. In order to access the application, please log in to your account or create one!",
+    "description": "Welcome to BetterFleet! We are thrilled to have you figure among us. In order to access the application, please log in to your account or create one!",
     "disconnect": "This is not your account?",
     "loginButton": "Sign in",
     "succeed": "Login Successful!",

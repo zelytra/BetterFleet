@@ -5,7 +5,7 @@
     "downloadHere": "Download here"
   },
   "comparison": {
-    "description": "Better Fleet stands as a performance titan by reducing server search time significantly – displaying a speed 3 to 4 times higher than that of Fleet Creator. When we look at our graph, the green bars, corresponding to Better Fleet, reach inferior values with a consistency that notes an advanced technical optimisation. This means that, concretely, Better Fleet locates the game server with remarkable agility, drastically reducing connection delays. Players can thus expedite a near-instant transition to their favourite virtual worlds, thanks to a concise platform for efficiency and speed. Better Fleet is the guarantee of an uncompromising performance for an unequal user experience.",
+    "description": "BetterFleet stands as a performance titan by reducing server search time significantly – displaying a speed 3 to 4 times higher than that of Fleet Creator. When we look at our graph, the green bars, corresponding to BetterFleet, reach inferior values with a consistency that notes an advanced technical optimisation. This means that, concretely, BetterFleet locates the game server with remarkable agility, drastically reducing connection delays. Players can thus expedite a near-instant transition to their favourite virtual worlds, thanks to a concise platform for efficiency and speed. BetterFleet is the guarantee of an uncompromising performance for an unequal user experience.",
     "subtitle": "A turbocharged connection for a triple speed gaming experience!",
     "title": "Comparison with Fleet Creator"
   },
@@ -16,7 +16,7 @@
     "license": "Licence"
   },
   "descriptions": {
-    "globe": "Better Fleet combines design and efficiency. Inspired by Sea of Thieves artistic direction, you will feel like navigating within an extension of the game at the height of responsiveness.",
+    "globe": "BetterFleet combines design and efficiency. Inspired by Sea of Thieves artistic direction, you will feel like navigating within an extension of the game at the height of responsiveness.",
     "hourglass": "Our synchronised auto-click feature implements a perfectly coordinated countdown for every player in the session, ensuring an impressively efficient server research that lowers waiting time to a minimum.",
     "key": "Our application ensures the security of users thanks to its open source code, allowing full transparency, and a team of active developers dedicated to regular updates and security maintenance."
   },
@@ -46,7 +46,7 @@
   },
   "faq": {
     "copy": "Link copied",
-    "description": "You have a question about Better Fleet? Here we answer the most frequently asked questions",
+    "description": "You have a question about BetterFleet? Here we answer the most frequently asked questions",
     "faq": "F.A.Q.",
     "more": "You are facing complications or you cannot find an answer to your problem? Meet us here on our",
     "question": {
@@ -77,20 +77,20 @@
         "content1": "Go to our official website:",
         "content2": "Click the \"Download\" button.",
         "content3": "Follow the onscreen instructions to complete the installation.",
-        "content4": "That's it! After these steps, Better Fleet will be installed on your device.",
-        "title": "How do I install Better Fleet?"
+        "content4": "That's it! After these steps, BetterFleet will be installed on your device.",
+        "title": "How do I install BetterFleet?"
       },
       "eac": {
-        "content1": "Better Fleet ressembles more a logbook than anything else. Its main automatic feature simulates a fairly simple mouse click, just like a voice command would, and does not technically constitute a macro in itself. Systems like Easy Anti-Cheat (EAC) mostly focus on RAM manipulation and therefore have no reason to condemn our method.",
+        "content1": "BetterFleet ressembles more a logbook than anything else. Its main automatic feature simulates a fairly simple mouse click, just like a voice command would, and does not technically constitute a macro in itself. Systems like Easy Anti-Cheat (EAC) mostly focus on RAM manipulation and therefore have no reason to condemn our method.",
         "content2": "Besides, the click is never executed in game and only occurs in the menu, in accordance with the Sea of Thieves and Xbox terms of service (TOS). These terms are broad enough to juridically cover as many situations as possible, but no point mentions our specific use. The option can however be disabled at the user's discretion.",
-        "content3": "It is still essential to understand that using tools such as Better Fleet and Fleet Creator is not entirely devoid of risks, especially regarding IP detection which remains a sensitive point. Our application is as safe as another, but being neither recognised by Rare nor by Microsoft, we fully depend on their sole decision to take action.",
+        "content3": "It is still essential to understand that using tools such as BetterFleet and Fleet Creator is not entirely devoid of risks, especially regarding IP detection which remains a sensitive point. Our application is as safe as another, but being neither recognised by Rare nor by Microsoft, we fully depend on their sole decision to take action.",
         "title": "Is there any risk with Easy Anti-Cheat? (EAC)"
       },
       "edge": {
         "content1": "If you have problems running the application or if it crashes after properly installing it, please follow these troubleshooting steps:",
         "content2": "Make sure your operating system is Windows 10 or Windows 11.",
         "content3": "Check whether Microsoft Edge and Microsoft Edge WebView2 are correctly installed on your device. These components are essential for the proper functioning of the application.",
-        "content4": "A conflict might occur with your antivirus software. If this one allows it, exclude Better Fleet from the list of present threats. Otherwise, deactivate your software and rerun the application.",
+        "content4": "A conflict might occur with your antivirus software. If this one allows it, exclude BetterFleet from the list of present threats. Otherwise, deactivate your software and rerun the application.",
         "content5": "If the issue still persists despite these checks, try reinstalling the application in order to fix any potential corruption.",
         "content6": "If after these steps the application is still not working, do not hesitate and meet us on our Discord server for more customised assistance.",
         "title": "Why does my application crash and/or does not start ?"
@@ -100,14 +100,14 @@
         "content2": "Reinforced authentication: We incorporated an authentication overlay in order to strengthen the security of user accounts.",
         "content3": "Open source: The application is completely open source, offering total transparency concerning its use and operation. This allows the community to verify and audit our code, therefore strengthening confidence in our product.",
         "content4": "Proactive maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes regular dependencies updates and continuously monitoring potential security breaches to prevent any risk.",
-        "content5": "Independent approach: As Better Fleet is not licenced by Microsoft, it is subjected to Windows Defender upon installation. Our application is no less secure and we set our sights on adapting to these constraints we cannot quite control.",
+        "content5": "Independent approach: As BetterFleet is not licenced by Microsoft, it is subjected to Windows Defender upon installation. Our application is no less secure and we set our sights on adapting to these constraints we cannot quite control.",
         "content6": "These joint efforts contribute to a reliable and secure platform for every one our users.",
         "title": "Is the application secure?"
       },
       "update": {
-        "content1": "Whenever an update is available, a pop-up window appears upon launching Better Fleet. You only have to click \"Yes\" to initiate the update. The application will automatically install the latest version and reboot once the update is complete.",
-        "content2": "Should an update be available while Better Fleet is already running, you can simply close the application. You will be offered to do the update at the next launch.",
-        "title": "How do I update Better Fleet?"
+        "content1": "Whenever an update is available, a pop-up window appears upon launching BetterFleet. You only have to click \"Yes\" to initiate the update. The application will automatically install the latest version and reboot once the update is complete.",
+        "content2": "Should an update be available while BetterFleet is already running, you can simply close the application. You will be offered to do the update at the next launch.",
+        "title": "How do I update BetterFleet?"
       }
     },
     "title": "Frequently Asked Questions"
@@ -117,14 +117,14 @@
     "discord": "Are you having trouble? Get immediately in touch with our team on our",
     "github": "Are you a developer and love to sail on the Sea of Thieves? Then come and contribute to the project!",
     "warning": {
-      "content": "Better Fleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience!",
+      "content": "BetterFleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience!",
       "title": "Disclaimer"
     }
   },
   "header": {
-    "details": "Better Fleet is currently in its beta phase ! Try out the application now !"
+    "details": "BetterFleet is currently in its beta phase ! Try out the application now !"
   },
-  "name": "Better Fleet",
+  "name": "BetterFleet",
   "nav": {
     "documentation": "Discover",
     "home": "Home",
@@ -132,7 +132,7 @@
   },
   "presentation": {
     "content": "Dive into the world of Sea of Thieves with the ultimate tool designed to forge alliances like never before. Our application revolutionises the way players log in, providing exceptional fluidity and significantly increasing your chances of finding an alliance, far surpassing the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, where bonding and sailing together becomes a reality accessible with every click.",
-    "title": "Better Fleet"
+    "title": "BetterFleet"
   },
   "stats": {
     "download": "Downloads",

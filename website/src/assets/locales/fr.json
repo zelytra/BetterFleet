@@ -5,7 +5,7 @@
     "downloadHere": "Télécharger ici"
   },
   "comparison": {
-    "description": "Better Fleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de Fleet Creator. Lorsqu'on observe notre graphique, les barres vertes, correspondant à Better Fleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, Better Fleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. Better Fleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
+    "description": "BetterFleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de Fleet Creator. Lorsqu'on observe notre graphique, les barres vertes, correspondant à BetterFleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, BetterFleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. BetterFleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
     "subtitle": "Une connexion turbo-chargée pour une expérience de jeu triple vitesse !",
     "title": "Comparaison avec Fleet Creator"
   },
@@ -16,7 +16,7 @@
     "license": "Licence"
   },
   "descriptions": {
-    "globe": "Better Fleet mêle design et efficacité. Reprenant une direction artistique proche de Sea of Thieves, vous aurez l'impression de naviguer dans une extension du jeu au summum de la réactivité.",
+    "globe": "BetterFleet mêle design et efficacité. Reprenant une direction artistique proche de Sea of Thieves, vous aurez l'impression de naviguer dans une extension du jeu au summum de la réactivité.",
     "hourglass": "Notre fonctionnalité d'auto-clic synchronisée met en œuvre un décompte parfaitement coordonné entre tous les joueurs de la session, garantissant une recherche de serveur d'une efficacité redoutable qui réduit le temps d'attente au minimum.",
     "key": "Notre application assure la sécurité des utilisateurs grâce à son code open source, permettant une transparence totale, et à une équipe de développeurs actifs qui se consacre à des mises à jour régulières et à la maintenance de la sécurité."
   },
@@ -46,7 +46,7 @@
   },
   "faq": {
     "copy": "Lien copié",
-    "description": "Vous avez une question concernant Better Fleet ? Nous répondons ici aux questions les plus fréquentes",
+    "description": "Vous avez une question concernant BetterFleet ? Nous répondons ici aux questions les plus fréquentes",
     "faq": "F.A.Q.",
     "more": "Vous rencontrez des difficultés ou vous ne trouvez pas de réponse à votre problème ? Rendez-vous sur notre",
     "question": {
@@ -77,20 +77,20 @@
         "content1": "Rendez-vous sur notre site officiel :",
         "content2": "Cliquez sur le bouton \"Télécharger\".",
         "content3": "Suivez les instructions à l'écran pour compléter l'installation.",
-        "content4": "Et voilà ! Après ces étapes, Better Fleet sera installé sur votre appareil.",
-        "title": "Comment installer Better Fleet ?"
+        "content4": "Et voilà ! Après ces étapes, BetterFleet sera installé sur votre appareil.",
+        "title": "Comment installer BetterFleet ?"
       },
       "eac": {
-        "content1": "Better Fleet se rapproche plus d'un journal de bord qu'autre chose. Sa principale fonction automatique simule un simple clic de souris, tout comme le ferait une commande vocale, et ne constitue pas une macro à proprement parler. Les systèmes comme Easy Anti-Cheat (EAC) se concentrent surtout sur les manipulations de mémoire vive (la RAM) et n'ont donc pas de raison de condamner notre méthode.",
+        "content1": "BetterFleet se rapproche plus d'un journal de bord qu'autre chose. Sa principale fonction automatique simule un simple clic de souris, tout comme le ferait une commande vocale, et ne constitue pas une macro à proprement parler. Les systèmes comme Easy Anti-Cheat (EAC) se concentrent surtout sur les manipulations de mémoire vive (la RAM) et n'ont donc pas de raison de condamner notre méthode.",
         "content2": "De plus, le clic n'est jamais exécuté en jeu et n'intervient que dans les menus, conformément aux conditions d'utilisation de Sea of Thieves et de Xbox. Ces conditions sont vastes afin de couvrir juridiquement un maximum de situations, mais aucun point ne mentionne notre utilisation spécifique. L'option est toutefois désactivable au bon vouloir de l'utilisateur.",
-        "content3": "Il reste essentiel de comprendre que l'utilisation d'outils tels que Better Fleet et Fleet Creator n'est pas entièrement dénuée de risques, notamment concernant la détection d'IP qui reste un point sensible. Notre application est aussi sûre qu'une autre, mais n'étant ni reconnus de Rare ni de Microsoft, nous dépendons pleinement de leur seule volonté d'agir.",
+        "content3": "Il reste essentiel de comprendre que l'utilisation d'outils tels que BetterFleet et Fleet Creator n'est pas entièrement dénuée de risques, notamment concernant la détection d'IP qui reste un point sensible. Notre application est aussi sûre qu'une autre, mais n'étant ni reconnus de Rare ni de Microsoft, nous dépendons pleinement de leur seule volonté d'agir.",
         "title": "Y a-t-il des risques avec Easy Anti-Cheat ? (EAC)"
       },
       "edge": {
         "content1": "Si vous rencontrez des problèmes pour lancer l'application ou si celle-ci plante après une installation correcte, veuillez suivre ces étapes de dépannage :",
         "content2": "Assurez-vous que votre système d'exploitation est Windows 10 ou Windows 11.",
         "content3": "Vérifiez que Microsoft Edge et Microsoft Edge WebView2 sont correctement installés sur votre machine. Ces composants sont essentiels pour le bon fonctionnement de l'application.",
-        "content4": "Il se peut qu'un conflit existe avec votre antivirus. S'il le permet, excluez Better Fleet de la liste des menaces présentes. Autrement, désactivez votre antivirus et relancez l'application.",
+        "content4": "Il se peut qu'un conflit existe avec votre antivirus. S'il le permet, excluez BetterFleet de la liste des menaces présentes. Autrement, désactivez votre antivirus et relancez l'application.",
         "content5": "Si le problème persiste malgré ces vérifications, tentez de réinstaller l'application afin de corriger toute corruption potentielle.",
         "content6": "Si après ces étapes l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée.",
         "title": "Pourquoi mon application plante et/ou ne se lance pas ?"
@@ -100,14 +100,14 @@
         "content2": "Authentification renforcée : Nous avons intégré une surcouche d'authentification pour renforcer la sécurité des comptes utilisateurs.",
         "content3": "Open source : L'application est entièrement open source, offrant une transparence totale sur son utilisation et son fonctionnement. Cela permet à la communauté de vérifier et d'auditer notre code, renforçant ainsi la confiance dans notre produit.",
         "content4": "Maintenance proactive : Nos développeurs s'engagent à maintenir l'application en condition de sécurité optimale. Cela comprend la mise à jour régulière des dépendances et le suivi continu des potentielles failles de sécurité pour prévenir tout risque.",
-        "content5": "Approche indépendante : Better Fleet n'étant pas sous licence Microsoft, il est soumis à Windows Defender lors de son installation. Notre application n'en est pas moins sécurisée et nous visons à nous adapter à ces contraintes dont nous n'avons pas le contrôle.",
+        "content5": "Approche indépendante : BetterFleet n'étant pas sous licence Microsoft, il est soumis à Windows Defender lors de son installation. Notre application n'en est pas moins sécurisée et nous visons à nous adapter à ces contraintes dont nous n'avons pas le contrôle.",
         "content6": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs.",
         "title": "L'application est-elle sécurisée ?"
       },
       "update": {
-        "content1": "Lorsqu'une mise à jour est disponible, une fenêtre pop-up apparaît au lancement de Better Fleet. Vous n'avez qu'à cliquer sur \"Oui\" pour lancer la mise à jour. L'application installera automatiquement la dernière version et redémarrera une fois la mise à jour terminée.",
-        "content2": "Dans le cas où une mise à jour est disponible alors que Better Fleet est déjà lancé, vous pouvez simplement fermer l'application. La mise à jour vous sera proposée au prochain lancement.",
-        "title": "Comment mettre à jour Better Fleet ?"
+        "content1": "Lorsqu'une mise à jour est disponible, une fenêtre pop-up apparaît au lancement de BetterFleet. Vous n'avez qu'à cliquer sur \"Oui\" pour lancer la mise à jour. L'application installera automatiquement la dernière version et redémarrera une fois la mise à jour terminée.",
+        "content2": "Dans le cas où une mise à jour est disponible alors que BetterFleet est déjà lancé, vous pouvez simplement fermer l'application. La mise à jour vous sera proposée au prochain lancement.",
+        "title": "Comment mettre à jour BetterFleet ?"
       }
     },
     "title": "Questions Les Plus Fréquentes"
@@ -117,14 +117,14 @@
     "discord": "Vous rencontrez un souci ? Contactez immédiatement notre équipe sur notre",
     "github": "Vous êtes développeur et vous adorez naviguer sur Sea of Thieves ? Alors venez contribuer au projet !",
     "warning": {
-      "content": "Better Fleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
+      "content": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu !",
       "title": "Avertissement"
     }
   },
   "header": {
-    "details": "Better Fleet est actuellement en bêta ! Testez l’application dès maintenant !"
+    "details": "BetterFleet est actuellement en bêta ! Testez l’application dès maintenant !"
   },
-  "name": "Better Fleet",
+  "name": "BetterFleet",
   "nav": {
     "documentation": "Découvrir",
     "home": "Accueil",
@@ -132,7 +132,7 @@
   },
   "presentation": {
     "content": "Plongez dans l'univers de Sea of Thieves avec l'outil ultime conçu pour forger des alliances comme jamais auparavant. Notre application révolutionne la façon dont les joueurs se connectent, offrant une fluidité exceptionnelle et augmentant significativement vos chances de trouver une alliance, dépassant de loin les capacités des autres applications. Rejoignez notre communauté et transformez votre expérience de jeu en une aventure épique, où créer des liens et naviguer ensemble devient une réalité accessible à chaque clic.",
-    "title": "Better Fleet"
+    "title": "BetterFleet"
   },
   "stats": {
     "download": "Téléchargements",
