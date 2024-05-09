@@ -2,14 +2,14 @@ import {UserStore} from "@/objects/stores/UserStore.ts";
 import {WebSocketMessage, WebSocketMessageType} from "@/objects/fleet/WebSocet.ts";
 import {AlertType} from "@/vue/alert/Alert.ts";
 import {alertProvider} from "@/main.ts";
-import {i18n} from "@/objects/i18n";
+import {tsi18n} from "@/objects/i18n";
 import {ActionPlayer, Player} from "@/objects/fleet/Player.ts";
 import {SotServer} from "@/objects/fleet/SotServer.ts";
 import {LocalTime} from "@js-joda/core";
 import {HTTPAxios} from "@/objects/utils/HTTPAxios.ts";
 import {ResponseType} from "@tauri-apps/api/http";
 
-const {t} = i18n.global;
+const {t} = tsi18n.global;
 
 export interface FleetStatistics {
   tryAmount: number

@@ -4,11 +4,11 @@ import en from "@assets/locales/en.json";
 import es from "@assets/locales/es.json";
 import de from "@assets/locales/de.json";
 
-export const i18n = createI18n({
+export const tsi18n = createI18n({
   legacy: false, // you must set `false`, to use Composition API
   locale: "fr", // set locale
   fallbackLocale: "en", // set fallback locale
   messages: {fr, en, es, de},
 });
 
-export default i18n;
+export default tsi18n;

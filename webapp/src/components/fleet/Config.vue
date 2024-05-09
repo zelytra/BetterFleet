@@ -97,7 +97,7 @@
         </div>
         <p>
           {{ t("credits.sot.thanks") }}
-          <a href="https://https://www.seaofthieves.com" target="_blank">Sea Of Thieves</a>
+          <a href="https://https://www.seaofthieves.com" target="_blank">Sea of Thieves</a>
           {{ t("credits.sot.use") }}
         </p>
         <p class="light">
@@ -370,7 +370,6 @@ button {
     }
 
     .label-wrapper {
-      max-width: 400px;
       display: flex;
       flex-direction: column;
     }

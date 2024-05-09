@@ -58,19 +58,6 @@ const gameStatusRefresh: number = setInterval(() => {
 }, 400);
 
 //document.addEventListener('contextmenu', event => event.preventDefault());
-onMounted(() => {
-  UserStore.init({
-    lang: "en",
-    soundEnable: true,
-    soundLevel: 30,
-    isMaster: false,
-    isReady: false,
-    status: PlayerStates.CLOSED,
-    username: "",
-    device: PlayerDevice.MICROSOFT,
-    macroEnable:true
-  });
-});
 
 window.onbeforeunload = () => {
   window.localStorage.setItem(
