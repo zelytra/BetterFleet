@@ -5,7 +5,7 @@
     "downloadHere": "Descarga aquí"
   },
   "comparison": {
-    "description": "Better Fleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de \"Fleet Creator\". Lorsqu'on observe notre graphique, les barres vertes, correspondant à BetterFleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, BetterFleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. BetterFleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
+    "description": "BetterFleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de \"Fleet Creator\". Lorsqu'on observe notre graphique, les barres vertes, correspondant à BetterFleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, BetterFleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. BetterFleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
     "subtitle": "¡Una conexión turbo para una experiencia de juego de triple velocidad!",
     "title": "Comparación con Fleet Creator"
   },
@@ -117,7 +117,7 @@
     "discord": "¿Estás experimentando algún problema? Póngase en contacto con nuestro equipo inmediatamente a través de nuestro servidor ",
     "github": "¿Eres desarrollador y te encanta navegar por los mares de Sea Of Thieves? ¡Ven y contribuye al proyecto!",
     "warning": {
-      "content": "Better Fleet no es una aplicación oficial asociada a Sea of Thieves y se distancia de cualquier referencia directa a este juego.",
+      "content": "BetterFleet no es una aplicación oficial asociada a Sea of Thieves y se distancia de cualquier referencia directa a este juego.",
       "title": "Advertencias"
     }
   },

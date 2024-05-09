@@ -1,9 +1,11 @@
 import {reactive} from "vue";
 import LocalStore, {LocalKey} from "@/objects/stores/LocalStore.ts";
 import {i18n} from "@/main.ts";
+import {tsi18n} from "@/objects/i18n/index.ts"
 import {Player, PlayerDevice} from "@/objects/fleet/Player.ts";
 import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {keycloakStore} from "@/objects/stores/LoginStates.ts";
+
 
 export const UserStore = reactive({
     player: {} as Player,
@@ -28,17 +30,17 @@ export const UserStore = reactive({
         server: undefined
       };
 
-      //@ts-ignore I18N typescript implementation
-      i18n.global.locale.value = this.player.lang;
+      i18n.global.locale.value = this.player.lang as "fr" | "en" | "es" | "de" || "en";
+      tsi18n.global.locale.value = this.player.lang as "fr" | "en" | "es" | "de" || "en";
       this.player.fleet = new Fleet();
     },
     setUser(user: Player) {
       this.player = user;
     },
     setLang(lang: string) {
-      //@ts-ignore I18N typescript implementation
       this.player.lang = lang;
-      i18n.global.locale.value = (this.player.lang as "fr") || "en";
+      i18n.global.locale.value = lang as "fr" | "en" | "es" | "de" || "en";
+      tsi18n.global.locale.value = lang as "fr" | "en" | "es" | "de" || "en";
     },
   })
 ;

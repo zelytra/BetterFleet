@@ -15,8 +15,8 @@
 import Header from "@/components/global/Header.vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {LocalKey} from "@/objects/stores/LocalStore.ts";
-import {onMounted, onUnmounted, watch} from "vue";
-import {PlayerDevice, PlayerStates} from "@/objects/fleet/Player.ts";
+import {onUnmounted, watch} from "vue";
+import {PlayerStates} from "@/objects/fleet/Player.ts";
 import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {invoke} from "@tauri-apps/api/tauri";
 import {RustSotServer} from "@/objects/fleet/SotServer.ts";
@@ -58,19 +58,6 @@ const gameStatusRefresh: number = setInterval(() => {
 }, 400);
 
 //document.addEventListener('contextmenu', event => event.preventDefault());
-onMounted(() => {
-  UserStore.init({
-    lang: "en",
-    soundEnable: true,
-    soundLevel: 30,
-    isMaster: false,
-    isReady: false,
-    status: PlayerStates.CLOSED,
-    username: "",
-    device: PlayerDevice.MICROSOFT,
-    macroEnable:true
-  });
-});
 
 window.onbeforeunload = () => {
   window.localStorage.setItem(

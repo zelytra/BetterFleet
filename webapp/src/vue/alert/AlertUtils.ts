@@ -1,7 +1,7 @@
 import {Alert, AlertType} from "@/vue/alert/Alert.ts";
-import {i18n} from "@/objects/i18n";
+import {tsi18n} from "@/objects/i18n";
 
-const {t} = i18n.global;
+const {t} = tsi18n.global;
 
 export class AlertUtils {
     public static getErrorAlert(): Alert {
