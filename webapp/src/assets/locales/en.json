@@ -45,9 +45,9 @@
       "title": "Session not found"
     },
     "socket": {
-      "connectionFailed": "Connection lost",
-      "random": "The WebSocket closed unexpectedly",
-      "title": "An error has occurred with the server"
+      "connectionFailed": "The WebSocket closed unexpectedly",
+      "random": "Failed to connect to the server",
+      "title": "Connection lost"
     },
     "unsupportedMedia": {
       "content": "The media you are trying to send is not supported by the application",
