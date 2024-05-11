@@ -6,6 +6,7 @@ import Config from "@/components/fleet/Config.vue";
 import {keycloakStore} from "@/objects/stores/LoginStates.ts";
 import Authentication from "@/components/Authentication.vue";
 import FleetMenuNavigator from "@/components/FleetMenuNavigator.vue";
+import Reports from "@/components/fleet/Reports.vue";
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -54,6 +55,15 @@ export const routes = [
           tooltip: 'config',
           requiresAuth: true,
           displayInNav: true
+        }
+      },
+      {
+        path: "report",
+        name: "Report",
+        component: Reports,
+        meta: {
+          requiresAuth: true,
+          displayInNav: false
         }
       }
     ]

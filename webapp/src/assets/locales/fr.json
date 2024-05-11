@@ -175,6 +175,22 @@
       }
     }
   },
+  "report": {
+    "bug": {
+      "button": "Envoyer le rapport",
+      "content1": "Si vous rencontrer un problème avec l'application, quelque chose qui ne fonctionne pas correctement. Nous vous proposons de nous le rapporter en nous ecrivant un court message qui explique le problème afin que nous puissons le corriger le plus rapidement possible.",
+      "content2": "Les donéees qui nous sont envoyer dans le rapport sont annonyme et ne contiennent aucune information perssonel. Nous envoyons de sinformations purrement statistiques et des messages de debug afin de pouvoir investiguer sur votre problème avec la meilleur efficacité",
+      "title": "Un bug ?"
+    },
+    "faq": {
+      "button": {
+        "discord": "Discord",
+        "faq": "F.A.Q."
+      },
+      "content": "Vous rencontrer un problème ? Rendez-vous sur notre site web, sur la page F.A.Q. pour voir si nous ne vous repondons pas déjà ! Autrement nous vous proposons de nous la poser sur notre Discord",
+      "title": "Vous avez une question ?"
+    }
+  },
   "session": {
     "choice": {
       "createComment": "Goûte à la liberté de régner sur les flots en pirate !",
