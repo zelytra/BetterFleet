@@ -5,8 +5,12 @@
         <h2>{{ t('report.faq.title') }}</h2>
         <p>{{ t('report.faq.content') }}</p>
         <div>
-          <PirateButton :label="t('report.faq.button.discord')"/>
-          <PirateButton :label="t('report.faq.button.faq')"/>
+          <a href="https://discord.gg/sHPp5CPxf2" target="_blank">
+            <PirateButton :label="t('report.faq.button.discord')"/>
+          </a>
+          <a href="https://betterfleet.fr/support" target="_blank">
+            <PirateButton :label="t('report.faq.button.faq')"/>
+          </a>
         </div>
       </div>
     </ParameterPart>
