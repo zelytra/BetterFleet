@@ -1,10 +1,7 @@
 package fr.zelytra.reports;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Date;
 
@@ -16,6 +13,7 @@ public class ReportEntity extends PanacheEntityBase {
     private Date reportingDate;
 
     @Id
+    @GeneratedValue
     @Column(name = "id", unique = true, columnDefinition = "int")
     private int id;
 
@@ -61,5 +59,13 @@ public class ReportEntity extends PanacheEntityBase {
 
     public void setLogs(String logs) {
         this.logs = logs;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
     }
 }

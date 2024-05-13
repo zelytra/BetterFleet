@@ -26,11 +26,12 @@ const deploy = ref<boolean>(false)
 const displayCopy = ref<boolean>(false);
 const props = defineProps({
   title: String,
-  id: String
+  id: String,
+  url: String
 })
 
 function copyLink() {
-  navigator.clipboard.writeText("https://" + window.location.host + "/support#" + props.id);
+  navigator.clipboard.writeText("https://" + window.location.host + "/" + props.url + "#" + props.id);
   displayCopy.value = true;
   setTimeout(() => {
     displayCopy.value = false;
@@ -108,7 +109,7 @@ onMounted(() => {
         position: absolute;
         top: 50%;
         left: 25px;
-        transform: translate(0,-50%);
+        transform: translate(0, -50%);
         white-space: nowrap;
       }
     }
@@ -132,6 +133,9 @@ onMounted(() => {
       display: flex;
       flex-direction: column;
       gap: 12px;
+      max-height: 390px;
+      overflow: hidden;
+      overflow-y: auto;
     }
 
 
