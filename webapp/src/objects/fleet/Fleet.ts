@@ -52,7 +52,7 @@ export class Fleet {
     UserStore.player.isReady = false;
     UserStore.player.isMaster = false;
 
-    await new HTTPAxios("socket/register", null).get(ResponseType.Text).then((response) => {
+    await new HTTPAxios("socket/register").get(ResponseType.Text).then((response) => {
       this.socket = new WebSocket(
         UserStore.player.serverHostName + "/" + response.data + "/" + sessionId);
     }).catch(() => {
