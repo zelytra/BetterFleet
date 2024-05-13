@@ -20,6 +20,15 @@
       "content": "Veuillez mettre à jour votre application",
       "title": "Client obsolète"
     },
+    "report": {
+      "emptyMessage": {
+        "content": "Vous ne pouvez soumettre un rapport sans contenu dans le message",
+        "title": "Message vide"
+      },
+      "send": {
+        "title": "Rapport envoyé"
+      }
+    },
     "research": {
       "notInMenu": {
         "content": "Vous n'êtes pas dans le menu du jeu",

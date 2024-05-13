@@ -28,7 +28,7 @@ import {AxiosResponse} from "axios";
 const reports = ref<ReportInterface[]>([])
 
 onMounted(() => {
-  new HTTPAxios("/report/list/all").get().then((response: AxiosResponse) => {
+  new HTTPAxios("report/list/all").get().then((response: AxiosResponse) => {
     reports.value = response.data as ReportInterface[]
   })
 })
