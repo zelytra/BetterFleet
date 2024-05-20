@@ -9,17 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.6.8",
+    "axios": "^1.7.1",
     "vue": "^3.4.27",
     "vue-i18n": "^9.13.1",
     "vue-kinesis": "^2.0.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
-    "sass": "^1.77.1",
+    "sass": "^1.77.2",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
     "vue-router": "^4.3.2",
-    "vue-tsc": "^2.0.17"
+    "vue-tsc": "^2.0.19"
   }
 }
