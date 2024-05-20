@@ -20,6 +20,7 @@ use winapi::shared::minwindef::DWORD;
 use winapi::um::winsock2;
 use crate::api::GameStatus;
 use sysinfo::{System};
+use idna::domain_to_ascii;
 
 const SIO_RCVALL: DWORD = 0x98000001;
 
@@ -66,13 +67,24 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     }
 
                     // Get hostname
-                    let hostname = match get_local_hostname() {
+                    let mut hostname = match get_local_hostname() {
                         Ok(hn) => hn,
                         Err(e) => {
                             eprintln!("Error getting local hostname: {}", e);
                             continue;
                         }
                     };
+
+                    match domain_to_ascii(&hostname) { //PC with hostname using non-english characters can cause issues
+                        Ok(punycode) => {
+                            hostname = punycode;
+                        }
+                        Err(e) => {
+                            eprintln!("Error converting hostname to Punycode: {}", e);
+                            return;
+                        }
+                    }
+                    println!("Hostname: {}", hostname);
 
                     // We need to add the port to the hostname to get the IP
                     let hostname = format!("{}:0", hostname);
@@ -103,6 +115,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                             // Capture the IP by filtering headers
                             match capture_ip(socket, listen_port).await {
                                 Some((ip, port)) => {
+                                    println!("Found IP: {} Port: {}", ip, port);
                                     // Got an IP, lock api and update every information
                                     let mut api_lock = api_clone.write().await;
                                     api_lock.game_status = GameStatus::InGame;
