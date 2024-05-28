@@ -1,6 +1,6 @@
 [package]
 name = "better_fleet"
-version = "0.2.2-beta"
+version = "0.2.3-beta"
 description = "A better fleet creator"
 authors = ["Zelytra", "dadodasyra"]
 license = ""
@@ -26,6 +26,7 @@ etherparse = "0.14.2"
 hostname = "0.3"
 sysinfo = "0.30.6"
 netstat2 = "0.9.1"
+idna = "0.5.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
