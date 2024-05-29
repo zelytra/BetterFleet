@@ -12,6 +12,8 @@ use crate::window_interaction::{set_focus_to_window, click_in_window_proportiona
 use std::ffi::CString;
 use std::ptr::null_mut;
 use winapi::um::winuser::FindWindowA;
+use tauri_plugin_log::{LogTarget};
+use tauri_plugin_log::fern::colors::ColoredLevelConfig;
 
 mod fetch_informations;
 mod api;
@@ -32,6 +34,13 @@ async fn main() {
 
     tauri::Builder::default()
         .manage(api_arc)
+        .plugin(tauri_plugin_log::Builder::default().targets([
+            LogTarget::LogDir,
+            LogTarget::Stdout,
+            LogTarget::Webview,
+        ])
+        .with_colors(ColoredLevelConfig::default())
+        .build())
         .invoke_handler(tauri::generate_handler![
             get_game_status,
             get_server_ip,
