@@ -15,6 +15,6 @@ export class BugReport {
   }
 
   sendReport() {
-    new HTTPAxios("/report/send").post(this.report)
+    new HTTPAxios("report/send").post(this.report)
   }
 }
