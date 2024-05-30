@@ -1,5 +1,6 @@
 import {keycloakStore} from "@/objects/stores/LoginStates.ts";
 import {fetch, ResponseType} from "@tauri-apps/api/http";
+import {info} from "tauri-plugin-log-api";
 
 export class HTTPAxios {
 
@@ -17,6 +18,7 @@ export class HTTPAxios {
 
   async get(responseType?: ResponseType) {
     const urlPath = this.url + this.path;
+    info("[HTTPAxios.ts][GET] " + urlPath)
     return await fetch(urlPath, {
       method: "GET",
       headers: HTTPAxios.header,
@@ -26,6 +28,7 @@ export class HTTPAxios {
 
   async post(body: any) {
     const urlPath = this.url + this.path;
+    info("[HTTPAxios.ts][POST] " + urlPath)
     return await fetch(urlPath, {
       method: "POST",
       body: {type: "Json", payload: body},

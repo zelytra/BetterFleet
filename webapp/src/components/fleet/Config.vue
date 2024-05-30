@@ -133,6 +133,7 @@ import {PlayerDevice} from "@/objects/fleet/Player.ts";
 import ParameterPart from "@/vue/templates/ParameterPart.vue";
 import {Utils} from "@/objects/utils/Utils.ts";
 import {keycloakStore} from "@/objects/stores/LoginStates.ts";
+import {info} from "tauri-plugin-log-api";
 
 const {t, availableLocales} = useI18n();
 const alerts = inject<AlertProvider>("alertProvider");
@@ -233,6 +234,7 @@ function onSave() {
     UserStore.player.fleet.updateToSession()
   }
   loadOptionList();
+  info("[Config.vue] User saved config");
 }
 
 function isConfigDifferent(): boolean {

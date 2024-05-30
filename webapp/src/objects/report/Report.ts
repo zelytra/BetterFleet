@@ -1,4 +1,5 @@
 import {HTTPAxios} from "@/objects/utils/HTTPAxios.ts";
+import {info} from "tauri-plugin-log-api";
 
 export interface ReportInterface {
   message: string
@@ -15,6 +16,7 @@ export class BugReport {
   }
 
   sendReport() {
+    info("[Report.ts] Sending a report")
     new HTTPAxios("report/send").post(this.report)
   }
 }
