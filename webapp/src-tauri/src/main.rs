@@ -54,17 +54,19 @@ async fn main() {
         .setup(move |app| {
             let log_path = app.path_resolver().app_log_dir().unwrap();
             *LOG_PATH.lock().unwrap() = log_path;
-            println!("{:?}", get_logs(100));
             Ok(())
         })
         .manage(api_arc)
-        .plugin(tauri_plugin_log::Builder::default().targets([
-            LogTarget::LogDir,
-            LogTarget::Stdout,
-            LogTarget::Webview,
-        ])
-        .with_colors(ColoredLevelConfig::default())
-        .build())
+        .plugin(
+            tauri_plugin_log::Builder::default().targets([
+                LogTarget::LogDir,
+                LogTarget::Stdout,
+                LogTarget::Webview,
+            ])
+            .max_file_size(8_000)
+            .with_colors(ColoredLevelConfig::default())
+            .build()
+        )
         .invoke_handler(tauri::generate_handler![
             get_game_status,
             get_server_ip,
@@ -72,6 +74,7 @@ async fn main() {
             get_game_object,
             get_last_updated_server_ip,
             rise_anchor,
+            get_logs,
             get_system_info
         ])
         .run(tauri::generate_context!())
@@ -149,20 +152,20 @@ fn rise_anchor() -> bool {
 }
 
 #[tauri::command]
-fn get_logs(max_lines: usize) -> Result<String, Box<dyn std::error::Error>> {
+async fn get_logs(max_lines: usize) -> tauri::Result<serde_json::Value> {
     let log_path = LOG_PATH.lock().unwrap().clone();
     info!("Exporting logs from {}", log_path.display());
 
     let mut output = String::new();
 
-    let entries = fs::read_dir(log_path)?;
+    let entries = fs::read_dir(log_path).map_err(|e| tauri::Error::from(e))?;
 
     for entry_result in entries {
-        let entry = entry_result?;
+        let entry = entry_result.map_err(|e| tauri::Error::from(e))?;
         if entry.path().is_file() {
-            let file = fs::File::open(entry.path())?;
+            let file = fs::File::open(entry.path()).map_err(|e| tauri::Error::from(e))?;
             let reader = io::BufReader::new(file);
-            let lines: Vec<String> = reader.lines().collect::<Result<_, _>>()?;
+            let lines: Vec<String> = reader.lines().collect::<Result<_, _>>().map_err(|e| tauri::Error::from(e))?;
             let lines = lines.into_iter().rev().take(max_lines).collect::<Vec<_>>();
 
             for line in lines {
@@ -172,7 +175,7 @@ fn get_logs(max_lines: usize) -> Result<String, Box<dyn std::error::Error>> {
         }
     }
 
-    Ok(output)
+    Ok(serde_json::Value::String(output))
 }
 
 #[tauri::command]
