@@ -188,7 +188,7 @@
     "bug": {
       "button": "Envoyer le rapport",
       "content1": "Si vous rencontrer un problème avec l'application, quelque chose qui ne fonctionne pas correctement. Nous vous proposons de nous le rapporter en nous ecrivant un court message qui explique le problème afin que nous puissons le corriger le plus rapidement possible.",
-      "content2": "Les donéees qui nous sont envoyer dans le rapport sont annonyme et ne contiennent aucune information perssonel. Nous envoyons de sinformations purrement statistiques et des messages de debug afin de pouvoir investiguer sur votre problème avec la meilleur efficacité",
+      "content2": "Les donéees qui nous sont envoyées dans le rapport sont annonyme et ne contiennent aucune informations personnelles. Nous envoyons des informations statistiques, des messages de debug afin de pouvoir investiguer sur votre problème avec la meilleur efficacité.",
       "title": "Un bug ?"
     },
     "faq": {
