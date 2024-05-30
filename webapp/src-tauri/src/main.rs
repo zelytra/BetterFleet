@@ -2,7 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::ffi::CString;
-use std::{fs, io};
+use std::{fs, io, panic};
 use std::io::BufRead;
 use std::path::PathBuf;
 use std::ptr::null_mut;
@@ -10,7 +10,7 @@ use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::Duration;
 use lazy_static::lazy_static;
-use log::info;
+use log::{error, info};
 use serde::Serialize;
 use tauri::State;
 use tauri_plugin_log::fern::colors::ColoredLevelConfig;
@@ -42,6 +42,13 @@ lazy_static! {
 #[tokio::main]
 async fn main() {
     let api_arc = fetch_informations::init().await.expect("Failed to initialize API");
+
+    panic::set_hook(Box::new(move |panic_info| {
+        error!("Crashed, gathering informations");
+        let payload = panic_info.payload().downcast_ref::<&str>().unwrap_or(&"Unknown panic");
+        let location = panic_info.location().map(|l| l.to_string()).unwrap_or_else(|| String::from("Unknown location"));
+        error!("Panic occurred at {}: {}", location, payload);
+    }));
 
     tauri::Builder::default()
         .setup(move |app| {
