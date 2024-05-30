@@ -37,12 +37,13 @@ import PirateButton from "@/vue/form/PirateButton.vue";
 import {inject, ref} from "vue";
 import {BugReport, ReportInterface} from "@/objects/report/Report.ts";
 import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
+import {invoke} from "@tauri-apps/api/tauri";
 
 const {t} = useI18n()
 const reportMessage = ref("")
 const alerts = inject<AlertProvider>("alertProvider");
 
-function sendReport() {
+async function sendReport() {
   if (reportMessage.value.length == 0) {
     alerts?.sendAlert({
       title: t('alert.report.emptyMessage.title'),
@@ -57,6 +58,17 @@ function sendReport() {
     logs: "",
     message: reportMessage.value
   }
+  await invoke('get_logs', {maxLines: 5000})
+      .then(logs => {
+        report.logs = logs as string;
+      })
+
+  await invoke('get_system_info')
+      .then(system => {
+        report.device = system as string;
+      })
+
+
   new BugReport(report).sendReport()
   alerts?.sendAlert({
     title: t('alert.report.send.title'),
