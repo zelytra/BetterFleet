@@ -10,7 +10,7 @@ use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::Duration;
 use lazy_static::lazy_static;
-use log::{error, info};
+use log::{error, info, LevelFilter};
 use serde::Serialize;
 use tauri::State;
 use tauri_plugin_log::fern::colors::ColoredLevelConfig;
@@ -25,6 +25,12 @@ use std::net::{IpAddr, ToSocketAddrs};
 mod fetch_informations;
 mod api;
 mod window_interaction;
+
+#[cfg(debug_assertions)]
+const LOG_LEVEL: LevelFilter = LevelFilter::Debug;
+
+#[cfg(not(debug_assertions))]
+const LOG_LEVEL: LevelFilter = LevelFilter::Info;
 
 #[derive(Serialize)]
 struct GameObject {
@@ -65,6 +71,7 @@ async fn main() {
             ])
             .max_file_size(8_000)
             .with_colors(ColoredLevelConfig::default())
+            .level(LOG_LEVEL)
             .build()
         )
         .invoke_handler(tauri::generate_handler![
