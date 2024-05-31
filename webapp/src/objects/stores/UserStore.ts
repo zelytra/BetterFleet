@@ -5,6 +5,7 @@ import {tsi18n} from "@/objects/i18n/index.ts"
 import {Player, PlayerDevice} from "@/objects/fleet/Player.ts";
 import {Fleet} from "@/objects/fleet/Fleet.ts";
 import {keycloakStore} from "@/objects/stores/LoginStates.ts";
+import {info} from "tauri-plugin-log-api";
 
 
 export const UserStore = reactive({
@@ -33,6 +34,7 @@ export const UserStore = reactive({
       i18n.global.locale.value = this.player.lang as "fr" | "en" | "es" | "de" || "en";
       tsi18n.global.locale.value = this.player.lang as "fr" | "en" | "es" | "de" || "en";
       this.player.fleet = new Fleet();
+      info("[UserStore.ts] UserStore loaded");
     },
     setUser(user: Player) {
       this.player = user;
@@ -41,6 +43,7 @@ export const UserStore = reactive({
       this.player.lang = lang;
       i18n.global.locale.value = lang as "fr" | "en" | "es" | "de" || "en";
       tsi18n.global.locale.value = lang as "fr" | "en" | "es" | "de" || "en";
+      info("[UserStore.ts] Changed lang to " + lang);
     },
   })
 ;

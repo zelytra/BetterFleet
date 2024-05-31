@@ -21,6 +21,7 @@ use winapi::um::winsock2;
 use crate::api::GameStatus;
 use sysinfo::{System};
 use idna::domain_to_ascii;
+use log::{debug, info, warn, error};
 
 const SIO_RCVALL: DWORD = 0x98000001;
 
@@ -36,6 +37,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
 
             if pid.is_empty() {
                 api.write().await.game_status = GameStatus::Closed;
+                debug!("Game is closed");
             } else {
                 let pid = pid[0].parse().unwrap();
                 // List of udp sockets used by the game
@@ -44,9 +46,11 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                 // Update game_status
                 if udp_connections.len() == 0 { // 0 = First menu/launching
                     api.write().await.game_status = GameStatus::Started;
+                    debug!("Game is started");
                 } else if udp_connections.len() == 1 { // Main menu
                     api.write().await.game_status = GameStatus::MainMenu;
                     api.write().await.main_menu_port = udp_connections[0];
+                    debug!("Game is in main menu with main menu port: {}", udp_connections[0]);
                 } else if udp_connections.len() == 2 { // 2 sockets = connected to a server
                     // Get UDP Listen port, that the other one that is not main_menu_port
                     let mut listen_port = udp_connections[0];
@@ -55,9 +59,9 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     if main_menu_port == 0 {
                         // This may happen when BetterFleet was launched after the connection to the server
                         // So we use the old technic of netstat powershell which output in order, mainmenu = first udp socket
-                        println!("Using netstat powershell to get main_menu_port");
+                        info!("Using netstat powershell to get main_menu_port");
                         let udp_connections = get_udp_connections_powershell(pid);
-                        println!("{:?}", udp_connections);
+                        info!("{:?}", udp_connections);
                         if udp_connections.len() == 2 {
                             listen_port = udp_connections[1];
                             api.write().await.main_menu_port = udp_connections[0];
@@ -70,7 +74,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     let mut hostname = match get_local_hostname() {
                         Ok(hn) => hn,
                         Err(e) => {
-                            eprintln!("Error getting local hostname: {}", e);
+                            error!("Error getting local hostname: {}", e);
                             continue;
                         }
                     };
@@ -80,18 +84,18 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                             hostname = punycode;
                         }
                         Err(e) => {
-                            eprintln!("Error converting hostname to Punycode: {}", e);
+                            error!("Error converting hostname to Punycode: {}", e);
                             return;
                         }
                     }
-                    println!("Hostname: {}", hostname);
+                    info!("Hostname: {}", hostname);
 
                     // We need to add the port to the hostname to get the IP
                     let hostname = format!("{}:0", hostname);
                     let ip_addresses = match hostname.to_socket_addrs() { //TODO Optimization: Cache ip_addresses
                         Ok(addrs) => addrs.map(|socket_addr| socket_addr.ip()).collect::<Vec<IpAddr>>(),
                         Err(e) => {
-                            eprintln!("Error getting IP addresses: {}", e);
+                            error!("Error getting IP addresses: {}", e);
                             continue;
                         }
                     };
@@ -107,7 +111,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                             let socket = match create_raw_socket(socket_addr).await {
                                 Ok(socket) => socket,
                                 Err(e) => {
-                                    eprintln!("Error creating raw socket: {}", e);
+                                    error!("Error creating raw socket: {}", e);
                                     return;
                                 }
                             };
@@ -115,7 +119,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                             // Capture the IP by filtering headers
                             match capture_ip(socket, listen_port).await {
                                 Some((ip, port)) => {
-                                    println!("Found IP: {} Port: {}", ip, port);
+                                    info!("Found IP: {} Port: {}", ip, port);
                                     // Got an IP, lock api and update every information
                                     let mut api_lock = api_clone.write().await;
                                     api_lock.game_status = GameStatus::InGame;
@@ -133,7 +137,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                                     let last_updated_server_ip = api_clone.read().await.last_updated_server_ip;
                                     let last_server_ip = api_clone.read().await.server_ip.clone();
                                     if last_updated_server_ip.elapsed() > Duration::from_secs(20) && last_server_ip != ""{
-                                        println!("Resetting server_ip, no result");
+                                        info!("Resetting server_ip, no result");
                                         let mut api_lock = api_clone.write().await;
 
                                         api_lock.server_ip = String::new();
@@ -172,7 +176,7 @@ fn get_udp_connections(target_pid: usize) -> Vec<u16> {
     let sockets_info = match get_sockets_info(af_flags, proto_flags) {
         Ok(sockets_info) => sockets_info,
         Err(e) => {
-            eprintln!("Failed to get socket information: {}", e);
+            error!("Failed to get socket information: {}", e);
             return Vec::new();
         }
     };
@@ -314,19 +318,21 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
                                     Some((remote_ip, remote_port))
                                 } else {
                                     // Result make no sense for SoT
-                                    println!("Result make no sense for SoT: {} {}", remote_ip, remote_port);
+                                    if remote_port != 0 {
+                                        warn!("Result make no sense for SoT: {} {}", remote_ip, remote_port);
+                                    }
                                     continue;
                                 }
                             }
                             Err(err) => {
-                                eprintln!("Error receiving packet: {}", err);
+                                error!("Error receiving packet: {}", err);
                                 None
                             }
                         }
                     },
 
                     Ok(_) => continue,
-                    Err(e) => eprintln!("Error receiving packet: {}", e),
+                    Err(e) => error!("Error receiving packet: {}", e),
                 }
             }
             _ = tokio::time::sleep(timeout) => {

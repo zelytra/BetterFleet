@@ -1,6 +1,6 @@
 <template>
   <div class="param-wrapper">
-    <h2>{{ title }}</h2>
+    <h2 v-if="title">{{ title }}</h2>
     <div class="template-wrapper">
       <slot/>
     </div>
@@ -20,6 +20,7 @@ defineProps({
   justify-content: center;
   align-items: center;
   width: 100%;
+  height: 100%;
   gap: 20px;
 
   h2{
@@ -44,6 +45,7 @@ defineProps({
     display: flex;
     align-items: center;
     width: 100%;
+    height: 100%;
     box-sizing: border-box;
     border-radius: 5px;
     gap: 40px;

@@ -1,4 +1,5 @@
 version: '3.4'
+name: betterfleet
 services:
 
   postgres-app:

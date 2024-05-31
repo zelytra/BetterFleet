@@ -40,6 +40,12 @@
         alt="update-button"
       >
       -->
+      <img
+          class="question"
+          src="@/assets/icons/question.svg"
+          alt="update-button"
+          @click="router.push('report')"
+      >
       <div
           v-if="UserStore.player.username"
           class="user-icon"
@@ -55,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import {routes} from "@/router";
+import {router, routes} from "@/router";
 import {ref} from "vue";
 import {UserStore} from "@/objects/stores/UserStore.ts";
 import {Utils} from "@/objects/utils/Utils.ts";
@@ -122,6 +128,11 @@ const {t} = useI18n()
 
     .update {
       width: 24px;
+    }
+
+    .question {
+      width: 20px;
+      cursor: pointer;
     }
 
     .user-icon {

@@ -20,6 +20,15 @@
       "content": "Veuillez mettre à jour votre application",
       "title": "Client obsolète"
     },
+    "report": {
+      "emptyMessage": {
+        "content": "Vous ne pouvez soumettre un rapport sans contenu dans le message",
+        "title": "Message vide"
+      },
+      "send": {
+        "title": "Rapport envoyé"
+      }
+    },
     "research": {
       "notInMenu": {
         "content": "Vous n'êtes pas dans le menu du jeu",
@@ -173,6 +182,22 @@
         "content": "Êtes-vous sûr de vouloir quitter la session ?",
         "title": "QUITTER LA SESSION"
       }
+    }
+  },
+  "report": {
+    "bug": {
+      "button": "Envoyer le rapport",
+      "content1": "Si vous rencontrer un problème avec l'application, quelque chose qui ne fonctionne pas correctement. Nous vous proposons de nous le rapporter en nous ecrivant un court message qui explique le problème afin que nous puissons le corriger le plus rapidement possible.",
+      "content2": "Les donéees qui nous sont envoyées dans le rapport sont annonyme et ne contiennent aucune informations personnelles. Nous envoyons des informations statistiques, des messages de debug afin de pouvoir investiguer sur votre problème avec la meilleur efficacité.",
+      "title": "Un bug ?"
+    },
+    "faq": {
+      "button": {
+        "discord": "Discord",
+        "faq": "F.A.Q."
+      },
+      "content": "Vous rencontrer un problème ? Rendez-vous sur notre site web, sur la page F.A.Q. pour voir si nous ne vous repondons pas déjà ! Autrement nous vous proposons de nous la poser sur notre Discord",
+      "title": "Vous avez une question ?"
     }
   },
   "session": {

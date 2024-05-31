@@ -3,7 +3,7 @@
     <img src="@/assets/icons/logo.svg" alt="app icon"/>
     <nav>
       <router-link
-          v-for="route in routes"
+          v-for="route in routes.filter((x)=> x.meta.displayInNav )"
           :key="route.name"
           class="router-link"
           :to="route.path"

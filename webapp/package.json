@@ -14,9 +14,10 @@
   "dependencies": {
     "@js-joda/core": "^5.6.2",
     "@tauri-apps/api": "^1.5.6",
+    "keycloak-js": "^24.0.4",
+    "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
     "vue": "^3.4.27",
-    "vue-i18n": "^9.13.1",
-    "keycloak-js": "^24.0.4"
+    "vue-i18n": "^9.13.1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.14",
