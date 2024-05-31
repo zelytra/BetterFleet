@@ -20,6 +20,15 @@
       "content": "Por favor actualice su aplicación",
       "title": "Cliente obsoleto"
     },
+    "report": {
+      "emptyMessage": {
+        "content": "No puede enviar un informe sin contenido en el mensaje.",
+        "title": "mensaje vacío"
+      },
+      "send": {
+        "title": "reporte enviado"
+      }
+    },
     "research": {
       "notInMenu": {
         "content": "No estás en el menú del juego.",
@@ -173,6 +182,22 @@
         "content": "¿Estás seguro de que quieres abandonar la sesión?",
         "title": "SALIR DE LA SESIÓN"
       }
+    }
+  },
+  "report": {
+    "bug": {
+      "button": "Enviar reporte",
+      "content1": "Si encuentra algún problema con la aplicación, algo no funciona correctamente. Te sugerimos que nos lo comuniques escribiéndonos un breve mensaje explicando el problema para que podamos corregirlo lo más rápido posible.",
+      "content2": "Los datos que nos envían en el informe son anónimos y no contienen ninguna información personal. Enviamos información estadística y mensajes de depuración para poder investigar su problema de la manera más eficiente posible.",
+      "title": "Un insecto ?"
+    },
+    "faq": {
+      "button": {
+        "discord": "Discordia",
+        "faq": "Preguntas frecuentes"
+      },
+      "content": "¿Tienes algún problema? Visite nuestro sitio web, en la página de preguntas frecuentes para ver si aún no le hemos respondido. De lo contrario te sugerimos que nos preguntes en nuestro Discord",
+      "title": "Tienes una pregunta ?"
     }
   },
   "session": {
