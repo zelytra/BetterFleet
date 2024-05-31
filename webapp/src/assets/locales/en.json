@@ -20,6 +20,15 @@
       "content": "Please update your application",
       "title": "Outdated client"
     },
+    "report": {
+      "emptyMessage": {
+        "content": "You cannot submit a report without content in the post",
+        "title": "Empty message"
+      },
+      "send": {
+        "title": "Report sent"
+      }
+    },
     "research": {
       "notInMenu": {
         "content": "You are not in the game menu",
@@ -173,6 +182,22 @@
         "content": "Are you sure you want to leave the session?",
         "title": "LEAVE THE SESSION"
       }
+    }
+  },
+  "report": {
+    "bug": {
+      "button": "Send Report",
+      "content1": "If you encounter a problem with the app, something that does not work properly. We suggest that you report it to us by writing a short message that explains the problem so that we can correct it as soon as possible.",
+      "content2": "The data sent to us in the report is annonym and does not contain any personal information. We send statistical information, debug messages in order to investigate your problem with the best efficiency.",
+      "title": "A bug?"
+    },
+    "faq": {
+      "button": {
+        "discord": "Discord",
+        "faq": "FAQ"
+      },
+      "content": "Having a problem? Visit our website on the F.A.Q page. to see if we are not answering you! Otherwise we offer you to put it on our Discord",
+      "title": "Do you have a question?"
     }
   },
   "session": {
