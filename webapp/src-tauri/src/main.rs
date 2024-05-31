@@ -161,7 +161,7 @@ fn rise_anchor() -> bool {
 #[tauri::command]
 async fn get_logs(max_lines: usize) -> tauri::Result<serde_json::Value> {
     let log_path = LOG_PATH.lock().unwrap().clone();
-    info!("Exporting logs from {}", log_path.display());
+    info!("Exporting logs from file");
 
     let mut output = String::new();
 

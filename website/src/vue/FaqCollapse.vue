@@ -8,7 +8,7 @@
       </div>
       <img src="@/assets/icons/arrow.svg" alt="arrow"/>
     </div>
-    <div class="content">
+    <div class="content" @click.stop>
       <div class="custom-content">
         <slot/>
       </div>

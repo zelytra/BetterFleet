@@ -48,6 +48,11 @@ onMounted(() => {
     display: flex;
     flex-direction: column;
     gap: 24px;
+    user-select: text;
+  }
+
+  p{
+    user-select: text;
   }
 
   p.logs, p.os {
