@@ -22,8 +22,8 @@
     },
     "report": {
       "emptyMessage": {
-        "content": "You cannot submit a report without content in the post",
-        "title": "Empty message"
+        "content": "Please do your best to describe your issue in the bug report",
+        "title": "Empty report"
       },
       "send": {
         "title": "Report sent"
