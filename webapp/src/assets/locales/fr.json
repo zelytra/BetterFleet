@@ -22,8 +22,8 @@
     },
     "report": {
       "emptyMessage": {
-        "content": "Vous ne pouvez soumettre un rapport sans contenu dans le message",
-        "title": "Message vide"
+        "content": "Veuillez décrire au mieux votre problème dans le rapport de bug",
+        "title": "Rapport vide"
       },
       "send": {
         "title": "Rapport envoyé"
@@ -187,16 +187,16 @@
   "report": {
     "bug": {
       "button": "Envoyer le rapport",
-      "content1": "Si vous rencontrer un problème avec l'application, quelque chose qui ne fonctionne pas correctement. Nous vous proposons de nous le rapporter en nous ecrivant un court message qui explique le problème afin que nous puissons le corriger le plus rapidement possible.",
-      "content2": "Les donéees qui nous sont envoyées dans le rapport sont annonyme et ne contiennent aucune informations personnelles. Nous envoyons des informations statistiques, des messages de debug afin de pouvoir investiguer sur votre problème avec la meilleur efficacité.",
-      "title": "Un bug ?"
+      "content1": "Vos rapports nous aident à corriger tout bug et fonctionnement anormal que vous venez à rencontrer sur l'application. Si tel est votre cas, nous vous invitons à décrire clairement et en détail votre problème dans l'encadré ci-dessous.",
+      "content2": "À noter qu'en plus du message, votre rapport nous transmettra anonymement des données utiles à l'identification du problème.",
+      "title": "Rapporter un bug"
     },
     "faq": {
       "button": {
         "discord": "Discord",
         "faq": "F.A.Q."
       },
-      "content": "Vous rencontrer un problème ? Rendez-vous sur notre site web, sur la page F.A.Q. pour voir si nous ne vous repondons pas déjà ! Autrement nous vous proposons de nous la poser sur notre Discord",
+      "content": "Rendez-vous sur la page F.A.Q. de notre site web, vous y trouverez peut-être déjà une réponse à votre problème ! Autrement vous pouvez nous contacter sur notre Discord. Veuillez noter qu'en cas de bug un rapport vous sera très certainement demandé !",
       "title": "Vous avez une question ?"
     }
   },
