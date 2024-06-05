@@ -186,17 +186,17 @@
   },
   "report": {
     "bug": {
-      "button": "Send Report",
-      "content1": "If you encounter a problem with the app, something that does not work properly. We suggest that you report it to us by writing a short message that explains the problem so that we can correct it as soon as possible.",
-      "content2": "The data sent to us in the report is annonym and does not contain any personal information. We send statistical information, debug messages in order to investigate your problem with the best efficiency.",
-      "title": "A bug?"
+      "button": "Submit report",
+      "content1": "Your reports help us fix any bugs and abnormal functioning you may encounter while browsing the application. If this is your case, we invite you to be as precise as can be and describe your problem in the box below.",
+      "content2": "It is worth noting that besides the message, your report will anonymously send us useful data for identifying the problem.",
+      "title": "Reporting a bug"
     },
     "faq": {
       "button": {
         "discord": "Discord",
-        "faq": "FAQ"
+        "faq": "F.A.Q."
       },
-      "content": "Having a problem? Visit our website on the F.A.Q page. to see if we are not answering you! Otherwise we offer you to put it on our Discord",
+      "content": "Check out the F.A.Q. page of our website, you might already find an answer to your problem there! You can otherwise contact us on our Discord. If it is regarding a bug, please note that you will most certainly be asked to send a report!",
       "title": "Do you have a question?"
     }
   },
