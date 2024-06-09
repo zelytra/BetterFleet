@@ -20,6 +20,15 @@
       "content": "Please update your application",
       "title": "Outdated client"
     },
+    "report": {
+      "emptyMessage": {
+        "content": "Please do your best to describe your issue in the bug report",
+        "title": "Empty report"
+      },
+      "send": {
+        "title": "Report sent"
+      }
+    },
     "research": {
       "notInMenu": {
         "content": "You are not in the game menu",
@@ -45,9 +54,9 @@
       "title": "Session not found"
     },
     "socket": {
-      "connectionFailed": "Connection lost",
+      "connectionFailed": "The connection to the server failed",
       "random": "The WebSocket closed unexpectedly",
-      "title": "An error has occurred with the server"
+      "title": "Connection lost"
     },
     "unsupportedMedia": {
       "content": "The media you are trying to send is not supported by the application",
@@ -173,6 +182,22 @@
         "content": "Are you sure you want to leave the session?",
         "title": "LEAVE THE SESSION"
       }
+    }
+  },
+  "report": {
+    "bug": {
+      "button": "Submit report",
+      "content1": "Your reports help us fix any bugs and abnormal functioning you may encounter while browsing the application. If this is your case, we invite you to be as precise as can be and describe your problem in the box below.",
+      "content2": "It is worth noting that besides the message, your report will anonymously send us useful data for identifying the problem.",
+      "title": "Reporting a bug"
+    },
+    "faq": {
+      "button": {
+        "discord": "Discord",
+        "faq": "F.A.Q."
+      },
+      "content": "Check out the F.A.Q. page of our website, you might already find an answer to your problem there! You can otherwise contact us on our Discord. If it is regarding a bug, please note that you will most certainly be asked to send a report!",
+      "title": "Do you have a question?"
     }
   },
   "session": {

@@ -20,6 +20,15 @@
       "content": "Bitte aktualisieren Sie Ihre Bewerbung",
       "title": "Veralteter Kunde"
     },
+    "report": {
+      "emptyMessage": {
+        "content": "Sie können keinen Bericht ohne Inhalt in der Nachricht einreichen",
+        "title": "Leere Nachricht"
+      },
+      "send": {
+        "title": "Bericht gesendet"
+      }
+    },
     "research": {
       "notInMenu": {
         "content": "Sie befinden sich nicht im Spielmenü",
@@ -173,6 +182,22 @@
         "content": "Sind Sie sicher, dass Sie die Sitzung verlassen möchten?",
         "title": "VERLASSEN SIE DIE SITZUNG"
       }
+    }
+  },
+  "report": {
+    "bug": {
+      "button": "Bericht senden",
+      "content1": "Wenn bei der Anwendung ein Problem auftritt, funktioniert etwas nicht richtig. Wir empfehlen Ihnen, uns das Problem zu melden, indem Sie uns eine kurze Nachricht schreiben, in der Sie das Problem erläutern, damit wir es so schnell wie möglich beheben können.",
+      "content2": "Die im Rahmen der Meldung an uns übermittelten Daten sind anonym und enthalten keine personenbezogenen Daten. Wir versenden statistische Informationen und Debug-Nachrichten, um Ihr Problem so effizient wie möglich untersuchen zu können.",
+      "title": "Ein Käfer ?"
+    },
+    "faq": {
+      "button": {
+        "discord": "Zwietracht",
+        "faq": "FAQs"
+      },
+      "content": "Haben Sie ein Problem? Besuchen Sie unsere Website auf der FAQ-Seite, um zu sehen, ob wir Ihnen noch nicht geantwortet haben! Ansonsten empfehlen wir Ihnen, uns auf unserem Discord zu fragen",
+      "title": "Hast du eine Frage ?"
     }
   },
   "session": {
