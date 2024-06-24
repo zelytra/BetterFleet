@@ -12,20 +12,20 @@
     "tauri-build": "npm run tauri build"
   },
   "dependencies": {
-    "@js-joda/core": "^5.6.2",
+    "@js-joda/core": "^5.6.3",
     "@tauri-apps/api": "^1.5.6",
-    "keycloak-js": "^24.0.4",
+    "keycloak-js": "^25.0.1",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
-    "vue": "^3.4.27",
+    "vue": "^3.4.30",
     "vue-i18n": "^9.13.1"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.14",
     "@vitejs/plugin-vue": "^5.0.5",
-    "sass": "^1.77.4",
-    "typescript": "^5.4.5",
-    "vite": "^5.2.12",
-    "vue-router": "^4.3.2",
-    "vue-tsc": "^2.0.19"
+    "sass": "^1.77.6",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.1",
+    "vue-router": "^4.4.0",
+    "vue-tsc": "^2.0.22"
   }
 }
