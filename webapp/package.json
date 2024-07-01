@@ -16,7 +16,7 @@
     "@tauri-apps/api": "^1.5.6",
     "keycloak-js": "^25.0.1",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
-    "vue": "^3.4.30",
+    "vue": "^3.4.31",
     "vue-i18n": "^9.13.1"
   },
   "devDependencies": {
@@ -26,6 +26,6 @@
     "typescript": "^5.5.2",
     "vite": "^5.3.2",
     "vue-router": "^4.4.0",
-    "vue-tsc": "^2.0.22"
+    "vue-tsc": "^2.0.24"
   }
 }
