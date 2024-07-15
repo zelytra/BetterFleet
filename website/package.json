@@ -1,7 +1,7 @@
 {
   "name": "betterfleet-website",
   "private": true,
-  "version": "0.2.3-beta",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host --port 5174",
