@@ -371,6 +371,11 @@ public class SessionManager {
                 continue;
             }
 
+            if (!player.getSocket().isOpen()) {
+                Log.error("Unable to send message socket is closed");
+                return;
+            }
+
             player.getSocket().getAsyncRemote().sendText(json, result -> {
                 if (result.getException() != null) {
                     Log.error("Unable to send message: " + result.getException());

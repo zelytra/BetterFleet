@@ -213,7 +213,6 @@ public class SessionSocket {
         session.setMaxIdleTimeout(30000); // 1h of timeout
 
         SessionManager manager = sessionManager;
-        player.setSocket(session);
 
         Log.info("[" + player.getUsername() + "] Connected !");
 
@@ -223,11 +222,13 @@ public class SessionSocket {
             Fleet fleet = manager.joinSession(newSessionId, player);
             player.setMaster(true);
             if (fleet != null) {
+                player.setSocket(session);
                 sessionManager.broadcastDataToSession(newSessionId, MessageType.UPDATE, fleet);
             }
         } else {
             Fleet fleet = manager.joinSession(sessionId, player);
             if (fleet != null) {
+                player.setSocket(session);
                 sessionManager.broadcastDataToSession(sessionId, MessageType.UPDATE, fleet);
             }
         }
