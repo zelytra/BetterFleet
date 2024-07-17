@@ -1,7 +1,7 @@
 {
   "name": "betterfleet-website",
   "private": true,
-  "version": "0.2.3-beta",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host --port 5174",
@@ -10,16 +10,16 @@
   },
   "dependencies": {
     "axios": "^1.7.2",
-    "vue": "^3.4.27",
+    "vue": "^3.4.31",
     "vue-i18n": "^9.13.1",
     "vue-kinesis": "^2.0.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",
-    "sass": "^1.77.4",
-    "typescript": "^5.4.5",
-    "vite": "^5.2.12",
-    "vue-router": "^4.3.2",
-    "vue-tsc": "^2.0.19"
+    "sass": "^1.77.6",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.2",
+    "vue-router": "^4.4.0",
+    "vue-tsc": "^2.0.24"
   }
 }

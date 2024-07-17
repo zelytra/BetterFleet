@@ -33,7 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 class SessionSocketTest {
 
     @ConfigProperty(name = "app.version")
-    String appVersion;
+    List<String> appVersion;
 
     @TestHTTPResource("/sessions/sessionId")
     URI websocketEndpoint;
@@ -95,7 +95,7 @@ class SessionSocketTest {
     void onOpen_PlayerSetReady_ReadyTrue() throws IOException, InterruptedException, EncodeException {
         Player player = new Player();
         player.setUsername("Player 1");
-        player.setClientVersion(appVersion);
+        player.setClientVersion(appVersion.get(0));
         player.setReady(false);
 
         betterFleetClient.sendMessage(MessageType.CONNECT, player);
@@ -112,12 +112,38 @@ class SessionSocketTest {
         assertEquals(1, socketMessage.getReadyPlayers().size());
     }
 
+    @Test
+    void TwoSocketOfSamePlayerTryToCreateSession_FirstSessionClosesSecondCreated() throws Exception {
+        Player player = new Player();
+        player.setUsername("Player 1");
+        player.setClientVersion(appVersion.get(0));
+        player.setReady(false);
+
+        betterFleetClient.sendMessage(MessageType.CONNECT, player);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        String sessionId = betterFleetClient.getMessageReceived(Fleet.class).getSessionId();
+        player.setSessionId(sessionId);
+
+        BetterFleetClient playerClient = new BetterFleetClient();
+        SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
+        URI uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/");
+
+        ContainerProvider.getWebSocketContainer().connectToServer(playerClient, uri);
+        playerClient.sendMessage(MessageType.CONNECT, player);
+
+        assertTrue(playerClient.getLatch().await(1, TimeUnit.SECONDS));
+        Fleet socketMessage = playerClient.getMessageReceived(Fleet.class);
+        assertNotNull(socketMessage);
+
+        assertEquals(1, sessionManager.getSessions().size());
+    }
+
     private List<Player> generateFakePlayer(int amount) {
         List<Player> fakePlayer = new ArrayList<>();
         for (int x = 0; x < amount; x++) {
             Player player = new Player();
             player.setUsername("Player " + x);
-            player.setClientVersion(appVersion);
+            player.setClientVersion(appVersion.get(0));
             fakePlayer.add(player);
         }
         return fakePlayer;

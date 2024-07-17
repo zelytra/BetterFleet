@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/webapp" # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       npm:
         applies-to: version-updates
@@ -12,7 +12,7 @@ updates:
   - package-ecosystem: "maven" # See documentation for possible values
     directory: "/backend" # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       npm:
         applies-to: version-updates
@@ -21,7 +21,7 @@ updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/website" # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       npm:
         applies-to: version-updates

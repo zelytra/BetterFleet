@@ -7,7 +7,9 @@ import fr.zelytra.session.server.SotServer;
 import fr.zelytra.statistics.StatisticsEntity;
 import fr.zelytra.statistics.StatisticsRepository;
 import io.quarkus.test.InjectMock;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.oidc.server.OidcWiremockTestResource;
 import jakarta.websocket.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
+@QuarkusTestResource(OidcWiremockTestResource.class)
 public class SessionManagerTest {
 
     @InjectMock
@@ -81,7 +84,7 @@ public class SessionManagerTest {
     }
 
     @Test
-    public void joinSession_PlayerConnectedToTwoSessionWithDifferentSocket_PlayerLeaveFistSession() {
+    public void joinSession_PlayerConnectedToTwoSessionWithDifferentSocket_PlayerLeaveFirstSession() {
         Session session1 = Mockito.mock();
         when(session1.getId()).thenReturn("1");
 
