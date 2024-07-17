@@ -33,7 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 class SessionSocketTest {
 
     @ConfigProperty(name = "app.version")
-    String appVersion;
+    List<String> appVersion;
 
     @TestHTTPResource("/sessions/sessionId")
     URI websocketEndpoint;
@@ -95,7 +95,7 @@ class SessionSocketTest {
     void onOpen_PlayerSetReady_ReadyTrue() throws IOException, InterruptedException, EncodeException {
         Player player = new Player();
         player.setUsername("Player 1");
-        player.setClientVersion(appVersion);
+        player.setClientVersion(appVersion.get(0));
         player.setReady(false);
 
         betterFleetClient.sendMessage(MessageType.CONNECT, player);
@@ -116,7 +116,7 @@ class SessionSocketTest {
     void TwoSocketOfSamePlayerTryToCreateSession_FirstSessionClosesSecondCreated() throws Exception {
         Player player = new Player();
         player.setUsername("Player 1");
-        player.setClientVersion(appVersion);
+        player.setClientVersion(appVersion.get(0));
         player.setReady(false);
 
         betterFleetClient.sendMessage(MessageType.CONNECT, player);
@@ -143,7 +143,7 @@ class SessionSocketTest {
         for (int x = 0; x < amount; x++) {
             Player player = new Player();
             player.setUsername("Player " + x);
-            player.setClientVersion(appVersion);
+            player.setClientVersion(appVersion.get(0));
             fakePlayer.add(player);
         }
         return fakePlayer;
