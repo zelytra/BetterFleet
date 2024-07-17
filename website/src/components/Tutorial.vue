@@ -31,7 +31,6 @@
         <img v-if="x==5" src="@/assets/steps/5.png" alt="step"/>
         <img v-if="x==6" src="@/assets/steps/6.png" alt="step"/>
         <img v-if="x==7" src="@/assets/steps/7.png" alt="step"/>
-        <img v-if="x==8" src="@/assets/steps/8.png" alt="step"/>
       </div>
     </div>
     <Separator/>
@@ -47,7 +46,7 @@ import {useI18n} from "vue-i18n";
 import Separator from "@/vue/Separator.vue";
 
 const {t} = useI18n();
-const stepAmount = 8;
+const stepAmount = 7;
 </script>
 
 <style scoped lang="scss">
