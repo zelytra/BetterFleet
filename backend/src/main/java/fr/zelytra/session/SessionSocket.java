@@ -20,6 +20,7 @@ import jakarta.websocket.server.ServerEndpoint;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.*;
 
 // WebSocket endpoint
@@ -32,7 +33,7 @@ public class SessionSocket {
     public static String PROXY_API_KEY = "";
 
     @ConfigProperty(name = "app.version")
-    String appVersion;
+    List<String> appVersion;
 
     @ConfigProperty(name = "proxy.check.api.key")
     String proxyApiKey;
@@ -200,7 +201,7 @@ public class SessionSocket {
         SocketSecurityEntity.websocketUser.remove(token);
 
         // Refuse connection from client with different version
-        if (player.getClientVersion() == null || !player.getClientVersion().equalsIgnoreCase(appVersion)) {
+        if (player.getClientVersion() == null || !appVersion.contains(player.getClientVersion())) {
             Log.warn("[" + player.getUsername() + "] Client is out of date, connection refused (" + player.getClientVersion() + ")");
             try {
                 sessionManager.sendDataToPlayer(session, MessageType.OUTDATED_CLIENT, null);
