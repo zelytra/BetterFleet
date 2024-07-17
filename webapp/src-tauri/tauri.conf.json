@@ -62,10 +62,8 @@
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
         "timestampUrl": "",
-        "iconPath": "icons/icon.ico",
-        "wix": {
-          "fragmentPaths": ["./wix/registry.wxs"],
-          "componentRefs": ["BetterFleetRegistryEntries"]
+        "nsis": {
+          "installerIcon": "icons/icon.ico"
         }
       }
     },
