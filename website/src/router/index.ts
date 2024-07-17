@@ -3,6 +3,7 @@ import Home from "@/components/Home.vue";
 import {i18n} from "@/objects/i18n";
 import Support from "@/components/Support.vue";
 import Reports from "@/components/Reports.vue";
+import Tutorial from "@/components/Tutorial.vue";
 
 const {t} = i18n.global;
 
@@ -25,6 +26,14 @@ export const routes = [
     path: "/support",
     name: t('nav.support'),
     component: Support,
+    meta: {
+      displayInNav: true
+    }
+  },
+  {
+    path: "/tutorial",
+    name: t('nav.tutorial'),
+    component: Tutorial,
     meta: {
       displayInNav: true
     }
