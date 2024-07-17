@@ -128,7 +128,8 @@
   "nav": {
     "documentation": "Discover",
     "home": "Home",
-    "support": "Support"
+    "support": "Support",
+    "tutorial": "Tutorial"
   },
   "presentation": {
     "content": "Dive into the world of Sea of Thieves with the ultimate tool designed to forge alliances like never before. Our application revolutionises the way players log in, providing exceptional fluidity and significantly increasing your chances of finding an alliance, far surpassing the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, where bonding and sailing together becomes a reality accessible with every click.",
@@ -139,5 +140,55 @@
     "players": "Online players",
     "sessions": "Open sessions",
     "title": "Statistics"
+  },
+  "tutorial": {
+    "end": {
+      "content": "Good wind and that the riches of the seas are yours, enjoy the friendship and the cooking offered by this alliance!",
+      "title": "Once the server is found?"
+    },
+    "howTo": {
+      "content": "To create an alliance in Sea of Thieves, players must coordinate their actions accurately. The organization starts well before taking the sea, often in the morning or at an agreed moment by all participants. The key is to synchronize the moment or each click the \"raise anch\" button in the game, This potentially allows the different crews to find themselves on the same server. This is where BetterFleet enters the seal to facilitate this synchronization. BetterFleet offers a platform where crews can communicate and plan their coordinated actions.",
+      "title": "How to create an alliance?"
+    },
+    "step": {
+      "1": {
+        "content": "Open the BetterFleet app and log in with your credentials to access your personal account.",
+        "title": "Connecting to Application"
+      },
+      "2": {
+        "content": "In the application settings, go to your profile page (user) to ensure that all information is correct and up to date.",
+        "title": "User Profile Configuration"
+      },
+      "3": {
+        "content": "Select the 'Create Session' option to set up a new space where you can invite other players to join your alliance.",
+        "title": "Session Creation"
+      },
+      "4": {
+        "content": "A unique code will be managed for your session. Give this code to the friends you want to invite to join the alliance.",
+        "title": "Session Code Sharing"
+      },
+      "5": {
+        "content": "Ask all players to go to the 'Raise Anchor' menu of the game, or they will be able to prepare to start the game together.",
+        "title": "Gathering in the 'Rising Anchor Menu'"
+      },
+      "6": {
+        "content": "Each player must then indicate that they are prefer. This is usually done by selecting the Preference option in the application interface.",
+        "title": "Preparation Confirmation"
+      },
+      "7": {
+        "content": "Once all players are ready, the Mayor of the session (or the leader) initiates a countdown on BetterFleet to coordinate the simultaneous click on 'raise the Anchor'.",
+        "title": "Starting Countdown by Session Mayor"
+      },
+      "8": {
+        "content": "After joining the game, players must check if they are all on the same server. This can be confirmed through BetterFleet's functionalities or by finding itself at an agreed meeting point in the game. If players do not find themselves on the same server, the process must be repeated from step 5 until the server is found.",
+        "title": "Verification of Strength on Server"
+      }
+    },
+    "stepWord": "Step",
+    "title": "Start at BetterFleet",
+    "whatIsIt": {
+      "content": "An alliance server in Sea of Thieves is a game server where several teams have agreed to form a strategic alliance and cook for their mutual benefit. On these servers, crews share the same objectives, such as the collection of treasures, or the completeness of queens, and agree not to attack each other. The idea is that all members of the alliance benefit from the rewards, which optimizes winnings and gaming experience for all participants. This creates an environment where players can focus on teamwork and exploration rather than on competency, which can offer a broader and more community-based experience.",
+      "title": "What is an alliance server on Sea Of Thieves?"
+    }
   }
 }
