@@ -61,7 +61,12 @@
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
-        "timestampUrl": ""
+        "timestampUrl": "",
+        "iconPath": "icons/icon.ico",
+        "wix": {
+          "fragmentPaths": ["./wix/registry.wxs"],
+          "componentRefs": ["BetterFleetRegistryEntries"]
+        }
       }
     },
     "security": {

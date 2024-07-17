@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <!-- Define the custom logo -->
+    <Fragment>
+      <Binary Id="MyLogo" SourceFile="./ressources/logo.bmp" />
+    </Fragment>
+
+    <!-- Customize the UI -->
+    <Fragment>
+      <UI>
+        <UIRef Id="WixUI_InstallDir" />
+        <UIRef Id="WixUI_ErrorProgressText" />
+
+        <!-- Modify the Welcome dialog to include the logo -->
+        <Dialog Id="WelcomeDlg" Width="370" Height="270" Title="[ProductName] Setup">
+          <Control Id="Logo" Type="Bitmap" X="15" Y="15" Width="64" Height="64" TabSkip="no" Text="MyLogo" />
+          <Control Id="Title" Type="Text" X="90" Y="15" Width="265" Height="60" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}[WelcomeTitle]" />
+          <Control Id="Description" Type="Text" X="90" Y="75" Width="265" Height="40" Transparent="yes" NoPrefix="yes" Text="[WelcomeDlgDescription]" />
+          <Control Id="Next" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Text="[Button_Next]" />
+          <Control Id="Cancel" Type="PushButton" X="11" Y="243" Width="56" Height="17" Cancel="yes" Text="[Button_Cancel]" />
+        </Dialog>
+      </UI>
+    </Fragment>
+</Wix>
