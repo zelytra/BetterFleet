@@ -128,7 +128,8 @@
   "nav": {
     "documentation": "Découvrir",
     "home": "Accueil",
-    "support": "Support"
+    "support": "Support",
+    "tutorial": "Tutoriel"
   },
   "presentation": {
     "content": "Plongez dans l'univers de Sea of Thieves avec l'outil ultime conçu pour forger des alliances comme jamais auparavant. Notre application révolutionne la façon dont les joueurs se connectent, offrant une fluidité exceptionnelle et augmentant significativement vos chances de trouver une alliance, dépassant de loin les capacités des autres applications. Rejoignez notre communauté et transformez votre expérience de jeu en une aventure épique, où créer des liens et naviguer ensemble devient une réalité accessible à chaque clic.",
@@ -139,5 +140,55 @@
     "players": "Joueurs en ligne",
     "sessions": "Sessions ouvertes",
     "title": "Statistiques"
+  },
+  "tutorial": {
+    "end": {
+      "content": "Bon vent et que les richesses des mers soient à vous, profitez pleinement de la camaraderie et de la coopération qu'offre cette alliance !",
+      "title": "Une fois le serveur trouvé ?"
+    },
+    "howTo": {
+      "content": "Pour créer une alliance dans Sea of Thieves, les joueurs doivent coordonner leurs actions avec précision. L'organisation commence généralement bien avant de prendre la mer, souvent le matin ou à un moment convenu par tous les participants. La clé est de synchroniser le moment où chacun clique sur le bouton \"Lever l'ancre\" dans le jeu, ce qui permet potentiellement aux différents équipages de se retrouver sur le même serveur. C'est là que BetterFleet entre en scène pour faciliter cette synchronisation. BetterFleet offre une plateforme où les équipages peuvent communiquer et planifier leur action de manière coordonnée.",
+      "title": "Comment créer une alliance ?"
+    },
+    "step": {
+      "1": {
+        "content": "Ouvrez l'application BetterFleet et connectez-vous avec vos identifiants pour accéder à votre compte personnel.",
+        "title": "Connexion à l'Application"
+      },
+      "2": {
+        "content": "Dans les paramètres de l'application, allez sur la page de votre profil (user) pour vous assurer que toutes les informations sont correctes et à jour.",
+        "title": "Configuration du profil utilisateur"
+      },
+      "3": {
+        "content": "Sélectionnez l'option 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
+        "title": "Création d'une Session"
+      },
+      "4": {
+        "content": "Un code unique sera généré pour votre session. Communiquez ce code aux amis que vous souhaitez inviter à faire partie de l'alliance.",
+        "title": "Partage du Code de Session"
+      },
+      "5": {
+        "content": "Demandez à tous les joueurs de se rendre dans le menu 'Lever l'Ancre' du  jeu, où ils pourront se préparer à lancer la partie ensemble.",
+        "title": "Rassemblement dans le Menu 'Lever l'Ancre'"
+      },
+      "6": {
+        "content": "Chaque joueur doit alors indiquer qu'il est prêt. Ceci se fait  habituellement en sélectionnant l'option 'Prêt' dans l'interface de  l'application.",
+        "title": "Confirmation de la Préparation"
+      },
+      "7": {
+        "content": "Une fois tous les joueurs prêts, le maître de session (ou le leader)  initie un compte à rebours sur BetterFleet pour coordonner la simultanéité du clic sur 'Lever l'Ancre'.",
+        "title": "Lancement du Compte à Rebours par le Maître de Session"
+      },
+      "8": {
+        "content": "Après avoir rejoint le jeu, les joueurs doivent vérifier s'ils sont tous  sur le même serveur. Cela peut être confirmé via les fonctionnalités de  BetterFleet ou en se retrouvant à un point de rencontre convenu dans le  jeu. Si les joueurs ne se retrouvent pas sur le même serveur, il faut répéter le processus à partir de l'étape 5 jusqu'à ce que le serveur souhaité soit trouvé.",
+        "title": "Vérification de la Présence sur le Même Serveu"
+      }
+    },
+    "stepWord": "Étape",
+    "title": "Débuter sur BetterFleet",
+    "whatIsIt": {
+      "content": "Un serveur d'alliance dans Sea of Thieves est un serveur de jeu où plusieurs équipages ont convenu de former une alliance stratégique et de coopérer pour leur bénéfice mutuel. Sur ces serveurs, les équipages partagent les mêmes objectifs, comme la collecte de trésors ou la complétion de quêtes, et s'accordent pour ne pas s'attaquer les uns les autres. L'idée est que tous les membres de l'alliance profitent des récompenses, ce qui optimise les gains et l'expérience de jeu pour tous les participants. Cela crée un environnement où les joueurs peuvent se concentrer sur la coopération et l'exploration plutôt que sur la compétition, ce qui peut offrir une expérience plus détendue et communautaire.",
+      "title": "Qu'est-ce qu'un serveur alliance sur Sea Of Thieves ?"
+    }
   }
 }

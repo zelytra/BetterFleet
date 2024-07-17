@@ -6,8 +6,8 @@
     <Separator/>
     <div class="tutorial-content">
       <div class="text-wrapper">
-        <h1>{{ t('tutorial.whatIsIT.title') }}</h1>
-        <p>{{ t('tutorial.whatIsIT.content') }}</p>
+        <h1>{{ t('tutorial.whatIsIt.title') }}</h1>
+        <p>{{ t('tutorial.whatIsIt.content') }}</p>
       </div>
       <div class="text-wrapper">
         <h1>{{ t('tutorial.howTo.title') }}</h1>
@@ -18,7 +18,7 @@
       <Separator/>
       <div class="tutorial-content">
         <div class="step">
-          <p>{{ t('tutorial.step') + " " + x }}</p>
+          <p>{{ t('tutorial.stepWord') + " " + x }}</p>
         </div>
         <div class="text-wrapper">
           <h1>{{ t('tutorial.step.' + x + '.title') }}</h1>
@@ -69,11 +69,13 @@ const stepAmount = 8;
     h1 {
       z-index: 2;
       font-size: 48px;
+      text-align: center;
     }
 
     p {
       z-index: 2;
       max-width: 50%;
+      text-align: center;
     }
 
     &:before {
@@ -127,6 +129,7 @@ const stepAmount = 8;
       p {
         z-index: 1;
         font-size: 30px;
+        text-align: center;
       }
 
       &:before {
@@ -149,8 +152,14 @@ const stepAmount = 8;
       color: var(--primary);
     }
 
+    p{
+      text-align: center;
+    }
+
     img {
       max-width: 80%;
+      image-rendering: high-quality;
+      border-radius: 8px;
     }
   }
 }
