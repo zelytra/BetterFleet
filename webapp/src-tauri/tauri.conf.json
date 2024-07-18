@@ -63,7 +63,7 @@
         "digestAlgorithm": "sha256",
         "timestampUrl": "",
         "nsis": {
-          "installerIcon": "icons/icon.ico"
+          "installerIcon": "icons/installer-icon.svg"
         }
       }
     },
