@@ -152,19 +152,19 @@
     },
     "step": {
       "1": {
-        "content": "Ouvrez l'application BetterFleet et connectez-vous avec vos identifiants pour accéder à votre compte personnel.",
+        "content": "Tout d'abord, vous aurez besoin d'un compte. En ouvrant BetterFleet il vous sera demandé de vous connecter avec vos identifiants afin d'accéder à l'application.",
         "title": "Connexion à l'Application"
       },
       "2": {
-        "content": "Dans les paramètres de l'application, allez sur la page de votre profil (user) pour vous assurer que toutes les informations sont correctes et à jour.",
-        "title": "Configuration du profil utilisateur"
+        "content": "(clef à supprimer)",
+        "title": "(clef à supprimer)"
       },
       "3": {
         "content": "Sélectionnez l'option 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
-        "title": "Création d'une Session"
+        "title": "Créer une Session"
       },
       "4": {
-        "content": "Un code unique sera généré pour votre session. Communiquez ce code aux amis que vous souhaitez inviter à faire partie de l'alliance.",
+        "content": "Un code unique sera généré pour votre session. Communiquez ce code aux personnes que vous souhaitez inviter à faire partie de l'alliance.",
         "title": "Partage du Code de Session"
       },
       "5": {
