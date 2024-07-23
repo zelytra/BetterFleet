@@ -176,11 +176,11 @@
         "title": "Confirmer que Tout le Monde est Prêt"
       },
       "7": {
-        "content": "Une fois tous les joueurs prêts, le chef de session initie un compte à rebours sur BetterFleet pour coordonner la simultanéité du clic sur 'Lever l'Ancre'.",
+        "content": "Une fois tous les joueurs prêts, le maître de session initie un compte à rebours sur BetterFleet pour coordonner la simultanéité du clic sur 'Lever l'Ancre'.",
         "title": "Lancement du Compte à Rebours"
       },
       "8": {
-        "content": "Une fois en jeu, il vous reste à vérifier si vous avez trouvé un serveur commun. BetterFleet regroupera dans la liste les joueurs qui sont ensemble. Dans le cas contraire, répétez le processus depuis l'étape 4 et ainsi de suite.",
+        "content": "Une fois en jeu, il vous reste à vérifier si vous avez trouvé un serveur commun. BetterFleet regroupera dans la liste les joueurs qui sont ensemble. Si vous n'avez pas trouvé de serveur, répétez le processus depuis l'étape 4 et ainsi de suite.",
         "title": "Vérifier la Présence sur le Même Serveur"
       }
     },
