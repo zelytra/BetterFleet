@@ -50,9 +50,8 @@ class SessionSocketTest {
     @BeforeEach
     void setup() throws URISyntaxException, DeploymentException, IOException {
         Mockito.doReturn(null).when(executorService).submit(any(Runnable.class));
-        String sessionId = sessionManager.createSession();
         SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
-        this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/" + sessionId);
+        this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/");
         betterFleetClient = new BetterFleetClient();
         ContainerProvider.getWebSocketContainer().connectToServer(betterFleetClient, uri);
     }
@@ -158,6 +157,7 @@ class SessionSocketTest {
         URI uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/");
         ContainerProvider.getWebSocketContainer().connectToServer(playerClient, uri);
         playerClient.sendMessage(MessageType.CONNECT, player2);
+        assertTrue(playerClient.getLatch().await(1, TimeUnit.SECONDS));
 
         assertEquals(1, sessionManager.getSessions().size());
     }
