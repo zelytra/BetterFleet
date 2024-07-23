@@ -113,7 +113,7 @@ class SessionSocketTest {
     }
 
     @Test
-    void TwoSocketOfSamePlayerTryToCreateSession_FirstSessionClosesSecondCreated() throws Exception {
+    void twoSocketOfSamePlayerTryToCreateSession_FirstSessionClosesSecondCreated() throws Exception {
         Player player = new Player();
         player.setUsername("Player 1");
         player.setClientVersion(appVersion.get(0));
@@ -134,6 +134,30 @@ class SessionSocketTest {
         assertTrue(playerClient.getLatch().await(1, TimeUnit.SECONDS));
         Fleet socketMessage = playerClient.getMessageReceived(Fleet.class);
         assertNotNull(socketMessage);
+
+        assertEquals(1, sessionManager.getSessions().size());
+    }
+
+    @Test
+    void playerWithNoUsernameTryToConnect() throws Exception {
+        Player player = new Player();
+        player.setUsername(null);
+        player.setClientVersion(appVersion.get(0));
+        player.setReady(false);
+
+        betterFleetClient.sendMessage(MessageType.CONNECT, player);
+        assertFalse(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        Player player2 = new Player();
+        player2.setUsername("Player 1");
+        player2.setClientVersion(appVersion.get(0));
+        player2.setReady(false);
+
+        BetterFleetClient playerClient = new BetterFleetClient();
+        SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
+        URI uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/");
+        ContainerProvider.getWebSocketContainer().connectToServer(playerClient, uri);
+        playerClient.sendMessage(MessageType.CONNECT, player2);
 
         assertEquals(1, sessionManager.getSessions().size());
     }
