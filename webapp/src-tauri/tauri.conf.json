@@ -63,7 +63,8 @@
         "digestAlgorithm": "sha256",
         "timestampUrl": "",
         "nsis": {
-          "installerIcon": "icons/installer-icon.ico"
+          "installerIcon": "icons/installer-icon.ico",
+          "sidebarImage": "icons/installer-banner.bmp"
         }
       }
     },
