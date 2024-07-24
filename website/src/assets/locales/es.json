@@ -139,5 +139,51 @@
     "players": "Joueur(s) en ligne",
     "sessions": "Session(s) ouverte",
     "title": "Estadísticas"
+  },
+  "tutorial": {
+    "end": {
+      "content": "¡Buena suerte y que las riquezas de los mares sean tuyas, aprovecha al máximo la camaradería y cooperación que ofrece esta alianza!",
+      "title": "¿Una vez encontrado el servidor?"
+    },
+    "howTo": {
+      "content": "Para crear una alianza en Sea of Thieves, los jugadores deben coordinar sus acciones con precisión. La organización generalmente comienza mucho antes de zarpar, muchas veces por la mañana o a una hora acordada por todos los participantes. La clave es sincronizar cuando todos hacen clic en el botón \"Levar ancla\" en el juego, lo que potencialmente permite que diferentes equipos terminen en el mismo servidor. Aquí es donde entra BetterFleet para facilitar esta sincronización. BetterFleet proporciona una plataforma donde las tripulaciones pueden comunicarse y planificar sus acciones de manera coordinada.",
+      "title": "¿Cómo crear una alianza?"
+    },
+    "step": {
+      "1": {
+        "content": "Abra la aplicación BetterFleet e inicie sesión con sus credenciales para acceder a su cuenta personal.",
+        "title": "Inicie sesión en la aplicación"
+      },
+      "2": {
+        "content": "Selecciona la opción 'Crear sesión' para configurar un nuevo espacio donde puedas invitar a otros jugadores a unirse a tu alianza.",
+        "title": "Creando una sesión"
+      },
+      "3": {
+        "content": "Se generará un código único para su sesión. Comunica este código a los amigos que deseas invitar a formar parte de la alianza.",
+        "title": "Código de sesión compartido"
+      },
+      "4": {
+        "content": "Haz que todos los jugadores vayan al menú \"Levantando anclas\" del juego, donde pueden prepararse para comenzar el juego juntos.",
+        "title": "Reuniéndose en el menú 'Levantando anclas'"
+      },
+      "5": {
+        "content": "Luego, cada jugador debe indicar que está listo. Esto generalmente se hace seleccionando la opción \"Listo\" en la interfaz de la aplicación.",
+        "title": "Confirmación de preparación"
+      },
+      "6": {
+        "content": "Una vez que todos los jugadores están listos, el maestro de sesión (o líder) inicia una cuenta regresiva en BetterFleet para coordinar la simultaneidad de hacer clic en 'Tejer ancla'.",
+        "title": "Lanzamiento de la cuenta atrás por parte del Session Master"
+      },
+      "7": {
+        "content": "Después de unirse al juego, los jugadores deben verificar si todos están en el mismo servidor. Esto se puede confirmar a través de las funciones de BetterFleet o reuniéndose en un punto de encuentro acordado en el juego. Si los jugadores no terminan en el mismo servidor, repita el proceso desde el paso 5 hasta encontrar el servidor deseado.",
+        "title": "Comprobando presencia en el mismo servidor"
+      }
+    },
+    "stepWord": "Escenario",
+    "title": "Empezando con BetterFleet",
+    "whatIsIt": {
+      "content": "Un servidor de alianza en Sea of Thieves es un servidor de juegos en el que varias tripulaciones han acordado formar una alianza estratégica y cooperar para beneficio mutuo. En estos servidores, las tripulaciones comparten los mismos objetivos, como recolectar tesoros o completar misiones, y acuerdan no atacarse entre sí. La idea es que todos los miembros de la alianza se beneficien de las recompensas, lo que optimiza las ganancias y la experiencia de juego para todos los participantes. Esto crea un entorno en el que los jugadores pueden centrarse en la cooperación y la exploración en lugar de la competencia, lo que puede proporcionar una experiencia más relajada y comunitaria.",
+      "title": "¿Qué es un servidor de alianza en Sea Of Thieves?"
+    }
   }
 }
