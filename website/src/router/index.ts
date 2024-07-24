@@ -32,7 +32,7 @@ export const routes = [
   },
   {
     path: "/tutorial",
-    name: t('nav.tutorial'),
+    name: t('nav.documentation'),
     component: Tutorial,
     meta: {
       displayInNav: true
