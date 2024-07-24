@@ -128,8 +128,7 @@
   "nav": {
     "documentation": "Discover",
     "home": "Home",
-    "support": "Support",
-    "tutorial": "(key to be deleted)"
+    "support": "Support"
   },
   "presentation": {
     "content": "Dive into the world of Sea of Thieves with the ultimate tool designed to forge alliances like never before. Our application revolutionises the way players log in, providing exceptional fluidity and significantly increasing your chances of finding an alliance, far surpassing the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, where bonding and sailing together becomes a reality accessible with every click.",
@@ -156,32 +155,28 @@
         "title": "Log into the Application"
       },
       "2": {
-        "content": "(key to be deleted)",
-        "title": "(key to be deleted)"
+        "content": "Select the 'Create Session' option to set up a new space where you can invite other players to join your alliance.",
+        "title": "Session Creation"
       },
       "3": {
-        "content": "Select the 'Create a session' option to set up a new space where you can invite other players to join your alliance.",
-        "title": "Create a Session"
+        "content": "A unique code will be managed for your session. Give this code to the friends you want to invite to join the alliance.",
+        "title": "Session Code Sharing"
       },
       "4": {
-        "content": "A unique ID will be generated for your session. Communicate this ID to the people you wish to invite to be part of the alliance.",
-        "title": "Share the Session ID"
+        "content": "Ask all players to go to the 'Raise Anchor' menu of the game, or they will be able to prepare to start the game together.",
+        "title": "Gathering in the 'Rising Anchor Menu'"
       },
       "5": {
-        "content": "Ask every player to go to the 'Set Sail' menu of Sea of Thieves, where they can prepare to launch the game together.",
-        "title": "Meeting in the 'Set Sail' Menu"
+        "content": "Each player must then indicate that they are prefer. This is usually done by selecting the Preference option in the application interface.",
+        "title": "Preparation Confirmation"
       },
       "6": {
-        "content": "Each player must then change their status for the start. Which they can do by selecting the 'Ready' option in the application interface.",
-        "title": "Confirm Everyone is Ready"
+        "content": "Once all players are ready, the Mayor of the session (or the leader) initiates a countdown on BetterFleet to coordinate the simultaneous click on 'raise the Anchor'.",
+        "title": "Starting Countdown by Session Mayor"
       },
       "7": {
-        "content": "Once all players are ready, the session master initiates a countdown on BetterFleet to coordinate the simultaneous click on 'Set Sail'.",
-        "title": "Launching the Countdown"
-      },
-      "8": {
-        "content": "Once in game, you have left to check whether you have found a common server. BetterFleet will gather in the list players who ended up together. If you did not find a server, repeat the process all the way from step 4 and so on.",
-        "title": "Check on Presence on the Same Server"
+        "content": "After joining the game, players must check if they are all on the same server. This can be confirmed through BetterFleet's functionalities or by finding itself at an agreed meeting point in the game. If players do not find themselves on the same server, the process must be repeated from step 5 until the server is found.",
+        "title": "Verification of Strength on Server"
       }
     },
     "stepWord": "Step",
