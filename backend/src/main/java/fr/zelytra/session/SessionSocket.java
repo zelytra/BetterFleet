@@ -211,6 +211,13 @@ public class SessionSocket {
             }
             return;
         }
+
+        // Kick the player without username
+        if (player.getUsername() == null) {
+            Log.info("A NULL user try to connect to application");
+            return;
+        }
+
         session.setMaxIdleTimeout(30000); // 1h of timeout
 
         SessionManager manager = sessionManager;
