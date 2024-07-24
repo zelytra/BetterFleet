@@ -156,27 +156,27 @@
       },
       "2": {
         "content": "Sélectionnez l'option 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
-        "title": "Créer une Session"
+        "title": "Création d'une Session"
       },
       "3": {
-        "content": "Un code unique sera généré pour votre session. Communiquez ce code aux personnes que vous souhaitez inviter à faire partie de l'alliance.",
+        "content": "Un code unique sera généré pour votre session. Communiquez ce code aux amis que vous souhaitez inviter à faire partie de l'alliance.",
         "title": "Partage du Code de Session"
       },
       "4": {
-        "content": "Demandez à tous les joueurs de se rendre dans le menu 'Lever l'Ancre' du jeu, où ils pourront se préparer à lancer la partie ensemble.",
+        "content": "Demandez à tous les joueurs de se rendre dans le menu 'Lever l'Ancre' du  jeu, où ils pourront se préparer à lancer la partie ensemble.",
         "title": "Rassemblement dans le Menu 'Lever l'Ancre'"
       },
       "5": {
-        "content": "Chaque joueur doit alors changer son statut pour le départ. Ce qu'il peut faire en sélectionnant l'option 'Prêt' dans l'interface de l'application.",
-        "title": "Confirmer que Tout le Monde est Prêt"
+        "content": "Chaque joueur doit alors indiquer qu'il est prêt. Ceci se fait  habituellement en sélectionnant l'option 'Prêt' dans l'interface de  l'application.",
+        "title": "Confirmation de la Préparation"
       },
       "6": {
-        "content": "Une fois tous les joueurs prêts, le maître de session initie un compte à rebours sur BetterFleet pour coordonner la simultanéité du clic sur 'Lever l'Ancre'.",
-        "title": "Lancement du Compte à Rebours"
+        "content": "Une fois tous les joueurs prêts, le maître de session (ou le leader)  initie un compte à rebours sur BetterFleet pour coordonner la simultanéité du clic sur 'Lever l'Ancre'.",
+        "title": "Lancement du Compte à Rebours par le Maître de Session"
       },
       "7": {
-        "content": "Une fois en jeu, il vous reste à vérifier si vous avez trouvé un serveur commun. BetterFleet regroupera dans la liste les joueurs qui sont ensemble. Si vous n'avez pas trouvé de serveur, répétez le processus depuis l'étape 4 et ainsi de suite.",
-        "title": "Vérifier la Présence sur le Même Serveur"
+        "content": "Après avoir rejoint le jeu, les joueurs doivent vérifier s'ils sont tous  sur le même serveur. Cela peut être confirmé via les fonctionnalités de  BetterFleet ou en se retrouvant à un point de rencontre convenu dans le  jeu. Si les joueurs ne se retrouvent pas sur le même serveur, il faut répéter le processus à partir de l'étape 5 jusqu'à ce que le serveur souhaité soit trouvé.",
+        "title": "Vérification de la Présence sur le Même Serveu"
       }
     },
     "stepWord": "Étape",
