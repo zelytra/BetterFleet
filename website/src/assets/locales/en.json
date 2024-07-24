@@ -122,7 +122,7 @@
     }
   },
   "header": {
-    "details": "BetterFleet made its official release! Try out the application now!"
+    "details": "BetterFleet has officially been released! Test the app now!"
   },
   "name": "BetterFleet",
   "nav": {
@@ -142,47 +142,47 @@
   },
   "tutorial": {
     "end": {
-      "content": "Godspeed! May you sail amongst honest seamen and find good wealth at sea! Still... Beware of mutineers, they do fancy the fresh smell of new riches!",
+      "content": "Good wind! May you sail in honor of sailors and make a fortune at sea! But. - Beware of the mutins, they envy the fresh fragrance of the new riches!",
       "title": "Once the server is found?"
     },
     "howTo": {
-      "content": "In order to create an alliance in Sea of Thieves, players must coordinate their actions with precision. Organisation generally starts long before putting out to sea, upon an time agreed by all participants. The key is to synchronise the exact moment at which everyone clicks on the \"Set Sail\" button in the game menu, which potentially allows the different crews to find themselves on the same server. This is where BetterFleet enters the scene. So as to help this synchronisation along, the application offers an interface on which players can plan their actions in a coordinated fashion.",
+      "content": "In order to create an alliance in Sea of Thieves, players must coordinate their actions accurately. The organization starts well before taking the sea, at an agreed moment by all participants. The key is to synchronize in the game menus at the given moment or each click on the \"Anchor raise\" button, This potentially allows the different crews to find themselves on the same server. This is where BetterFleet enters the seal. In order to facilitate this synchronization, the app offers an interface over which players can plan their actions in a coordinated manner.",
       "title": "How to create an alliance?"
     },
     "step": {
       "1": {
-        "content": "First and foremost, you need to create an account. Upon opening BetterFleet you will be asked to log in with your details so you can access the application.",
+        "content": "First you will need an account. By opening BetterFleet you will be asked to log in with your credentials in order to access the application.",
         "title": "Log into the Application"
       },
       "2": {
         "content": "Select the 'Create a session' option to set up a new space where you can invite other players to join your alliance.",
-        "title": "Create a Session"
+        "title": "Create Session"
       },
       "3": {
-        "content": "A unique ID will be generated for your session. Communicate this ID to the people you wish to invite to be part of the alliance.",
+        "content": "A unique code will be managed for your session. Give this code to the people you want to invite to join the alliance.",
         "title": "Share the Session ID"
       },
       "4": {
-        "content": "Ask every player to go to the 'Set Sail' menu of Sea of Thieves, where they can prepare to launch the game together.",
+        "content": "Ask all players to go to the 'Raise Anchor' menu of the game, or they will be able to prepare to start the game together.",
         "title": "Meeting in the 'Set Sail' Menu"
       },
       "5": {
-        "content": "Each player must then change their status for the start. Which they can do by selecting the 'Ready' option in the application interface.",
-        "title": "Confirm Everyone is Ready"
+        "content": "Each player then has to change their status for the start, and what they can do by selecting the Preview option in the application interface.",
+        "title": "Confirm Everyone is Precious"
       },
       "6": {
-        "content": "Once all players are ready, the session master initiates a countdown on BetterFleet to coordinate the simultaneous click on 'Set Sail'.",
-        "title": "Launching the Countdown"
+        "content": "Once all players are ready, the Mayor of the session initiates a countdown on BetterFleet to coordinate the simultaneity of the click on 'raise the Anchor'.",
+        "title": "Countdown Launch"
       },
       "7": {
-        "content": "Once in game, you have left to check whether you have found a common server. BetterFleet will gather in the list players who ended up together. If you did not find a server, repeat the process all the way from step 4 and so on.",
-        "title": "Check on Presence on the Same Server"
+        "content": "Once in play, you have to check if you found a common server. BetterFleet will list players who are together. If you did not find a server, repeat the process from step 4 and so on.",
+        "title": "Check Server Meme Presence"
       }
     },
     "stepWord": "Step",
     "title": "Beginning on BetterFleet",
     "whatIsIt": {
-      "content": "An alliance server is a game server where several crews agreed on forming a strategic alliance and cooperating for their mutual benefit. On these servers, players share the same objectives, such as collecting treasures or bringing quests to completion, and shake hands on not attacking each other. The idea is that each and every member benefits from the rewards, therefore optimising profit and gaming experience for everyone. This creates an environment where players can focus on teamwork and exploration rather than being competitive, offering a more laid-back community-based adventure.",
+      "content": "An alliance server is a game server or several teams have agreed to form a strategic alliance by combining for their mutual benefit. On these servers, players share the same goals, such as the collection of treasures, or the completeness of queens, and agree not to attack each other. The idea is for each member to benefit from the rewards, optimizing the winnings and the gaming experience of all. This creates an environment where players can focus on teamwork and exploration rather than on competency, offering a more extensive community adventure.",
       "title": "What is an alliance server on Sea of Thieves?"
     }
   }
