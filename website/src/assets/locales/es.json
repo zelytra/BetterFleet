@@ -128,8 +128,7 @@
   "nav": {
     "documentation": "Documentación",
     "home": "bienvenida",
-    "support": "Apoyo",
-    "tutorial": "Tutorial"
+    "support": "Apoyo"
   },
   "presentation": {
     "content": "Sumérgete en el mundo de Sea of Thieves con la herramienta definitiva diseñada para forjar alianzas como nunca antes. Nuestra aplicación revoluciona la forma en que los jugadores se conectan, brindando una fluidez excepcional y aumentando significativamente sus posibilidades de encontrar una alianza, superando con creces las capacidades de otras aplicaciones. Únase a nuestra comunidad y transforme su experiencia de juego en una aventura épica, donde unirse y navegar juntos se convierte en una realidad accesible con cada clic.",
@@ -156,30 +155,26 @@
         "title": "Inicie sesión en la aplicación"
       },
       "2": {
-        "content": "En la configuración de la aplicación, vaya a la página de su perfil (usuario) para asegurarse de que toda la información sea correcta y esté actualizada.",
-        "title": "Configuración del perfil de usuario"
-      },
-      "3": {
         "content": "Selecciona la opción 'Crear sesión' para configurar un nuevo espacio donde puedas invitar a otros jugadores a unirse a tu alianza.",
         "title": "Creando una sesión"
       },
-      "4": {
+      "3": {
         "content": "Se generará un código único para su sesión. Comunica este código a los amigos que deseas invitar a formar parte de la alianza.",
         "title": "Código de sesión compartido"
       },
-      "5": {
+      "4": {
         "content": "Haz que todos los jugadores vayan al menú \"Levantando anclas\" del juego, donde pueden prepararse para comenzar el juego juntos.",
         "title": "Reuniéndose en el menú 'Levantando anclas'"
       },
-      "6": {
+      "5": {
         "content": "Luego, cada jugador debe indicar que está listo. Esto generalmente se hace seleccionando la opción \"Listo\" en la interfaz de la aplicación.",
         "title": "Confirmación de preparación"
       },
-      "7": {
+      "6": {
         "content": "Una vez que todos los jugadores están listos, el maestro de sesión (o líder) inicia una cuenta regresiva en BetterFleet para coordinar la simultaneidad de hacer clic en 'Tejer ancla'.",
         "title": "Lanzamiento de la cuenta atrás por parte del Session Master"
       },
-      "8": {
+      "7": {
         "content": "Después de unirse al juego, los jugadores deben verificar si todos están en el mismo servidor. Esto se puede confirmar a través de las funciones de BetterFleet o reuniéndose en un punto de encuentro acordado en el juego. Si los jugadores no terminan en el mismo servidor, repita el proceso desde el paso 5 hasta encontrar el servidor deseado.",
         "title": "Comprobando presencia en el mismo servidor"
       }
