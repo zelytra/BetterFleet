@@ -128,8 +128,7 @@
   "nav": {
     "documentation": "Découvrir",
     "home": "Accueil",
-    "support": "Support",
-    "tutorial": "(clef à supprimer)"
+    "support": "Support"
   },
   "presentation": {
     "content": "Plongez dans l'univers de Sea of Thieves avec l'outil ultime conçu pour forger des alliances comme jamais auparavant. Notre application révolutionne la façon dont les joueurs se connectent, offrant une fluidité exceptionnelle et augmentant significativement vos chances de trouver une alliance, dépassant de loin les capacités des autres applications. Rejoignez notre communauté et transformez votre expérience de jeu en une aventure épique, où créer des liens et naviguer ensemble devient une réalité accessible à chaque clic.",
@@ -156,30 +155,26 @@
         "title": "Connexion à l'Application"
       },
       "2": {
-        "content": "(clef à supprimer)",
-        "title": "(clef à supprimer)"
-      },
-      "3": {
         "content": "Sélectionnez l'option 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
         "title": "Créer une Session"
       },
-      "4": {
+      "3": {
         "content": "Un code unique sera généré pour votre session. Communiquez ce code aux personnes que vous souhaitez inviter à faire partie de l'alliance.",
         "title": "Partage du Code de Session"
       },
-      "5": {
+      "4": {
         "content": "Demandez à tous les joueurs de se rendre dans le menu 'Lever l'Ancre' du jeu, où ils pourront se préparer à lancer la partie ensemble.",
         "title": "Rassemblement dans le Menu 'Lever l'Ancre'"
       },
-      "6": {
+      "5": {
         "content": "Chaque joueur doit alors changer son statut pour le départ. Ce qu'il peut faire en sélectionnant l'option 'Prêt' dans l'interface de l'application.",
         "title": "Confirmer que Tout le Monde est Prêt"
       },
-      "7": {
+      "6": {
         "content": "Une fois tous les joueurs prêts, le maître de session initie un compte à rebours sur BetterFleet pour coordonner la simultanéité du clic sur 'Lever l'Ancre'.",
         "title": "Lancement du Compte à Rebours"
       },
-      "8": {
+      "7": {
         "content": "Une fois en jeu, il vous reste à vérifier si vous avez trouvé un serveur commun. BetterFleet regroupera dans la liste les joueurs qui sont ensemble. Si vous n'avez pas trouvé de serveur, répétez le processus depuis l'étape 4 et ainsi de suite.",
         "title": "Vérifier la Présence sur le Même Serveur"
       }
