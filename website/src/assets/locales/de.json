@@ -128,8 +128,7 @@
   "nav": {
     "documentation": "Entdecken",
     "home": "Willkommen",
-    "support": "Unterstützung",
-    "tutorial": "Lernprogramm"
+    "support": "Unterstützung"
   },
   "presentation": {
     "content": "Tauchen Sie ein in die Welt von Sea of Thieves mit dem ultimativen Tool, mit dem Sie Allianzen wie nie zuvor schmieden können. Unsere App revolutioniert die Art und Weise, wie Spieler miteinander in Kontakt treten. Sie bietet eine außergewöhnliche Flexibilität und erhöht Ihre Chancen, eine Allianz zu finden, erheblich, indem sie die Möglichkeiten anderer Apps bei weitem übertrifft. Treten Sie unserer Community bei und verwandeln Sie Ihr Spielerlebnis in ein episches Abenteuer, bei dem Bindung und gemeinsames Segeln mit jedem Klick zur Realität werden.",
@@ -156,30 +155,26 @@
         "title": "Melden Sie sich bei der Anwendung an"
       },
       "2": {
-        "content": "Gehen Sie in den App-Einstellungen zu Ihrer Profilseite (Benutzerseite), um sicherzustellen, dass alle Informationen korrekt und aktuell sind.",
-        "title": "Konfiguration des Benutzerprofils"
-      },
-      "3": {
         "content": "Wählen Sie die Option „Sitzung erstellen“, um einen neuen Bereich einzurichten, in dem Sie andere Spieler einladen können, Ihrer Allianz beizutreten.",
         "title": "Erstellen einer Sitzung"
       },
-      "4": {
+      "3": {
         "content": "Für Ihre Sitzung wird ein eindeutiger Code generiert. Teilen Sie diesen Code den Freunden mit, die Sie zur Mitgliedschaft in der Allianz einladen möchten.",
         "title": "Teilen von Sitzungscodes"
       },
-      "5": {
+      "4": {
         "content": "Bitten Sie alle Spieler, das Menü „Raising Anchor“ des Spiels aufzurufen, wo sie sich darauf vorbereiten können, das Spiel gemeinsam zu starten.",
         "title": "Treffen im Menü „Anker heben“."
       },
-      "6": {
+      "5": {
         "content": "Jeder Spieler muss dann angeben, dass er bereit ist. Dies geschieht normalerweise durch Auswahl der Option „Bereit“ in der Anwendungsoberfläche.",
         "title": "Bestätigung der Bereitschaft"
       },
-      "7": {
+      "6": {
         "content": "Sobald alle Spieler bereit sind, startet der Sitzungsleiter (oder Leiter) einen Countdown auf BetterFleet, um die Gleichzeitigkeit des Klickens auf „Anker weben“ zu koordinieren.",
         "title": "Start des Countdowns durch den Session Master"
       },
-      "8": {
+      "7": {
         "content": "Nach dem Beitritt zum Spiel müssen die Spieler überprüfen, ob sie sich alle auf demselben Server befinden. Dies kann über die BetterFleet-Funktionen oder durch Treffen an einem vereinbarten Treffpunkt im Spiel bestätigt werden. Wenn Spieler nicht auf demselben Server landen, wiederholen Sie den Vorgang ab Schritt 5, bis der gewünschte Server gefunden wird.",
         "title": "Überprüfen der Präsenz auf demselben Server"
       }
