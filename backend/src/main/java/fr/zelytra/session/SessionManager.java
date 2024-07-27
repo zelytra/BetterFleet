@@ -94,7 +94,9 @@ public class SessionManager {
         if (fleet == null) {
             sendDataToPlayer(player.getSocket(), MessageType.SESSION_NOT_FOUND, null);
             try {
-                player.getSocket().close();
+                if (player.getSocket() != null) {
+                    player.getSocket().close();
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -111,7 +111,7 @@ jobs:
           node-version: 20
 
       - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@1.79
 
       - uses: Swatinem/rust-cache@v2
         with:
