@@ -43,6 +43,10 @@ public class BetterFleetClient {
         return new ObjectMapper().convertValue(messageReceived.data(), tClass);
     }
 
+    public Session getSession() {
+        return session;
+    }
+
     // Getter for latch
     public CountDownLatch getLatch() {
         return latch;

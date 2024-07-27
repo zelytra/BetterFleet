@@ -162,6 +162,24 @@ class SessionSocketTest {
         assertEquals(1, sessionManager.getSessions().size());
     }
 
+    @Test
+    void playerConnectToNullSession() throws Exception {
+        Player player = new Player();
+        player.setUsername("Player 1");
+        player.setClientVersion(appVersion.get(0));
+        player.setReady(false);
+
+        BetterFleetClient playerClient = new BetterFleetClient();
+        SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
+        URI uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/ABCDEF");
+
+        ContainerProvider.getWebSocketContainer().connectToServer(playerClient, uri);
+        playerClient.sendMessage(MessageType.CONNECT, player);
+
+        assertTrue(playerClient.getLatch().await(1, TimeUnit.SECONDS));
+        assertEquals(0, sessionManager.getSessions().size());
+    }
+
     private List<Player> generateFakePlayer(int amount) {
         List<Player> fakePlayer = new ArrayList<>();
         for (int x = 0; x < amount; x++) {
