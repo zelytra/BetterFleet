@@ -41,7 +41,9 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             } else {
                 let pid = pid[0].parse().unwrap();
                 // List of udp sockets used by the game
+                info!("Using classical process to get udp connections");
                 let udp_connections = get_udp_connections(pid);
+                info!("{:?}", udp_connections);
 
                 // Update game_status
                 if udp_connections.len() == 0 { // 0 = First menu/launching
@@ -165,6 +167,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                 GameStatus::Unknown => 2000,
             };
 
+            info!("Sleeping for {}, game status : {:?} ", dynamic_time, game_status);
             tokio::time::sleep(Duration::from_millis(dynamic_time)).await;
         }
     });
