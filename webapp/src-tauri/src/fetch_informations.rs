@@ -21,7 +21,7 @@ use winapi::um::winsock2;
 use crate::api::GameStatus;
 use sysinfo::{System};
 use idna::domain_to_ascii;
-use log::{debug, info, warn, error};
+use log::{info, warn, error};
 
 const SIO_RCVALL: DWORD = 0x98000001;
 
@@ -34,7 +34,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
         loop {
             // Fetch pid game
             let pid = find_pid_of("SoTGame.exe");
-
+            info!("PID found: {:?}",pid);
             if pid.is_empty() {
                 api.write().await.game_status = GameStatus::Closed;
                 info!("Game is closed");
@@ -51,7 +51,10 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     api.write().await.game_status = GameStatus::MainMenu;
                     api.write().await.main_menu_port = udp_connections[0];
                     info!("Game is in main menu with main menu port: {}", udp_connections[0]);
-                } else if udp_connections.len() == 2 { // 2 sockets = connected to a server
+                } else {
+                    // [old method] 2 sockets = connected to a server
+                    // Some users uncounted problems with more than 2 UDP sockets connections changing to else
+
                     // Get UDP Listen port, that the other one that is not main_menu_port
                     let mut listen_port = udp_connections[0];
 
