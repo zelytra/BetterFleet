@@ -37,7 +37,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
 
             if pid.is_empty() {
                 api.write().await.game_status = GameStatus::Closed;
-                debug!("Game is closed");
+                info!("Game is closed");
             } else {
                 let pid = pid[0].parse().unwrap();
                 // List of udp sockets used by the game
@@ -46,11 +46,11 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                 // Update game_status
                 if udp_connections.len() == 0 { // 0 = First menu/launching
                     api.write().await.game_status = GameStatus::Started;
-                    debug!("Game is started");
+                    info!("Game is started");
                 } else if udp_connections.len() == 1 { // Main menu
                     api.write().await.game_status = GameStatus::MainMenu;
                     api.write().await.main_menu_port = udp_connections[0];
-                    debug!("Game is in main menu with main menu port: {}", udp_connections[0]);
+                    info!("Game is in main menu with main menu port: {}", udp_connections[0]);
                 } else if udp_connections.len() == 2 { // 2 sockets = connected to a server
                     // Get UDP Listen port, that the other one that is not main_menu_port
                     let mut listen_port = udp_connections[0];
