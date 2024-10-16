@@ -21,7 +21,7 @@ use winapi::um::winsock2;
 use crate::api::GameStatus;
 use sysinfo::{System};
 use idna::domain_to_ascii;
-use log::{debug, info, warn, error};
+use log::{info, warn, error};
 
 const SIO_RCVALL: DWORD = 0x98000001;
 
@@ -34,24 +34,29 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
         loop {
             // Fetch pid game
             let pid = find_pid_of("SoTGame.exe");
-
+            info!("PID found: {:?}",pid);
             if pid.is_empty() {
                 api.write().await.game_status = GameStatus::Closed;
-                debug!("Game is closed");
+                info!("Game is closed");
             } else {
                 let pid = pid[0].parse().unwrap();
                 // List of udp sockets used by the game
+                info!("Using classical process to get udp connections");
                 let udp_connections = get_udp_connections(pid);
+                info!("{:?}", udp_connections);
 
                 // Update game_status
                 if udp_connections.len() == 0 { // 0 = First menu/launching
                     api.write().await.game_status = GameStatus::Started;
-                    debug!("Game is started");
+                    info!("Game is started");
                 } else if udp_connections.len() == 1 { // Main menu
                     api.write().await.game_status = GameStatus::MainMenu;
                     api.write().await.main_menu_port = udp_connections[0];
-                    debug!("Game is in main menu with main menu port: {}", udp_connections[0]);
-                } else if udp_connections.len() == 2 { // 2 sockets = connected to a server
+                    info!("Game is in main menu with main menu port: {}", udp_connections[0]);
+                } else {
+                    // [old method] 2 sockets = connected to a server
+                    // Some users uncounted problems with more than 2 UDP sockets connections changing to else
+
                     // Get UDP Listen port, that the other one that is not main_menu_port
                     let mut listen_port = udp_connections[0];
 
@@ -162,6 +167,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                 GameStatus::Unknown => 2000,
             };
 
+            info!("Sleeping for {}, game status : {:?} ", dynamic_time, game_status);
             tokio::time::sleep(Duration::from_millis(dynamic_time)).await;
         }
     });
