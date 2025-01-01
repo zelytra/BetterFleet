@@ -13,19 +13,19 @@
   },
   "dependencies": {
     "@js-joda/core": "^5.6.3",
-    "@tauri-apps/api": "^1.6.0",
-    "keycloak-js": "^25.0.6",
+    "@tauri-apps/api": "^2.1.1",
+    "keycloak-js": "^26.0.7",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
-    "vue": "^3.5.10",
-    "vue-i18n": "^9.14.1"
+    "vue": "^3.5.13",
+    "vue-i18n": "^11.0.1"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.6.2",
-    "@vitejs/plugin-vue": "^5.1.4",
-    "sass": "^1.79.4",
-    "typescript": "^5.6.2",
-    "vite": "^5.4.8",
-    "vue-router": "^4.4.5",
-    "vue-tsc": "^2.1.6"
+    "@tauri-apps/cli": "^2.1.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "sass": "^1.83.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.6",
+    "vue-router": "^4.5.0",
+    "vue-tsc": "^2.2.0"
   }
 }
