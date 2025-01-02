@@ -20,7 +20,7 @@
     "vue-i18n": "^11.0.1"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.5.2",
+    "@tauri-apps/cli": "^2.1.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "sass": "^1.83.0",
     "typescript": "^5.7.2",
