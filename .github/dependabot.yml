@@ -4,11 +4,19 @@ updates:
     directory: "/webapp" # Location of package manifests
     schedule:
       interval: "monthly"
+    ignore:
+      - dependency-name: "@tauri-apps/api"
+        versions: ">=1.5.4"
+      - dependency-name: "@tauri-apps/cli"
+        versions: ">=2.1.1"
+      - dependency-name: "tauri-plugin-log-api"
+        versions: "*"
     groups:
       npm:
         applies-to: version-updates
         patterns:
-        - "*"
+          - "*"
+
   - package-ecosystem: "maven" # See documentation for possible values
     directory: "/backend" # Location of package manifests
     schedule:
@@ -17,15 +25,17 @@ updates:
       npm:
         applies-to: version-updates
         patterns:
-        - "*"
+          - "*"
+
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/website" # Location of package manifests
     schedule:
       interval: "monthly"
+    ignore:
+      - dependency-name: "@tauri-apps/api"
+        versions: ">=1.5.4"
     groups:
       npm:
         applies-to: version-updates
         patterns:
-        - "*"
-    
-
+          - "*"

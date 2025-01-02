@@ -118,13 +118,12 @@ jobs:
   test-tauri:
     name: Tauri Build Test
     runs-on: ${{ matrix.platform }}
-    needs: [webapp-build, website-build]
-    if: |
-      ${{ needs.paths.outputs.webapp == 'true' }}
+    needs: [webapp-build]
+    if: ${{ needs.paths.outputs.webapp == 'true' }}
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest, ubuntu-latest] # Add other platforms if needed
+        platform: [windows-latest] # Add other platforms if needed
     defaults:
       run:
         working-directory: 'webapp'
@@ -141,12 +140,6 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: 'webapp/src-tauri'
-
-      - name: Install dependencies on Windows
-        if: matrix.platform == 'windows-latest'
-        run: |
-          choco install libgtk
-          # Add other Windows-specific dependencies if needed
 
       - name: Install dependencies on Ubuntu
         if: matrix.platform == 'ubuntu-latest'

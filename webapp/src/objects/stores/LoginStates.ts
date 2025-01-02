@@ -39,7 +39,9 @@ export const keycloakStore = reactive({
   },
   loginUser(redirectionUrl: string) {
     if (!keycloakStore.isAuthenticated || !keycloakStore.keycloak.authenticated) {
-      window.open(keycloakStore.keycloak.createLoginUrl({redirectUri: redirectionUrl}), '_self')
+      keycloakStore.keycloak.createLoginUrl({redirectUri: redirectionUrl}).then((url) => {
+        window.open(url, '_self')
+      })
     }
   }
 })
