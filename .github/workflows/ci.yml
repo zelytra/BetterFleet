@@ -120,7 +120,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     needs: [webapp-build, website-build]
     if: |
-      ${{ needs.paths.outputs.webapp == 'true' || needs.paths.outputs.website == 'true' }}
+      ${{ needs.paths.outputs.webapp == 'true' }}
     strategy:
       fail-fast: false
       matrix:
