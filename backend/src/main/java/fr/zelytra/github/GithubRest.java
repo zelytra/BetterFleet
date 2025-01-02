@@ -1,6 +1,5 @@
 package fr.zelytra.github;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -9,7 +8,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/github")
-@ApplicationScoped
 public class GithubRest {
 
     @Inject
