@@ -141,12 +141,6 @@ jobs:
         with:
           workspaces: 'webapp/src-tauri'
 
-      - name: Install dependencies on Windows
-        if: matrix.platform == 'windows-latest'
-        run: |
-          choco install libgtk
-          # Add other Windows-specific dependencies if needed
-
       - name: Install dependencies on Ubuntu
         if: matrix.platform == 'ubuntu-latest'
         run: |
