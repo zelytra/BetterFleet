@@ -26,7 +26,7 @@ etherparse = "0.15.0"
 hostname = "0.4.0"
 sysinfo = "0.30.6"
 netstat2 = "0.9.1"
-idna = "1.0.0"
+idna = "1.0.3"
 log = "^0.4"
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"] }
 lazy_static = "1.4.0"
