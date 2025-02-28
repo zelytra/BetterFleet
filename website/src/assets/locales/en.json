@@ -51,11 +51,11 @@
     "more": "You are facing complications or you cannot find an answer to your problem? Meet us here on our",
     "question": {
       "alliance": {
-        "content1": "BetterFleet aide les joueurs à trouver des alliances, mais ne garantit pas un accès instantané à un même serveur.",
-        "content2": "Pour regrouper plusieurs joueurs, de nombreux facteurs entrent en jeu et ne sont pas contrôlés par BetterFleet. Parmi eux : l'heure, le nombre de joueurs effectuant la recherche, la localisation, la connexion Internet, ainsi que le bon vouloir des serveurs de matchmaking de Sea of Thieves.",
-        "content3": "Nous observons une tendance où le temps de recherche varie entre 5 minutes pour les plus chanceux et jusqu'à 3 heures pour les moins chanceux. Toutefois, ces estimations restent approximatives et ne sont pas garanties.",
-        "content4": "BetterFleet ne vous fait pas rejoindre automatiquement le même serveur de façon instantanée, mais il facilite votre recherche en optimisant le processus.",
-        "title": "BetterFleet garantit-il de rejoindre instantanément le même serveur ?"
+        "content1": "BetterFleet helps players find alliances, but does not guarantee instant access to a single server.",
+        "content2": "To group several players, many factors come into play and are not controlled by BetterFleet. These include: time, number of players performing search, location, Internet connection, as well as the goodwill of Sea of Thieves matchmaking servers.",
+        "content3": "We observe a tendency or the search time varies between 5 minutes for the luckiest and up to 3 hours for the least fortunate. However, these estimates remain approximate and are not guaranteed.",
+        "content4": "BetterFleet does not automatically join the same server on an instant basis, but it makes your search easier by optimizing the process.",
+        "title": "Does BetterFleet guarantee to join the same server instantly?"
       },
       "bug": {
         "content1": "If you encounter any issue or bugs, we encourage you to bring it to our attention so that we can work on improving your experience. Here is how you can contact us:",
@@ -103,9 +103,9 @@
         "title": "Why does my application crash and/or does not start ?"
       },
       "password": {
-        "content1": "Si vous oubliez votre mot de passe, l'application ne permet pas de le récupérer automatiquement. Vous pouvez nous contacter sur notre Discord, et nous pourrons le réinitialiser pour vous. Cependant, nous vous recommandons plutôt de créer un nouveau compte, sauf si vous tenez absolument à récupérer l'ancien.",
-        "content2": "L'application dispose d'une fonctionnalité \"Mot de passe oublié\", mais nous ne disposons pas encore de l'infrastructure nécessaire pour l'activer. Vous pouvez contribuer au projet ou faire un don via notre page GitHub pour nous aider à la mettre en place.",
-        "title": "Que faire en cas d'oubli de mon mot de passe ?"
+        "content1": "If you forget your password, the app does not automatically recover it. You can contact us on our Discord, and we can reset it for you. However, we recommend that you create a new account, unless you really want to recover the old one.",
+        "content2": "The app has a \"Forgot password\" feature, but we do not yet have the necessary infrastructure to enable it. You can contribute to the project or donate via our GitHub page to help us set it up.",
+        "title": "What should I do if I forget my password?"
       },
       "security": {
         "content1": "Yes, our application was designed with user security as the absolute priority. Following are the measures we implemented to ensure safe use:",
