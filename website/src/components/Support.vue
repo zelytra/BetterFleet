@@ -70,6 +70,16 @@
         </ul>
         <p>{{ t('faq.question.console.content4') }}</p>
       </FaqCollapse>
+      <FaqCollapse url="support" id="alliance" :title="t('faq.question.alliance.title')">
+        <p>{{ t('faq.question.alliance.content1') }}</p>
+        <p>{{ t('faq.question.alliance.content2') }}</p>
+        <p>{{ t('faq.question.alliance.content3') }}</p>
+        <p>{{ t('faq.question.alliance.content4') }}</p>
+      </FaqCollapse>
+      <FaqCollapse url="support" id="password" :title="t('faq.question.password.title')">
+        <p>{{ t('faq.question.password.content1') }}</p>
+        <p>{{ t('faq.question.password.content2') }}</p>
+      </FaqCollapse>
     </div>
   </section>
 </template>
