@@ -69,9 +69,10 @@ async fn main() {
                 LogTarget::Stdout,
                 LogTarget::Webview,
             ])
-            .max_file_size(8_000)
+            .max_file_size(2_000) //Seems 2MB
             .with_colors(ColoredLevelConfig::default())
             .level(LOG_LEVEL)
+            .rotation_strategy(RotationStrategy::KeepAll)
             .build()
         )
         .invoke_handler(tauri::generate_handler![
