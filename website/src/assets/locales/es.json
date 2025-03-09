@@ -50,6 +50,13 @@
     "faq": "Preguntas frecuentes",
     "more": "Si encuentra algún problema o no puede resolverlo. Visita nuestro",
     "question": {
+      "alliance": {
+        "content1": "BetterFleet ayuda a los jugadores a encontrar alianzas, pero no garantiza acceso instantáneo al mismo servidor.",
+        "content2": "Al agrupar a varios jugadores, entran en juego muchos factores que están fuera del control de BetterFleet. Entre ellos: el tiempo, la cantidad de jugadores que buscan, la ubicación, la conexión a Internet y la buena voluntad de los servidores de emparejamiento de Sea of Thieves.",
+        "content3": "Observamos una tendencia donde el tiempo de búsqueda varía entre 5 minutos para los afortunados y hasta 3 horas para los menos afortunados. Sin embargo, estas estimaciones siguen siendo aproximadas y no están garantizadas.",
+        "content4": "BetterFleet no lo une automáticamente al mismo servidor de forma instantánea, pero facilita su búsqueda al agilizar el proceso.",
+        "title": "¿BetterFleet garantiza unirse al mismo servidor instantáneamente?"
+      },
       "bug": {
         "content1": "Si experimenta algún problema o error con nuestra aplicación, le recomendamos que nos lo informe para que podamos trabajar para mejorar su experiencia. Así es como puede contactarnos:",
         "content2": "Discord: únete a nuestro servidor Discord y comparte tu problema en el canal de soporte dedicado. Nuestro equipo está siempre listo para ayudarte y responder tus preguntas en tiempo real.",
@@ -94,6 +101,11 @@
         "content5": "Si es antivirus, desactívelo.",
         "content6": "Si después de estos pasos la aplicación aún no funciona, no dudes en contactarnos en nuestro servidor de Discord para obtener asistencia más personalizada.",
         "title": "La aplicación no se inicia o falla, ¿por qué? (Borde)"
+      },
+      "password": {
+        "content1": "Si olvidas tu contraseña, la aplicación no te permite recuperarla automáticamente. Puedes contactarnos en nuestro Discord y podremos restablecerlo por ti. Sin embargo, le recomendamos que cree una cuenta nueva, a menos que realmente desee recuperar la antigua.",
+        "content2": "La aplicación tiene una función de \"Olvidé mi contraseña\", pero aún no tenemos la infraestructura para habilitarla. Puedes contribuir al proyecto o donar a través de nuestra página de GitHub para ayudarnos a ponerlo en funcionamiento.",
+        "title": "¿Qué debo hacer si olvido mi contraseña?"
       },
       "security": {
         "content1": "Sí, nuestra aplicación está diseñada teniendo como máxima prioridad la seguridad del usuario. Estas son las medidas que hemos implementado para garantizar un uso seguro:",
