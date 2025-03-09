@@ -56,6 +56,7 @@ export class Fleet {
     await new HTTPAxios("socket/register").get(ResponseType.Text).then((response) => {
       this.socket = new WebSocket(
         UserStore.player.serverHostName + "/" + response.data + "/" + sessionId);
+      info("[Fleet.ts] Socket register")
     }).catch(() => {
       info("[Fleet.ts] Failed to socket register")
       alertProvider.sendAlert({
@@ -70,14 +71,15 @@ export class Fleet {
     // Send player data to backend for initialization
     this.socket.onopen = () => {
       info("[Fleet.ts] Opening web socket")
+
       if (!this.socket) return;
       const message: WebSocketMessage = {
         data: UserStore.player,
         messageType: WebSocketMessageType.CONNECT,
       };
       this.socket.send(JSON.stringify(message));
-      info("[Fleet.ts] Sending player informations")
-      // If player already connect to a server
+      info("[Fleet.ts] Sending connect player informations "+UserStore.player.username)
+      // If player is already connected to a sot server
       if (UserStore.player.server) {
         this.joinServer()
       }
@@ -87,7 +89,7 @@ export class Fleet {
       const message: WebSocketMessage = JSON.parse(ev.data) as WebSocketMessage;
       switch (message.messageType) {
         case WebSocketMessageType.UPDATE: {
-          info("[Fleet.ts][WebSocket] Receive UPDATE message")
+          info("[Fleet.ts][WebSocket] Receive UPDATE message for session " + UserStore.player.sessionId)
           this.handleFleetUpdate(message.data as FleetInterface);
           break;
         }
@@ -142,7 +144,7 @@ export class Fleet {
     };
 
     this.socket.onclose = () => {
-      info("[Fleet.ts][WebSocket] As been closed")
+      info("[Fleet.ts][WebSocket] " + UserStore.player.sessionId + " session has been closed")
       UserStore.player.fleet!.sessionId = "";
       UserStore.player.countDown = undefined; // Reset timer to avoid app freeze
     }
@@ -170,8 +172,8 @@ export class Fleet {
       return;
     }
     this.socket.close();
+    info("[Fleet.ts][WebSocket] User leave the session " + this.sessionId)
     this.sessionId = "";
-    info("[Fleet.ts][WebSocket] User leave the session")
   }
 
   updateToSession(): void {
@@ -220,7 +222,7 @@ export class Fleet {
       data: UserStore.player.server,
       messageType: WebSocketMessageType.JOIN_SERVER,
     };
-    info("[Fleet.ts][WebSocket] User join a SOT server")
+    info("[Fleet.ts][WebSocket] User join a SOT server " + JSON.stringify(UserStore.player.server))
     this.socket.send(JSON.stringify(message));
   }
 
@@ -230,7 +232,7 @@ export class Fleet {
       data: UserStore.player.server,
       messageType: WebSocketMessageType.LEAVE_SERVER,
     };
-    info("[Fleet.ts][WebSocket] User leave a SOT server")
+    info("[Fleet.ts][WebSocket] User leave a SOT server " + JSON.stringify(UserStore.player.server))
     this.socket.send(JSON.stringify(message));
     UserStore.player.server = undefined;
   }
