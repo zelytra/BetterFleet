@@ -304,6 +304,12 @@ public class SessionManager {
     @Nullable
     public Player getPlayerFromUsername(String username) {
         Fleet fleet = this.getFleetByPlayerName(username);
+
+        if (fleet == null) {
+            Log.warn("Cannot find session for player: " + username);
+            return null;
+        }
+
         for (Player playerInList : fleet.getPlayers()) {
             if (playerInList.getUsername().equalsIgnoreCase(username)) {
                 return playerInList;
