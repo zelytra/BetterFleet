@@ -269,13 +269,12 @@ public class SessionManager {
 
         // Return cached SOT server
         if (sotServers.containsKey(hash)) {
-            return sotServers.get(hash);
+            return sotServers.get(hash).copy();
         }
-
         // The object inject may not be completed, so we're creating fresh one to make sure all data has been initialized
         SotServer newServer = new SotServer(server.getIp(), server.getPort());
         sotServers.put(newServer.getHash(), newServer);
-        return newServer;
+        return newServer.copy();
     }
 
     @Lock(value = Lock.Type.WRITE, time = 200)
@@ -289,6 +288,7 @@ public class SessionManager {
         if (!fleet.getServers().containsKey(findedSotServer.getHash())) {
             fleet.getServers().put(findedSotServer.getHash(), findedSotServer);
         }
+
         // Do not add player if already in
         if (fleet.getServers().get(findedSotServer.getHash()).getConnectedPlayers().contains(player)) {
             return;
@@ -304,6 +304,12 @@ public class SessionManager {
     @Nullable
     public Player getPlayerFromUsername(String username) {
         Fleet fleet = this.getFleetByPlayerName(username);
+
+        if (fleet == null) {
+            Log.warn("Cannot find session for player: " + username);
+            return null;
+        }
+
         for (Player playerInList : fleet.getPlayers()) {
             if (playerInList.getUsername().equalsIgnoreCase(username)) {
                 return playerInList;
@@ -333,6 +339,11 @@ public class SessionManager {
     @Lock(value = Lock.Type.READ, time = 200)
     public ConcurrentMap<String, Fleet> getSessions() {
         return this.sessions;
+    }
+
+    @Lock(value = Lock.Type.READ, time = 200)
+    public ConcurrentMap<String, SotServer> getSotServers() {
+        return sotServers;
     }
 
     /**

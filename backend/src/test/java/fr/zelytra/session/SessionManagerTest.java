@@ -248,6 +248,25 @@ public class SessionManagerTest {
     }
 
     @Test
+    public void playerJoinSotServer_CacheSotServerShouldNotContainedConnectedPlayers() {
+        Session session = Mockito.mock();
+        when(session.getId()).thenReturn("123");
+        when(session.getAsyncRemote()).thenReturn(null);
+
+        Player player = new Player();
+        player.setUsername("Player 1");
+        player.setSocket(session);
+
+        String sessionId1 = sessionManager.createSession();
+        sessionManager.joinSession(sessionId1, player);
+        SotServer server = new SotServer("1.1.1.1", 8080);
+        String serverHash = server.getHash();
+
+        sessionManager.playerJoinSotServer(player, server);
+        assertEquals(0, sessionManager.getSotServers().get(serverHash).getConnectedPlayers().size(), "Any player should be inside the cache system of the servers");
+    }
+
+    @Test
     public void playerLeaveSotServer_PlayerShouldLeaveSotServer_True() {
         Session session = Mockito.mock();
         when(session.getId()).thenReturn("123");
