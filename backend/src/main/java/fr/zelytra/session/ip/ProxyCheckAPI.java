@@ -79,10 +79,10 @@ public class ProxyCheckAPI {
                     location.append(ipJsonObject.getString("country")).append(" - ");
                 }
                 if (ipJsonObject.getString("region") != null) {
-                    location.append(ipJsonObject.getString("")).append(" - ");
+                    location.append(ipJsonObject.getString("region")).append(" - ");
                 }
                 if (ipJsonObject.getString("city") != null) {
-                    location.append(ipJsonObject.getString(""));
+                    location.append(ipJsonObject.getString("city"));
                 }
 
 
