@@ -51,10 +51,10 @@
     "more": "You are facing complications or you cannot find an answer to your problem? Meet us here on our",
     "question": {
       "alliance": {
-        "content1": "BetterFleet helps players find alliances, but does not guarantee instant access to a single server.",
-        "content2": "To group several players, many factors come into play and are not controlled by BetterFleet. These include: time, number of players performing search, location, Internet connection, as well as the goodwill of Sea of Thieves matchmaking servers.",
-        "content3": "We observe a tendency or the search time varies between 5 minutes for the luckiest and up to 3 hours for the least fortunate. However, these estimates remain approximate and are not guaranteed.",
-        "content4": "BetterFleet does not automatically join the same server on an instant basis, but it makes your search easier by optimizing the process.",
+        "content1": "BetterFleet helps players optimise their alliance creation, but it does not guarantee instant access to a single server.",
+        "content2": "The search process entails numerous factors over which BetterFleet has no control. Among which: time of the day, number of players, location, Internet connection, as well as the goodwill of Sea of Thieves matchmaking servers.",
+        "content3": "As for how long is needed, we observe a tendency varying between 5 minutes for the luckiest and up to 3 hours for the least fortunate. However, these estimations remain approximate and are not guaranteed.",
+        "content4": "Nethertheless, if you are knowledgeable on how to improve the search system for BetterFleet, we are inclined to study any suggestion you can make on Discord or GitHub.",
         "title": "Does BetterFleet guarantee to join the same server instantly?"
       },
       "bug": {
@@ -103,9 +103,9 @@
         "title": "Why does my application crash and/or does not start ?"
       },
       "password": {
-        "content1": "If you forget your password, the app does not automatically recover it. You can contact us on our Discord, and we can reset it for you. However, we recommend that you create a new account, unless you really want to recover the old one.",
-        "content2": "The app has a \"Forgot password\" feature, but we do not yet have the necessary infrastructure to enable it. You can contribute to the project or donate via our GitHub page to help us set it up.",
-        "title": "What should I do if I forget my password?"
+        "content1": "Unfortunately, BetterFleet cannot recover your lost password. If it happens, you can contact us on our Discord and we will reset it for you. However, we recommend that you create a new account, unless you really want to recover the old one.",
+        "content2": "The application has a \"Forgot password\" feature, but we do not yet have the necessary infrastructure to enable it. You can contribute to the project via our GitHub page to help us set it up.",
+        "title": "What should I do if I forgot my password?"
       },
       "security": {
         "content1": "Yes, our application was designed with user security as the absolute priority. Following are the measures we implemented to ensure safe use:",
