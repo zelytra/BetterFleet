@@ -135,7 +135,7 @@ export class Fleet {
     };
 
     this.socket.onerror = () => {
-      error("[Fleet.ts][WebSocket] An error as occurred in the websocket")
+      error("[Fleet.ts][WebSocket] An error has occurred in the websocket")
       alertProvider.sendAlert({
         content: t("alert.socket.connectionFailed"),
         title: t("alert.socket.title"),
