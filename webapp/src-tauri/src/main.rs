@@ -14,7 +14,7 @@ use log::{error, info, LevelFilter};
 use serde::Serialize;
 use tauri::State;
 use tauri_plugin_log::fern::colors::ColoredLevelConfig;
-use tauri_plugin_log::LogTarget;
+use tauri_plugin_log::{LogTarget, RotationStrategy};
 use tokio::sync::RwLock;
 use winapi::um::winuser::FindWindowA;
 use crate::api::{Api, GameStatus};
@@ -69,9 +69,10 @@ async fn main() {
                 LogTarget::Stdout,
                 LogTarget::Webview,
             ])
-            .max_file_size(8_000)
+            .max_file_size(2_000) //Seems 2MB
             .with_colors(ColoredLevelConfig::default())
             .level(LOG_LEVEL)
+            .rotation_strategy(RotationStrategy::KeepAll)
             .build()
         )
         .invoke_handler(tauri::generate_handler![
@@ -172,8 +173,7 @@ async fn get_logs(max_lines: usize) -> tauri::Result<serde_json::Value> {
         if entry.path().is_file() {
             let file = fs::File::open(entry.path()).map_err(|e| tauri::Error::from(e))?;
             let reader = io::BufReader::new(file);
-            let lines: Vec<String> = reader.lines().collect::<Result<_, _>>().map_err(|e| tauri::Error::from(e))?;
-            let lines = lines.into_iter().rev().take(max_lines).collect::<Vec<_>>();
+            let lines: Vec<String> = reader.lines().take(max_lines).collect::<Result<_, _>>().map_err(|e| tauri::Error::from(e))?;
 
             for line in lines {
                 output.push_str(&line);
@@ -181,6 +181,7 @@ async fn get_logs(max_lines: usize) -> tauri::Result<serde_json::Value> {
             }
         }
     }
+    info!("Logs exported");
 
     Ok(serde_json::Value::String(output))
 }
@@ -217,7 +218,7 @@ fn get_system_info() -> String {
     for (pid, process) in sys.processes() {
         let process_name = process.name();
 
-        if process_name == "BetterFleet.exe" || process_name == "SoT.exe" {
+        if process_name == "BetterFleet.exe" || process_name == "SoTGame.exe" {
             system_info.push_str(&format!(
                 "[{}] {} CPU {}, {:?}\n",
                 pid,
