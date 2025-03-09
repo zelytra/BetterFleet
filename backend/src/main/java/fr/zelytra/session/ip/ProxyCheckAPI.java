@@ -85,11 +85,8 @@ public class ProxyCheckAPI {
                     location.append(ipJsonObject.getString("city"));
                 }
 
-
                 Log.info("[PROXY CHECK] New SOT server detected !");
-
                 return location.toString();
-
             } else {
                 Log.error("GET request not worked, Response Code: " + responseCode);
             }
