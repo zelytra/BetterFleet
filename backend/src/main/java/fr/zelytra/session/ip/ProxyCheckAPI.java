@@ -66,17 +66,25 @@ public class ProxyCheckAPI {
                 StringBuilder location = new StringBuilder();
                 JSONObject jsonResponse = new JSONObject(response.toString());
 
-                if(!Objects.equals(jsonResponse.getString("status"), "ok")){
+                if (!Objects.equals(jsonResponse.getString("status"), "ok")) {
                     Log.warn("The proxy checker has reach is free limit, please provide a token or change the bill plan of your token api");
                     return "";
                 }
 
                 JSONObject ipJsonObject = jsonResponse.getJSONObject(this.getIp());
+                if (ipJsonObject.getString("continent") != null) {
+                    location.append(ipJsonObject.getString("continent")).append(" - ");
+                }
+                if (ipJsonObject.getString("country") != null) {
+                    location.append(ipJsonObject.getString("country")).append(" - ");
+                }
+                if (ipJsonObject.getString("region") != null) {
+                    location.append(ipJsonObject.getString("")).append(" - ");
+                }
+                if (ipJsonObject.getString("city") != null) {
+                    location.append(ipJsonObject.getString(""));
+                }
 
-                location.append(ipJsonObject.getString("continent")).append(" - ");
-                location.append(ipJsonObject.getString("country")).append(" - ");
-                location.append(ipJsonObject.getString("region")).append(" - ");
-                location.append(ipJsonObject.getString("city"));
 
                 Log.info("[PROXY CHECK] New SOT server detected !");
 
