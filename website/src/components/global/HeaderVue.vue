@@ -40,7 +40,7 @@ header {
   box-sizing: border-box;
   padding: 0 24px 12px;
   height: 90px;
-  background: url("@/assets/backgrounds/header.svg") repeat-x 50% 100%/1200px 144px;
+  background: url("@/assets/backgrounds/header.svg") repeat-x 50% 95%/1200px 144px;
   position: relative;
   z-index: 4;
   margin-bottom: 35px;
