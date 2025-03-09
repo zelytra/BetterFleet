@@ -218,7 +218,7 @@ fn get_system_info() -> String {
     for (pid, process) in sys.processes() {
         let process_name = process.name();
 
-        if process_name == "BetterFleet.exe" || process_name == "SoT.exe" {
+        if process_name == "BetterFleet.exe" || process_name == "SoTGame.exe" {
             system_info.push_str(&format!(
                 "[{}] {} CPU {}, {:?}\n",
                 pid,
