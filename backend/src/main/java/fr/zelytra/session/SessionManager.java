@@ -19,6 +19,9 @@ import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.websocket.Session;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ import java.util.concurrent.ExecutorService;
  */
 @ApplicationScoped
 @Lock
+@Path("servers")
 public class SessionManager {
 
     private final ConcurrentMap<String, Fleet> sessions = new ConcurrentHashMap<>();
@@ -46,6 +50,12 @@ public class SessionManager {
 
     @Inject
     ExecutorService executor;
+    
+    @GET
+    @Path("ip")
+    public Response getIp() {
+        return Response.ok(sotServers).build();
+    }
 
     /**
      * Creates a new session with a unique ID and adds it to the sessions map.
