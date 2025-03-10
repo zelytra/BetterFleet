@@ -31,20 +31,22 @@ players looking to improve their gaming experience.
 
 ## Comparison of Fleet Management Applications: BetterFleet vs. FleetCreator
 
-| Feature                               | BetterFleet                 | FleetCreator                |
-|---------------------------------------|-----------------------------|-----------------------------|
-| Speed*                                | ~5sec detection, fast UI    | ~20 sec detection, slow UI  |
-| Ad free                               | :white_check_mark:          | :x:                         |
-| Complete free access                  | :white_check_mark:          | :x:                         |
-| UX friendly                           | :white_check_mark:          | :x:                         |
-| Open source                           | :white_check_mark:          | :x:                         |
-| IPv6 support                          | :white_check_mark:          | :x:                         |
-| Automatic click between the same crew | :white_check_mark:          | :x:                         |
-| Size of file                          | <20MB                       | >200MB                      |
-| No memory leak**                      | :white_check_mark:          | :warning:                   |
+| Feature                               | BetterFleet              | FleetCreator               |
+|---------------------------------------|--------------------------|----------------------------|
+| Speed*                                | ~5sec detection, fast UI | ~20 sec detection, slow UI |
+| Ad free                               | :white_check_mark:       | :x:                        |
+| Complete free access                  | :white_check_mark:       | :x:                        |
+| UX friendly                           | :white_check_mark:       | :x:                        |
+| Open source                           | :white_check_mark:       | :x:                        |
+| IPv6 support                          | :white_check_mark:       | :x:                        |
+| Automatic click between the same crew | :white_check_mark:       | :x:                        |
+| Size of file                          | <20MB                    | >200MB                     |
+| Enhanced detection algorithm**        | :white_check_mark:       | :warning:                  |
+| No memory leak***                     | :white_check_mark:       | :warning:                  |
 
 \* Comparison benchmark [spreadsheet](https://docs.google.com/spreadsheets/d/12ETC_1stmQ0MtDgxDIbpUkCQvMW4dVE_4f6FLz92RlA/edit?usp=sharing)\
-\** FleetCreator has been observed to consume 8GB of RAM after 10 hours of usage, indicating a possible memory leak.
+\** Rare seems to be working on the [SDR](https://partner.steamgames.com/doc/features/multiplayer/steamdatagramrelay) implementation. In certains cases FleetCreator shows a "corrupted" status that we handle. More technical information [here](https://github.com/zelytra/BetterFleet/issues/364).\
+\*** FleetCreator has been observed to consume 8GB of RAM after 10 hours of usage, indicating a possible memory leak.
 
 ---
 
