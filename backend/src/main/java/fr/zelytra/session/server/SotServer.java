@@ -117,9 +117,20 @@ public class SotServer {
         return colors.get(random.nextInt(colors.size()));
     }
 
-    @Override
-    public String toString() {
-        return ip + ":" + port + " | " + hash + " | " + location;
+   @Override
+   public String toString() {
+       return ip + ":" + port + " | " + hash + " | " + location;
+   }
+
+    public SotServer copy() {
+        SotServer clone = new SotServer();
+        clone.ip = this.ip;
+        clone.port = this.port;
+        clone.location = this.location;
+        clone.hash = this.hash;
+        clone.color = this.color;
+        clone.connectedPlayers = new ArrayList<>();
+        return clone;
     }
 }
 
