@@ -34,66 +34,86 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
         loop {
             // Fetch pid game
             let pid = find_pid_of("SoTGame.exe");
-            info!("PID found: {:?}",pid);
+            let game_status = api.read().await.game_status.clone();
             if pid.is_empty() {
-                api.write().await.game_status = GameStatus::Closed;
-                info!("Game is closed");
+                if game_status != GameStatus::Closed {
+                    api.write().await.game_status = GameStatus::Closed;
+                    info!("Game is closed");
+                }
             } else {
                 let pid = pid[0].parse().unwrap();
                 // List of udp sockets used by the game
-                info!("Using classical process to get udp connections");
                 let udp_connections = get_udp_connections(pid);
-                info!("{:?}", udp_connections);
+                let port_count = udp_connections.len();
+                info!("{:?} | Port count: {}", udp_connections, port_count);
 
                 // Update game_status
-                if udp_connections.len() == 0 { // 0 = First menu/launching
-                    api.write().await.game_status = GameStatus::Started;
-                    info!("Game is started");
-                } else if udp_connections.len() == 1 { // Main menu
-                    api.write().await.game_status = GameStatus::MainMenu;
-                    api.write().await.main_menu_port = udp_connections[0];
-                    info!("Game is in main menu with main menu port: {}", udp_connections[0]);
+                if port_count == 0 { // 0 = First menu/launching
+                    if game_status != GameStatus::Started {
+                        api.write().await.game_status = GameStatus::Started;
+                        info!("Game has started on PID {}", pid);
+                    }
+                } else if port_count == 1 { // Main menu
+                    if game_status != GameStatus::MainMenu {
+                        api.write().await.game_status = GameStatus::MainMenu;
+                        api.write().await.main_menu_port = udp_connections[0];
+                        info!("Game is in main menu with main menu port: {}", udp_connections[0]);
+                    }
                 } else {
                     // [old method] 2 sockets = connected to a server
-                    // Some users uncounted problems with more than 2 UDP sockets connections changing to else
+                    // Some users uncounted problems with more than 2 UDP sockets connections changing to "else" instead of elseif
 
-                    // Get UDP Listen port, that the other one that is not main_menu_port
-                    let mut listen_port = udp_connections[0];
-
-                    let main_menu_port = api.read().await.main_menu_port;
+                    let mut listen_ports : Vec<u16>;
+                    let mut main_menu_port = api.read().await.main_menu_port;
                     if main_menu_port == 0 {
                         // This may happen when BetterFleet was launched after the connection to the server
                         // So we use the old technic of netstat powershell which output in order, mainmenu = first udp socket
                         info!("Using netstat powershell to get main_menu_port");
                         let udp_connections = get_udp_connections_powershell(pid);
                         info!("{:?}", udp_connections);
-                        if udp_connections.len() == 2 {
-                            listen_port = udp_connections[1];
-                            api.write().await.main_menu_port = udp_connections[0];
-                        }
-                    } else if udp_connections[0] == main_menu_port {
-                        listen_port = udp_connections[1];
+
+                        //We absolutely need this in every case to get it filtered out later
+                        main_menu_port = udp_connections[0];
+                        api.write().await.main_menu_port = main_menu_port;
                     }
+
+                    if port_count == 2 {
+                        // Easy classical case with 2 udp connections
+                        // Get UDP Listen port, that's the other one that is not main_menu_port
+                        if udp_connections[0] == main_menu_port {
+                            listen_ports = vec![udp_connections[1]];
+                        } else {
+                            listen_ports = vec![udp_connections[0]];
+                        }
+                    } else {
+                        // More than 2 udp connections, this becomes more complex
+                        // We're gonna try every ports except main menu
+                        // This is not perfect but it's the best we can do
+                        // 27 ports for main menu and 28 for in game ?
+
+                        let old_port_count = api.read().await.port_count;
+                        if old_port_count > 2 && old_port_count - 1 == port_count as i8 {
+                            //Port count is decreasing, we can assume that the game is in the main menu
+                            api.write().await.game_status = GameStatus::MainMenu;
+                            info!("Port count decreased ({} -> {}), game is in main menu", old_port_count, port_count);
+                            listen_ports = vec!();
+                        } else {
+                            if game_status == GameStatus::Unknown {
+                                api.write().await.game_status = GameStatus::MainMenu;
+                                info!("Game status is unknown, setting to main menu");
+                            }
+                            //listen_ports = find_outliers_iqr(&udp_connections);
+                            listen_ports = udp_connections;
+                        }
+                    }
+
+                    //Filter out main menu port
+                    listen_ports.retain(|&x| x != main_menu_port);
+
+                    info!("Listen ports: {:?} | Listen ports count: {}", listen_ports, listen_ports.len());
 
                     // Get hostname
-                    let mut hostname = match get_local_hostname() {
-                        Ok(hn) => hn,
-                        Err(e) => {
-                            error!("Error getting local hostname: {}", e);
-                            continue;
-                        }
-                    };
-
-                    match domain_to_ascii(&hostname) { //PC with hostname using non-english characters can cause issues
-                        Ok(punycode) => {
-                            hostname = punycode;
-                        }
-                        Err(e) => {
-                            error!("Error converting hostname to Punycode: {}", e);
-                            return;
-                        }
-                    }
-                    info!("Hostname: {}", hostname);
+                    let hostname = get_hostname().unwrap();
 
                     // We need to add the port to the hostname to get the IP
                     let hostname = format!("{}:0", hostname);
@@ -109,56 +129,15 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     let socket_addresses: Vec<SocketAddr> = ip_addresses.into_iter().map(|ip| SocketAddr::new(ip, 0)).collect();
                     for socket_addr in socket_addresses {
                         let api_clone = Arc::clone(&api);
+                        let listen_ports_clone = listen_ports.clone();
 
-                        // One thread / IP
-                        tokio::spawn(async move {
-                            // Init RAW listen socket
-                            let socket = match create_raw_socket(socket_addr).await {
-                                Ok(socket) => socket,
-                                Err(e) => {
-                                    error!("Error creating raw socket: {}", e);
-                                    return;
-                                }
-                            };
-
-                            // Capture the IP by filtering headers
-                            match capture_ip(socket, listen_port).await {
-                                Some((ip, port)) => {
-                                    info!("Found IP: {} Port: {}", ip, port);
-                                    // Got an IP, lock api and update every information
-                                    let mut api_lock = api_clone.write().await;
-                                    api_lock.game_status = GameStatus::InGame;
-                                    api_lock.server_ip = ip;
-                                    api_lock.server_port = port;
-                                    api_lock.last_updated_server_ip = Instant::now();
-
-                                    // Release the lock
-                                    drop(api_lock);
-                                }
-
-                                None => {
-                                    // Got no result, get the last update time and check if it's too old
-                                    // This is not a typical timeout and should never happen, it's a security
-                                    let last_updated_server_ip = api_clone.read().await.last_updated_server_ip;
-                                    let last_server_ip = api_clone.read().await.server_ip.clone();
-                                    if last_updated_server_ip.elapsed() > Duration::from_secs(20) && last_server_ip != ""{
-                                        info!("Resetting server_ip, no result");
-                                        let mut api_lock = api_clone.write().await;
-
-                                        api_lock.server_ip = String::new();
-                                        api_lock.server_port = 0;
-                                        api_lock.last_updated_server_ip = Instant::now();
-
-                                        drop(api_lock);
-                                    }
-                                }
-                            }
-                        });
+                        spawn_thread(socket_addr, api_clone, listen_ports_clone);
                     }
                 }
+                api.write().await.port_count = port_count as i8;
+
             }
 
-            let game_status = api.read().await.game_status.clone();
             let dynamic_time = match game_status {
                 GameStatus::Closed => 5000,
                 GameStatus::Started => 3000,
@@ -167,12 +146,60 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                 GameStatus::Unknown => 2000,
             };
 
-            info!("Sleeping for {}, game status : {:?} ", dynamic_time, game_status);
+            info!("Sleeping for {} | Game status: {:?} ", dynamic_time, game_status);
             tokio::time::sleep(Duration::from_millis(dynamic_time)).await;
         }
     });
 
     Ok(api_base)
+}
+
+fn spawn_thread(socket_addr: SocketAddr, api_clone: Arc<RwLock<Api>>, listen_ports_clone: Vec<u16>) {
+    // One thread / IP
+    tokio::spawn(async move {
+        // Init RAW listen socket
+        let socket = match create_raw_socket(socket_addr).await {
+            Ok(socket) => socket,
+            Err(e) => {
+                error!("Error creating raw socket: {}", e);
+                return;
+            }
+        };
+
+        // Capture the IP by filtering headers
+        match capture_ip(socket, listen_ports_clone).await {
+            Some((ip, port, local_port)) => {
+                info!("Found IP: {} | Distant port: {} | Local port: {}", ip, port, local_port);
+                // Got an IP, lock api and update every information
+                let mut api_lock = api_clone.write().await;
+                api_lock.game_status = GameStatus::InGame;
+                api_lock.server_ip = ip;
+                api_lock.server_port = port;
+                api_lock.last_updated_server_ip = Instant::now();
+
+                // Release the lock
+                drop(api_lock);
+            }
+
+            None => {
+                // Got no result, get the last update time and check if it's too old
+                // This is not a typical timeout and should never happen, it's a security
+                let last_updated_server_ip = api_clone.read().await.last_updated_server_ip;
+                let last_server_ip = api_clone.read().await.server_ip.clone();
+                if last_updated_server_ip.elapsed() > Duration::from_secs(15) && last_server_ip != ""{
+                    info!("Resetting server_ip, no result");
+                    let mut api_lock = api_clone.write().await;
+
+                    api_lock.game_status = GameStatus::MainMenu; //We assume that since the great "udp socket disaster"
+                    api_lock.server_ip = String::new();
+                    api_lock.server_port = 0;
+                    api_lock.last_updated_server_ip = Instant::now();
+
+                    drop(api_lock);
+                }
+            }
+        }
+    });
 }
 
 // Fetch game UDP connections
@@ -235,8 +262,18 @@ fn get_udp_connections_powershell(pid: usize) -> Vec<u16> {
 }
 
 // Get local hostname
-fn get_local_hostname() -> std::io::Result<String> {
-    Ok(hostname::get()?.into_string().unwrap_or_else(|_| "localhost".into()))
+pub fn get_hostname() -> std::io::Result<String> {
+    let mut hostname = hostname::get()?.into_string().unwrap_or_else(|_| "localhost".into());
+
+    match domain_to_ascii(&hostname) { //PC with hostname using non-english characters can cause issues
+        Ok(punycode) => {
+            hostname = punycode;
+        }
+        Err(e) => {
+            error!("Error converting hostname to Punycode: {}", e);
+        }
+    }
+    Ok(hostname)
 }
 
 // Get game PID
@@ -255,7 +292,7 @@ pub fn find_pid_of(process_name: &str) -> Vec<String> {
 }
 
 // Receive & filter packets to get the server IP
-async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)> {
+async fn capture_ip(socket: UdpSocket, listen_ports: Vec<u16>) -> Option<(String, u16, u16)> {
     let mut buf = [0u8; (256 * 256) - 1];
     let timeout = Duration::from_millis(500); // This needs to be lower than the main loop sleep duration
     let start_time = Instant::now();
@@ -308,24 +345,28 @@ async fn capture_ip(socket: UdpSocket, listen_port: u16) -> Option<(String, u16)
 
                                 let mut remote_ip = String::new();
                                 let mut remote_port = 0;
+                                let mut local_port = 0;
 
-                                if source_port == listen_port {
+                                if listen_ports.contains(&source_port) {
                                     // We are the source
                                     remote_ip = destination_ip;
                                     remote_port = destination_port;
-                                } else if destination_port == listen_port {
+                                    local_port = source_port;
+                                } else if listen_ports.contains(&destination_port) {
                                     // We are the destination
                                     remote_ip = source_ip;
                                     remote_port = source_port;
+                                    local_port = destination_port;
                                 }
 
                                 if remote_port >= 30000 && remote_port < 40000 {
                                     // Got a plausible result
-                                    Some((remote_ip, remote_port))
+                                    Some((remote_ip, remote_port, local_port))
                                 } else {
                                     // Result make no sense for SoT
-                                    if remote_port != 0 {
-                                        warn!("Result make no sense for SoT: {} {}", remote_ip, remote_port);
+                                    // port 3075 may happen when switching from main menu to "rise anchor" interface.
+                                    if remote_port != 0 && remote_port != 3075 {
+                                        warn!("Result make no sense for SoT: {} {} (Local port {})", remote_ip, remote_port, local_port);
                                     }
                                     continue;
                                 }

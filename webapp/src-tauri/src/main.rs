@@ -198,6 +198,7 @@ fn get_system_info() -> String {
         Total swap  : {} bytes\n\
         Used swap   : {} bytes\n\
         System name:             {:?}\n\
+        System fetched hostname: {:?}\n\
         System kernel version:   {:?}\n\
         System OS version:       {:?}\n\
         System host name:        {:?}\n\
@@ -208,6 +209,7 @@ fn get_system_info() -> String {
         sys.total_swap(),
         sys.used_swap(),
         System::name().unwrap(),
+        fetch_informations::get_hostname(),
         System::kernel_version().unwrap(),
         System::long_os_version().unwrap(),
         System::host_name().unwrap(),

@@ -8,7 +8,8 @@ pub struct Api {
     pub server_ip: String,
     pub server_port: u16,
     pub last_updated_server_ip: Instant,
-    pub main_menu_port: u16
+    pub main_menu_port: u16,
+    pub port_count: i8
 }
 
 #[derive(PartialEq, Debug, Clone, Serialize)]
@@ -28,6 +29,7 @@ impl Api {
             server_port: 0,
             last_updated_server_ip: Instant::now(),
             main_menu_port: 0,
+            port_count: -1
         }
     }
 
