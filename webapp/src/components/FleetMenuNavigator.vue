@@ -32,28 +32,35 @@ const gameStatusRefresh: number = setInterval(() => {
     const rustSotServer: RustSotServer = {status: PlayerStates.CLOSED, ip: response.ip, port: response.port}
     rustSotServer.status = Utils.parseRustPlayerStatus(response.status);
 
-    if (UserStore.player.status != rustSotServer.status) {
+    const fleet: Fleet = UserStore.player.fleet as Fleet;
+    const isPlayerNewlyInGame: boolean = UserStore.player.status != PlayerStates.IN_GAME && rustSotServer.status == PlayerStates.IN_GAME;
+    const isPlayerDisconnecting: boolean = UserStore.player.status == PlayerStates.IN_GAME && rustSotServer.status != PlayerStates.IN_GAME
+    const isPlayerInGameAndServerIsDetected: boolean = UserStore.player.status == PlayerStates.IN_GAME
+        && rustSotServer.ip != undefined
+        && UserStore.player.server == undefined
 
-      const fleet: Fleet = UserStore.player.fleet as Fleet;
-
-      // Reset player server
-      if (UserStore.player.status == PlayerStates.IN_GAME && rustSotServer.status != PlayerStates.IN_GAME) {
-        fleet.leaveServer();
-      } else if (rustSotServer.ip && UserStore.player.status != PlayerStates.IN_GAME && rustSotServer.status == PlayerStates.IN_GAME) {
-        UserStore.player.server = {
-          connectedPlayers: [],
-          hash: undefined,
-          ip: rustSotServer.ip,
-          location: "",
-          port: rustSotServer.port,
-          color: ""
-        }
-        fleet.joinServer();
+    // Reset player server
+    if (isPlayerDisconnecting) {
+      fleet.leaveServer();
+      fleet.updateToSession();
+    } else if ((isPlayerNewlyInGame && rustSotServer.ip) || isPlayerInGameAndServerIsDetected) {
+      UserStore.player.server = {
+        connectedPlayers: [],
+        hash: undefined,
+        ip: rustSotServer.ip,
+        location: "",
+        port: rustSotServer.port,
+        color: ""
       }
+      fleet.joinServer();
+      fleet.updateToSession();
+    }
 
+    if (UserStore.player.status != rustSotServer.status) {
       UserStore.player.status = rustSotServer.status;
       fleet.updateToSession();
     }
+
   })
 }, 400);
 
