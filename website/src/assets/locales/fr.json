@@ -51,10 +51,10 @@
     "more": "Vous rencontrez des difficultés ou vous ne trouvez pas de réponse à votre problème ? Rendez-vous sur notre",
     "question": {
       "alliance": {
-        "content1": "BetterFleet aide les joueurs à optimiser leurs créations d'alliances, mais ne garantit pas un accès instantané à un même serveur.",
-        "content2": "Le processus de recherche implique de nombreux facteurs que BetterFleet ne contrôle pas. Parmi eux : l'heure, le nombre de joueurs, la localisation, la connexion Internet, ainsi que le bon vouloir des serveurs de matchmaking de Sea of Thieves.",
-        "content3": "Pour le temps requis, nous observons une tendance variant entre 5 minutes pour les plus chanceux et 3 heures pour les malheureux. Ces estimations restent malgré tout approximatives et ne sont pas garanties.",
-        "content4": "Si toutefois vous avez les connaissances pour améliorer le système de recherche de BetterFleet, nous sommes enclins à étudier les propositions que vous pourrez faire sur Discord ou GitHub.",
+        "content1": "BetterFleet aide les joueurs à trouver des alliances, mais ne garantit pas un accès instantané à un même serveur.",
+        "content2": "Pour regrouper plusieurs joueurs, de nombreux facteurs entrent en jeu et ne sont pas contrôlés par BetterFleet. Parmi eux : l'heure, le nombre de joueurs effectuant la recherche, la localisation, la connexion Internet, ainsi que le bon vouloir des serveurs de matchmaking de Sea of Thieves.",
+        "content3": "Nous observons une tendance où le temps de recherche varie entre 5 minutes pour les plus chanceux et jusqu'à 3 heures pour les moins chanceux. Toutefois, ces estimations restent approximatives et ne sont pas garanties.",
+        "content4": "BetterFleet ne vous fait pas rejoindre automatiquement le même serveur de façon instantanée, mais il facilite votre recherche en optimisant le processus.",
         "title": "BetterFleet garantit-il de rejoindre instantanément le même serveur ?"
       },
       "bug": {
@@ -103,9 +103,9 @@
         "title": "Pourquoi mon application plante et/ou ne se lance pas ?"
       },
       "password": {
-        "content1": "BetterFleet ne permet malheureusement pas de récupérer votre mot de passe. Si cela arrive, vous pouvez nous contacter sur notre Discord et nous pourrons le réinitialiser pour vous. Cependant, nous vous recommandons plutôt de créer un nouveau compte, sauf si tenez absolument à récupérer l'ancien.",
-        "content2": "L'application dispose d'une fonctionnalité \"Mot de passe oublié\", mais nous ne disposons pas encore de l'infrastructure nécessaire pour l'activer. Vous pouvez contribuer au projet via notre page GitHub pour nous aider à la mettre en place.",
-        "title": "Que faire si j'ai oublié mon mot de passe ?"
+        "content1": "Si vous oubliez votre mot de passe, l'application ne permet pas de le récupérer automatiquement. Vous pouvez nous contacter sur notre Discord, et nous pourrons le réinitialiser pour vous. Cependant, nous vous recommandons plutôt de créer un nouveau compte, sauf si vous tenez absolument à récupérer l'ancien.",
+        "content2": "L'application dispose d'une fonctionnalité \"Mot de passe oublié\", mais nous ne disposons pas encore de l'infrastructure nécessaire pour l'activer. Vous pouvez contribuer au projet ou faire un don via notre page GitHub pour nous aider à la mettre en place.",
+        "title": "Que faire en cas d'oubli de mon mot de passe ?"
       },
       "security": {
         "content1": "Oui, notre application est conçue avec la sécurité des utilisateurs comme priorité absolue. Voici les mesures que nous avons mises en place pour garantir une utilisation sûre :",
