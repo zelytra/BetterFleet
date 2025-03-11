@@ -320,38 +320,38 @@
       "89": "El barco naufragado",
       "9": "La guarida de Davy Jones",
       "90": "El refugio de los ladrones",
-      "91": "L'Attaque Opportune",
-      "92": "L'Évasion Intrépide",
-      "93": "La Fortune Égarée",
-      "94": "La Pièce de Huit",
-      "95": "Le Récit Héroïque",
-      "96": "La Cape Flamboyante",
-      "97": "Le Corsaire Assermenté",
-      "98": "Le Lagon Bleu",
-      "99": "La Mission Malicieuse"
+      "91": "El ataque oportunista",
+      "92": "La huida intrépida",
+      "93": "La fortuna perdida",
+      "94": "La pieza de ocho",
+      "95": "El cuento heroico",
+      "96": "La capa llameante",
+      "97": "El corsario jurado",
+      "98": "La laguna azul",
+      "99": "La misión maliciosa"
     },
     "player": {
-      "notReady": "Pas prêt",
-      "ready": "Prêt",
+      "notReady": "No estoy listo",
+      "ready": "Listo",
       "status": {
-        "closed": "Hors ligne",
-        "in-game": "En jeu",
-        "main-menu": "Dans les menus du jeu",
-        "started": "Jeu lancé"
+        "closed": "Desconectado",
+        "in-game": "Apostar",
+        "main-menu": "En los menús del juego",
+        "started": "Juego lanzado"
       }
     },
-    "run": "Lever l'ancre",
+    "run": "Levantar el ancla",
     "status": {
-      "countdown": "Lancement dans",
-      "ready": "Prêt",
-      "waiting": "En attente"
+      "countdown": "Lanzamiento en",
+      "ready": "Listo",
+      "waiting": "En espera"
     }
   },
   "tooltips": {
     "navbar": {
-      "config": "Paramètres",
-      "fleet": "Session",
-      "home": "Page d'accueil"
+      "config": "Ajustes",
+      "fleet": "Sesión",
+      "home": "Página de inicio"
     }
   }
 }
