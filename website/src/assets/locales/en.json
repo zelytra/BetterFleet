@@ -50,6 +50,13 @@
     "faq": "F.A.Q.",
     "more": "You are facing complications or you cannot find an answer to your problem? Meet us here on our",
     "question": {
+      "alliance": {
+        "content1": "BetterFleet helps players optimise their alliance creation, but it does not guarantee instant access to a single server.",
+        "content2": "The search process entails numerous factors over which BetterFleet has no control. Among which: time of the day, number of players, location, Internet connection, as well as the goodwill of Sea of Thieves matchmaking servers.",
+        "content3": "As for how long is needed, we observe a tendency varying between 5 minutes for the luckiest and up to 3 hours for the least fortunate. However, these estimations remain approximate and are not guaranteed.",
+        "content4": "Nethertheless, if you are knowledgeable on how to improve the search system for BetterFleet, we are inclined to study any suggestion you can make on Discord or GitHub.",
+        "title": "Does BetterFleet guarantee to join the same server instantly?"
+      },
       "bug": {
         "content1": "If you encounter any issue or bugs, we encourage you to bring it to our attention so that we can work on improving your experience. Here is how you can contact us:",
         "content2": "Discord: Join our Discord server and share your issue in the dedicated support channel. Our team is always ready to help you and answer your questions in real time.",
@@ -95,6 +102,11 @@
         "content6": "If after these steps the application is still not working, do not hesitate and meet us on our Discord server for more customised assistance.",
         "title": "Why does my application crash and/or does not start ?"
       },
+      "password": {
+        "content1": "Unfortunately, BetterFleet cannot recover your lost password. If it happens, you can contact us on our Discord and we will reset it for you. However, we recommend that you create a new account, unless you really want to recover the old one.",
+        "content2": "The application has a \"Forgot password\" feature, but we do not yet have the necessary infrastructure to enable it. You can contribute to the project via our GitHub page to help us set it up.",
+        "title": "What should I do if I forgot my password?"
+      },
       "security": {
         "content1": "Yes, our application was designed with user security as the absolute priority. Following are the measures we implemented to ensure safe use:",
         "content2": "Reinforced authentication: We incorporated an authentication overlay in order to strengthen the security of user accounts.",
@@ -117,7 +129,7 @@
     "discord": "Are you having trouble? Get immediately in touch with our team on our",
     "github": "Are you a developer and love to sail on the Sea of Thieves? Then come and contribute to the project!",
     "warning": {
-      "content": "BetterFleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience!",
+      "content": "BetterFleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience. The user agrees to be held sole responsible for its use!",
       "title": "Disclaimer"
     }
   },

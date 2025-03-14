@@ -50,6 +50,13 @@
     "faq": "FAQs",
     "more": "Haben Sie Schwierigkeiten oder finden Sie keine Antwort auf Ihr Problem? Besuchen Sie unser",
     "question": {
+      "alliance": {
+        "content1": "BetterFleet hilft Spielern dabei, Allianzen zu finden, garantiert jedoch keinen sofortigen Zugriff auf denselben Server.",
+        "content2": "Beim Zusammenführen mehrerer Spieler in einer Gruppe spielen viele Faktoren eine Rolle, auf die BetterFleet keinen Einfluss hat. Darunter: Zeit, Anzahl der suchenden Spieler, Standort, Internetverbindung und das Wohlwollen der Matchmaking-Server von Sea of Thieves.",
+        "content3": "Wir beobachten einen Trend, bei dem die Suchzeit zwischen 5 Minuten für die Glücklichen und bis zu 3 Stunden für die weniger Glücklichen variiert. Diese Schätzungen sind jedoch nur annähernd und können nicht garantiert werden.",
+        "content4": "BetterFleet verbindet Sie nicht automatisch sofort mit demselben Server, erleichtert Ihre Suche jedoch, indem es den Vorgang optimiert.",
+        "title": "Garantiert BetterFleet, dass man sich sofort demselben Server anschließt?"
+      },
       "bug": {
         "content1": "Wenn Sie auf Probleme oder Fehler stoßen, empfehlen wir Ihnen, uns diese zu melden, damit wir daran arbeiten können, Ihr Erlebnis zu verbessern. So erreichen Sie uns:",
         "content2": "Discord: Treten Sie unserem Discord-Server bei und teilen Sie Ihr Problem im speziellen Support-Kanal. Unser Team ist immer bereit, Ihnen zu helfen und Ihre Fragen in Echtzeit zu beantworten.",
@@ -94,6 +101,11 @@
         "content5": "Wenn das Problem trotz dieser Überprüfungen weiterhin besteht, versuchen Sie, die Anwendung neu zu installieren, um mögliche Schäden zu beheben.",
         "content6": "Wenn die Anwendung nach diesen Schritten immer noch nicht funktioniert, zögern Sie nicht, uns auf unserem Discord-Server zu kontaktieren, um weitere persönliche Unterstützung zu erhalten.",
         "title": "Warum stürzt meine Anwendung ab und/oder startet nicht?"
+      },
+      "password": {
+        "content1": "Wenn Sie Ihr Passwort vergessen, können Sie es über die Anwendung nicht automatisch wiederherstellen. Sie können uns über Discord kontaktieren und wir können es für Sie zurücksetzen. Wir empfehlen Ihnen jedoch, stattdessen ein neues Konto zu erstellen, es sei denn, Sie möchten das alte unbedingt wiederherstellen.",
+        "content2": "Die App verfügt über eine Funktion „Passwort vergessen“, aber wir verfügen noch nicht über die Infrastruktur, um diese zu aktivieren. Sie können zum Projekt beitragen oder über unsere GitHub-Seite spenden, um uns bei der Umsetzung zu helfen.",
+        "title": "Was soll ich tun, wenn ich mein Passwort vergesse?"
       },
       "security": {
         "content1": "Ja, bei der Entwicklung unserer App steht die Benutzersicherheit an erster Stelle. Hier sind die Maßnahmen, die wir ergriffen haben, um eine sichere Nutzung zu gewährleisten:",
