@@ -1,44 +1,44 @@
 {
   "button": {
     "download": "Download",
-    "downloadApp": "Download application",
+    "downloadApp": "Download the application",
     "downloadHere": "Download here"
   },
   "comparison": {
-    "description": "BetterFleet stands as a performance titan by reducing server search time significantly – displaying a speed 3 to 4 times higher than that of Fleet Creator. When we look at our graph, the green bars, corresponding to BetterFleet, reach inferior values with a consistency that notes a advanced technical optimization. This means that, concretely, BetterFleet locates the game server with remarkable agility, drastically reducing connection delays. Players can thus expedite a near-instant transition to their favorite virtual worlds, thanks to a concise platform for efficiency and speed. BetterFleet is the assurance of an uncompromising performance for an unequal user experience.",
-    "subtitle": "A turbocharged connection for triple speed game!",
+    "description": "BetterFleet stands as a performance titan by reducing server search time significantly – displaying a speed 3 to 4 times higher than that of Fleet Creator. When we look at our graph, the green bars, corresponding to BetterFleet, reach inferior values with a consistency that notes an advanced technical optimisation. This means that, concretely, BetterFleet locates the game server with remarkable agility, drastically reducing connection delays. Players can thus expedite a near-instant transition to their favourite virtual worlds, thanks to a concise platform for efficiency and speed. BetterFleet is the guarantee of an uncompromising performance for an unequal user experience.",
+    "subtitle": "A turbocharged connection for a triple speed gaming experience!",
     "title": "Comparison with Fleet Creator"
   },
   "credits": {
     "and": "&",
-    "designed": "Designated by",
-    "developed": "Powered by",
+    "designed": "Designed by",
+    "developed": "Developed by",
     "license": "License"
   },
   "descriptions": {
-    "globe": "BetterFleet is designed and efficient. With an artistic direction close to Sea of Thieves, you will feel like navigating an extension of the game at the peak of the reactivity.",
-    "hourglass": "Our synchronized auto-click feature implements a perfectly coordinated account between all players in the session ensuring a server search for a fearsome efficiency that minimizes the wait time.",
-    "key": "Our application ensures the security of users thanks to its open source code, allowing full transparency, and a team of active developers dedicated to regular updates and maintenance of the security."
+    "globe": "BetterFleet combines design and efficiency. Inspired by Sea of Thieves artistic direction, you will feel like navigating within an extension of the game at the height of responsiveness.",
+    "hourglass": "Our synchronised auto-click feature implements a perfectly coordinated countdown for every player in the session, ensuring an impressively efficient server research that lowers waiting time to a minimum.",
+    "key": "Our application ensures the security of users thanks to its open source code, allowing full transparency, and a team of active developers dedicated to regular updates and security maintenance."
   },
   "discover": {
     "discord": {
-      "button": "Join Discord",
+      "button": "Join the Discord",
       "content": "Our application has grown well beyond a simple interface because it is anchored in a vibrant, committed community on our dedicated Discord server. This dynamic space is the crossroads where players can not only share their experiences, but also actively contribute to development by submitting ideas for improvement. Open and constructive dialogue is encouraged, forging synergy between users and creators. In addition, our Discord server provides robust support for those who want to integrate our application on their side. Whether for technical advice, strategic orientations or customization tips, our members and our support team are always ready to help, ensuring a transparent and successful integration.",
       "nav": "Our Community",
-      "title": "Our preferred exchange platform!"
+      "title": "Our favourite exchange platform!"
     },
     "github": {
       "button": "GitHub",
-      "content": "At the heart of our project is a deep commitment to open source, Reflected by our code accessible to all and our team of active and receptive developers. This philosophy guarantees a constant evolution of our application, driven by transparent collaboration and fruitful exchanges with our community. Player feedback is a cornerstone of our development process, as it allows us to fine-tune and improve our offer, by ensuring that it responds precisely to the needs and desires of our users. Openness to suggestions and ability to adapt quickly to our developers ensure that our application remains at the cutting edge, while cultivating a relationship of trust and mutual respect with our committed community.",
+      "content": "At the heart of our project is a deep commitment to open source, reflected by our code accessible to all and our team of active and receptive developers. This philosophy guarantees a constant evolution of our application, driven by transparent collaboration and fruitful exchanges with our community. Player feedback is a cornerstone of our development process, as it allows us to fine-tune and improve our offer, by ensuring that it responds precisely to the needs and desires of our users. Openness to suggestions and ability to adapt quickly to our developers ensure that our application remains at the cutting edge, while cultivating a relationship of trust and mutual respect with our committed community.",
       "nav": "Collaborative Innovation",
-      "title": "Our open source commitment to constantly evolving application"
+      "title": "Our open source commitment for an application in constant evolution"
     },
-    "title": "Our Values and Objectives",
+    "title": "Our objectives and values",
     "translation": {
       "button": "Crowdin",
       "content": "Our application embraces diversity and inclusiveness through its i18n based development opening the door to translations in any language by the community itself. This approach ensures that our application can be easily adapted and used by users around the world. reflecting our commitment to breaking language barriers. In addition, we have set up a public Crowdin project, providing an intuitive platform for all those willing to contribute to the translation efforts. This initiative promotes international collaboration, enabling our application to be enriched by the cultural and linguistic nuances of each contributor. Together, we build a truly global, accessible and engaging gaming experience for an ever-expanding international community.",
       "nav": "Participatory Translation",
-      "title": "Uniting players from all over the world thanks to i18n and Crowdin"
+      "title": "Unite players all over the world with i18n and Crowdin"
     }
   },
   "download": {
@@ -46,91 +46,91 @@
   },
   "faq": {
     "copy": "Link copied",
-    "description": "Have a question about BetterFleet? We answer here the most relevant questions",
+    "description": "You have a question about BetterFleet? Here we answer the most frequently asked questions",
     "faq": "FAQ",
-    "more": "Having trouble or not finding the answer to your problem? Go to our",
+    "more": "You are facing complications or you cannot find an answer to your problem? Meet us here on our",
     "question": {
       "alliance": {
-        "content1": "BetterFleet helps players find alliances, but does not guarantee instant access to a single server.",
-        "content2": "To group several players, many factors come into play and are not controlled by BetterFleet. These include: time, number of players performing search, location, Internet connection, as well as the goodwill of Sea of Thieves matchmaking servers.",
-        "content3": "We observe a tendency or the search time varies between 5 minutes for the luckiest and up to 3 hours for the least fortunate. However, these estimates remain approximate and are not guaranteed.",
-        "content4": "BetterFleet does not automatically join the same server on an instant basis, but it makes your search easier by optimizing the process.",
+        "content1": "BetterFleet helps players optimise their alliance creation, but it does not guarantee instant access to a single server.",
+        "content2": "The search process entails numerous factors over which BetterFleet has no control. Among which: time of the day, number of players, location, Internet connection, as well as the goodwill of Sea of Thieves matchmaking servers.",
+        "content3": "As for how long is needed, we observe a tendency varying between 5 minutes for the luckiest and up to 3 hours for the least fortunate. However, these estimations remain approximate and are not guaranteed.",
+        "content4": "Nethertheless, if you are knowledgeable on how to improve the search system for BetterFleet, we are inclined to study any suggestion you can make on Discord or GitHub.",
         "title": "Does BetterFleet guarantee to join the same server instantly?"
       },
       "bug": {
-        "content1": "If you encounter problems or bugs, we encourage you to report it to us so that we can work on improving your experience. Here's how to contact us:",
-        "content2": "Discord: Join our Discord server and share your issue in the support channel. Our team is always ready to help you and answer your questions in time.",
-        "content3": "GitHub: If you are familiar with GitHub, you can also open an issue on our GitHub era. This allows us to track structural problems and ensure transparent and effective monitoring.",
-        "content4": "We understand your feedback and commit to solving issues in the best of the issues.",
-        "title": "How do I report a bug or problem?"
+        "content1": "If you encounter any issue or bugs, we encourage you to bring it to our attention so that we can work on improving your experience. Here is how you can contact us:",
+        "content2": "Discord: Join our Discord server and share your issue in the dedicated support channel. Our team is always ready to help you and answer your questions in real time.",
+        "content3": "GitHub: If you are familiar with GitHub, you can also open an issue on our GitHub repository. This allows us to structurally track problems and ensure transparent and effective monitoring.",
+        "content4": "We appreciate your feedback and are committed to resolving reported issues as quickly as possible.",
+        "title": "How do I report a problem or a bug?"
       },
       "console": {
-        "content1": "Absolutely! We developed special features to improve the experience of Xbox and PlayStation players. Here's what we've put in place:",
-        "content2": "Sound count: We have incorporated a sound component into the count. This function allows users to know exactly when to raise anchor, without the Alliance Leader having to give voice instructions. This makes the sessions more fluid while addressing the delay caused by online exchange platforms.",
-        "content3": "Platform type visual indication: We added an icon that allows users to know if their teammates are using a console. This feature promotes better coordination and understanding between players of different platforms.",
-        "content4": "These enhancements are concise to make the game experience more intuitive and accessible to console players, ensuring harmonious integration within mixed gaming communities.",
-        "title": "Is there an integer for console players?"
+        "content1": "Absolutely! We developed specific features to improve the experience of Xbox and PlayStation players. Here is what we implemented:",
+        "content2": "Audio countdown: We incorporated a sound component to the countdown. This function allows users to know exactly when to set sail, without putting upon the alliance leader to give vocal instructions. This makes sessions run smoothly all the while getting around latency caused by online exchange platforms.",
+        "content3": "Visual indication of the platform used: We added an icon to let users know whether their teammates are on a console. This feature promotes better coordination and understanding between players who use different platforms.",
+        "content4": "These enhancements are designed to make gaming experience more intuitive and accessible for console players, ensuring harmonious integration within mixed gaming communities.",
+        "title": "Is it worthy of interest for console players?"
       },
       "data": {
-        "content1": "Confidentiality and security of our users' data are of the utmost importance to us. Here is our policy on user data management:",
-        "content2": "Data usage: Username and email address are the only elements required for application purposes. No other personal data is collected.",
-        "content3": "Security and Encryption: Data collected is encrypted and stored securely to prevent unauthorized access.",
-        "content4": "Cookies and Resell: We do not use any cookies, nor do we sell or share user information with third parties.",
+        "content1": "The confidentiality and security of our users' data are of the utmost importance to us. Here is our policy regarding the management of user data:",
+        "content2": "Data usage: The username and email address are the only required elements for the proper functioning of the application. No other personal data is collected.",
+        "content3": "Security and encryption: The collected data is encrypted and safely stored to prevent any unauthorised access.",
+        "content4": "Cookies and resale: We do not use cookies, and we do not sell nor do we share users' information with third parties.",
         "content5": "Anonymous data and statistics: For the continuous improvement of our application, we use anonymous data for statistical purposes. Under no circumstances do these data allow users to be personally identified.",
-        "content6": "We are committed to maintaining transparency and respecting the privacy of our users in all circumstances.",
-        "title": "What do I do with user data?"
+        "content6": "We are committed to maintaining a certain level of transparency and respecting the privacy of our users at all times.",
+        "title": "What do we do with user data?"
       },
       "download": {
         "content1": "Go to our official website:",
         "content2": "Click the \"Download\" button.",
-        "content3": "Follow the instructions on the screen to complete the installation.",
-        "content4": "That's it! BetterFleet will be installed on your device.",
-        "title": "How to install BetterFleet?"
+        "content3": "Follow the onscreen instructions to complete the installation.",
+        "content4": "That's it! After these steps, BetterFleet will be installed on your device.",
+        "title": "How do I install BetterFleet?"
       },
       "eac": {
-        "content1": "BetterFleet is closer to a logbook than anything else. Its main automatic function simulates a single mouse click, just like a voice command, and does not constitute a macro in itself. Systems such as Easy Anti-Cheat (EAC) focus mainly on RAM manipulation and therefore have no reason to condemn our method.",
-        "content2": "Also, click is never executed in-game and only occurs in menus, compliant with the conditions of use of Sea of Thieves and Xbox. These conditions are broad in order to legally cover as many situations as possible, but there is no mention of our specific use. The option is however deactivable at the user's wish.",
-        "content3": "It remains essential to understand that using tools such as BetterFleet and Fleet Creator is not entirely risky, especially regarding IP detection, which remains a sensitive point. Our application is as supreme as another, but not recognized by Rare or Microsoft, we are fully dependent on their will to act.",
-        "title": "Are there any risks with Easy Anti-Cheat? (EAC)"
+        "content1": "BetterFleet ressembles more a logbook than anything else. Its main automatic feature simulates a fairly simple mouse click, just like a voice command would, and does not technically constitute a macro in itself. Systems like Easy Anti-Cheat (EAC) mostly focus on RAM manipulation and therefore have no reason to condemn our method.",
+        "content2": "Besides, the click is never executed in game and only occurs in the menu, in accordance with the Sea of Thieves and Xbox terms of service (TOS). These terms are broad enough to juridically cover as many situations as possible, but no point mentions our specific use. The option can however be disabled at the user's discretion.",
+        "content3": "It is still essential to understand that using tools such as BetterFleet and Fleet Creator is not entirely devoid of risks, especially regarding IP detection which remains a sensitive point. Our application is as safe as another, but being neither recognised by Rare nor by Microsoft, we fully depend on their sole decision to take action.",
+        "title": "Is there any risk with Easy Anti-Cheat? (EAC)"
       },
       "edge": {
-        "content1": "If you have problems running the application or if it crashes after a proper installation, please follow these troubleshooting steps:",
+        "content1": "If you have problems running the application or if it crashes after properly installing it, please follow these troubleshooting steps:",
         "content2": "Make sure your operating system is Windows 10 or Windows 11.",
-        "content3": "Make sure Microsoft Edge and Microsoft Edge WebView2 are installed correctly on your machine. These components are essential for the proper functioning of the application.",
-        "content4": "There may be a conflict with your antivirus, if permitted, exclude BetterFleet from the list of threats presented. Otherwise, disable your antivirus and restart the application.",
-        "content5": "If the problem persists, try to reinstall the app to fix any potential corruption.",
-        "content6": "If after these steps the app still doesn't work, please do not contact us on our Discord server for more personalized support.",
-        "title": "Why does my application crash and/or not launch?"
+        "content3": "Check whether Microsoft Edge and Microsoft Edge WebView2 are correctly installed on your device. These components are essential for the proper functioning of the application.",
+        "content4": "A conflict might occur with your antivirus software. If this one allows it, exclude BetterFleet from the list of present threats. Otherwise, deactivate your software and rerun the application.",
+        "content5": "If the issue still persists despite these checks, try reinstalling the application in order to fix any potential corruption.",
+        "content6": "If after these steps the application is still not working, do not hesitate and meet us on our Discord server for more customised assistance.",
+        "title": "Why does my application crash and/or does not start ?"
       },
       "password": {
-        "content1": "If you forget your password, the app does not automatically recover it. You can contact us on our Discord, and we can reset it for you. However, we recommend that you create a new account, unless you really want to recover the old one.",
-        "content2": "The app has a \"Forgot password\" feature, but we do not yet have the necessary infrastructure to enable it. You can contribute to the project or donate via our GitHub page to help us set it up.",
-        "title": "What should I do if I forget my password?"
+        "content1": "Unfortunately, BetterFleet cannot recover your lost password. If it happens, you can contact us on our Discord and we will reset it for you. However, we recommend that you create a new account, unless you really want to recover the old one.",
+        "content2": "The application has a \"Forgot password\" feature, but we do not yet have the necessary infrastructure to enable it. You can contribute to the project via our GitHub page to help us set it up.",
+        "title": "What should I do if I forgot my password?"
       },
       "security": {
-        "content1": "Yes, our application is consistent with user security as the absolute priority. Here are the measures we have put in place to ensure greater use:",
-        "content2": "Strengthened authentication: We have integrated an authentication overlay to strengthen the security of user accounts.",
-        "content3": "Open source: The application is completely open source, offering total transparency about its use and operation. This allows the community to verify and audit our code, strengthening confidence in our product.",
-        "content4": "Proactive Maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes updated dependencies and ongoing monitoring of potential security vulnerabilities to prevent risk.",
-        "content5": "Independent approach: BetterFleet is not licensed under Microsoft and is subject to Windows Defender during installation. Our application is still secure, and we aim to adapt to these constraints which we do not have control.",
-        "content6": "These joint efforts contribute to a reliable and secure platform for all our users.",
-        "title": "Is the app secured?"
+        "content1": "Yes, our application was designed with user security as the absolute priority. Following are the measures we implemented to ensure safe use:",
+        "content2": "Reinforced authentication: We incorporated an authentication overlay in order to strengthen the security of user accounts.",
+        "content3": "Open source: The application is completely open source, offering total transparency concerning its use and operation. This allows the community to verify and audit our code, therefore strengthening confidence in our product.",
+        "content4": "Proactive maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes regular dependencies updates and continuously monitoring potential security breaches to prevent any risk.",
+        "content5": "Independent approach: As BetterFleet is not licenced by Microsoft, it is subjected to Windows Defender upon installation. Our application is no less secure and we set our sights on adapting to these constraints we cannot quite control.",
+        "content6": "These joint efforts contribute to a reliable and secure platform for every one our users.",
+        "title": "Is the application secure?"
       },
       "update": {
-        "content1": "When an update is available, a pop-up window will appear when BetterFleet is launched. You only have to click \"Yes\" to start the update. The app will automatically install the latest version and restart once the update is complete.",
-        "content2": "In the case of an update is available while BetterFleet is already launched, you can simply close the application. The update will be offered for the next launch.",
-        "title": "How to update BetterFleet?"
+        "content1": "Whenever an update is available, a pop-up window appears upon launching BetterFleet. You only have to click \"Yes\" to initiate the update. The application will automatically install the latest version and reboot once the update is complete.",
+        "content2": "Should an update be available while BetterFleet is already running, you can simply close the application. You will be offered to do the update at the next launch.",
+        "title": "How do I update BetterFleet?"
       }
     },
-    "title": "Most Freest Questions"
+    "title": "Frequently Asked Questions"
   },
   "footer": {
-    "content": "Join our global adventure - your passion, our technology. Together, let's transform the game. Powered by community and open innovation.",
-    "discord": "Having trouble? Contact our team on our",
-    "github": "Are you a developer and love sailing on Sea of Thieves? Then come and contribute to the project!",
+    "content": "Join our worldwide adventure - your passion, our technology. Together, let's transform the game. Powered by the community and open innovation.",
+    "discord": "Are you having trouble? Get immediately in touch with our team on our",
+    "github": "Are you a developer and love to sail on the Sea of Thieves? Then come and contribute to the project!",
     "warning": {
-      "content": "BetterFleet is an unofficial third-party application unrelated to the Sea of Thieves Development Team. Its use is external and does not affect the experience in any way!",
-      "title": "Warning"
+      "content": "BetterFleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience. The user agrees to be held sole responsible for its use!",
+      "title": "Disclaimer"
     }
   },
   "header": {
@@ -143,13 +143,13 @@
     "support": "Support"
   },
   "presentation": {
-    "content": "Dive into the world of Sea of Thieves with the ultimate tool to forge alliances like never before. Our app is changing how players log in, offering exceptional fluidity and significantly increasing your chances of finding an alliance, far beyond the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, or create links and navigate together becomes a reference accessible with each click.",
+    "content": "Dive into the world of Sea of Thieves with the ultimate tool designed to forge alliances like never before. Our application revolutionises the way players log in, providing exceptional fluidity and significantly increasing your chances of finding an alliance, far surpassing the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, where bonding and sailing together becomes a reality accessible with every click.",
     "title": "BetterFleet"
   },
   "stats": {
     "download": "Downloads",
-    "players": "Online Players",
-    "sessions": "Open Sessions",
+    "players": "Online players",
+    "sessions": "Open sessions",
     "title": "Statistics"
   },
   "tutorial": {
@@ -164,19 +164,19 @@
     "step": {
       "1": {
         "content": "First you will need an account. By opening BetterFleet you will be asked to log in with your credentials in order to access the application.",
-        "title": "Connecting to Application"
+        "title": "Log into the Application"
       },
       "2": {
-        "content": "Select the 'Create Session' option to set up a new space where you can invite other players to join your alliance.",
+        "content": "Select the 'Create a session' option to set up a new space where you can invite other players to join your alliance.",
         "title": "Create Session"
       },
       "3": {
         "content": "A unique code will be managed for your session. Give this code to the people you want to invite to join the alliance.",
-        "title": "Session Code Sharing"
+        "title": "Share the Session ID"
       },
       "4": {
         "content": "Ask all players to go to the 'Raise Anchor' menu of the game, or they will be able to prepare to start the game together.",
-        "title": "Gathering in the 'Rising Anchor Menu'"
+        "title": "Meeting in the 'Set Sail' Menu"
       },
       "5": {
         "content": "Each player then has to change their status for the start, and what they can do by selecting the Preview option in the application interface.",
@@ -192,7 +192,7 @@
       }
     },
     "stepWord": "Step",
-    "title": "Start at BetterFleet",
+    "title": "Beginning on BetterFleet",
     "whatIsIt": {
       "content": "An alliance server is a game server or several teams have agreed to form a strategic alliance by combining for their mutual benefit. On these servers, players share the same goals, such as the collection of treasures, or the completeness of queens, and agree not to attack each other. The idea is for each member to benefit from the rewards, optimizing the winnings and the gaming experience of all. This creates an environment where players can focus on teamwork and exploration rather than on competency, offering a more extensive community adventure.",
       "title": "What is an alliance server on Sea of Thieves?"
