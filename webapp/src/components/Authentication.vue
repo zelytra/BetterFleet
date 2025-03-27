@@ -1,65 +1,77 @@
 <template>
   <section class="auth-page">
-    <img src="@/assets/icons/full-logo.svg" alt="app logo"/>
+    <img src="@/assets/icons/full-logo.svg" alt="app logo" />
     <div class="card login-wrapper" v-if="!keycloakStore.isAuthenticated">
-      <h1>{{ t('login.welcome') }} <strong>{{ t('appName') }}</strong></h1>
-      <p>{{ t('login.description') }}</p>
-      <PirateButton :label="t('login.loginButton')" @on-button-click="authUser"/>
+      <h1>
+        {{ t("login.welcome") }} <strong>{{ t("appName") }}</strong>
+      </h1>
+      <p>{{ t("login.description") }}</p>
+      <PirateButton
+        :label="t('login.loginButton')"
+        @on-button-click="authUser"
+      />
     </div>
     <div class="card user-card" v-else>
-      <h1>{{ t('login.succeed') }}</h1>
+      <h1>{{ t("login.succeed") }}</h1>
       <div
-          v-if="UserStore.player.username"
-          class="user-icon"
-          :style="{ backgroundColor: Utils.generateRandomColor() }"
+        v-if="UserStore.player.username"
+        class="user-icon"
+        :style="{ backgroundColor: Utils.generateRandomColor() }"
       >
         <p>
           {{ UserStore.player.username.charAt(0).toUpperCase() }}
         </p>
       </div>
-      <p>{{ t('login.userWelcome') }} <strong>{{ keycloakStore.user.username }}</strong> !</p>
+      <p>
+        {{ t("login.userWelcome") }}
+        <strong>{{ keycloakStore.user.username }}</strong> !
+      </p>
       <div class="action-wrapper">
-        <PirateButton :label="t('login.continue')" @on-button-click="leavePage()"/>
-        <p class="sub-action" @click="keycloakStore.keycloak.logout()">{{ t('login.disconnect') }}</p>
+        <PirateButton
+          :label="t('login.continue')"
+          @on-button-click="leavePage()"
+        />
+        <p class="sub-action" @click="keycloakStore.keycloak.logout()">
+          {{ t("login.disconnect") }}
+        </p>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-
-import {keycloakStore} from "@/objects/stores/LoginStates.ts";
-import {useI18n} from "vue-i18n";
+import { keycloakStore } from "@/objects/stores/LoginStates.ts";
+import { useI18n } from "vue-i18n";
 import PirateButton from "@/vue/form/PirateButton.vue";
 import router from "@/router";
-import {UserStore} from "@/objects/stores/UserStore";
-import {Utils} from "@/objects/utils/Utils";
-import {onMounted, onUnmounted} from "vue";
+import { UserStore } from "@/objects/stores/UserStore";
+import { Utils } from "@/objects/utils/Utils";
+import { onMounted, onUnmounted } from "vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 onMounted(() => {
   document.addEventListener("keydown", keyPressEvent);
-})
+});
 
 onUnmounted(() => {
-  document.removeEventListener("keydown", keyPressEvent)
-})
+  document.removeEventListener("keydown", keyPressEvent);
+});
 
 function keyPressEvent(event: KeyboardEvent) {
   if (event.key === "Enter") {
-    leavePage()
+    leavePage();
   }
 }
 
 function authUser() {
   if (!keycloakStore.isAuthenticated || !keycloakStore.keycloak.authenticated) {
-    keycloakStore.loginUser(window.location.origin)
+    keycloakStore.loginUser(window.location.origin);
   }
 }
 
 function leavePage() {
-  router.push("/fleet/session")
+  router.push("/fleet/session");
 }
 </script>
 
@@ -169,7 +181,6 @@ section.auth-page {
           color: white;
         }
       }
-
     }
   }
 }

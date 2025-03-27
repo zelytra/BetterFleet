@@ -1,29 +1,30 @@
 <template>
   <Transition>
     <div class="save-bar" v-if="barActive">
-      <p>{{ t('config.savebar.content') }}</p>
+      <p>{{ t("config.savebar.content") }}</p>
       <div class="action-bar">
-        <p class="cancel" @click="emits('cancel')">{{ t('config.savebar.cancel') }}</p>
-        <button @click="emits('save')">{{ t('config.savebar.save') }}</button>
+        <p class="cancel" @click="emits('cancel')">
+          {{ t("config.savebar.cancel") }}
+        </p>
+        <button @click="emits('save')">{{ t("config.savebar.save") }}</button>
       </div>
     </div>
   </Transition>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 
-import {useI18n} from "vue-i18n";
-
-const {t} = useI18n();
+const { t } = useI18n();
 
 defineProps({
   barActive: {
     type: Boolean,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const emits = defineEmits(['save', 'cancel'])
+const emits = defineEmits(["save", "cancel"]);
 </script>
 
 <style scoped lang="scss">

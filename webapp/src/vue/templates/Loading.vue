@@ -1,32 +1,32 @@
 <template>
   <section v-if="isLoading" class="loading-wrapper">
     <div class="logo">
-      <img src="@/assets/icons/heart.svg" alt="heart-logo"/>
-      <h2>{{ t('appName') }}</h2>
+      <img src="@/assets/icons/heart.svg" alt="heart-logo" />
+      <h2>{{ t("appName") }}</h2>
     </div>
     <div class="main-content">
-      <img src="@/assets/icons/compass.svg" alt="loading-logo"/>
-      <slot/>
+      <img src="@/assets/icons/compass.svg" alt="loading-logo" />
+      <slot />
     </div>
     <div class="tips">
-      <img src="@/assets/icons/flame.svg" alt="tips-icon"/>
-      <p>{{ t('loading.tips') }}</p>
+      <img src="@/assets/icons/flame.svg" alt="tips-icon" />
+      <p>{{ t("loading.tips") }}</p>
     </div>
     <div class="loading-animation">
-      <p>{{ t('loading.loading') }}</p>
-      <img src="@/assets/icons/legend.svg" alt="login-icon"/>
+      <p>{{ t("loading.loading") }}</p>
+      <img src="@/assets/icons/legend.svg" alt="login-icon" />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
-const {t} = useI18n();
+const { t } = useI18n();
 
 defineProps({
-  isLoading: Boolean
-})
+  isLoading: Boolean,
+});
 
 defineEmits<{
   (e: "update:isLoading", isLoading: boolean): void;
@@ -115,8 +115,7 @@ defineEmits<{
   }
 }
 
-@-webkit-keyframes rotating /* Safari and Chrome */
-{
+@-webkit-keyframes rotating /* Safari and Chrome */ {
   from {
     transform: rotate(0deg);
   }

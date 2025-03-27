@@ -5,9 +5,9 @@
         <div class="user-info">
           <div class="username">
             <div
-                v-if="UserStore.player.username"
-                class="user-icon"
-                :style="{ backgroundColor: Utils.generateRandomColor() }"
+              v-if="UserStore.player.username"
+              class="user-icon"
+              :style="{ backgroundColor: Utils.generateRandomColor() }"
             >
               <p>
                 {{ UserStore.player.username.charAt(0).toUpperCase() }}
@@ -19,24 +19,28 @@
       </template>
       <template #left-content>
         <button @click="keycloakStore.keycloak.logout()">
-          {{ t('config.disconnect') }}
+          {{ t("config.disconnect") }}
         </button>
       </template>
     </BannerTemplate>
     <ParameterPart :title="t('config.part.general')">
       <SingleSelect
-          :label="t('config.lang.label')"
-          v-model:data="langOptions"
+        :label="t('config.lang.label')"
+        v-model:data="langOptions"
       />
       <SingleSelect
-          :label="t('config.device.label')"
-          v-model:data="deviceOptions"
+        :label="t('config.device.label')"
+        v-model:data="deviceOptions"
       />
       <div class="checkbox-wrapper descriptor">
-        <input type="checkbox" v-model="activeMacro"/>
+        <input type="checkbox" v-model="activeMacro" />
         <div class="label-wrapper">
-          <p @click="activeMacro = !activeMacro">{{ t("config.macro.check") }}</p>
-          <p class="description" @click="activeMacro = !activeMacro">{{ t("config.macro.description") }}</p>
+          <p @click="activeMacro = !activeMacro">
+            {{ t("config.macro.check") }}
+          </p>
+          <p class="description" @click="activeMacro = !activeMacro">
+            {{ t("config.macro.description") }}
+          </p>
         </div>
       </div>
     </ParameterPart>
@@ -44,31 +48,33 @@
       <div class="input-section">
         <div class="sound-wrapper">
           <InputSlider
-              v-model:input-value="volume"
-              :label="t('config.sound.label')"
-              :lock="!activeSound"
+            v-model:input-value="volume"
+            :label="t('config.sound.label')"
+            :lock="!activeSound"
           />
           <button @click="runSound()">
-            <img src="../../assets/icons/sound.svg" alt="sound icon"/>
+            <img src="../../assets/icons/sound.svg" alt="sound icon" />
             <p>{{ t("config.sound.test") }}</p>
           </button>
         </div>
         <div class="checkbox-wrapper">
-          <input type="checkbox" v-model="activeSound"/>
-          <p @click="activeSound = !activeSound">{{ t("config.sound.check") }}</p>
+          <input type="checkbox" v-model="activeSound" />
+          <p @click="activeSound = !activeSound">
+            {{ t("config.sound.check") }}
+          </p>
         </div>
       </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.developer')">
       <div class="input-section">
         <InputText
-            v-model:input-value="hostName"
-            :placeholder="t('config.server.placeholder')"
-            :label="t('config.server.label')"
-            :lock="!devMode"
+          v-model:input-value="hostName"
+          :placeholder="t('config.server.placeholder')"
+          :label="t('config.server.label')"
+          :lock="!devMode"
         />
         <div class="checkbox-wrapper">
-          <input type="checkbox" v-model="devMode"/>
+          <input type="checkbox" v-model="devMode" />
           <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
         </div>
       </div>
@@ -89,15 +95,17 @@
         <div class="social-wrapper">
           <p>{{ t("credits.socials") }}</p>
           <a href="https://discord.gg/sHPp5CPxf2" target="_blank"
-          ><img src="../../assets/icons/discord.svg"
+            ><img src="../../assets/icons/discord.svg"
           /></a>
           <a href="https://github.com/zelytra/BetterFleet" target="_blank"
-          ><img src="../../assets/icons/github.svg"
+            ><img src="../../assets/icons/github.svg"
           /></a>
         </div>
         <p>
           {{ t("credits.sot.thanks") }}
-          <a href="https://https://www.seaofthieves.com" target="_blank">Sea of Thieves</a>
+          <a href="https://https://www.seaofthieves.com" target="_blank"
+            >Sea of Thieves</a
+          >
           {{ t("credits.sot.use") }}
         </p>
         <p class="light">
@@ -105,17 +113,21 @@
         </p>
       </div>
     </ParameterPart>
-    <SaveBar :bar-active="isConfigDifferent()" @save="onSave()" @cancel="resetConfig"/>
+    <SaveBar
+      :bar-active="isConfigDifferent()"
+      @save="onSave()"
+      @cancel="resetConfig"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import InputText from "@/vue/form/InputText.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
-import {SingleSelectInterface} from "@/vue/form/Inputs.ts";
-import {inject, onMounted, ref,} from "vue";
+import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
+import { inject, onMounted, ref } from "vue";
 
 import fr from "@assets/icons/locales/fr.svg";
 import de from "@assets/icons/locales/de.svg";
@@ -124,27 +136,27 @@ import en from "@assets/icons/locales/en.svg";
 import xbox from "@assets/icons/xbox.svg";
 import microsoft from "@assets/icons/microsoft.svg";
 import playstation from "@assets/icons/playstation.svg";
-import {UserStore} from "@/objects/stores/UserStore.ts";
-import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
+import { UserStore } from "@/objects/stores/UserStore.ts";
+import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import SaveBar from "@/vue/utils/SaveBar.vue";
 import InputSlider from "@/vue/form/InputSlider.vue";
 import countdownSound from "@assets/sounds/countdown.mp3";
-import {PlayerDevice} from "@/objects/fleet/Player.ts";
+import { PlayerDevice } from "@/objects/fleet/Player.ts";
 import ParameterPart from "@/vue/templates/ParameterPart.vue";
-import {Utils} from "@/objects/utils/Utils.ts";
-import {keycloakStore} from "@/objects/stores/LoginStates.ts";
-import {info} from "tauri-plugin-log-api";
+import { Utils } from "@/objects/utils/Utils.ts";
+import { keycloakStore } from "@/objects/stores/LoginStates.ts";
+import { info } from "tauri-plugin-log-api";
 
-const {t, availableLocales} = useI18n();
+const { t, availableLocales } = useI18n();
 const alerts = inject<AlertProvider>("alertProvider");
 
-const langOptions = ref<SingleSelectInterface>({data: []});
-const deviceOptions = ref<SingleSelectInterface>({data: []});
+const langOptions = ref<SingleSelectInterface>({ data: [] });
+const deviceOptions = ref<SingleSelectInterface>({ data: [] });
 const devMode = ref<boolean>(false);
 const volume = ref<number>(50);
-const activeSound = ref<boolean>(true)
-const activeMacro = ref<boolean>(true)
-const hostName = ref<string>(UserStore.player.serverHostName!)
+const activeSound = ref<boolean>(true);
+const activeMacro = ref<boolean>(true);
+const hostName = ref<string>(UserStore.player.serverHostName!);
 const username = ref<string>(UserStore.player.username);
 const inputLoading = ref<boolean>(false);
 
@@ -156,7 +168,7 @@ onMounted(() => {
 });
 
 function loadOptionList() {
-  langOptions.value.data = []
+  langOptions.value.data = [];
   for (const locale of availableLocales) {
     langOptions.value.data.push({
       display: t("locales." + locale),
@@ -164,37 +176,37 @@ function loadOptionList() {
       image: getImgUrl(locale),
     });
   }
-  deviceOptions.value.data = []
+  deviceOptions.value.data = [];
   deviceOptions.value.data.push({
     display: "Microsoft",
     id: PlayerDevice.MICROSOFT,
-    image: getDeviceImgUrl('microsoft')
-  })
+    image: getDeviceImgUrl("microsoft"),
+  });
   deviceOptions.value.data.push({
     display: "Xbox",
     id: PlayerDevice.XBOX,
-    image: getDeviceImgUrl('xbox')
-  })
+    image: getDeviceImgUrl("xbox"),
+  });
   deviceOptions.value.data.push({
     display: "PlayStation",
     id: PlayerDevice.PLAYSTATION,
-    image: getDeviceImgUrl('playstation')
-  })
+    image: getDeviceImgUrl("playstation"),
+  });
   resetConfig();
 }
 
 function resetConfig() {
   if (UserStore.player.device) {
-    deviceOptions.value.selectedValue = deviceOptions.value.data.filter((x) =>
-        x.id == UserStore.player.device
-    )[0]
+    deviceOptions.value.selectedValue = deviceOptions.value.data.filter(
+      (x) => x.id == UserStore.player.device,
+    )[0];
   } else {
-    deviceOptions.value.selectedValue = deviceOptions.value.data[0]
+    deviceOptions.value.selectedValue = deviceOptions.value.data[0];
   }
 
   if (UserStore.player.lang) {
     langOptions.value.selectedValue = langOptions.value.data.filter(
-        (x) => x.id == UserStore.player.lang,
+      (x) => x.id == UserStore.player.lang,
     )[0];
   } else {
     langOptions.value.selectedValue = langOptions.value.data[0];
@@ -216,22 +228,23 @@ function resetConfig() {
 
 function onSave() {
   UserStore.setLang(langOptions.value.selectedValue!.id);
-  UserStore.player.device = deviceOptions.value.selectedValue!.id as PlayerDevice;
+  UserStore.player.device = deviceOptions.value.selectedValue!
+    .id as PlayerDevice;
   UserStore.player.soundLevel = volume.value;
   UserStore.player.soundEnable = activeSound.value;
   UserStore.player.macroEnable = activeMacro.value;
   if (username.value.length == 0 || username.value.length >= 16) {
     alerts!.sendAlert({
-      content: t('alert.username.length.content'),
-      title: t('alert.username.length.title'),
-      type: AlertType.ERROR
-    })
+      content: t("alert.username.length.content"),
+      title: t("alert.username.length.title"),
+      type: AlertType.ERROR,
+    });
   } else {
     UserStore.player.username = username.value;
   }
   UserStore.player.serverHostName = hostName.value;
   if (UserStore.player.fleet && UserStore.player.fleet.sessionId) {
-    UserStore.player.fleet.updateToSession()
+    UserStore.player.fleet.updateToSession();
   }
   loadOptionList();
   info("[Config.vue] User saved config");
@@ -241,11 +254,18 @@ function isConfigDifferent(): boolean {
   if (!inputLoading.value) return false;
   if (UserStore.player.username != username.value) return true;
   if (UserStore.player.serverHostName != hostName.value) return true;
-  if (langOptions.value.selectedValue && UserStore.player.lang != langOptions.value.selectedValue!.id) return true;
+  if (
+    langOptions.value.selectedValue &&
+    UserStore.player.lang != langOptions.value.selectedValue!.id
+  )
+    return true;
   if (volume.value != UserStore.player.soundLevel) return true;
   if (activeSound.value != UserStore.player.soundEnable) return true;
   if (activeMacro.value != UserStore.player.macroEnable) return true;
-  return deviceOptions.value.selectedValue != undefined && UserStore.player.device != deviceOptions.value.selectedValue!.id;
+  return (
+    deviceOptions.value.selectedValue != undefined &&
+    UserStore.player.device != deviceOptions.value.selectedValue!.id
+  );
 }
 
 function getImgUrl(iconName: string): string {
@@ -277,7 +297,7 @@ function getDeviceImgUrl(iconName: string): string {
 function runSound() {
   if (sound.paused) {
     sound.volume = volume.value / 100;
-    sound.play()
+    sound.play();
   }
 }
 </script>
@@ -324,7 +344,11 @@ button {
   all: unset;
   cursor: pointer;
   height: 100%;
-  background: linear-gradient(270deg, rgba(212, 50, 50, 0.20) 0%, rgba(212, 50, 50, 0.00) 108.45%);
+  background: linear-gradient(
+    270deg,
+    rgba(212, 50, 50, 0.2) 0%,
+    rgba(212, 50, 50, 0) 108.45%
+  );
   padding: 0 16px;
   white-space: nowrap;
 }
@@ -397,14 +421,7 @@ button {
       transform: scale(0);
       height: 10px;
       background: var(--primary-text);
-      clip-path: polygon(
-              14% 44%,
-              0 65%,
-              50% 100%,
-              100% 16%,
-              80% 0%,
-              43% 62%
-      );
+      clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
       transform-origin: bottom left;
     }
 

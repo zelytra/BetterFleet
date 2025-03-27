@@ -1,14 +1,27 @@
 <template>
   <div class="input-global-wrapper" v-if="data.selectedValue">
     <label v-if="label">{{ label }}</label>
-    <div :class="{ 'input-wrapper': true, disabled: lock,deploy:isOpen }" @click="isOpen=true">
-      <img :src="data.selectedValue.image" alt="flag"/>
+    <div
+      :class="{ 'input-wrapper': true, disabled: lock, deploy: isOpen }"
+      @click="isOpen = true"
+    >
+      <img :src="data.selectedValue.image" alt="flag" />
       <p>{{ data.selectedValue.display }}</p>
     </div>
     <transition>
-      <div class="dropdown" v-if="isOpen" @mouseleave="isOpen=false" v-click-outside="()=>isOpen = false">
-      <span v-for="option in data.data.filter((x)=> x.id !== data.selectedValue?.id)" @click="updateData(option)">
-         <img :src="option.image" alt="flag"/>
+      <div
+        class="dropdown"
+        v-if="isOpen"
+        @mouseleave="isOpen = false"
+        v-click-outside="() => (isOpen = false)"
+      >
+        <span
+          v-for="option in data.data.filter(
+            (x) => x.id !== data.selectedValue?.id,
+          )"
+          @click="updateData(option)"
+        >
+          <img :src="option.image" alt="flag" />
           {{ option.display }}
         </span>
       </div>
@@ -17,14 +30,14 @@
 </template>
 
 <script setup lang="ts">
-import {computed, PropType, ref} from "vue";
-import {InputData, SingleSelectInterface} from "@/vue/form/Inputs.ts"
+import { computed, PropType, ref } from "vue";
+import { InputData, SingleSelectInterface } from "@/vue/form/Inputs.ts";
 
-const isOpen = ref<boolean>(false)
+const isOpen = ref<boolean>(false);
 const props = defineProps({
-  data: {type: Object as PropType<SingleSelectInterface>, required: true},
-  label: {type: String, required: false},
-  lock: {type: Boolean, required: false, default: () => false},
+  data: { type: Object as PropType<SingleSelectInterface>, required: true },
+  label: { type: String, required: false },
+  lock: { type: Boolean, required: false, default: () => false },
 });
 const emits = defineEmits(["update:data", "validate"]);
 
@@ -37,9 +50,8 @@ const computedInput = computed({
 
 function updateData(option: InputData) {
   computedInput.value.selectedValue = option;
-  isOpen.value = false
+  isOpen.value = false;
 }
-
 </script>
 
 <style scoped lang="scss">
@@ -62,7 +74,7 @@ function updateData(option: InputData) {
     min-width: 250px;
 
     &:after {
-      content: '>';
+      content: ">";
       position: absolute;
       top: 50%;
       right: 10px;
@@ -106,7 +118,7 @@ function updateData(option: InputData) {
   .dropdown {
     z-index: 9;
     background: var(--secondary-background);
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     position: absolute;
     top: 70px;
     display: flex;

@@ -330,16 +330,8 @@
       "98": "Le Lagon Bleu",
       "99": "La Mission Malicieuse"
     },
-    "player": {
-      "notReady": "Pas prêt",
-      "ready": "Prêt",
-      "status": {
-        "closed": "Hors ligne",
-        "in-game": "En jeu",
-        "main-menu": "Dans les menus du jeu",
-        "started": "Jeu lancé"
-      }
-    },
+    "player": "Joueur",
+    "players": "Joueurs",
     "run": "Lever l'ancre",
     "status": {
       "countdown": "Lancement dans",

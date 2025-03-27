@@ -1,14 +1,13 @@
-import {keycloakStore} from "@/objects/stores/LoginStates.ts";
-import {fetch, ResponseType} from "@tauri-apps/api/http";
-import {info} from "tauri-plugin-log-api";
+import { keycloakStore } from "@/objects/stores/LoginStates.ts";
+import { fetch, ResponseType } from "@tauri-apps/api/http";
+import { info } from "tauri-plugin-log-api";
 
 export class HTTPAxios {
-
   private readonly path: string;
   private static readonly header = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, DELETE',
-    'Authorization': ''
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, DELETE",
+    Authorization: "",
   };
   private readonly url = import.meta.env.VITE_BACKEND_HOST + "/";
 
@@ -18,21 +17,21 @@ export class HTTPAxios {
 
   async get(responseType?: ResponseType) {
     const urlPath = this.url + this.path;
-    info("[HTTPAxios.ts][GET] " + urlPath)
+    info("[HTTPAxios.ts][GET] " + urlPath);
     return await fetch(urlPath, {
       method: "GET",
       headers: HTTPAxios.header,
-      responseType: responseType ? responseType : ResponseType.JSON
+      responseType: responseType ? responseType : ResponseType.JSON,
     });
   }
 
   async post(body: any) {
     const urlPath = this.url + this.path;
-    info("[HTTPAxios.ts][POST] " + urlPath)
+    info("[HTTPAxios.ts][POST] " + urlPath);
     return await fetch(urlPath, {
       method: "POST",
-      body: {type: "Json", payload: body},
-      headers: HTTPAxios.header
+      body: { type: "Json", payload: body },
+      headers: HTTPAxios.header,
     });
   }
 
@@ -51,6 +50,6 @@ export class HTTPAxios {
     await keycloakStore.keycloak.updateToken(60).then((refresh: boolean) => {
       if (refresh) console.debug("Token was successfully refreshed");
     });
-    HTTPAxios.header.Authorization = 'Bearer ' + keycloakStore.keycloak.token;
+    HTTPAxios.header.Authorization = "Bearer " + keycloakStore.keycloak.token;
   }
 }

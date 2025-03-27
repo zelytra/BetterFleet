@@ -2,80 +2,79 @@
   <section class="report">
     <ParameterPart>
       <div class="report-wrapper">
-        <h2>{{ t('report.faq.title') }}</h2>
-        <p>{{ t('report.faq.content') }}</p>
+        <h2>{{ t("report.faq.title") }}</h2>
+        <p>{{ t("report.faq.content") }}</p>
         <div>
           <a href="https://discord.gg/sHPp5CPxf2" target="_blank">
-            <PirateButton :label="t('report.faq.button.discord')"/>
+            <PirateButton :label="t('report.faq.button.discord')" />
           </a>
           <a href="https://betterfleet.fr/support" target="_blank">
-            <PirateButton :label="t('report.faq.button.faq')"/>
+            <PirateButton :label="t('report.faq.button.faq')" />
           </a>
         </div>
       </div>
     </ParameterPart>
     <ParameterPart>
       <div class="report-wrapper">
-        <h2>{{ t('report.bug.title') }}</h2>
-        <p>{{ t('report.bug.content1') }}</p>
-        <p>{{ t('report.bug.content2') }}</p>
+        <h2>{{ t("report.bug.title") }}</h2>
+        <p>{{ t("report.bug.content1") }}</p>
+        <p>{{ t("report.bug.content2") }}</p>
         <div class="text-area-wrapper">
-          <textarea maxlength="500" v-model="reportMessage"/>
+          <textarea maxlength="500" v-model="reportMessage" />
           <p>{{ reportMessage.length }}/500</p>
         </div>
-        <PirateButton :label="t('report.bug.button')" @on-button-click="sendReport()"/>
+        <PirateButton
+          :label="t('report.bug.button')"
+          @on-button-click="sendReport()"
+        />
       </div>
     </ParameterPart>
   </section>
 </template>
 
 <script setup lang="ts">
-
 import ParameterPart from "@/vue/templates/ParameterPart.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import PirateButton from "@/vue/form/PirateButton.vue";
-import {inject, ref} from "vue";
-import {BugReport, ReportInterface} from "@/objects/report/Report.ts";
-import {AlertProvider, AlertType} from "@/vue/alert/Alert.ts";
-import {invoke} from "@tauri-apps/api/tauri";
+import { inject, ref } from "vue";
+import { BugReport, ReportInterface } from "@/objects/report/Report.ts";
+import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
+import { invoke } from "@tauri-apps/api/tauri";
 
-const {t} = useI18n()
-const reportMessage = ref("")
+const { t } = useI18n();
+const reportMessage = ref("");
 const alerts = inject<AlertProvider>("alertProvider");
 
 async function sendReport() {
   if (reportMessage.value.length == 0) {
     alerts?.sendAlert({
-      title: t('alert.report.emptyMessage.title'),
-      content: t('alert.report.emptyMessage.content'),
-      type: AlertType.WARNING
-    })
+      title: t("alert.report.emptyMessage.title"),
+      content: t("alert.report.emptyMessage.content"),
+      type: AlertType.WARNING,
+    });
     return;
   }
 
   const report: ReportInterface = {
     device: "",
     logs: "",
-    message: reportMessage.value
-  }
-  await invoke('get_logs', {maxLines: 5000})
-      .then(logs => {
-        report.logs = logs as string;
-      })
+    message: reportMessage.value,
+  };
+  await invoke("get_logs", { maxLines: 5000 }).then((logs) => {
+    report.logs = logs as string;
+  });
 
-  await invoke('get_system_info')
-      .then(system => {
-        report.device = system as string;
-      })
+  await invoke("get_system_info").then((system) => {
+    report.device = system as string;
+  });
 
-
-  new BugReport(report).sendReport()
+  new BugReport(report).sendReport();
   alerts?.sendAlert({
-    title: t('alert.report.send.title'),
+    title: t("alert.report.send.title"),
     content: "",
-    type: AlertType.VALID
-  })
-  reportMessage.value = ""
+    type: AlertType.VALID,
+  });
+  reportMessage.value = "";
 }
 </script>
 
@@ -100,7 +99,7 @@ async function sendReport() {
       &:after {
         display: flex;
         position: absolute;
-        content: '';
+        content: "";
         bottom: -10px;
         left: 50%;
         transform: translate(-50%, 0);
