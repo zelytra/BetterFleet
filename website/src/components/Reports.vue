@@ -1,7 +1,11 @@
 <template>
   <section class="reports-wrapper">
-    <FaqCollapse url="reports" v-for="report of reports" :id="report.id.toString()"
-                 :title="'Report n°'+report.id + ' | '+report.reportingDate">
+    <FaqCollapse
+      url="reports"
+      v-for="report of reports"
+      :id="report.id.toString()"
+      :title="'Report n°' + report.id + ' | ' + report.reportingDate"
+    >
       <div class="content-wrapper">
         <p class="message">
           {{ report.message }}
@@ -18,20 +22,19 @@
 </template>
 
 <script setup lang="ts">
-
 import FaqCollapse from "@/vue/FaqCollapse.vue";
-import {onMounted, ref} from "vue";
-import {ReportInterface} from "@/objects/BugReport.ts";
-import {HTTPAxios} from "@/objects/HTTPAxios.ts";
-import {AxiosResponse} from "axios";
+import { onMounted, ref } from "vue";
+import { ReportInterface } from "@/objects/BugReport.ts";
+import { HTTPAxios } from "@/objects/HTTPAxios.ts";
+import { AxiosResponse } from "axios";
 
-const reports = ref<ReportInterface[]>([])
+const reports = ref<ReportInterface[]>([]);
 
 onMounted(() => {
   new HTTPAxios("report/list/all").get().then((response: AxiosResponse) => {
-    reports.value = response.data as ReportInterface[]
-  })
-})
+    reports.value = response.data as ReportInterface[];
+  });
+});
 </script>
 
 <style scoped lang="scss">
@@ -51,13 +54,14 @@ onMounted(() => {
     user-select: text;
   }
 
-  p{
+  p {
     user-select: text;
   }
 
-  p.logs, p.os {
+  p.logs,
+  p.os {
     white-space: pre;
-    font-family: "JetBrains Mono",sans-serif;
+    font-family: "JetBrains Mono", sans-serif;
   }
 }
 </style>

@@ -1,24 +1,24 @@
 <template>
   <section>
     <div class="description">
-      <img src="@/assets/icons/key.svg"/>
-      <p>{{ t('descriptions.key') }}</p>
+      <img src="@/assets/icons/key.svg" />
+      <p>{{ t("descriptions.key") }}</p>
     </div>
     <div class="description">
-      <img src="@/assets/icons/hourglass.svg"/>
-      <p>{{ t('descriptions.hourglass') }}</p>
+      <img src="@/assets/icons/hourglass.svg" />
+      <p>{{ t("descriptions.hourglass") }}</p>
     </div>
     <div class="description">
-      <img src="@/assets/icons/globe.svg"/>
-      <p>{{ t('descriptions.globe') }}</p>
+      <img src="@/assets/icons/globe.svg" />
+      <p>{{ t("descriptions.globe") }}</p>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
-const {t} = useI18n()
+const { t } = useI18n();
 </script>
 
 <style scoped lang="scss">

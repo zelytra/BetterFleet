@@ -1,20 +1,20 @@
 <template>
   <section>
-    <h1>{{ t('comparison.title') }}</h1>
+    <h1>{{ t("comparison.title") }}</h1>
     <div class="content">
-      <img src="@/assets/backgrounds/chart.svg" alt="chart"/>
+      <img src="@/assets/backgrounds/chart.svg" alt="chart" />
       <div class="description">
-        <h2>{{ t('comparison.subtitle') }}</h2>
-        <p>{{ t('comparison.description') }}</p>
+        <h2>{{ t("comparison.subtitle") }}</h2>
+        <p>{{ t("comparison.description") }}</p>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 
-const {t} = useI18n()
+const { t } = useI18n();
 </script>
 
 <style scoped lang="scss">
@@ -36,7 +36,7 @@ section {
     &:after {
       display: flex;
       position: absolute;
-      content: '';
+      content: "";
       bottom: 24px;
       left: 50%;
       transform: translate(-50%, 0);

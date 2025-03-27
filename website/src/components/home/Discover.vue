@@ -1,48 +1,54 @@
 <template>
   <section>
-    <h1>{{ t('discover.title') }}</h1>
+    <h1>{{ t("discover.title") }}</h1>
     <div class="slider-wrapper">
       <div class="slider-nav">
-        <span @click="index=0" :class="{selected:index==0}">{{ t('discover.discord.nav') }}</span>
-        <span @click="index=1" :class="{selected:index==1}">{{ t('discover.github.nav') }}</span>
-        <span @click="index=2" :class="{selected:index==2}">{{ t('discover.translation.nav') }}</span>
+        <span @click="index = 0" :class="{ selected: index == 0 }">{{
+          t("discover.discord.nav")
+        }}</span>
+        <span @click="index = 1" :class="{ selected: index == 1 }">{{
+          t("discover.github.nav")
+        }}</span>
+        <span @click="index = 2" :class="{ selected: index == 2 }">{{
+          t("discover.translation.nav")
+        }}</span>
       </div>
       <div class="content-wrapper">
         <transition>
-          <div class="content" v-if="index==0">
+          <div class="content" v-if="index == 0">
             <div class="side-content">
-              <h2>{{ t('discover.discord.title') }}</h2>
-              <p>{{ t('discover.discord.content') }}</p>
+              <h2>{{ t("discover.discord.title") }}</h2>
+              <p>{{ t("discover.discord.content") }}</p>
               <a href="https://discord.gg/sHPp5CPxf2" target="_blank">
-                <PirateButton :label="t('discover.discord.button')"/>
+                <PirateButton :label="t('discover.discord.button')" />
               </a>
             </div>
             <div class="side-content image">
-              <img width="200px" src="@/assets/icons/discord.svg"/>
+              <img width="200px" src="@/assets/icons/discord.svg" />
             </div>
           </div>
-          <div class="content" v-else-if="index==1">
+          <div class="content" v-else-if="index == 1">
             <div class="side-content">
-              <h2>{{ t('discover.github.title') }}</h2>
-              <p>{{ t('discover.github.content') }}</p>
+              <h2>{{ t("discover.github.title") }}</h2>
+              <p>{{ t("discover.github.content") }}</p>
               <a href="https://github.com/zelytra/BetterFleet" target="_blank">
-                <PirateButton :label="t('discover.github.button')"/>
+                <PirateButton :label="t('discover.github.button')" />
               </a>
             </div>
             <div class="side-content image">
-              <img src="@/assets/backgrounds/discord-x-app.svg"/>
+              <img src="@/assets/backgrounds/discord-x-app.svg" />
             </div>
           </div>
-          <div class="content" v-else-if="index==2">
+          <div class="content" v-else-if="index == 2">
             <div class="side-content">
-              <h2>{{ t('discover.translation.title') }}</h2>
-              <p>{{ t('discover.translation.content') }}</p>
+              <h2>{{ t("discover.translation.title") }}</h2>
+              <p>{{ t("discover.translation.content") }}</p>
               <a href="https://crowdin.com/project/betterfleet" target="_blank">
-                <PirateButton :label="t('discover.translation.button')"/>
+                <PirateButton :label="t('discover.translation.button')" />
               </a>
             </div>
             <div class="side-content image">
-              <img src="@/assets/backgrounds/app-mockup.png"/>
+              <img src="@/assets/backgrounds/app-mockup.png" />
             </div>
           </div>
         </transition>
@@ -52,12 +58,12 @@
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-i18n";
-import {ref} from "vue";
+import { useI18n } from "vue-i18n";
+import { ref } from "vue";
 import PirateButton from "@/vue/PirateButton.vue";
 
-const {t} = useI18n()
-const index = ref<number>(0)
+const { t } = useI18n();
+const index = ref<number>(0);
 </script>
 
 <style scoped lang="scss">
@@ -78,7 +84,7 @@ section {
     &:after {
       display: flex;
       position: absolute;
-      content: '';
+      content: "";
       bottom: 24px;
       left: 50%;
       transform: translate(-50%, 0);
@@ -115,7 +121,8 @@ section {
         cursor: pointer;
         text-align: center;
 
-        &:hover, &.selected {
+        &:hover,
+        &.selected {
           background: url("@/assets/backgrounds/button.svg") no-repeat;
           background-size: cover;
         }
@@ -155,8 +162,6 @@ section {
             max-width: 100%;
           }
         }
-
-
       }
     }
   }

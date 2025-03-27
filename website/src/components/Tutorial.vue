@@ -1,57 +1,56 @@
 <template>
   <section class="tutorial">
     <div class="banner">
-      <h1>{{ t('tutorial.title') }}</h1>
+      <h1>{{ t("tutorial.title") }}</h1>
     </div>
-    <Separator/>
+    <Separator />
     <div class="tutorial-content">
       <div class="text-wrapper">
-        <h1>{{ t('tutorial.whatIsIt.title') }}</h1>
-        <p>{{ t('tutorial.whatIsIt.content') }}</p>
+        <h1>{{ t("tutorial.whatIsIt.title") }}</h1>
+        <p>{{ t("tutorial.whatIsIt.content") }}</p>
       </div>
       <div class="text-wrapper">
-        <h1>{{ t('tutorial.howTo.title') }}</h1>
-        <p>{{ t('tutorial.howTo.content') }}</p>
+        <h1>{{ t("tutorial.howTo.title") }}</h1>
+        <p>{{ t("tutorial.howTo.content") }}</p>
       </div>
     </div>
     <div v-for="x of stepAmount">
-      <Separator/>
+      <Separator />
       <div class="tutorial-content">
         <div class="step">
-          <p>{{ t('tutorial.stepWord') + " " + x }}</p>
+          <p>{{ t("tutorial.stepWord") + " " + x }}</p>
         </div>
         <div class="text-wrapper">
-          <h1>{{ t('tutorial.step.' + x + '.title') }}</h1>
-          <p>{{ t('tutorial.step.' + x + '.content') }}</p>
+          <h1>{{ t("tutorial.step." + x + ".title") }}</h1>
+          <p>{{ t("tutorial.step." + x + ".content") }}</p>
         </div>
-        <img v-if="x==1" src="@/assets/steps/1.png" alt="step"/>
-        <img v-if="x==2" src="@/assets/steps/2.png" alt="step"/>
-        <img v-if="x==3" src="@/assets/steps/3.png" alt="step"/>
-        <img v-if="x==4" src="@/assets/steps/4.png" alt="step"/>
-        <img v-if="x==5" src="@/assets/steps/5.png" alt="step"/>
-        <img v-if="x==6" src="@/assets/steps/6.png" alt="step"/>
-        <img v-if="x==7" src="@/assets/steps/7.png" alt="step"/>
+        <img v-if="x == 1" src="@/assets/steps/1.png" alt="step" />
+        <img v-if="x == 2" src="@/assets/steps/2.png" alt="step" />
+        <img v-if="x == 3" src="@/assets/steps/3.png" alt="step" />
+        <img v-if="x == 4" src="@/assets/steps/4.png" alt="step" />
+        <img v-if="x == 5" src="@/assets/steps/5.png" alt="step" />
+        <img v-if="x == 6" src="@/assets/steps/6.png" alt="step" />
+        <img v-if="x == 7" src="@/assets/steps/7.png" alt="step" />
       </div>
     </div>
-    <Separator/>
+    <Separator />
     <div class="banner end">
-      <h1>{{ t('tutorial.end.title') }}</h1>
-      <p>{{ t('tutorial.end.content') }}</p>
+      <h1>{{ t("tutorial.end.title") }}</h1>
+      <p>{{ t("tutorial.end.content") }}</p>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import Separator from "@/vue/Separator.vue";
 
-const {t} = useI18n();
+const { t } = useI18n();
 const stepAmount = 7;
 </script>
 
 <style scoped lang="scss">
 .tutorial {
-
   .banner {
     height: 443px;
     padding: 64px;
@@ -78,7 +77,7 @@ const stepAmount = 7;
     }
 
     &:before {
-      content: ' ';
+      content: " ";
       display: block;
       position: absolute;
       left: 0;
@@ -132,7 +131,7 @@ const stepAmount = 7;
       }
 
       &:before {
-        content: ' ';
+        content: " ";
         display: block;
         position: absolute;
         left: 0;
@@ -151,7 +150,7 @@ const stepAmount = 7;
       color: var(--primary);
     }
 
-    p{
+    p {
       text-align: center;
     }
 

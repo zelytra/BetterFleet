@@ -1,19 +1,19 @@
 <template>
   <transition>
     <section v-if="stats">
-      <h1>{{t('stats.title')}}</h1>
+      <h1>{{ t("stats.title") }}</h1>
       <div class="stats-cards-wrapper">
         <div class="card">
           <h2>+ {{ stats.download }}</h2>
-          <p>{{t('stats.download')}}</p>
+          <p>{{ t("stats.download") }}</p>
         </div>
         <div class="card important">
           <h2>+ {{ onlinePlayer }}</h2>
-          <p>{{t('stats.players')}}</p>
+          <p>{{ t("stats.players") }}</p>
         </div>
         <div class="card">
           <h2>+ {{ stats.sessionsOpen }}</h2>
-          <p>{{ t('stats.sessions')}}</p>
+          <p>{{ t("stats.sessions") }}</p>
         </div>
       </div>
     </section>
@@ -21,24 +21,26 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
-import {Stats} from "@/objects/Stats.ts";
-import {HTTPAxios} from "@/objects/HTTPAxios.ts";
-import {AxiosResponse} from "axios";
-import {useI18n} from "vue-i18n";
+import { onMounted, ref } from "vue";
+import { Stats } from "@/objects/Stats.ts";
+import { HTTPAxios } from "@/objects/HTTPAxios.ts";
+import { AxiosResponse } from "axios";
+import { useI18n } from "vue-i18n";
 
-const stats = ref<Stats>()
+const stats = ref<Stats>();
 const onlinePlayer = ref<number>(0);
-const {t} = useI18n();
+const { t } = useI18n();
 
 onMounted(() => {
   new HTTPAxios("stats/all", null).get().then((response: AxiosResponse) => {
     stats.value = response.data as Stats;
-  })
-  new HTTPAxios("stats/online-users", null).get().then((response: AxiosResponse) => {
-    onlinePlayer.value = response.data as number;
-  })
-})
+  });
+  new HTTPAxios("stats/online-users", null)
+    .get()
+    .then((response: AxiosResponse) => {
+      onlinePlayer.value = response.data as number;
+    });
+});
 </script>
 
 <style scoped lang="scss">
@@ -59,7 +61,7 @@ section {
     &:after {
       display: flex;
       position: absolute;
-      content: '';
+      content: "";
       bottom: 24px;
       left: 50%;
       transform: translate(-50%, 0);
@@ -81,10 +83,12 @@ section {
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background: url("@assets/backgrounds/stats-card.svg") 0 0/100% 100% no-repeat;
+      background: url("@assets/backgrounds/stats-card.svg") 0 0/100% 100%
+        no-repeat;
 
       &.important {
-        background: url("@/assets/backgrounds/stats-card-important.svg") 0 0/100% 100% no-repeat;
+        background: url("@/assets/backgrounds/stats-card-important.svg") 0
+          0/100% 100% no-repeat;
       }
 
       h2 {

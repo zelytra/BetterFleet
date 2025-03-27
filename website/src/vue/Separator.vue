@@ -1,13 +1,11 @@
 <template>
-  <hr>
+  <hr />
 </template>
 
-<script setup lang="ts">
-
-</script>
+<script setup lang="ts"></script>
 
 <style scoped lang="scss">
-hr{
+hr {
   //all: unset;
   background: url("@/assets/backgrounds/seperation.svg") repeat-x;
   width: 100%;

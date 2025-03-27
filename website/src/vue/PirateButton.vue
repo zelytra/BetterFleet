@@ -5,12 +5,11 @@
 </template>
 
 <script setup lang="ts">
-
 defineProps({
-  label: String
-})
+  label: String,
+});
 
-const emits = defineEmits(['onButtonClick'])
+const emits = defineEmits(["onButtonClick"]);
 </script>
 
 <style scoped lang="scss">

@@ -1,20 +1,28 @@
 <template>
   <section>
-    <h1>{{ t('download.now') }} <span>{{ t('name') }}</span></h1>
-    <a v-if="AppStore.githubRelease.url" :href="AppStore.githubRelease.url" target="_blank">
-      <PirateButton :label="t('button.downloadHere')" @on-button-click="incrementDownload"/>
+    <h1>
+      {{ t("download.now") }} <span>{{ t("name") }}</span>
+    </h1>
+    <a
+      v-if="AppStore.githubRelease.url"
+      :href="AppStore.githubRelease.url"
+      target="_blank"
+    >
+      <PirateButton
+        :label="t('button.downloadHere')"
+        @on-button-click="incrementDownload"
+      />
     </a>
   </section>
 </template>
 
 <script setup lang="ts">
-
 import PirateButton from "@/vue/PirateButton.vue";
-import {AppStore} from "@/objects/stores/appStore.ts";
-import {incrementDownload} from "@/objects/Stats.ts";
-import {useI18n} from "vue-i18n";
+import { AppStore } from "@/objects/stores/appStore.ts";
+import { incrementDownload } from "@/objects/Stats.ts";
+import { useI18n } from "vue-i18n";
 
-const {t} = useI18n()
+const { t } = useI18n();
 </script>
 
 <style scoped lang="scss">
@@ -32,7 +40,7 @@ section {
   z-index: 0;
 
   &:before {
-    content: ' ';
+    content: " ";
     display: block;
     position: absolute;
     left: 0;
