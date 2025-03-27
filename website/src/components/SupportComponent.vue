@@ -4,12 +4,12 @@
       <h1>{{ t("faq.faq") }}</h1>
       <p>{{ t("faq.description") }}</p>
     </div>
-    <Separator />
+    <SeparatorVue />
     <div class="faq">
       <h1>{{ t("faq.title") }}</h1>
       <FaqCollapse
-        url="support"
         id="download"
+        url="support"
         :title="t('faq.question.download.title')"
       >
         <p>
@@ -23,21 +23,21 @@
         <p>{{ t("faq.question.download.content4") }}</p>
       </FaqCollapse>
       <FaqCollapse
-        url="support"
         id="update"
+        url="support"
         :title="t('faq.question.update.title')"
       >
         <p>{{ t("faq.question.update.content1") }}</p>
         <p>{{ t("faq.question.update.content2") }}</p>
       </FaqCollapse>
-      <FaqCollapse url="support" id="EAC" :title="t('faq.question.eac.title')">
+      <FaqCollapse id="EAC" url="support" :title="t('faq.question.eac.title')">
         <p>{{ t("faq.question.eac.content1") }}</p>
         <p>{{ t("faq.question.eac.content2") }}</p>
         <p>{{ t("faq.question.eac.content3") }}</p>
       </FaqCollapse>
       <FaqCollapse
-        url="support"
         id="edge"
+        url="support"
         :title="t('faq.question.edge.title')"
       >
         <p>{{ t("faq.question.edge.content1") }}</p>
@@ -50,8 +50,8 @@
         <p>{{ t("faq.question.edge.content6") }}</p>
       </FaqCollapse>
       <FaqCollapse
-        url="support"
         id="security"
+        url="support"
         :title="t('faq.question.security.title')"
       >
         <p>{{ t("faq.question.security.content1") }}</p>
@@ -63,7 +63,7 @@
         </ul>
         <p>{{ t("faq.question.security.content6") }}</p>
       </FaqCollapse>
-      <FaqCollapse url="support" id="bug" :title="t('faq.question.bug.title')">
+      <FaqCollapse id="bug" url="support" :title="t('faq.question.bug.title')">
         <p>{{ t("faq.question.bug.content1") }}</p>
         <ul>
           <li>{{ t("faq.question.bug.content2") }}</li>
@@ -72,8 +72,8 @@
         <p>{{ t("faq.question.bug.content4") }}</p>
       </FaqCollapse>
       <FaqCollapse
-        url="support"
         id="data"
+        url="support"
         :title="t('faq.question.data.title')"
       >
         <p>{{ t("faq.question.data.content1") }}</p>
@@ -86,8 +86,8 @@
         <p>{{ t("faq.question.data.content6") }}</p>
       </FaqCollapse>
       <FaqCollapse
-        url="support"
         id="console"
+        url="support"
         :title="t('faq.question.console.title')"
       >
         <p>{{ t("faq.question.console.content1") }}</p>
@@ -98,8 +98,8 @@
         <p>{{ t("faq.question.console.content4") }}</p>
       </FaqCollapse>
       <FaqCollapse
-        url="support"
         id="alliance"
+        url="support"
         :title="t('faq.question.alliance.title')"
       >
         <p>{{ t("faq.question.alliance.content1") }}</p>
@@ -108,8 +108,8 @@
         <p>{{ t("faq.question.alliance.content4") }}</p>
       </FaqCollapse>
       <FaqCollapse
-        url="support"
         id="password"
+        url="support"
         :title="t('faq.question.password.title')"
       >
         <p>{{ t("faq.question.password.content1") }}</p>
@@ -122,7 +122,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import FaqCollapse from "@/vue/FaqCollapse.vue";
-import Separator from "@/vue/Separator.vue";
+import SeparatorVue from "@/vue/SeparatorVue.vue";
 
 const { t } = useI18n();
 </script>

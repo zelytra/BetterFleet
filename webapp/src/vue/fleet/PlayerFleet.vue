@@ -26,36 +26,36 @@
       <!-- Contributor user icon -->
       <div class="contrib-wrapper">
         <img
-          class="contributor"
           v-if="contributor == ContributorType.DEVELOPER"
-          @mouseenter="displayContrib = true"
-          @mouseleave="displayContrib = false"
+          class="contributor"
           src="@/assets/icons/contributors/developer.svg"
           alt="developer"
-        />
-        <img
-          class="contributor"
-          v-if="contributor == ContributorType.DESIGNER"
           @mouseenter="displayContrib = true"
           @mouseleave="displayContrib = false"
+        />
+        <img
+          v-if="contributor == ContributorType.DESIGNER"
+          class="contributor"
           src="@/assets/icons/contributors/designer.svg"
           alt="designer"
-        />
-        <img
-          class="contributor"
-          v-if="contributor == ContributorType.TRANSLATOR"
           @mouseenter="displayContrib = true"
           @mouseleave="displayContrib = false"
+        />
+        <img
+          v-if="contributor == ContributorType.TRANSLATOR"
+          class="contributor"
           src="@/assets/icons/contributors/translator.svg"
           alt="translator"
-        />
-        <img
-          class="contributor"
-          v-if="contributor == ContributorType.ALPHA_TESTER"
           @mouseenter="displayContrib = true"
           @mouseleave="displayContrib = false"
+        />
+        <img
+          v-if="contributor == ContributorType.ALPHA_TESTER"
+          class="contributor"
           src="@/assets/icons/contributors/alpha-tester.svg"
           alt="alpha-tester"
+          @mouseenter="displayContrib = true"
+          @mouseleave="displayContrib = false"
         />
         <span v-if="displayContrib && contributor">{{
           t("session.contributor." + contributor.toLowerCase())
@@ -72,10 +72,10 @@
       </p>
     </div>
     <div class="content">
-      <span class="player-status ready" v-if="player.isReady">{{
+      <span v-if="player.isReady" class="player-status ready">{{
         t("session.player.ready")
       }}</span>
-      <span class="player-status not-ready" v-else>{{
+      <span v-else class="player-status not-ready">{{
         t("session.player.notReady")
       }}</span>
     </div>

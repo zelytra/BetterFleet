@@ -7,7 +7,7 @@ export interface KeycloakUser {
   username: string;
 }
 
-let initOptions: KeycloakConfig = {
+const initOptions: KeycloakConfig = {
   url: import.meta.env.VITE_KEYCLOAK_HOST,
   realm: "Betterfleet",
   clientId: "application",

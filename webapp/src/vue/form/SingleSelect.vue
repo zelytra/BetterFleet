@@ -1,5 +1,5 @@
 <template>
-  <div class="input-global-wrapper" v-if="data.selectedValue">
+  <div v-if="data.selectedValue" class="input-global-wrapper">
     <label v-if="label">{{ label }}</label>
     <div
       :class="{ 'input-wrapper': true, disabled: lock, deploy: isOpen }"
@@ -10,15 +10,16 @@
     </div>
     <transition>
       <div
-        class="dropdown"
         v-if="isOpen"
-        @mouseleave="isOpen = false"
         v-click-outside="() => (isOpen = false)"
+        class="dropdown"
+        @mouseleave="isOpen = false"
       >
         <span
           v-for="option in data.data.filter(
             (x) => x.id !== data.selectedValue?.id,
           )"
+          :key="option.id"
           @click="updateData(option)"
         >
           <img :src="option.image" alt="flag" />

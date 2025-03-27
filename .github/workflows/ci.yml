@@ -114,6 +114,7 @@ jobs:
           cache-dependency-path: webapp/package-lock.json
       - run: npm ci
       - run: npm run prettier:check --if-present
+      - run: npm run lint:check --if-present
 
   website-build:
     name: Website Build

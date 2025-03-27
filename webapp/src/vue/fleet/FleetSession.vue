@@ -8,7 +8,9 @@
       <p>
         {{ session.playerAmount }}
         {{
-          session.playerAmount > 1 ? t("session.players") : t("session.player")
+          session.playerAmount > 1
+            ? t("session.playersLabel")
+            : t("session.playerLabel")
         }}
       </p>
     </div>

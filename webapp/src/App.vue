@@ -4,14 +4,14 @@
       <component :is="Component" />
     </transition>
   </router-view>
-  <Loading :is-loading="false">
+  <LoadingVue :is-loading="false">
     <h1>{{ t("loading.targetGame") }}</h1>
-  </Loading>
+  </LoadingVue>
   <AlertComponent />
 </template>
 
 <script setup lang="ts">
-import Loading from "@/vue/templates/Loading.vue";
+import LoadingVue from "@/vue/templates/LoadingVue.vue";
 import AlertComponent from "@/vue/alert/AlertComponent.vue";
 import { useI18n } from "vue-i18n";
 import { onMounted } from "vue";

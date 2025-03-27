@@ -1,9 +1,9 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Home from "@/components/Home.vue";
+import HomeComponent from "@/components/HomeComponent.vue";
 import { i18n } from "@/objects/i18n";
-import Support from "@/components/Support.vue";
-import Reports from "@/components/Reports.vue";
-import Tutorial from "@/components/Tutorial.vue";
+import SupportComponent from "@/components/SupportComponent.vue";
+import ReportsComponent from "@/components/ReportsComponent.vue";
+import TutorialComponent from "@/components/TutorialComponent.vue";
 
 const { t } = i18n.global;
 
@@ -17,7 +17,7 @@ export const routes = [
   {
     path: "/",
     name: t("nav.home"),
-    component: Home,
+    component: HomeComponent,
     meta: {
       displayInNav: true,
     },
@@ -25,7 +25,7 @@ export const routes = [
   {
     path: "/support",
     name: t("nav.support"),
-    component: Support,
+    component: SupportComponent,
     meta: {
       displayInNav: true,
     },
@@ -33,7 +33,7 @@ export const routes = [
   {
     path: "/tutorial",
     name: t("nav.documentation"),
-    component: Tutorial,
+    component: TutorialComponent,
     meta: {
       displayInNav: true,
     },
@@ -41,7 +41,7 @@ export const routes = [
   {
     path: "/reports",
     name: "report",
-    component: Reports,
+    component: ReportsComponent,
     meta: {
       displayInNav: false,
     },

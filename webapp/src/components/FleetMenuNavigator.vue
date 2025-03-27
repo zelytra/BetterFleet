@@ -1,6 +1,6 @@
 <template>
   <section class="app-section">
-    <Header />
+    <HeaderComponent />
     <section class="content">
       <router-view v-slot="{ Component }">
         <transition mode="out-in">
@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import Header from "@/components/global/Header.vue";
+import HeaderComponent from "@/components/global/HeaderComponent.vue";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import { LocalKey } from "@/objects/stores/LocalStore.ts";
 import { onUnmounted, watch } from "vue";

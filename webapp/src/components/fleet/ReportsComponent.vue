@@ -20,7 +20,7 @@
         <p>{{ t("report.bug.content1") }}</p>
         <p>{{ t("report.bug.content2") }}</p>
         <div class="text-area-wrapper">
-          <textarea maxlength="500" v-model="reportMessage" />
+          <textarea v-model="reportMessage" maxlength="500" />
           <p>{{ reportMessage.length }}/500</p>
         </div>
         <PirateButton

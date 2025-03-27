@@ -1,7 +1,7 @@
 <template>
   <section class="auth-page">
     <img src="@/assets/icons/full-logo.svg" alt="app logo" />
-    <div class="card login-wrapper" v-if="!keycloakStore.isAuthenticated">
+    <div v-if="!keycloakStore.isAuthenticated" class="card login-wrapper">
       <h1>
         {{ t("login.welcome") }} <strong>{{ t("appName") }}</strong>
       </h1>
@@ -11,7 +11,7 @@
         @on-button-click="authUser"
       />
     </div>
-    <div class="card user-card" v-else>
+    <div v-else class="card user-card">
       <h1>{{ t("login.succeed") }}</h1>
       <div
         v-if="UserStore.player.username"

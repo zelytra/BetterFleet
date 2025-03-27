@@ -1,12 +1,12 @@
 import { createWebHistory, createRouter } from "vue-router";
 import fleet from "@/assets/icons/navigation.svg";
 import config from "@/assets/icons/config.svg";
-import Fleet from "@/components/fleet/Fleet.vue";
-import Config from "@/components/fleet/Config.vue";
+import FleetComponent from "@/components/fleet/FleetComponent.vue";
+import ConfigComponent from "@/components/fleet/ConfigComponent.vue";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
-import Authentication from "@/components/Authentication.vue";
+import AuthenticationComponent from "@/components/AuthenticationComponent.vue";
 import FleetMenuNavigator from "@/components/FleetMenuNavigator.vue";
-import Reports from "@/components/fleet/Reports.vue";
+import ReportsComponent from "@/components/fleet/ReportsComponent.vue";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -22,7 +22,7 @@ export const routes = [
   {
     path: "/",
     name: "Auth",
-    component: Authentication,
+    component: AuthenticationComponent,
     meta: {
       displayInNav: false,
     },
@@ -38,7 +38,7 @@ export const routes = [
       {
         path: "session",
         name: "Fleet",
-        component: Fleet,
+        component: FleetComponent,
         meta: {
           icon: fleet,
           tooltip: "fleet",
@@ -48,8 +48,8 @@ export const routes = [
       },
       {
         path: "config",
-        name: "Config",
-        component: Config,
+        name: "ConfigComponent",
+        component: ConfigComponent,
         meta: {
           icon: config,
           tooltip: "config",
@@ -60,7 +60,7 @@ export const routes = [
       {
         path: "report",
         name: "Report",
-        component: Reports,
+        component: ReportsComponent,
         meta: {
           requiresAuth: true,
           displayInNav: false,
@@ -75,7 +75,7 @@ export const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _from) => {
+router.beforeEach((to) => {
   if (to.meta.requiresAuth) {
     if (
       !keycloakStore.isAuthenticated ||

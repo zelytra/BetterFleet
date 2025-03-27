@@ -1,9 +1,9 @@
 <template>
   <section class="reports-wrapper">
     <FaqCollapse
-      url="reports"
       v-for="report of reports"
-      :id="report.id.toString()"
+      :key="report.id"
+      url="reports"
       :title="'Report n°' + report.id + ' | ' + report.reportingDate"
     >
       <div class="content-wrapper">

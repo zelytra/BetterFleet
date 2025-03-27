@@ -28,12 +28,12 @@
       </template>
       <template #left-content>
         <button
-          @click="confirmationStartSession()"
           v-if="UserStore.player.isMaster"
           :class="{
             'session-starter': true,
             pending: session.getReadyPlayers().length != session.players.length,
           }"
+          @click="confirmationStartSession()"
         >
           {{ t("session.run") }}
         </button>
@@ -41,26 +41,30 @@
     </BannerTemplate>
     <div class="lobby-content">
       <div class="player-table">
-        <ServerContainer
-          v-if="computedSession.servers.size > 0"
-          v-for="[hash, server] of getFilteredSotServer()"
-          :server="
-            hash.toUpperCase() +
-            (!server.location ? '' : ' | ' + server.location)
-          "
-          :color="server.color"
-          :player-count="server.connectedPlayers.length"
-        >
-          <PlayerFleet
-            v-for="player in server.connectedPlayers.sort((a, b) => {
-              return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
-            })"
-            :player="player"
-            @click.right.prevent="openContextMenu($event, player)"
-          />
-        </ServerContainer>
+        <div v-if="computedSession.servers.size > 0">
+          <ServerContainer
+            v-for="[hash, server] of getFilteredSotServer()"
+            :key="hash"
+            :server="
+              hash.toUpperCase() +
+              (!server.location ? '' : ' | ' + server.location)
+            "
+            :color="server.color"
+            :player-count="server.connectedPlayers.length"
+          >
+            <PlayerFleet
+              v-for="player in server.connectedPlayers.sort((a, b) => {
+                return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
+              })"
+              :key="player.username"
+              :player="player"
+              @click.right.prevent="openContextMenu($event, player)"
+            />
+          </ServerContainer>
+        </div>
         <PlayerFleet
           v-for="player in getFilteredPlayerList()"
+          :key="player.username"
           :player="player"
           class="player-fleet-card"
           @click.right.prevent="openContextMenu($event, player)"
@@ -104,7 +108,6 @@
     </transition>
     <ConfirmationModal
       v-model:is-confirmation-modal-open="launchConfirmation"
-      @on-confirm="startSession"
       :cancel="t('modal.confirm.launch.cancel')"
       :confirm="t('modal.confirm.launch.confirm')"
       :content="t('modal.confirm.launch.content')"
@@ -112,10 +115,10 @@
       cancel-class="important"
       confirm-class="warning"
       title-class="warning"
+      @on-confirm="startSession"
     />
     <ConfirmationModal
       v-model:is-confirmation-modal-open="leaveConfirmation"
-      @on-confirm="session.leaveSession()"
       :cancel="t('modal.confirm.leave.cancel')"
       :confirm="t('modal.confirm.leave.confirm')"
       :content="t('modal.confirm.leave.content')"
@@ -123,6 +126,7 @@
       cancel-class="information"
       confirm-class="important"
       title-class="important"
+      @on-confirm="session.leaveSession()"
     />
     <MasterContextMenu
       ref="contextMenu"
@@ -219,7 +223,7 @@ function startSession() {
 function getFilteredPlayerList() {
   const removedPlayer: string[] = [];
   for (const player of props.session!.players) {
-    computedSession.value.servers.forEach((value, _key) => {
+    computedSession.value.servers.forEach((value) => {
       if (
         value.connectedPlayers.filter((x) => x.username == player.username)
           .length > 0

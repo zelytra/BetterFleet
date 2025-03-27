@@ -3,19 +3,19 @@
     <h1>{{ t("discover.title") }}</h1>
     <div class="slider-wrapper">
       <div class="slider-nav">
-        <span @click="index = 0" :class="{ selected: index == 0 }">{{
+        <span :class="{ selected: index == 0 }" @click="index = 0">{{
           t("discover.discord.nav")
         }}</span>
-        <span @click="index = 1" :class="{ selected: index == 1 }">{{
+        <span :class="{ selected: index == 1 }" @click="index = 1">{{
           t("discover.github.nav")
         }}</span>
-        <span @click="index = 2" :class="{ selected: index == 2 }">{{
+        <span :class="{ selected: index == 2 }" @click="index = 2">{{
           t("discover.translation.nav")
         }}</span>
       </div>
       <div class="content-wrapper">
         <transition>
-          <div class="content" v-if="index == 0">
+          <div v-if="index == 0" class="content">
             <div class="side-content">
               <h2>{{ t("discover.discord.title") }}</h2>
               <p>{{ t("discover.discord.content") }}</p>
@@ -27,7 +27,7 @@
               <img width="200px" src="@/assets/icons/discord.svg" />
             </div>
           </div>
-          <div class="content" v-else-if="index == 1">
+          <div v-else-if="index == 1" class="content">
             <div class="side-content">
               <h2>{{ t("discover.github.title") }}</h2>
               <p>{{ t("discover.github.content") }}</p>
@@ -39,7 +39,7 @@
               <img src="@/assets/backgrounds/discord-x-app.svg" />
             </div>
           </div>
-          <div class="content" v-else-if="index == 2">
+          <div v-else-if="index == 2" class="content">
             <div class="side-content">
               <h2>{{ t("discover.translation.title") }}</h2>
               <p>{{ t("discover.translation.content") }}</p>

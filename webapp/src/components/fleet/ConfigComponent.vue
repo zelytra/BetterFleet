@@ -25,15 +25,15 @@
     </BannerTemplate>
     <ParameterPart :title="t('config.part.general')">
       <SingleSelect
-        :label="t('config.lang.label')"
         v-model:data="langOptions"
+        :label="t('config.lang.label')"
       />
       <SingleSelect
-        :label="t('config.device.label')"
         v-model:data="deviceOptions"
+        :label="t('config.device.label')"
       />
       <div class="checkbox-wrapper descriptor">
-        <input type="checkbox" v-model="activeMacro" />
+        <input v-model="activeMacro" type="checkbox" />
         <div class="label-wrapper">
           <p @click="activeMacro = !activeMacro">
             {{ t("config.macro.check") }}
@@ -58,7 +58,7 @@
           </button>
         </div>
         <div class="checkbox-wrapper">
-          <input type="checkbox" v-model="activeSound" />
+          <input v-model="activeSound" type="checkbox" />
           <p @click="activeSound = !activeSound">
             {{ t("config.sound.check") }}
           </p>
@@ -74,7 +74,7 @@
           :lock="!devMode"
         />
         <div class="checkbox-wrapper">
-          <input type="checkbox" v-model="devMode" />
+          <input v-model="devMode" type="checkbox" />
           <p @click="devMode = !devMode">{{ t("config.devmode") }}</p>
         </div>
       </div>
@@ -247,7 +247,7 @@ function onSave() {
     UserStore.player.fleet.updateToSession();
   }
   loadOptionList();
-  info("[Config.vue] User saved config");
+  info("[ConfigComponent.vue] User saved config");
 }
 
 function isConfigDifferent(): boolean {

@@ -4,8 +4,8 @@
     <div :class="{ 'input-wrapper': true, disabled: lock }">
       <p>0</p>
       <input
-        class="range"
         v-model.number="inputValue as number"
+        class="range"
         type="range"
         :min="0"
         :max="100"
@@ -22,7 +22,7 @@ defineProps({
   label: { type: String, required: false },
   lock: { type: Boolean, required: false, default: () => false },
 });
-const emits = defineEmits(["validate"]);
+defineEmits(["validate"]);
 </script>
 
 <style scoped lang="scss">

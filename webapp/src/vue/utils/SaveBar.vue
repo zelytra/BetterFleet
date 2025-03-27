@@ -1,6 +1,6 @@
 <template>
   <Transition>
-    <div class="save-bar" v-if="barActive">
+    <div v-if="barActive" class="save-bar">
       <p>{{ t("config.savebar.content") }}</p>
       <div class="action-bar">
         <p class="cancel" @click="emits('cancel')">

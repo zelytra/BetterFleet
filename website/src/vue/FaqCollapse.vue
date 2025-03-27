@@ -1,15 +1,15 @@
 <template>
   <div
-    class="collapse-container"
     :id="id"
-    @click="deploy = !deploy"
+    class="collapse-container"
     :class="{ deploy: deploy }"
+    @click="deploy = !deploy"
   >
     <div class="header">
       <h1>{{ title }}</h1>
       <div class="copy-wrapper">
         <img src="@/assets/icons/link.svg" alt="link" @click.stop="copyLink" />
-        <p class="copy" v-if="displayCopy">{{ t("faq.copy") }}</p>
+        <p v-if="displayCopy" class="copy">{{ t("faq.copy") }}</p>
       </div>
       <img src="@/assets/icons/arrow.svg" alt="arrow" />
     </div>

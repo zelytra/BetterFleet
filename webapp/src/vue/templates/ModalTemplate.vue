@@ -1,14 +1,14 @@
 <template>
   <transition-group>
-    <div class="blur-background" v-if="isModalOpen" />
+    <div v-if="isModalOpen" class="blur-background" />
     <div
       v-if="isModalOpen"
-      class="modal"
       v-click-outside="
         () => {
           isModalOpen = false;
         }
       "
+      class="modal"
       @keydown.esc="isModalOpen = false"
     >
       <svg

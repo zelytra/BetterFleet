@@ -15,8 +15,8 @@
       <button
         v-for="item in menu.data"
         :key="item.key"
-        @click="contextClick(item.key)"
         :class="item.class"
+        @click="contextClick(item.key)"
       >
         {{ item.display }}
       </button>
@@ -30,7 +30,7 @@ import { ContextMenu } from "@/vue/context/ContextMenu.ts";
 
 const posLeft = ref<number>(0);
 const posTop = ref<number>(0);
-const display = defineModel("display");
+const display = defineModel<boolean>("display");
 
 defineProps({
   menu: { type: Object as PropType<ContextMenu<string>>, required: false },

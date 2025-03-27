@@ -3,7 +3,7 @@
     <div class="banner">
       <h1>{{ t("tutorial.title") }}</h1>
     </div>
-    <Separator />
+    <SeparatorVue />
     <div class="tutorial-content">
       <div class="text-wrapper">
         <h1>{{ t("tutorial.whatIsIt.title") }}</h1>
@@ -14,8 +14,8 @@
         <p>{{ t("tutorial.howTo.content") }}</p>
       </div>
     </div>
-    <div v-for="x of stepAmount">
-      <Separator />
+    <div v-for="x of stepAmount" :key="x">
+      <SeparatorVue />
       <div class="tutorial-content">
         <div class="step">
           <p>{{ t("tutorial.stepWord") + " " + x }}</p>
@@ -33,7 +33,7 @@
         <img v-if="x == 7" src="@/assets/steps/7.png" alt="step" />
       </div>
     </div>
-    <Separator />
+    <SeparatorVue />
     <div class="banner end">
       <h1>{{ t("tutorial.end.title") }}</h1>
       <p>{{ t("tutorial.end.content") }}</p>
@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import Separator from "@/vue/Separator.vue";
+import SeparatorVue from "@/vue/SeparatorVue.vue";
 
 const { t } = useI18n();
 const stepAmount = 7;
