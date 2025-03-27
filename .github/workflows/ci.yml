@@ -159,6 +159,7 @@ jobs:
           cache-dependency-path: website/package-lock.json
       - run: npm ci
       - run: npm run prettier:check --if-present
+      - run: npm run lint:check --if-present
 
   test-tauri:
     name: Tauri Build Test
