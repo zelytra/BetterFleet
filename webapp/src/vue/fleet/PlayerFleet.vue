@@ -1,75 +1,116 @@
 <template>
-  <div :class="{'player-fleet-wrapper':true,'is-player':UserStore.player.username == player.username}">
+  <div
+    :class="{
+      'player-fleet-wrapper': true,
+      'is-player': UserStore.player.username == player.username,
+    }"
+  >
     <div class="content username">
-      <span class="user-icon" :style="{backgroundColor:Utils.generateRandomColor()}">{{
-          player.username.charAt(0).toUpperCase()
-        }}</span>
+      <span
+        class="user-icon"
+        :style="{ backgroundColor: Utils.generateRandomColor() }"
+        >{{ player.username.charAt(0).toUpperCase() }}</span
+      >
       <p>{{ player.username }}</p>
 
       <!-- Device user icon -->
-      <img v-if="player.device == PlayerDevice.XBOX" src="@/assets/icons/xbox.svg"/>
-      <img v-if="player.device == PlayerDevice.PLAYSTATION" src="@/assets/icons/playstation.svg"/>
-
+      <img
+        v-if="player.device == PlayerDevice.XBOX"
+        src="@/assets/icons/xbox.svg"
+      />
+      <img
+        v-if="player.device == PlayerDevice.PLAYSTATION"
+        src="@/assets/icons/playstation.svg"
+      />
 
       <!-- Contributor user icon -->
       <div class="contrib-wrapper">
-        <img class="contributor" v-if="contributor == ContributorType.DEVELOPER" @mouseenter="displayContrib = true"
-             @mouseleave="displayContrib = false"
-             src="@/assets/icons/contributors/developer.svg"
-             alt="developer"/>
-        <img class="contributor" v-if="contributor == ContributorType.DESIGNER" @mouseenter="displayContrib = true"
-             @mouseleave="displayContrib = false"
-             src="@/assets/icons/contributors/designer.svg"
-             alt="designer"/>
-        <img class="contributor" v-if="contributor == ContributorType.TRANSLATOR" @mouseenter="displayContrib = true"
-             @mouseleave="displayContrib = false"
-             src="@/assets/icons/contributors/translator.svg"
-             alt="translator"/>
-        <img class="contributor" v-if="contributor == ContributorType.ALPHA_TESTER" @mouseenter="displayContrib = true"
-             @mouseleave="displayContrib = false"
-             src="@/assets/icons/contributors/alpha-tester.svg"
-             alt="alpha-tester"/>
-        <span v-if="displayContrib && contributor">{{ t('session.contributor.' + (contributor.toLowerCase())) }}</span>
+        <img
+          v-if="contributor == ContributorType.DEVELOPER"
+          class="contributor"
+          src="@/assets/icons/contributors/developer.svg"
+          alt="developer"
+          @mouseenter="displayContrib = true"
+          @mouseleave="displayContrib = false"
+        />
+        <img
+          v-if="contributor == ContributorType.DESIGNER"
+          class="contributor"
+          src="@/assets/icons/contributors/designer.svg"
+          alt="designer"
+          @mouseenter="displayContrib = true"
+          @mouseleave="displayContrib = false"
+        />
+        <img
+          v-if="contributor == ContributorType.TRANSLATOR"
+          class="contributor"
+          src="@/assets/icons/contributors/translator.svg"
+          alt="translator"
+          @mouseenter="displayContrib = true"
+          @mouseleave="displayContrib = false"
+        />
+        <img
+          v-if="contributor == ContributorType.ALPHA_TESTER"
+          class="contributor"
+          src="@/assets/icons/contributors/alpha-tester.svg"
+          alt="alpha-tester"
+          @mouseenter="displayContrib = true"
+          @mouseleave="displayContrib = false"
+        />
+        <span v-if="displayContrib && contributor">{{
+          t("session.contributor." + contributor.toLowerCase())
+        }}</span>
       </div>
 
-      <img v-if="player.isMaster" src="@/assets/icons/key.svg"/>
-
+      <img v-if="player.isMaster" src="@/assets/icons/key.svg" />
     </div>
     <div class="content">
-      <p :class="{status:true,offline:player.status == PlayerStates.CLOSED }">
-        {{ t('session.player.status.' + Fleet.getFormatedStatus(player)) }}
+      <p
+        :class="{ status: true, offline: player.status == PlayerStates.CLOSED }"
+      >
+        {{ t("session.player.status." + Fleet.getFormatedStatus(player)) }}
       </p>
     </div>
     <div class="content">
-      <span class="player-status ready" v-if="player.isReady">{{ t('session.player.ready') }}</span>
-      <span class="player-status not-ready" v-else>{{ t('session.player.notReady') }}</span>
+      <span v-if="player.isReady" class="player-status ready">{{
+        t("session.player.ready")
+      }}</span>
+      <span v-else class="player-status not-ready">{{
+        t("session.player.notReady")
+      }}</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {onUpdated, PropType, ref} from "vue";
-import {Fleet} from "@/objects/fleet/Fleet.ts";
-import {useI18n} from "vue-i18n";
-import {Utils} from "@/objects/utils/Utils.ts";
-import {Player, PlayerDevice, PlayerStates} from "@/objects/fleet/Player.ts";
-import {UserStore} from "@/objects/stores/UserStore.ts";
-import {ContributorProvider, ContributorType} from "@/objects/fleet/Contributor.ts";
+import { onUpdated, PropType, ref } from "vue";
+import { Fleet } from "@/objects/fleet/Fleet.ts";
+import { useI18n } from "vue-i18n";
+import { Utils } from "@/objects/utils/Utils.ts";
+import { Player, PlayerDevice, PlayerStates } from "@/objects/fleet/Player.ts";
+import { UserStore } from "@/objects/stores/UserStore.ts";
+import {
+  ContributorProvider,
+  ContributorType,
+} from "@/objects/fleet/Contributor.ts";
 
-const {t} = useI18n()
+const { t } = useI18n();
 const displayContrib = ref<boolean>(false);
 const props = defineProps({
   player: {
     type: Object as PropType<Player>,
-    required: true
-  }
-})
-const contributor = ref<ContributorType | null>(ContributorProvider.getPlayerContrib(props.player.username));
+    required: true,
+  },
+});
+const contributor = ref<ContributorType | null>(
+  ContributorProvider.getPlayerContrib(props.player.username),
+);
 
 onUpdated(() => {
-  contributor.value = ContributorProvider.getPlayerContrib(props.player.username);
-})
-
+  contributor.value = ContributorProvider.getPlayerContrib(
+    props.player.username,
+  );
+});
 </script>
 
 <style scoped lang="scss">
@@ -139,8 +180,8 @@ onUpdated(() => {
       }
     }
 
-    p, span {
-
+    p,
+    span {
       &.status {
         color: var(--primary);
         position: absolute;
@@ -161,7 +202,7 @@ onUpdated(() => {
       text-align: end;
 
       &:after {
-        content: '';
+        content: "";
         width: 12px;
         height: 12px;
         border-radius: 50%;
@@ -188,6 +229,5 @@ onUpdated(() => {
       }
     }
   }
-
 }
 </style>

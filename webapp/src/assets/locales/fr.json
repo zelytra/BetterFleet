@@ -340,6 +340,8 @@
         "started": "Jeu lancé"
       }
     },
+    "playersLabel": "Joueurs",
+    "playerLabel": "Joueur",
     "run": "Lever l'ancre",
     "status": {
       "countdown": "Lancement dans",

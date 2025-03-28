@@ -3,56 +3,77 @@
     <BannerTemplate>
       <template #content>
         <div class="header-content">
-          <img src="../../../assets/icons/sot.svg"/>
+          <img src="../../../assets/icons/sot.svg" />
           <div class="title-content">
             <p>{{ session.sessionName }}</p>
             <div class="id-wrapper">
               <p class="id">
                 {{ t("session.id") + ": " }}
-                <span @click="copyIdToClipboard(session.sessionId.toUpperCase())">{{
-                    session.sessionId.toUpperCase()
-                  }}</span>
+                <span
+                  @click="copyIdToClipboard(session.sessionId.toUpperCase())"
+                  >{{ session.sessionId.toUpperCase() }}</span
+                >
               </p>
-              <img src="../../../assets/icons/clipboard.svg" alt="copy-button"
-                   @click="copyIdToClipboard(session.sessionId.toUpperCase())"/>
+              <img
+                src="../../../assets/icons/clipboard.svg"
+                alt="copy-button"
+                @click="copyIdToClipboard(session.sessionId.toUpperCase())"
+              />
               <transition>
-                <p v-if="displayIdCopy">{{ t('session.idCopy') }}</p>
+                <p v-if="displayIdCopy">{{ t("session.idCopy") }}</p>
               </transition>
             </div>
           </div>
         </div>
       </template>
       <template #left-content>
-        <button @click="confirmationStartSession()" v-if="UserStore.player.isMaster"
-                :class="{'session-starter':true,'pending':session.getReadyPlayers().length !=session.players.length}">
-          {{ t('session.run') }}
+        <button
+          v-if="UserStore.player.isMaster"
+          :class="{
+            'session-starter': true,
+            pending: session.getReadyPlayers().length != session.players.length,
+          }"
+          @click="confirmationStartSession()"
+        >
+          {{ t("session.run") }}
         </button>
       </template>
     </BannerTemplate>
     <div class="lobby-content">
       <div class="player-table">
-        <ServerContainer v-if="computedSession.servers.size > 0" v-for="[hash,server] of getFilteredSotServer()"
-                         :server="hash.toUpperCase()+(!server.location?'':' | '+server.location)" :color="server.color"
-                         :player-count="server.connectedPlayers.length">
-          <PlayerFleet
+        <div v-if="computedSession.servers.size > 0">
+          <ServerContainer
+            v-for="[hash, server] of getFilteredSotServer()"
+            :key="hash"
+            :server="
+              hash.toUpperCase() +
+              (!server.location ? '' : ' | ' + server.location)
+            "
+            :color="server.color"
+            :player-count="server.connectedPlayers.length"
+          >
+            <PlayerFleet
               v-for="player in server.connectedPlayers.sort((a, b) => {
-            return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
-          })"
+                return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
+              })"
+              :key="player.username"
               :player="player"
-              @click.right.prevent="openContextMenu($event,player)"
-          />
-        </ServerContainer>
+              @click.right.prevent="openContextMenu($event, player)"
+            />
+          </ServerContainer>
+        </div>
         <PlayerFleet
-            v-for="player in getFilteredPlayerList()"
-            :player="player"
-            class="player-fleet-card"
-            @click.right.prevent="openContextMenu($event,player)"
+          v-for="player in getFilteredPlayerList()"
+          :key="player.username"
+          :player="player"
+          class="player-fleet-card"
+          @click.right.prevent="openContextMenu($event, player)"
         />
       </div>
       <div class="lobby-details">
         <button
-            :class="{ 'ready-button': true, not: !UserStore.player.isReady }"
-            @click="updateStatus"
+          :class="{ 'ready-button': true, not: !UserStore.player.isReady }"
+          @click="updateStatus"
         >
           <p v-if="UserStore.player.isReady">{{ t("session.player.ready") }}</p>
           <p v-else>{{ t("session.player.notReady") }}</p>
@@ -76,62 +97,62 @@
               </p>
             </div>
           </div>
-          <button class="session-status" @click="leaveConfirmation=true">
+          <button class="session-status" @click="leaveConfirmation = true">
             <p>{{ t("session.leave") }}</p>
           </button>
         </div>
       </div>
     </div>
     <transition>
-      <SessionCountdown v-if="UserStore.player.countDown" :session="session"/>
+      <SessionCountdown v-if="UserStore.player.countDown" :session="session" />
     </transition>
     <ConfirmationModal
-        v-model:is-confirmation-modal-open="launchConfirmation"
-        @on-confirm="startSession"
-        :cancel="t('modal.confirm.launch.cancel')"
-        :confirm="t('modal.confirm.launch.confirm')"
-        :content="t('modal.confirm.launch.content')"
-        :title="t('modal.confirm.launch.title')"
-        cancel-class="important"
-        confirm-class="warning"
-        title-class="warning"
+      v-model:is-confirmation-modal-open="launchConfirmation"
+      :cancel="t('modal.confirm.launch.cancel')"
+      :confirm="t('modal.confirm.launch.confirm')"
+      :content="t('modal.confirm.launch.content')"
+      :title="t('modal.confirm.launch.title')"
+      cancel-class="important"
+      confirm-class="warning"
+      title-class="warning"
+      @on-confirm="startSession"
     />
     <ConfirmationModal
-        v-model:is-confirmation-modal-open="leaveConfirmation"
-        @on-confirm="session.leaveSession()"
-        :cancel="t('modal.confirm.leave.cancel')"
-        :confirm="t('modal.confirm.leave.confirm')"
-        :content="t('modal.confirm.leave.content')"
-        :title="t('modal.confirm.leave.title')"
-        cancel-class="information"
-        confirm-class="important"
-        title-class="important"
+      v-model:is-confirmation-modal-open="leaveConfirmation"
+      :cancel="t('modal.confirm.leave.cancel')"
+      :confirm="t('modal.confirm.leave.confirm')"
+      :content="t('modal.confirm.leave.content')"
+      :title="t('modal.confirm.leave.title')"
+      cancel-class="information"
+      confirm-class="important"
+      title-class="important"
+      @on-confirm="session.leaveSession()"
     />
     <MasterContextMenu
-        ref="contextMenu"
-        v-model:display="displayContextMenu"
-        :menu="masterContextMenu"
-        @action="onContextAction"
+      ref="contextMenu"
+      v-model:display="displayContextMenu"
+      :menu="masterContextMenu"
+      @action="onContextAction"
     />
   </section>
 </template>
 
 <script setup lang="ts">
-import {computed, onUnmounted, PropType, ref} from "vue";
-import {Fleet} from "@/objects/fleet/Fleet.ts";
+import { computed, onUnmounted, PropType, ref } from "vue";
+import { Fleet } from "@/objects/fleet/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
-import {UserStore} from "@/objects/stores/UserStore.ts";
+import { UserStore } from "@/objects/stores/UserStore.ts";
 import SessionCountdown from "@/components/fleet/session/SessionCountdown.vue";
 import ServerContainer from "@/vue/templates/ServerContainer.vue";
 import ConfirmationModal from "@/vue/form/ConfirmationModal.vue";
 import MasterContextMenu from "@/vue/context/MasterContextMenu.vue";
-import {ContextMenu, MenuData} from "@/vue/context/ContextMenu.ts";
-import {Player} from "@/objects/fleet/Player.ts";
-import {WebSocketMessageType} from "@/objects/fleet/WebSocet.ts";
+import { ContextMenu, MenuData } from "@/vue/context/ContextMenu.ts";
+import { Player } from "@/objects/fleet/Player.ts";
+import { WebSocketMessageType } from "@/objects/fleet/WebSocet.ts";
 
-const {t} = useI18n();
+const { t } = useI18n();
 const displayIdCopy = ref<boolean>(false);
 const launchConfirmation = ref<boolean>(false);
 const leaveConfirmation = ref<boolean>(false);
@@ -140,19 +161,21 @@ const contextMenu = ref();
 const masterContextMenu = ref<ContextMenu<string>>();
 const contextMenuData: MenuData[] = [
   {
-    display: t('contextMenu.master.promote'),
+    display: t("contextMenu.master.promote"),
     key: "promote",
-    class: "green"
-  }, {
-    display: t('contextMenu.master.demote'),
+    class: "green",
+  },
+  {
+    display: t("contextMenu.master.demote"),
     key: "demote",
-    class: "blue"
-  }, {
-    display: t('contextMenu.master.kick'),
+    class: "blue",
+  },
+  {
+    display: t("contextMenu.master.kick"),
     key: "kick",
-    class: "red"
-  }
-]
+    class: "red",
+  },
+];
 const props = defineProps({
   session: {
     type: Object as PropType<Fleet>,
@@ -162,13 +185,13 @@ const props = defineProps({
 
 const keepAlive: number = setInterval(() => {
   if (props.session) {
-    props.session.sendKeepAlive()
+    props.session.sendKeepAlive();
   }
-}, 30000)
+}, 30000);
 
 onUnmounted(() => {
-  clearInterval(keepAlive)
-})
+  clearInterval(keepAlive);
+});
 
 function updateStatus() {
   UserStore.player.isReady = !UserStore.player.isReady;
@@ -178,15 +201,14 @@ function updateStatus() {
 defineEmits(["update:selected-value"]);
 const computedSession = computed({
   get: (): Fleet => props.session,
-  set: (): void => {
-  },
+  set: (): void => {},
 });
 
 function confirmationStartSession() {
   if (props.session.getReadyPlayers().length != props.session.players.length) {
-    launchConfirmation.value = true
+    launchConfirmation.value = true;
   } else {
-    startSession()
+    startSession();
   }
 }
 
@@ -195,48 +217,57 @@ function startSession() {
   if (!UserStore.player.isMaster) {
     return;
   }
-  props.session!.runCountDown()
+  props.session!.runCountDown();
 }
 
 function getFilteredPlayerList() {
   const removedPlayer: string[] = [];
   for (const player of props.session!.players) {
-    computedSession.value.servers.forEach((value, _key) => {
-      if (value.connectedPlayers.filter(x => x.username == player.username).length > 0) {
-        removedPlayer.push(player.username)
+    computedSession.value.servers.forEach((value) => {
+      if (
+        value.connectedPlayers.filter((x) => x.username == player.username)
+          .length > 0
+      ) {
+        removedPlayer.push(player.username);
         return;
       }
-    })
+    });
   }
-  return computedSession.value.players.filter(x => !removedPlayer.includes(x.username)).sort((a, b) => {
-    return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
-  })
+  return computedSession.value.players
+    .filter((x) => !removedPlayer.includes(x.username))
+    .sort((a, b) => {
+      return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
+    });
 }
 
 function getFilteredSotServer() {
-  return new Map([...props.session.servers].sort((a, b) => {
-    return b[1].connectedPlayers.length - a[1].connectedPlayers.length
-  }))
+  return new Map(
+    [...props.session.servers].sort((a, b) => {
+      return b[1].connectedPlayers.length - a[1].connectedPlayers.length;
+    }),
+  );
 }
 
 function copyIdToClipboard(id: string) {
   navigator.clipboard.writeText(id);
   displayIdCopy.value = true;
-  setTimeout(() => displayIdCopy.value = false, 2000);
+  setTimeout(() => (displayIdCopy.value = false), 2000);
 }
 
 function openContextMenu(event: any, player: Player) {
-
-  if (!UserStore.player.isMaster || player.username == UserStore.player.username) {
+  if (
+    !UserStore.player.isMaster ||
+    player.username == UserStore.player.username
+  ) {
     return;
   }
 
   contextMenu.value.setPos(event);
   masterContextMenu.value = {
-    title: t('contextMenu.master.title') + ": " + player.username,
+    title: t("contextMenu.master.title") + ": " + player.username,
     data: contextMenuData,
-    metaData: player.username
-  }
+    metaData: player.username,
+  };
   displayContextMenu.value = true;
 }
 
@@ -247,30 +278,36 @@ function onContextAction(action: string) {
   switch (action) {
     case "promote": {
       props.session.playerAction(
-          {
-            sessionId: props.session.sessionId,
-            username: masterContextMenu.value!.metaData
-          }, WebSocketMessageType.PROMOTE_PLAYER)
-      break
+        {
+          sessionId: props.session.sessionId,
+          username: masterContextMenu.value!.metaData,
+        },
+        WebSocketMessageType.PROMOTE_PLAYER,
+      );
+      break;
     }
     case "demote": {
       props.session.playerAction(
-          {
-            sessionId: props.session.sessionId,
-            username: masterContextMenu.value!.metaData
-          }, WebSocketMessageType.DEMOTE_PLAYER)
-      break
+        {
+          sessionId: props.session.sessionId,
+          username: masterContextMenu.value!.metaData,
+        },
+        WebSocketMessageType.DEMOTE_PLAYER,
+      );
+      break;
     }
     case "kick": {
       props.session.playerAction(
-          {
-            sessionId: props.session.sessionId,
-            username: masterContextMenu.value!.metaData
-          }, WebSocketMessageType.KICK_PLAYER)
-      break
+        {
+          sessionId: props.session.sessionId,
+          username: masterContextMenu.value!.metaData,
+        },
+        WebSocketMessageType.KICK_PLAYER,
+      );
+      break;
     }
   }
-  displayContextMenu.value = false
+  displayContextMenu.value = false;
 }
 </script>
 
@@ -280,7 +317,6 @@ function onContextAction(action: string) {
   height: 100%;
   display: flex;
   flex-direction: column;
-
 
   .header-content {
     display: flex;
@@ -327,7 +363,6 @@ function onContextAction(action: string) {
           color: var(--primary);
         }
       }
-
     }
   }
 
@@ -336,15 +371,19 @@ function onContextAction(action: string) {
     cursor: pointer;
     height: 100%;
     background: linear-gradient(
-            270deg,
-            rgba(50, 212, 153, 0.2) 0%,
-            rgba(50, 212, 153, 0) 108.45%
+      270deg,
+      rgba(50, 212, 153, 0.2) 0%,
+      rgba(50, 212, 153, 0) 108.45%
     );
     padding: 0 16px;
     white-space: nowrap;
 
     &.pending {
-      background: linear-gradient(270deg, rgba(212, 147, 50, 0.20) 0%, rgba(212, 147, 50, 0.00) 108.45%);
+      background: linear-gradient(
+        270deg,
+        rgba(212, 147, 50, 0.2) 0%,
+        rgba(212, 147, 50, 0) 108.45%
+      );
     }
   }
 
@@ -388,9 +427,9 @@ function onContextAction(action: string) {
         all: unset;
         border-radius: 5px;
         background: linear-gradient(
-                0deg,
-                rgba(50, 212, 153, 0.2) -14.61%,
-                rgba(50, 212, 153, 0.07) 167.42%
+          0deg,
+          rgba(50, 212, 153, 0.2) -14.61%,
+          rgba(50, 212, 153, 0.07) 167.42%
         );
         width: 100%;
         height: 80px;
@@ -400,9 +439,9 @@ function onContextAction(action: string) {
 
         &.not {
           background: linear-gradient(
-                  0deg,
-                  rgba(212, 50, 50, 0.2) -14.61%,
-                  rgba(212, 50, 50, 0.07) 167.42%
+            0deg,
+            rgba(212, 50, 50, 0.2) -14.61%,
+            rgba(212, 50, 50, 0.07) 167.42%
           );
         }
       }
@@ -461,9 +500,9 @@ function onContextAction(action: string) {
           width: 100%;
           text-align: center;
           background: linear-gradient(
-                  0deg,
-                  rgba(212, 50, 50, 0.2) 0%,
-                  rgba(212, 50, 50, 0) 97.89%
+            0deg,
+            rgba(212, 50, 50, 0.2) 0%,
+            rgba(212, 50, 50, 0) 97.89%
           );
         }
       }

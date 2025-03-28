@@ -1,50 +1,50 @@
-import {createWebHistory, createRouter} from "vue-router";
-import Home from "@/components/Home.vue";
-import {i18n} from "@/objects/i18n";
-import Support from "@/components/Support.vue";
-import Reports from "@/components/Reports.vue";
-import Tutorial from "@/components/Tutorial.vue";
+import { createWebHistory, createRouter } from "vue-router";
+import HomeComponent from "@/components/HomeComponent.vue";
+import { i18n } from "@/objects/i18n";
+import SupportComponent from "@/components/SupportComponent.vue";
+import ReportsComponent from "@/components/ReportsComponent.vue";
+import TutorialComponent from "@/components/TutorialComponent.vue";
 
-const {t} = i18n.global;
+const { t } = i18n.global;
 
-declare module 'vue-router' {
-    interface RouteMeta {
-        displayInNav: boolean
-    }
+declare module "vue-router" {
+  interface RouteMeta {
+    displayInNav: boolean;
+  }
 }
 
 export const routes = [
   {
     path: "/",
-    name: t('nav.home'),
-    component: Home,
+    name: t("nav.home"),
+    component: HomeComponent,
     meta: {
-      displayInNav: true
-    }
+      displayInNav: true,
+    },
   },
   {
     path: "/support",
-    name: t('nav.support'),
-    component: Support,
+    name: t("nav.support"),
+    component: SupportComponent,
     meta: {
-      displayInNav: true
-    }
+      displayInNav: true,
+    },
   },
   {
     path: "/tutorial",
-    name: t('nav.documentation'),
-    component: Tutorial,
+    name: t("nav.documentation"),
+    component: TutorialComponent,
     meta: {
-      displayInNav: true
-    }
+      displayInNav: true,
+    },
   },
   {
     path: "/reports",
     name: "report",
-    component: Reports,
+    component: ReportsComponent,
     meta: {
-      displayInNav: false
-    }
+      displayInNav: false,
+    },
   },
 ];
 

@@ -1,2 +1,2 @@
 /// <reference types="vite/client" />
-declare module 'vue-kinesis'
+declare module "vue-kinesis";

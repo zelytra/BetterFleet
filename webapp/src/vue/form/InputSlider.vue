@@ -1,29 +1,28 @@
 <template>
   <div class="input-global-wrapper">
     <label v-if="label">{{ label }}</label>
-    <div :class="{'input-wrapper':true,disabled:lock}">
+    <div :class="{ 'input-wrapper': true, disabled: lock }">
       <p>0</p>
       <input
-          class="range"
-          v-model.number="inputValue as number"
-          type="range"
-          :min="0"
-          :max="100"
-          :disabled="lock"
+        v-model.number="inputValue as number"
+        class="range"
+        type="range"
+        :min="0"
+        :max="100"
+        :disabled="lock"
       />
       <p>100</p>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
-const inputValue = defineModel<number>('inputValue');
+const inputValue = defineModel<number>("inputValue");
 defineProps({
-  label: {type: String, required: false},
-  lock: {type: Boolean, required: false, default: () => false}
+  label: { type: String, required: false },
+  lock: { type: Boolean, required: false, default: () => false },
 });
-const emits = defineEmits(["validate"]);
+defineEmits(["validate"]);
 </script>
 
 <style scoped lang="scss">
@@ -65,7 +64,6 @@ const emits = defineEmits(["validate"]);
         background: white;
         cursor: pointer;
       }
-
     }
 
     span.cross {

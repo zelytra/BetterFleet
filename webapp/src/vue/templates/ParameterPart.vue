@@ -2,15 +2,15 @@
   <div class="param-wrapper">
     <h2 v-if="title">{{ title }}</h2>
     <div class="template-wrapper">
-      <slot/>
+      <slot />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 defineProps({
-  title: String
-})
+  title: String,
+});
 </script>
 
 <style scoped lang="scss">
@@ -23,12 +23,12 @@ defineProps({
   height: 100%;
   gap: 20px;
 
-  h2{
+  h2 {
     position: relative;
     &:after {
       display: flex;
       position: absolute;
-      content: '';
+      content: "";
       bottom: -10px;
       left: 50%;
       transform: translate(-50%, 0);
@@ -40,7 +40,7 @@ defineProps({
 
   .template-wrapper {
     border: 2px solid #222631;
-    background: rgba(34, 38, 49, 0.20);
+    background: rgba(34, 38, 49, 0.2);
     padding: 43px;
     display: flex;
     align-items: center;

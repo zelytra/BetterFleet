@@ -1,15 +1,7 @@
 {
-  "developers": [
-    "Zelytra",
-    "dadodasyra"
-  ],
-  "translators" : [
-    "Ichabodt"
-  ],
-  "designers": [
-    "ZeTro",
-    "Zamao"
-  ],
+  "developers": ["Zelytra", "dadodasyra"],
+  "translators": ["Ichabodt"],
+  "designers": ["ZeTro", "Zamao"],
   "alphaTesters": [
     "Azuryy11",
     "mael",

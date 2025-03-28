@@ -1,6 +1,6 @@
-import {defineConfig} from 'vite'
-import vue from '@vitejs/plugin-vue'
-import {fileURLToPath, URL} from "node:url";
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import { fileURLToPath, URL } from "node:url";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,7 +18,7 @@ export default defineConfig({
       {
         find: "@components",
         replacement: fileURLToPath(
-          new URL("./src/components", import.meta.url)
+          new URL("./src/components", import.meta.url),
         ),
       },
       {
@@ -34,4 +34,4 @@ export default defineConfig({
       },
     },
   },
-})
+});
