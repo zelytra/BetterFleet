@@ -76,7 +76,7 @@ const emits = defineEmits(["createSession"]);
 }
 
 .refresh {
-  background-image: url("@assets/backgrounds/blue-button.svg ");
+  background-image: url("@assets/backgrounds/blue-button.svg");
   width: 256px;
   height: 90px;
   display: flex;
@@ -107,11 +107,11 @@ const emits = defineEmits(["createSession"]);
   }
 
   &.create {
-    background-image: url("@assets/banners/create_session.svg ");
+    background-image: url("@assets/banners/create_session.svg");
   }
 
   &.join {
-    background-image: url("@assets/banners/join_session.svg ");
+    background-image: url("@assets/banners/join_session.svg");
     background-blend-mode: darken;
   }
 
