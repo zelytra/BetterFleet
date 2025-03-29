@@ -1,18 +1,6 @@
 <template>
   <section class="choice-wrapper">
-    <SessionCard
-      :title="t('session.choice.createSession')"
-      @click="createSession"
-    >
-      <p>{{ t("session.choice.createComment") }}</p>
-    </SessionCard>
-    <SessionCard
-      :title="t('session.choice.joinSession')"
-      :background="'linear-gradient(270deg, rgba(50, 144, 212, 0.20) 0%, rgba(50, 144, 212, 0.07) 108.45%)'"
-      @click="isModalOpen = true"
-    >
-      <p>{{ t("session.choice.joinComment") }}</p>
-    </SessionCard>
+    <FleetSessionNavigator />
     <modal-template v-model:is-modal-open="isModalOpen">
       <div class="username-wrapper">
         <div class="main-content">
@@ -33,7 +21,6 @@
 </template>
 
 <script setup lang="ts">
-import SessionCard from "@/vue/templates/SessionCard.vue";
 import { useI18n } from "vue-i18n";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { PropType, ref, watch } from "vue";
@@ -41,6 +28,7 @@ import ModalTemplate from "@/vue/templates/ModalTemplate.vue";
 import InputText from "@/vue/form/InputText.vue";
 import { AlertType } from "@/vue/alert/Alert.ts";
 import { alertProvider } from "@/main.ts";
+import FleetSessionNavigator from "@/vue/fleet/FleetSessionNavigator.vue";
 
 const { t } = useI18n();
 const isModalOpen = ref<boolean>(false);
