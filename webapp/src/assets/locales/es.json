@@ -1,32 +1,32 @@
 {
   "alert": {
     "badRequest": {
-      "content": "La consulta está dañada o es incorrecta",
-      "title": "Solicitud incorrecta"
+      "content": "La consulta está corrupta o es incorrecta.",
+      "title": "Mala consulta"
     },
     "emptySession": {
-      "content": "Por favor, introduzca un código de sesión",
-      "title": "Código de sesión vacío"
+      "content": "El campo de identificación está vacío, ingrese un valor",
+      "title": "ID de sesión vacía"
     },
     "error": {
-      "content": "Se ha producido un error",
+      "content": "Ha ocurrido un error",
       "title": "Error"
     },
     "forbidden": {
-      "content": "No tienes los permisos necesarios para acceder a esta página.",
+      "content": "No tienes el permiso necesario para acceder a esta página.",
       "title": "Acceso denegado"
     },
     "outdated": {
-      "content": "Por favor actualiza tu aplicación",
+      "content": "Por favor actualice su aplicación",
       "title": "Cliente obsoleto"
     },
     "report": {
       "emptyMessage": {
-        "content": "Describa su problema lo mejor que pueda en el informe de error.",
-        "title": "Informe vacío"
+        "content": "No puede enviar un informe sin contenido en el mensaje.",
+        "title": "mensaje vacío"
       },
       "send": {
-        "title": "Reporte enviado"
+        "title": "reporte enviado"
       }
     },
     "research": {
@@ -45,64 +45,64 @@
     },
     "session": {
       "notLeave": {
-        "content": "No puedes salir de esta página",
-        "title": "Lanzamiento en proceso"
+        "content": "No puedes salir de la página durante un lanzamiento.",
+        "title": "No puedes salir de la pagina."
       }
     },
     "sessionNotFound": {
-      "content": "Comprueba tu código de sesión",
+      "content": "Verifique su ID de sesión",
       "title": "Sesión no encontrada"
     },
     "socket": {
-      "connectionFailed": "No se pudo conectar al servidor",
+      "connectionFailed": "La conexión al servidor falló",
       "random": "El WebSocket se cerró inesperadamente",
-      "title": "Conexión perdida"
+      "title": "Ha ocurrido un error con el servidor."
     },
     "unsupportedMedia": {
-      "content": "El medio que intentas enviar no es compatible con la aplicación",
+      "content": "El medio que estás intentando enviar no es compatible con la aplicación.",
       "title": "Medios no compatibles"
     },
     "username": {
       "ignore": {
-        "content": "Tu apodo no ha sido cambiado",
-        "title": "Lanzamiento en proceso"
+        "content": "Se lanza el narrador",
+        "title": "Cambio ignorado"
       },
       "length": {
-        "content": "Su apodo no puede estar vacío ni exceder los 16 caracteres.",
-        "title": "Formato de apodo no válido"
+        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
+        "title": "Mauvais format de pseudo"
       }
     },
     "websocketAuthFailed": {
-      "content": "Error en la autenticación de WebSocket",
-      "title": "No se puede conectar"
+      "content": "Error de autenticación de Websocket",
+      "title": "Error de autenticación"
     }
   },
-  "appName": "MejorFlota",
+  "appName": "Mejor flota",
   "config": {
     "device": {
-      "label": "Plataforma"
+      "label": "Plataformas"
     },
     "devmode": "Habilitar el modo desarrollador",
-    "disconnect": "Finalizar la sesión",
+    "disconnect": "Desconectarse",
     "lang": {
       "label": "Idioma"
     },
     "macro": {
-      "check": "Lanzamiento asistido",
-      "description": "Hace clic automáticamente en \"Levantar ancla\" al final de la cuenta regresiva"
+      "check": "Activar/Desactivar macro de sesión",
+      "description": "Ejecución de un clic automático al final de la cuenta atrás."
     },
     "name": {
-      "label": "Seudónimo",
-      "placeholder": "Seudónimo"
+      "label": "Nombre de usuario",
+      "placeholder": "Nombre de usuario"
     },
     "part": {
       "audio": "Audio",
-      "developer": "Revelador",
+      "developer": "Desarrollador",
       "general": "General"
     },
     "savebar": {
-      "cancel": "Cancelar cambios",
-      "content": "¡Salta, salta, salta! ¡Vi que hiciste algunas ediciones!",
+      "cancel": "Descartar los cambios",
+      "content": "¡Salto, salto, salto! ¡Vi que hiciste algunos cambios!",
       "save": "Ahorrar"
     },
     "server": {
@@ -110,60 +110,60 @@
       "placeholder": "https://betterfleet.com/api"
     },
     "sound": {
-      "check": "Habilitar/Deshabilitar la cuenta regresiva del sonido",
-      "label": "Cuenta regresiva de sonido",
-      "test": "Prueba"
+      "check": "Activar/desactivar la cuenta atrás de audio",
+      "label": "Conteo de sonidos",
+      "test": "prueba"
     },
     "subtitle": "Opciones de preferencia",
-    "title": "Ajustes"
+    "title": "Configuraciones"
   },
   "contextMenu": {
     "master": {
-      "demote": "Degradar",
+      "demote": "Eliminar maestro",
       "kick": "Expulsar",
-      "promote": "Promocionar a maestro de sesión",
+      "promote": "Asignar maestro",
       "title": "Usuario"
     }
   },
   "credits": {
-    "and": "Y",
-    "description": "BetterFleet fue desarrollado con el objetivo de facilitar la creación de alianzas en Sea of Thieves.",
-    "designed": "Diseñado por",
-    "details": "BetterFleet es una aplicación de terceros no oficial sin afiliación con el equipo de desarrollo de Sea of Thieves. Su uso es externo y no afecta la experiencia de juego de ninguna manera. El usuario es el único responsable de su uso.",
+    "and": "y",
+    "description": "BetterFleet se desarrolló para facilitar la formación de alianzas en Sea Of Thieves",
+    "designed": "Diseñada por",
+    "details": "BetterFleet es una aplicación de terceros no oficial y no relacionada con el equipo de desarrollo de Sea Of Thieves. ¡Su uso es puramente externo y no tiene ningún impacto en la experiencia de juego!",
     "developed": "Desarrollado por",
-    "socials": "Encuéntrenos aquí:",
+    "socials": "Encuéntranos aquí:",
     "sot": {
-      "thanks": "Nos gustaría devolver algo a",
-      "use": "que pertenece a los piratas porque, como puedes ver, ¡usamos la fuente y los banners del juego!"
+      "thanks": "Nos gustaría agradecer",
+      "use": "para permitirnos usar la fuente y los banners de su juego"
     },
     "title": "Créditos"
   },
   "firstLogin": {
     "button": {
-      "description": "¡Icemos las velas, pongamos el timón y zarpemos hacia mar abierto!",
-      "title": "Comienza la aventura"
+      "description": "¡Icen las velas muchachos, tomen el timón y salgan al mar!",
+      "title": "Que comience la jornada"
     },
-    "description": "Ingrese su gamertag actual para garantizar el buen funcionamiento de la alianza.",
-    "tips": "Puedes cambiar tu apodo en cualquier momento en la configuración.",
-    "title": "¿Cómo te llamas amigo?"
+    "description": "Ingrese su gamertag actual para supervisar el buen funcionamiento de la alianza.",
+    "tips": "Puedes cambiar tu nombre de usuario en cualquier momento en la sección \"Preferencias\"",
+    "title": "¿Cómo te llamas muchacho?"
   },
   "loading": {
     "loading": "Cargando...",
-    "targetGame": "Detección de juego actual",
-    "targetLoading": "Juego detectado. Preparación de barcos.",
-    "tips": "Esto puede tardar un poco, por favor verifica que tu juego esté funcionando"
+    "targetGame": "Detección de juego en curso",
+    "targetLoading": "Juego detectado. Naves en preparación.",
+    "tips": "Este proceso puede tardar un poco, asegúrate de que tu juego esté iniciado."
   },
   "locales": {
-    "de": "Alemán",
-    "en": "Inglés",
+    "de": "Deutsch",
+    "en": "English",
     "es": "Español",
-    "fr": "Francés"
+    "fr": "Français"
   },
   "login": {
-    "continue": "Continuar",
-    "description": "¡Bienvenido a BetterFleet! Estamos encantados de tenerle con nosotros. ¡Para utilizar la aplicación, inicia sesión en tu cuenta o crea una!",
-    "disconnect": "¿Esta no es tu cuenta?",
-    "loginButton": "Acceso",
+    "continue": "seguir",
+    "description": "¡Bienvenidos a Mejor Flota! Estamos encantados de tenerte entre nosotros. Para poder utilizar la aplicación por completo, es necesario iniciar sesión en su cuenta o crear una.",
+    "disconnect": "¿Esta no es tu cuenta? ",
+    "loginButton": "Conectarse",
     "succeed": "¡Conexión exitosa!",
     "userWelcome": "Bienvenido",
     "welcome": "Bienvenido a"
@@ -171,187 +171,189 @@
   "modal": {
     "confirm": {
       "launch": {
-        "cancel": "Cancelar",
+        "cancel": "anular",
         "confirm": "Levantar el ancla",
-        "content": "¡No todo el mundo está preparado! ¿Estás seguro que deseas levar anclas?",
+        "content": "¡No todos los jugadores están preparados! ¿Estás seguro de que quieres levar anclas?",
         "title": "ATENCIÓN !"
       },
       "leave": {
-        "cancel": "Cancelar",
+        "cancel": "anular",
         "confirm": "Salir de la sesión",
-        "content": "¿Estás seguro que deseas abandonar la sesión?",
+        "content": "¿Estás seguro de que quieres abandonar la sesión?",
         "title": "SALIR DE LA SESIÓN"
       }
     }
   },
   "report": {
     "bug": {
-      "button": "Enviar el informe",
-      "content1": "Sus informes nos ayudan a corregir cualquier error o funcionamiento anormal que encuentre en la aplicación. Si este es tu caso, te invitamos a que describas tu problema de forma clara y detallada en el cuadro siguiente.",
-      "content2": "Tenga en cuenta que, además del mensaje, su informe nos enviará de forma anónima datos útiles para identificar el problema.",
-      "title": "Reportar un error"
+      "button": "Enviar reporte",
+      "content1": "Si encuentra algún problema con la aplicación, algo no funciona correctamente. Te sugerimos que nos lo comuniques escribiéndonos un breve mensaje explicando el problema para que podamos corregirlo lo más rápido posible.",
+      "content2": "Los datos que nos envían en el informe son anónimos y no contienen ninguna información personal. Enviamos información estadística y mensajes de depuración para poder investigar su problema de la manera más eficiente posible.",
+      "title": "Un insecto ?"
     },
     "faq": {
       "button": {
         "discord": "Discordia",
         "faq": "Preguntas frecuentes"
       },
-      "content": "Vaya a la página de preguntas frecuentes de nuestro sitio web, ¡quizás ya encuentre allí la respuesta a su problema! De lo contrario, puedes contactarnos en nuestro Discord. Tenga en cuenta que en caso de que se produzca algún error, con toda seguridad se le solicitará que lo informe.",
-      "title": "¿Tienes alguna pregunta?"
+      "content": "¿Tienes algún problema? Visite nuestro sitio web, en la página de preguntas frecuentes para ver si aún no le hemos respondido. De lo contrario te sugerimos que nos preguntes en nuestro Discord",
+      "title": "Tienes una pregunta ?"
     }
   },
   "session": {
     "choice": {
-      "createComment": "¡Saborea la libertad de gobernar los mares como un pirata!",
+      "createComment": "¡Dale un mordisco a la libertad y domina el mar de ladrones!",
       "createSession": "Crear una sesión",
-      "joinComment": "¡Toma una taza, sube a bordo y únete a la tripulación!",
+      "joinComment": "¡Coge una jarra, sube a bordo y únete a la tripulación!",
       "joinSession": "Unirse a una sesión",
       "modal": {
         "button": "Únete a la sesión",
-        "comment": "Cada sesión es privada y requiere un código. ¡Pregúntale al anfitrión de la sesión a la que deseas unirte!",
-        "title": "Introduzca un código de sesión"
+        "comment": "Cada sesión es privada y requiere un código de identificación. ¡Pregúntale al anfitrión de la sesión a la que deseas unirte!",
+        "title": "Ingrese una ID de sesión"
       }
     },
     "contributor": {
-      "alpha_tester": "Probador Alfa",
-      "designer": "Diseñador",
-      "developer": "Revelador",
+      "alpha_tester": "Probador alfa",
+      "designer": "Designado",
+      "developer": "Desarrollador",
       "translator": "Traductor"
     },
-    "countdown": "La búsqueda comienza en...",
-    "id": "Código de sesión",
-    "idCopy": "Copiado!",
+    "countdown": "La investigación comienza en...",
+    "id": "ID de sesión",
+    "idCopy": "¡Copiado!",
     "informations": {
-      "success": "Posibilidad de éxito",
+      "success": "Tasa de éxito",
       "title": "Información",
       "totalPlayer": "Jugadores listos",
       "tryNumber": "Número de intentos"
     },
-    "leave": "Salir de la sesión",
+    "leave": "abandonar la sesión",
     "name": {
-      "0": "El barco fantasma",
-      "1": "El tesoro escondido",
-      "10": "El catalejo rayado",
-      "11": "El abordaje nocturno",
-      "12": "La valentía del capitán",
-      "13": "La tripulación amotinada",
-      "14": "La ola rompiente",
-      "15": "El botín robado",
-      "16": "El ron del contrabandista",
-      "17": "La vela de sombra",
-      "18": "El ancla oxidada",
-      "19": "El puerto de la fortuna",
-      "2": "Dados cargados",
-      "20": "La leyenda olvidada",
-      "21": "El naufragio velado",
-      "22": "El anzuelo brillante",
-      "23": "La tormenta torrencial",
-      "24": "La tabla deslizante",
-      "25": "La cala secreta",
-      "26": "El mercado negro",
-      "27": "La búsqueda del tesoro",
-      "28": "El mástil tembloroso",
-      "29": "La pistola de chispa",
-      "3": "La isla misteriosa",
-      "30": "El calamar gigante",
-      "31": "El código pirata",
-      "32": "La daga sangrienta",
-      "33": "El viento favorable",
-      "34": "El fugitivo cojo",
-      "35": "El cartucho rústico",
-      "36": "El duelo improvisado",
-      "37": "La llama ardiente",
-      "38": "El corazón del océano",
-      "39": "La historia del pasado",
-      "4": "El loro parlante",
-      "40": "El motín salvaje",
-      "41": "La tortuga marina",
-      "42": "El plan infalible",
+      "0": "Barco fantasma",
+      "1": "Tesoro escondido",
+      "10": "Catalejo pirata",
+      "11": "Embarque nocturno",
+      "12": "Capitán Valiente",
+      "13": "Pandilla rebelde",
+      "14": "Ola monstruosa",
+      "15": "Botín robado",
+      "16": "Ron picante",
+      "17": "Velo rasgado",
+      "18": "Ancla oxidada",
+      "19": "Puerto Prohibido",
+      "2": "Mapa antiguo",
+      "20": "Leyenda olvidada",
+      "21": "Naufragio sumergido",
+      "22": "Gancho brillante",
+      "23": "Tormenta violenta",
+      "24": "Suelo resbaladizo",
+      "25": "cala secreta",
+      "26": "Mercado negro",
+      "27": "Búsqueda del tesoro",
+      "28": "Mástil roto",
+      "29": "Pistola cargada",
+      "3": "Isla misteriosa",
+      "30": "Calamar gigante",
+      "31": "Código pirata",
+      "32": "Daga oculta",
+      "33": "Viento favorable",
+      "34": "Prisionero fugitivo",
+      "35": "Cartucho viejo",
+      "36": "Duelo mortal",
+      "37": "Llama apagada",
+      "38": "Joya preciosa",
+      "39": "Historia olvidada",
+      "4": "Loro hablador",
+      "40": "Equipo de motín",
+      "41": "Tortuga marina",
+      "42": "plan secreto",
       "43": "Polvo húmedo",
-      "44": "El galeón español",
-      "45": "Bahía Paraíso",
-      "46": "El timón astillado",
-      "47": "La estrella del norte",
-      "48": "La promesa vengativa",
-      "49": "El banquete escandaloso",
-      "5": "La brújula desorientada",
-      "50": "El mosquete humeante",
-      "51": "La canción del mar",
-      "52": "El aparejo dudoso",
-      "53": "El medallón azteca",
-      "54": "El mapa enigmático",
-      "55": "El mensaje en una botella",
-      "56": "La lámpara de tormenta",
-      "57": "El antiguo pergamino",
-      "58": "Amanecer crepuscular",
-      "59": "El bucanero engañoso",
-      "6": "El sable afilado",
-      "60": "La peligrosa travesía",
-      "61": "La artimaña del bucanero",
-      "62": "El chelín espumoso",
-      "63": "El consejo pirata",
-      "64": "El alma errante",
-      "65": "La prisión fortificada",
-      "66": "El amuleto maldito",
-      "67": "La batalla naval",
-      "68": "El rayo verde",
-      "69": "El cofre del muerto",
-      "7": "El cañón retumbante",
-      "70": "La fuente de la juventud",
-      "71": "La orilla desconocida",
-      "72": "Dinero falso",
-      "73": "El pacto de sangre",
-      "74": "La alianza rota",
-      "75": "El antiguo manuscrito",
-      "76": "La palabra de honor",
-      "77": "El holandés errante",
-      "78": "Piratería real",
-      "79": "El espejismo marino",
-      "8": "El pabellón negro",
-      "80": "El eco aullante",
-      "81": "La arena dorada",
-      "82": "El horizonte penetrante",
-      "83": "El incesante tic tac",
-      "84": "El sol poniente",
-      "85": "La noche sin luna",
+      "44": "Galeón Español",
+      "45": "Bahía tranquila",
+      "46": "Timón roto",
+      "47": "estrella guía",
+      "48": "Venganza prometida",
+      "49": "Banquete salvaje",
+      "5": "Brújula mágica",
+      "50": "Mosquete humeante",
+      "51": "Canción del mar",
+      "52": "Garfio lanzado",
+      "53": "Medalla Pirata",
+      "54": "Tarjeta enigmática",
+      "55": "Mensaje oculto",
+      "56": "Lámpara de tormenta",
+      "57": "pergamino viejo",
+      "58": "Baliza nocturna",
+      "59": "Filibusterismo ágil",
+      "6": "Sable afilado",
+      "60": "Cruce peligroso",
+      "61": "Bucanero astuto",
+      "62": "corona robada",
+      "63": "Consejo Pirata",
+      "64": "Alma errante",
+      "65": "Prisión fortificada",
+      "66": "Amuleto protegido",
+      "67": "Combate naval",
+      "68": "Brujería Negra",
+      "69": "Pecho atrapado",
+      "7": "Cañón retumbante",
+      "70": "Grito de libertad",
+      "71": "Costa salvaje",
+      "72": "Moneda falsa",
+      "73": "Pacto Secreto",
+      "74": "Alianza rota",
+      "75": "Manuscrito antiguo",
+      "76": "Palabra dada",
+      "77": "Barco fantasma",
+      "78": "Trono Pirata",
+      "79": "Espejismo marino",
+      "8": "Bandera Negra",
+      "80": "Cueva del eco",
+      "81": "arena dorada",
+      "82": "ojo vigilante",
+      "83": "Reloj roto",
+      "84": "Sol poniente",
+      "85": "Noche sin luna",
       "86": "Marea alta",
-      "87": "El aliento abisal",
-      "88": "La tormenta amenazante",
-      "89": "El barco naufragado",
-      "9": "La guarida de Davy Jones",
-      "90": "El refugio de los ladrones",
-      "91": "El ataque oportunista",
-      "92": "La huida intrépida",
-      "93": "La fortuna perdida",
-      "94": "La pieza de ocho",
-      "95": "El cuento heroico",
-      "96": "La capa llameante",
-      "97": "El corsario jurado",
-      "98": "La laguna azul",
-      "99": "La misión maliciosa"
+      "87": "Viento de cola",
+      "88": "Amenaza de tormenta",
+      "89": "Barco naufragado",
+      "9": "Cofre cerrado",
+      "90": "Refugio escondido",
+      "91": "Ataque sorpresa",
+      "92": "Escape audaz",
+      "93": "Fortuna perdida",
+      "94": "pepita brillante",
+      "95": "Historia heroica",
+      "96": "Cabo robado",
+      "97": "Juramento pirata",
+      "98": "Laguna Azul",
+      "99": "Misión secreta"
     },
     "player": {
-      "notReady": "No estoy listo",
+      "notReady": "No está listo",
       "ready": "Listo",
       "status": {
         "closed": "Desconectado",
-        "in-game": "Apostar",
-        "main-menu": "En los menús del juego",
+        "in-game": "En el juego",
+        "main-menu": "En el menú del juego",
         "started": "Juego lanzado"
       }
     },
-    "run": "Levantar el ancla",
+    "playersLabel": "Jugadores",
+    "playerLabel": "Jugador",
+    "run": "Zarpar",
     "status": {
-      "countdown": "Lanzamiento en",
+      "countdown": "Lanzará en",
       "ready": "Listo",
-      "waiting": "En espera"
+      "waiting": "Espera"
     }
   },
   "tooltips": {
     "navbar": {
-      "config": "Ajustes",
+      "config": "Page de configuration",
       "fleet": "Sesión",
-      "home": "Página de inicio"
+      "home": "Page d'acceuil"
     }
   }
 }
