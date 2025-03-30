@@ -156,8 +156,8 @@
   "locales": {
     "de": "Deutsch",
     "en": "English",
-    "es": "Spanish",
-    "fr": "French"
+    "es": "Español",
+    "fr": "Français"
   },
   "login": {
     "continue": "Continue",
@@ -194,7 +194,7 @@
     "faq": {
       "button": {
         "discord": "Discord",
-        "faq": "FAQ"
+        "faq": "F.A.Q."
       },
       "content": "Check out the F.A.Q. page of our website, you might already find an answer to your problem there! You can otherwise contact us on our Discord. If it is regarding a bug, please note that you will most certainly be asked to send a report!",
       "title": "Do you have a question?"
@@ -340,6 +340,8 @@
         "started": "Game launched"
       }
     },
+    "playersLabel": "Players",
+    "playerLabel": "Player",
     "run": "Set sail",
     "status": {
       "countdown": "Launch in",
