@@ -227,6 +227,7 @@
       "totalPlayer": "Joueurs prêts",
       "tryNumber": "Nombre d'essais"
     },
+    "issue": "Si vous rencontrez le moindre problème, rejoignez notre",
     "leave": "Quitter la session",
     "name": {
       "0": "Le Navire Fantôme",
@@ -330,8 +331,11 @@
       "98": "Le Lagon Bleu",
       "99": "La Mission Malicieuse"
     },
+    "or": "OR",
     "player": {
       "notReady": "Pas prêt",
+      "online": "Joueur connecté",
+      "onlines": "Joueurs connectés",
       "ready": "Prêt",
       "status": {
         "closed": "Hors ligne",
@@ -340,8 +344,9 @@
         "started": "Jeu lancé"
       }
     },
-    "playersLabel": "Joueurs",
     "playerLabel": "Joueur",
+    "playersLabel": "Joueurs",
+    "refresh": "Raffraichir",
     "run": "Lever l'ancre",
     "status": {
       "countdown": "Lancement dans",
