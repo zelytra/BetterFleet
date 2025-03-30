@@ -63,6 +63,11 @@ function createSession() {
     align-items: center;
     justify-content: start;
     gap: 17px;
+    width: 325px;
+    box-sizing: border-box;
+    max-height: calc(100vh);
+    overflow: hidden;
+    overflow-y: auto;
   }
 }
 </style>

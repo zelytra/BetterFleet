@@ -11,16 +11,18 @@
     <p>{{ t("session.choice.createSession") }}</p>
     <p class="description">{{ t("session.choice.createComment") }}</p>
   </div>
-  <h3>OR</h3>
+  <h3>{{ t("session.or") }}</h3>
   <div class="session join" @click="isModalOpen = true">
     <p>{{ t("session.choice.joinSession") }}</p>
     <p class="description">{{ t("session.choice.joinComment") }}</p>
   </div>
   <div class="discord">
-    <img src="@/assets/icons/contributors/translator.svg" />
+    <img src="@/assets/icons/contributors/translator.svg" alt="book" />
     <p v-if="true">
       {{ t("session.issue") }}
-      <a href="">{{ t("report.faq.button.discord") }}</a>
+      <a href="https://discord.com/invite/sHPp5CPxf2" target="_blank">{{
+        t("report.faq.button.discord")
+      }}</a>
     </p>
   </div>
 </template>
@@ -40,18 +42,20 @@ const emits = defineEmits(["createSession"]);
 .discord {
   background-image: url("@assets/backgrounds/brown-display.svg");
   width: 256px;
-  height: 132px;
+  height: 98px;
   display: flex;
   box-sizing: border-box;
   justify-content: center;
   align-items: center;
   padding: 8px;
+  aspect-ratio: 256 / 98;
 
   img {
     width: 60px;
   }
 
   p {
+    font-size: 14px;
     text-align: center;
     padding: 12px;
 
@@ -64,11 +68,12 @@ const emits = defineEmits(["createSession"]);
 .player-count {
   background-image: url("@assets/backgrounds/green-display.svg");
   width: 256px;
-  height: 103px;
+  height: 78px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  aspect-ratio: 256 / 78;
 
   h3 {
     color: var(--primary);
@@ -83,6 +88,7 @@ const emits = defineEmits(["createSession"]);
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  aspect-ratio: 256 / 90;
 
   &:hover {
     scale: 1.01;
@@ -91,7 +97,7 @@ const emits = defineEmits(["createSession"]);
 
 .session {
   width: 256px;
-  height: 316px;
+  height: 152px;
   display: flex;
   box-sizing: border-box;
   padding: 12px;
@@ -101,6 +107,7 @@ const emits = defineEmits(["createSession"]);
   cursor: pointer;
   gap: 13px;
   position: relative;
+  background-repeat: no-repeat;
 
   &:hover {
     scale: 1.01;
@@ -108,11 +115,13 @@ const emits = defineEmits(["createSession"]);
 
   &.create {
     background-image: url("@assets/banners/create_session.svg");
+    aspect-ratio: 256 / 152;
   }
 
   &.join {
     background-image: url("@assets/banners/join_session.svg");
     background-blend-mode: darken;
+    aspect-ratio: 256 / 152;
   }
 
   &:after {
@@ -122,7 +131,7 @@ const emits = defineEmits(["createSession"]);
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.35);
+    background: rgba(0, 0, 0, 0.52);
     pointer-events: none;
     z-index: 1;
     mask-image: url("@assets/banners/create_session.svg");

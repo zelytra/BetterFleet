@@ -1,6 +1,16 @@
 <template>
   <div class="public-session-wrapper">
-    <div class="filter-wrapper"></div>
+    <div class="filter-wrapper">
+      <single-select
+        :data="{
+          data: [
+            { display: 'Public', id: '0' },
+            { display: 'Private', id: '1' },
+          ],
+          selectedValue: { display: 'Private', id: '1' },
+        }"
+      />
+    </div>
     <div class="sessions-wrapper">
       <FleetSession
         v-for="session of sessions"
@@ -17,6 +27,7 @@ import { ref } from "vue";
 import { PublicSession } from "@/objects/fleet/PublicSessions.ts";
 import FleetSession from "@/vue/fleet/FleetSession.vue";
 import { countryFlags } from "@/objects/utils/LangIcons.ts";
+import SingleSelect from "@/vue/form/SingleSelect.vue";
 
 const { t } = useI18n();
 const sessions = ref<PublicSession[]>([]);
@@ -53,6 +64,7 @@ countryFlags.forEach((_flag, key) => {
     background: var(--primary-background-static);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 5px;
+    padding: 4px 18px;
   }
 
   .sessions-wrapper {
