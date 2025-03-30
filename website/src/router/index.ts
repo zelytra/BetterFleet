@@ -1,11 +1,11 @@
 import { createWebHistory, createRouter } from "vue-router";
 import HomeComponent from "@/components/HomeComponent.vue";
-import { i18n } from "@/objects/i18n";
+import { tsi18n } from "@/objects/i18n";
 import SupportComponent from "@/components/SupportComponent.vue";
 import ReportsComponent from "@/components/ReportsComponent.vue";
 import TutorialComponent from "@/components/TutorialComponent.vue";
 
-const { t } = i18n.global;
+const { t } = tsi18n.global;
 
 declare module "vue-router" {
   interface RouteMeta {
