@@ -1,26 +1,22 @@
 <template>
-  <Header/>
+  <Header />
   <router-view v-slot="{ Component }">
     <transition mode="out-in">
-      <component :is="Component"/>
+      <component :is="Component" />
     </transition>
   </router-view>
-  <FooterVue/>
+  <FooterVue />
 </template>
 
 <script setup lang="ts">
-
 import Header from "@/components/global/HeaderVue.vue";
-import {onBeforeMount} from "vue";
-import {AppStore} from "@/objects/stores/appStore.ts";
+import { onBeforeMount } from "vue";
+import { AppStore } from "@/objects/stores/appStore.ts";
 import FooterVue from "@/components/global/FooterVue.vue";
 
 onBeforeMount(() => {
-  AppStore.init()
-})
-
+  AppStore.init();
+});
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

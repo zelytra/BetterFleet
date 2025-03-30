@@ -1,18 +1,23 @@
 <template>
   <transition>
     <div
-        v-if="display && menu"
-        v-click-outside="
+      v-if="display && menu"
+      v-click-outside="
         () => {
           display = false;
         }
       "
-        :style="{ top: posTop - 5 + 'px', left: posLeft - 50 + 'px' }"
-        class="context-menu"
-        @mouseleave="display = false"
+      :style="{ top: posTop - 5 + 'px', left: posLeft - 50 + 'px' }"
+      class="context-menu"
+      @mouseleave="display = false"
     >
       <p class="title">{{ menu.title }}</p>
-      <button v-for="item in menu.data" :key="item.key" @click="contextClick(item.key)" :class="item.class">
+      <button
+        v-for="item in menu.data"
+        :key="item.key"
+        :class="item.class"
+        @click="contextClick(item.key)"
+      >
         {{ item.display }}
       </button>
     </div>
@@ -20,22 +25,22 @@
 </template>
 
 <script setup lang="ts">
-import {PropType, ref} from "vue";
-import {ContextMenu} from "@/vue/context/ContextMenu.ts";
+import { PropType, ref } from "vue";
+import { ContextMenu } from "@/vue/context/ContextMenu.ts";
 
 const posLeft = ref<number>(0);
 const posTop = ref<number>(0);
-const display = defineModel('display')
+const display = defineModel<boolean>("display");
 
 defineProps({
-  menu: {type: Object as PropType<ContextMenu<string>>, required: false},
+  menu: { type: Object as PropType<ContextMenu<string>>, required: false },
 });
 
 const emits = defineEmits<{
   (e: "action", action: string): void;
 }>();
 
-defineExpose({setPos});
+defineExpose({ setPos });
 
 function contextClick(item: string) {
   emits("action", item);
@@ -100,7 +105,6 @@ function setPos(event: any) {
       }
     }
   }
-
 }
 
 .v-enter-active,

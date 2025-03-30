@@ -1,7 +1,7 @@
 <template>
   <div
     class="box"
-    v-bind:class="{
+    :class="{
       valid: props.alert.type.key === AlertType.VALID.key,
       error: props.alert.type.key === AlertType.ERROR.key,
       warning: props.alert.type.key === AlertType.WARNING.key,

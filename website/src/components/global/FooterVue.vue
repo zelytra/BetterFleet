@@ -2,29 +2,35 @@
   <footer>
     <div class="main-footer">
       <div class="card">
-        <img src="@/assets/icons/full-logo.svg" alt="full logo"/>
-        <p>{{ t('footer.content') }}</p>
+        <img src="@/assets/icons/full-logo.svg" alt="full logo" />
+        <p>{{ t("footer.content") }}</p>
         <span>{{ version }}</span>
       </div>
       <div class="card github" @click="openGithub">
-        <img src="@/assets/icons/github.svg" class="icon" alt="full logo"/>
-        <p>{{ t('footer.github') }}</p>
+        <img src="@/assets/icons/github.svg" class="icon" alt="full logo" />
+        <p>{{ t("footer.github") }}</p>
       </div>
       <div class="card-wrapper">
         <div class="card details warning">
-          <h2>{{ t('footer.warning.title') }}</h2>
-          <p>{{ t('footer.warning.content') }}</p>
+          <h2>{{ t("footer.warning.title") }}</h2>
+          <p>{{ t("footer.warning.content") }}</p>
         </div>
         <div class="card details discord" @click="openDiscord">
-          <p>{{ t('footer.discord') }} <a href="https://discord.gg/sHPp5CPxf2">Discord</a>.</p>
+          <p>
+            {{ t("footer.discord") }}
+            <a href="https://discord.gg/sHPp5CPxf2">Discord</a>.
+          </p>
         </div>
       </div>
     </div>
     <div class="credit-wrapper">
-      <p><span>Better Fleet©</span> {{ t('credits.license') }} {{ date }} | {{ t('credits.developed') }}
+      <p>
+        <span>Better Fleet©</span> {{ t("credits.license") }} {{ date }} |
+        {{ t("credits.developed") }}
         <a href="https://zelytra.fr">Zelytra</a>
-        {{ t('credits.and') }} <a
-            href="https://github.com/dadodasyra">dadodasyra</a> - {{ t('credits.designed') }}
+        {{ t("credits.and") }}
+        <a href="https://github.com/dadodasyra">dadodasyra</a> -
+        {{ t("credits.designed") }}
         <a href="https://zetro.fr">ZeTro</a>
       </p>
     </div>
@@ -32,19 +38,19 @@
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-i18n";
-import {ref} from "vue";
+import { useI18n } from "vue-i18n";
+import { ref } from "vue";
 
 const version = ref(import.meta.env.VITE_VERSION);
-const {t} = useI18n()
-const date = ref<number>((new Date()).getFullYear())
+const { t } = useI18n();
+const date = ref<number>(new Date().getFullYear());
 
 function openGithub() {
-  window.open("https://github.com/zelytra/BetterFleet", '_blank');
+  window.open("https://github.com/zelytra/BetterFleet", "_blank");
 }
 
 function openDiscord() {
-  window.open("https://discord.gg/sHPp5CPxf2", '_blank');
+  window.open("https://discord.gg/sHPp5CPxf2", "_blank");
 }
 </script>
 
@@ -68,7 +74,6 @@ footer {
     background-size: cover;
     display: flex;
     gap: 17px;
-
 
     .card-wrapper {
       display: flex;
@@ -112,7 +117,7 @@ footer {
         &:after {
           display: flex;
           position: absolute;
-          content: '';
+          content: "";
           bottom: -7px;
           left: 50%;
           transform: translate(-50%, 0);
@@ -153,15 +158,12 @@ footer {
         background-size: cover;
         cursor: pointer;
 
-
         &:hover {
           transform: translateY(-5px);
           filter: brightness(1.1);
         }
       }
     }
-
-
   }
 
   .credit-wrapper {
@@ -170,7 +172,8 @@ footer {
     display: flex;
     justify-content: center;
 
-    a, span {
+    a,
+    span {
       color: var(--primary);
     }
   }

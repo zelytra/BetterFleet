@@ -6,11 +6,19 @@
         <p>{{ content }}</p>
       </div>
       <div class="button-wrapper">
-        <button :class="cancelClass" @click="isConfirmationModalOpen = false">{{ cancel }}</button>
-        <button :class="confirmClass" @click="()=>{
-          emits('onConfirm');
-          isConfirmationModalOpen=false
-        }">{{ confirm }}
+        <button :class="cancelClass" @click="isConfirmationModalOpen = false">
+          {{ cancel }}
+        </button>
+        <button
+          :class="confirmClass"
+          @click="
+            () => {
+              emits('onConfirm');
+              isConfirmationModalOpen = false;
+            }
+          "
+        >
+          {{ confirm }}
         </button>
       </div>
     </div>
@@ -20,27 +28,27 @@
 <script setup lang="ts">
 import ModalTemplate from "@/vue/templates/ModalTemplate.vue";
 
-const isConfirmationModalOpen = defineModel<boolean>('isConfirmationModalOpen');
+const isConfirmationModalOpen = defineModel<boolean>("isConfirmationModalOpen");
 
 defineProps({
   title: String,
   titleClass: {
     type: String,
-    required: false
+    required: false,
   },
   content: String,
   cancel: String,
   confirm: String,
   cancelClass: {
     type: String,
-    required: false
+    required: false,
   },
   confirmClass: {
     type: String,
-    required: false
-  }
-})
-const emits = defineEmits(['onConfirm']);
+    required: false,
+  },
+});
+const emits = defineEmits(["onConfirm"]);
 </script>
 
 <style scoped lang="scss">
@@ -52,7 +60,7 @@ const emits = defineEmits(['onConfirm']);
   justify-content: space-between;
   align-items: center;
   gap: 18px;
-  background: #0F1013;
+  background: #0f1013;
 
   .content {
     display: flex;
@@ -93,7 +101,7 @@ const emits = defineEmits(['onConfirm']);
       transition: all 100ms ease-in-out;
 
       &.warning {
-        background-color: #D4933233;
+        background-color: #d4933233;
 
         &:hover {
           background-color: var(--warning);
@@ -101,7 +109,7 @@ const emits = defineEmits(['onConfirm']);
       }
 
       &.important {
-        background-color: #D4323233;
+        background-color: #d4323233;
 
         &:hover {
           background-color: var(--important);
@@ -109,13 +117,12 @@ const emits = defineEmits(['onConfirm']);
       }
 
       &.information {
-        background-color: #32D49933;
+        background-color: #32d49933;
 
         &:hover {
           background-color: var(--information);
         }
       }
-
     }
   }
 }

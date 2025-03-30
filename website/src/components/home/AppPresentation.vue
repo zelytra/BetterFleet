@@ -2,26 +2,41 @@
   <kinesis-container>
     <section>
       <div class="side-content text">
-        <h1>{{ t('presentation.title') }}</h1>
-        <p>{{ t('presentation.content') }}</p>
-        <a v-if="AppStore.githubRelease.url" :href="AppStore.githubRelease.url" target="_blank">
-          <PirateButton :label="t('button.downloadApp')" @on-button-click="incrementDownload"/>
+        <h1>{{ t("presentation.title") }}</h1>
+        <p>{{ t("presentation.content") }}</p>
+        <a
+          v-if="AppStore.githubRelease.url"
+          :href="AppStore.githubRelease.url"
+          target="_blank"
+        >
+          <PirateButton
+            :label="t('button.downloadApp')"
+            @on-button-click="incrementDownload"
+          />
         </a>
       </div>
-      <kinesis-element :strength="20" type="depth" class="side-content parallax">
-        <img class="parallax-image" src="@/assets/backgrounds/app-mockup.png" alt="app mockup"/>
+      <kinesis-element
+        :strength="20"
+        type="depth"
+        class="side-content parallax"
+      >
+        <img
+          class="parallax-image"
+          src="@/assets/backgrounds/app-mockup.png"
+          alt="app mockup"
+        />
       </kinesis-element>
     </section>
   </kinesis-container>
 </template>
 
 <script setup lang="ts">
-import {AppStore} from "@/objects/stores/appStore.ts";
+import { AppStore } from "@/objects/stores/appStore.ts";
 import PirateButton from "@/vue/PirateButton.vue";
-import {useI18n} from "vue-i18n";
-import {incrementDownload} from "@/objects/Stats.ts";
+import { useI18n } from "vue-i18n";
+import { incrementDownload } from "@/objects/Stats.ts";
 
-const {t} = useI18n()
+const { t } = useI18n();
 </script>
 
 <style scoped lang="scss">
@@ -36,7 +51,7 @@ section {
   justify-content: space-between;
 
   &:before {
-    content: ' ';
+    content: " ";
     display: block;
     position: absolute;
     left: 0;

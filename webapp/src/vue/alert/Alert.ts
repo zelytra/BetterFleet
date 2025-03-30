@@ -1,5 +1,5 @@
 import flame from "@/assets/icons/alert-flame.svg";
-import {AlertUtils} from "@/vue/alert/AlertUtils.ts";
+import { AlertUtils } from "@/vue/alert/AlertUtils.ts";
 
 export class AlertType {
   static readonly VALID = new AlertType("VALID", flame);
@@ -10,8 +10,7 @@ export class AlertType {
   private constructor(
     public readonly key: string,
     public readonly value: any,
-  ) {
-  }
+  ) {}
 
   toString() {
     return this.value;
@@ -28,8 +27,7 @@ export interface Alert {
 export class AlertProvider {
   private alerts: Alert[] = [];
 
-  constructor() {
-  }
+  constructor() {}
 
   public get getAlerts() {
     return this.alerts;
@@ -65,7 +63,6 @@ export class AlertProvider {
         this.sendAlert(AlertUtils.getUnsupportedMediaType());
         break;
       }
-
     }
   }
 }

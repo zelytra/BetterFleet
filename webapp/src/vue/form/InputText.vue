@@ -1,27 +1,27 @@
 <template>
   <div class="input-global-wrapper">
     <label v-if="label">{{ label }}</label>
-    <div :class="{'input-wrapper':true,disabled:lock}">
+    <div :class="{ 'input-wrapper': true, disabled: lock }">
       <input
-          v-model="inputValue"
-          type="text"
-          :disabled="lock"
-          :placeholder="placeholder"
-          @keydown.enter="emits('validate')"
+        v-model="inputValue"
+        type="text"
+        :disabled="lock"
+        :placeholder="placeholder"
+        @keydown.enter="emits('validate')"
       />
-      <span :class="{cross:true,disabled:lock}" @click="resetInput">
-      <img src="@/assets/icons/cross.svg"/>
-    </span>
+      <span :class="{ cross: true, disabled: lock }" @click="resetInput">
+        <img src="@/assets/icons/cross.svg" />
+      </span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const inputValue = defineModel<string>('inputValue',{default:()=>""});
+const inputValue = defineModel<string>("inputValue", { default: () => "" });
 const props = defineProps({
-  placeholder: {type: String, required: false, default: ""},
-  label: {type: String, required: false},
-  lock: {type: Boolean, required: false, default: () => false}
+  placeholder: { type: String, required: false, default: "" },
+  label: { type: String, required: false },
+  lock: { type: Boolean, required: false, default: () => false },
 });
 const emits = defineEmits(["validate"]);
 
@@ -53,7 +53,7 @@ function resetInput() {
 
     &.disabled {
       cursor: not-allowed;
-      background: rgba(23, 26, 33, 0.40);
+      background: rgba(23, 26, 33, 0.4);
       color: var(--secondary-text);
     }
 

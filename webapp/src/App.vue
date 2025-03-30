@@ -1,24 +1,24 @@
 <template>
   <router-view v-slot="{ Component }">
     <transition mode="out-in">
-      <component :is="Component"/>
+      <component :is="Component" />
     </transition>
   </router-view>
-  <Loading :is-loading="false">
+  <LoadingVue :is-loading="false">
     <h1>{{ t("loading.targetGame") }}</h1>
-  </Loading>
-  <AlertComponent/>
+  </LoadingVue>
+  <AlertComponent />
 </template>
 
 <script setup lang="ts">
-import Loading from "@/vue/templates/Loading.vue";
+import LoadingVue from "@/vue/templates/LoadingVue.vue";
 import AlertComponent from "@/vue/alert/AlertComponent.vue";
-import {useI18n} from "vue-i18n";
-import {onMounted} from "vue";
-import {UserStore} from "@/objects/stores/UserStore.ts";
-import {PlayerDevice, PlayerStates} from "@/objects/fleet/Player.ts";
+import { useI18n } from "vue-i18n";
+import { onMounted } from "vue";
+import { UserStore } from "@/objects/stores/UserStore.ts";
+import { PlayerDevice, PlayerStates } from "@/objects/fleet/Player.ts";
 
-const {t} = useI18n()
+const { t } = useI18n();
 
 onMounted(() => {
   UserStore.init({
@@ -30,11 +30,9 @@ onMounted(() => {
     status: PlayerStates.CLOSED,
     username: "",
     device: PlayerDevice.MICROSOFT,
-    macroEnable:true
+    macroEnable: true,
   });
 });
 </script>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

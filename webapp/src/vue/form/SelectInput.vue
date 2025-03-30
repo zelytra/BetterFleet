@@ -2,7 +2,11 @@
   <div class="input-wrapper">
     <div class="wrapper input" @click="openOption()">
       <div class="selected-values">
-        <p v-for="value of checked" v-if="checked.length > 0">{{ value }}</p>
+        <div v-if="checked.length > 0">
+          <p v-for="value of checked" :key="value">
+            {{ value }}
+          </p>
+        </div>
         <span v-else>{{ placeHolder }}</span>
       </div>
       <img
@@ -14,21 +18,22 @@
 
     <transition>
       <div
-        class="wrapper options"
         v-if="toggleOption"
         v-click-outside="() => closeOption()"
+        class="wrapper options"
         @mouseleave="closeOption()"
       >
         <div
-          class="option"
           v-for="option of options"
+          :key="option"
+          class="option"
           :class="{ selected: checked.includes(option.toString()) }"
           @click="forceCheckUpdate(option.toString())"
         >
           <input
-            type="checkbox"
             :id="option + '-input'"
             v-model="checked"
+            type="checkbox"
             :value="option"
           />
           <label>{{ option }}</label>
@@ -48,7 +53,7 @@ const emits = defineEmits(["selectChange"]);
 
 defineProps({
   options: {
-    type: Object as PropType<String[]>,
+    type: Object as PropType<string[]>,
     required: true,
   },
   placeHolder: String,
@@ -74,6 +79,7 @@ function closeOption() {
 
 <style scoped lang="scss">
 @import "@assets/style.scss";
+
 .input-wrapper {
   position: relative;
   width: 240px;

@@ -1,48 +1,58 @@
 <template>
-  <div class="collapse-container" :id="id" @click="deploy = !deploy" :class="{deploy:deploy}">
+  <div
+    :id="id"
+    class="collapse-container"
+    :class="{ deploy: deploy }"
+    @click="deploy = !deploy"
+  >
     <div class="header">
       <h1>{{ title }}</h1>
       <div class="copy-wrapper">
-        <img src="@/assets/icons/link.svg" alt="link" @click.stop="copyLink"/>
-        <p class="copy" v-if="displayCopy">{{ t('faq.copy') }}</p>
+        <img src="@/assets/icons/link.svg" alt="link" @click.stop="copyLink" />
+        <p v-if="displayCopy" class="copy">{{ t("faq.copy") }}</p>
       </div>
-      <img src="@/assets/icons/arrow.svg" alt="arrow"/>
+      <img src="@/assets/icons/arrow.svg" alt="arrow" />
     </div>
     <div class="content" @click.stop>
       <div class="custom-content">
-        <slot/>
+        <slot />
       </div>
-      <p class="see-more">{{ t('faq.more') }} <a href="http://discord.betterfleet.fr" target="_blank">Discord</a></p>
+      <p class="see-more">
+        {{ t("faq.more") }}
+        <a href="http://discord.betterfleet.fr" target="_blank">Discord</a>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-i18n";
-import {onMounted, ref} from "vue";
+import { useI18n } from "vue-i18n";
+import { onMounted, ref } from "vue";
 
-const {t} = useI18n()
-const deploy = ref<boolean>(false)
+const { t } = useI18n();
+const deploy = ref<boolean>(false);
 const displayCopy = ref<boolean>(false);
 const props = defineProps({
   title: String,
   id: String,
-  url: String
-})
+  url: String,
+});
 
 function copyLink() {
-  navigator.clipboard.writeText("https://" + window.location.host + "/" + props.url + "#" + props.id);
+  navigator.clipboard.writeText(
+    "https://" + window.location.host + "/" + props.url + "#" + props.id,
+  );
   displayCopy.value = true;
   setTimeout(() => {
     displayCopy.value = false;
-  }, 1000)
+  }, 1000);
 }
 
 onMounted(() => {
   if (window.location.href.includes("#" + props.id)) {
     deploy.value = true;
   }
-})
+});
 </script>
 
 <style scoped lang="scss">
@@ -57,7 +67,7 @@ onMounted(() => {
 
   &.deploy {
     .header {
-      background-color: #32D49980;
+      background-color: #32d49980;
 
       img[alt="arrow"] {
         transform: rotate(0);
@@ -84,7 +94,7 @@ onMounted(() => {
     }
 
     &:hover {
-      background-color: #32D49980;
+      background-color: #32d49980;
     }
 
     img[alt="arrow"] {
@@ -137,7 +147,6 @@ onMounted(() => {
       overflow: hidden;
       overflow-y: auto;
     }
-
 
     p.see-more {
       position: absolute;
