@@ -8,14 +8,15 @@ import en from "@/assets/locales/en.json";
 import fr from "@/assets/locales/fr.json";
 import es from "@/assets/locales/es.json";
 import de from "@/assets/locales/de.json";
+import source from "@/assets/locales/source.json";
 import { AlertProvider } from "@/vue/alert/Alert.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 
 export const i18n = createI18n({
   legacy: false, // you must set `false`, to use Composition API
   locale: "fr", // set locale
-  fallbackLocale: "en", // set fallback locale
-  messages: { fr, en, es, de },
+  fallbackLocale: "source", // set fallback locale
+  messages: { fr, en, es, de, source },
 });
 
 const app = createApp(App);
