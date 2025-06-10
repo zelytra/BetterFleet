@@ -340,6 +340,8 @@
         "started": "Juego lanzado"
       }
     },
+    "playersLabel": "Jugadores",
+    "playerLabel": "Jugador",
     "run": "Zarpar",
     "status": {
       "countdown": "Lanzará en",

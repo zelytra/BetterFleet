@@ -340,6 +340,8 @@
         "started": "Spiel gestartet"
       }
     },
+    "playersLabel": "Spieler",
+    "playerLabel": "Spieler",
     "run": "Segel setzen",
     "status": {
       "countdown": "Starten in",

@@ -340,6 +340,8 @@
         "started": "Game launched"
       }
     },
+    "playersLabel": "Players",
+    "playerLabel": "Player",
     "run": "Set sail",
     "status": {
       "countdown": "Launch in",
