@@ -14,7 +14,7 @@
   "dependencies": {
     "axios": "^1.9.0",
     "vue": "^3.5.16",
-    "vue-i18n": "^11.1.5",
+    "vue-i18n": "^11.1.10",
     "vue-kinesis": "^2.0.5"
   },
   "devDependencies": {
