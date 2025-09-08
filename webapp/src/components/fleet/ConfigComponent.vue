@@ -175,6 +175,9 @@ function loadOptionList() {
       id: locale,
       image: getImgUrl(locale),
     });
+    langOptions.value.data = langOptions.value.data.filter(
+      (x) => x.id !== "source",
+    );
   }
   deviceOptions.value.data = [];
   deviceOptions.value.data.push({
