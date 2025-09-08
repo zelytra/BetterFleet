@@ -101,7 +101,7 @@
       "general": "Allgemein"
     },
     "savebar": {
-      "cancel": "Änderungen verwerfen",
+      "cancel": "Änderungen abbrechen",
       "content": "Hop Hop Hop! Ich habe gesehen, dass du einige Änderungen vorgenommen hast! ",
       "save": "Speichern"
     },
@@ -120,7 +120,7 @@
   "contextMenu": {
     "master": {
       "demote": "Master entfernen",
-      "kick": "Vertreiben",
+      "kick": "Kicken",
       "promote": "Master zuweisen",
       "title": "Benutzer"
     }
@@ -128,9 +128,9 @@
   "credits": {
     "and": "und",
     "description": "BetterFleet wurde entwickelt, um die Bildung von Allianzen in Sea Of Thieves zu erleichtern",
-    "designed": "Entworfen von",
+    "designed": "Bezeichnen durch",
     "details": "BetterFleet ist eine nicht offizielle Drittanbieteranwendung, die nichts mit dem Entwicklungsteam von Sea Of Thieves zu tun hat. Die Verwendung ist rein äußerlich und hat keinen Einfluss auf das Spielerlebnis!",
-    "developed": "Entwickelt von",
+    "developed": "Entwickeln von",
     "socials": "Finden Sie uns hier:",
     "sot": {
       "thanks": "Wir möchten uns bedanken",
@@ -157,28 +157,29 @@
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
-    "fr": "Français"
+    "fr": "Français",
+    "it": "Italienisch"
   },
   "login": {
-    "continue": "Weitermachen",
+    "continue": "Weiter",
     "description": "Willkommen bei BetterFleet! Wir freuen uns, Sie bei uns zu haben. Damit Sie die Anwendung vollständig nutzen können, ist es notwendig, sich bei Ihrem Konto anzumelden oder eins zu erstellen!",
     "disconnect": "Das ist nicht Ihr Konto? ",
     "loginButton": "Einloggen",
     "succeed": "Erfolgreiche Verbindung!",
-    "userWelcome": "Willkommen",
+    "userWelcome": "Begrüßung",
     "welcome": "Willkommen zu"
   },
   "modal": {
     "confirm": {
       "launch": {
-        "cancel": "Stornieren",
+        "cancel": "Abbrechen",
         "confirm": "Heben Sie den Anker",
         "content": "Nicht alle Spieler sind bereit! Sind Sie sicher, dass Sie den Anker lichten möchten?",
-        "title": "AUFMERKSAMKEIT !"
+        "title": "WARNUNG!"
       },
       "leave": {
-        "cancel": "Stornieren",
-        "confirm": "Sitzung beenden",
+        "cancel": "Abbrechen",
+        "confirm": "Sitzung verlassen",
         "content": "Sind Sie sicher, dass Sie die Sitzung verlassen möchten?",
         "title": "VERLASSEN SIE DIE SITZUNG"
       }
@@ -267,7 +268,7 @@
       "40": "Meuterei-Crew",
       "41": "Meeresschildkröte",
       "42": "Geheimer Plan",
-      "43": "Nasses Pulver",
+      "43": "Geweichtes Gunpowder",
       "44": "Spanische Galeone",
       "45": "Ruhige Bucht",
       "46": "Kaputtes Ruder",
@@ -314,7 +315,7 @@
       "83": "Kaputte Uhr",
       "84": "Sonnenuntergang",
       "85": "Mondlose Nacht",
-      "86": "Flut",
+      "86": "Die hohe Ebene",
       "87": "Rückenwind",
       "88": "Gewittergefahr",
       "89": "Schiffbrüchiges Boot",
@@ -340,8 +341,6 @@
         "started": "Spiel gestartet"
       }
     },
-    "playersLabel": "Spieler",
-    "playerLabel": "Spieler",
     "run": "Segel setzen",
     "status": {
       "countdown": "Starten in",
