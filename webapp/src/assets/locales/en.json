@@ -157,7 +157,8 @@
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
-    "fr": "Français"
+    "fr": "Français",
+    "it": "Italiano"
   },
   "login": {
     "continue": "Continue",
@@ -340,8 +341,6 @@
         "started": "Game launched"
       }
     },
-    "playersLabel": "Players",
-    "playerLabel": "Player",
     "run": "Set sail",
     "status": {
       "countdown": "Launch in",
