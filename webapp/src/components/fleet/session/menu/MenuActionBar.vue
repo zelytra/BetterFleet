@@ -1,20 +1,22 @@
 <template>
-  <div class="refresh">
-    <h3>{{ t("session.refresh") }}</h3>
-  </div>
-  <div class="player-count">
-    <h3>{{ 42 }}</h3>
-    <p v-if="true">{{ t("session.player.online") }}</p>
-    <p v-else>{{ t("session.player.online") }}</p>
-  </div>
-  <div class="session create" @click="emits('createSession')">
-    <p>{{ t("session.choice.createSession") }}</p>
-    <p class="description">{{ t("session.choice.createComment") }}</p>
-  </div>
-  <h3>{{ t("session.or") }}</h3>
-  <div class="session join" @click="isModalOpen = true">
-    <p>{{ t("session.choice.joinSession") }}</p>
-    <p class="description">{{ t("session.choice.joinComment") }}</p>
+  <div class="menu-wrapper">
+    <div class="refresh">
+      <h3>{{ t("session.refresh") }}</h3>
+    </div>
+    <div class="player-count">
+      <h3>{{ 42 }}</h3>
+      <p v-if="true">{{ t("session.player.online") }}</p>
+      <p v-else>{{ t("session.player.online") }}</p>
+    </div>
+    <div class="session create" @click="emits('createSession')">
+      <p>{{ t("session.choice.createSession") }}</p>
+      <p class="description">{{ t("session.choice.createComment") }}</p>
+    </div>
+    <h3>{{ t("session.or") }}</h3>
+    <div class="session join" @click="isModalOpen = true">
+      <p>{{ t("session.choice.joinSession") }}</p>
+      <p class="description">{{ t("session.choice.joinComment") }}</p>
+    </div>
   </div>
   <div class="discord">
     <img src="@/assets/icons/contributors/translator.svg" alt="book" />
@@ -39,6 +41,13 @@ const emits = defineEmits(["createSession"]);
 </script>
 
 <style scoped lang="scss">
+.menu-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 17px;
+}
 .discord {
   background-image: url("@assets/backgrounds/brown-display.svg");
   width: 256px;

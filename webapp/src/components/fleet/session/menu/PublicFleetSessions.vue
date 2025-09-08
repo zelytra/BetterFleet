@@ -61,7 +61,7 @@ function createSession() {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: start;
+    justify-content: space-between;
     gap: 17px;
     width: 325px;
     box-sizing: border-box;
