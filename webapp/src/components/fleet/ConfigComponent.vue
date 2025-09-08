@@ -133,6 +133,7 @@ import fr from "@assets/icons/locales/fr.svg";
 import de from "@assets/icons/locales/de.svg";
 import es from "@assets/icons/locales/es.svg";
 import en from "@assets/icons/locales/en.svg";
+import it from "@assets/icons/locales/it.svg";
 import xbox from "@assets/icons/xbox.svg";
 import microsoft from "@assets/icons/microsoft.svg";
 import playstation from "@assets/icons/playstation.svg";
@@ -279,6 +280,8 @@ function getImgUrl(iconName: string): string {
       return de;
     case "es":
       return es;
+    case "it":
+      return it;
     default:
       return en;
   }
