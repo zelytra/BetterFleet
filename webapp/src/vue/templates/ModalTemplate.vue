@@ -42,12 +42,12 @@ const isModalOpen = defineModel<boolean>("isModalOpen");
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 5;
+  z-index: 999;
   backdrop-filter: blur(1.75px);
 }
 
 .modal {
-  z-index: 6;
+  z-index: 1000;
   position: absolute;
   top: 50%;
   left: 50%;
