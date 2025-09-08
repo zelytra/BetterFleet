@@ -19,7 +19,7 @@
     "keycloak-js": "^26.2.0",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
     "vue": "^3.5.16",
-    "vue-i18n": "^11.1.5"
+    "vue-i18n": "^11.1.10"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.2",
