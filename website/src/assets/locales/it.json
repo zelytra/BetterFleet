@@ -1,119 +1,119 @@
 {
   "button": {
-    "download": "Tel caricabatterie",
-    "downloadApp": "Applicazione del caricabatterie",
-    "downloadHere": "Télécharger ici"
+    "download": "Download",
+    "downloadApp": "Scarica l'applicazione",
+    "downloadHere": "Scarica qui"
   },
   "comparison": {
-    "description": "BetterFleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de Fleet Creator. Lorsqu'on observe notre graphique, les barres vertes, correspondant à BetterFleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, BetterFleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. BetterFleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
-    "subtitle": "Une connexion turbo-chargée pour une expérience de jeu triple vitesse !",
-    "title": "Comparaison avec Fleet Creator"
+    "description": "BetterFleet si impone come un vero e proprio gigante delle prestazioni, riducendo in modo significativo il tempo di ricerca dei server – con una velocità da 3 a 4 volte superiore rispetto a Fleet Creator. Osservando il nostro grafico, le barre verdi, che rappresentano BetterFleet, raggiungono valori più bassi con una costanza che evidenzia un’ottimizzazione tecnica avanzata. In pratica, ciò significa che BetterFleet individua il server di gioco con un’agilità straordinaria, abbattendo drasticamente i tempi di connessione. I giocatori possono così vivere una transizione quasi istantanea verso i loro mondi virtuali preferiti, grazie a una piattaforma progettata per efficienza e rapidità. BetterFleet è la garanzia di prestazioni senza compromessi per un’esperienza utente senza paragoni.",
+    "subtitle": "Una connessione turbo per un’esperienza di gioco a tripla velocità!",
+    "title": "Confronto con Fleet Creator"
   },
   "credits": {
     "and": "&",
-    "designed": "Designe<unk> par",
-    "developed": "Développé par",
+    "designed": "Progettato da",
+    "developed": "Developed by",
     "license": "Licenza"
   },
   "descriptions": {
-    "globe": "BetterFleet me<unk> le design et efficacite<unk> . Reprenant une direction artistique proche de Sea of Thieves, vous aurez l'impression de naviguer dans une extension du jeu au summum de la reжactivite<unk> .",
-    "hourglass": "Notre fonctionnalité d'auto-clic synchronisée met en œuvre un décompte parfaitement coordonné entre tous les joueurs de la session, garantissant une recherche de serveur d'une efficacité redoutable qui réduit le temps d'attente au minimum.",
-    "key": "Notre application assure la sécurité des utilisateurs grâce à son code open source, permettant une transparence totale, et à une équipe de développeurs actifs qui se consacre à des mises à jour régulières et à la maintenance de la sécurité."
+    "globe": "BetterFleet unisce design ed efficienza. Ispirato alla direzione artistica di Sea of Thieves, vi darà la sensazione di navigare in un’estensione del gioco, al massimo della reattività.",
+    "hourglass": "La nostra funzione di auto-clic sincronizzato avvia un conto alla rovescia perfettamente coordinato tra tutti i giocatori della sessione, garantendo un’efficienza straordinaria nella ricerca del server e riducendo al minimo i tempi di attesa.",
+    "key": "La nostra applicazione garantisce la sicurezza degli utenti grazie al suo codice open source, che assicura massima trasparenza, e a un team di sviluppatori attivi dedicati ad aggiornamenti regolari e alla manutenzione della sicurezza."
   },
   "discover": {
     "discord": {
-      "button": "Rejoindre le Discord",
-      "content": "Notre application s'étend bien au-delà d'une simple interface, car elle s'ancre au sein d'une communauté vibrante et engagée sur notre serveur Discord dédié. Cet espace dynamique est le carrefour où les joueurs peuvent non seulement partager leurs expériences, mais aussi contribuer activement au développement en soumettant des idées d'amélioration. Le dialogue ouvert et constructif est encouragé, forgeant une synergie entre les utilisateurs et les créateurs. De plus, notre serveur Discord offre un support robuste pour ceux qui souhaitent intégrer notre application de leur côté. Que ce soit pour des conseils techniques, des orientations stratégiques ou des astuces de personnalisation, nos membres et notre équipe de support sont toujours prêts à aider, assurant une intégration transparente et réussie.",
-      "nav": "Notre Communauté",
-      "title": "Notre plateforme d'échange préférée !"
+      "button": "Unisciti al Discord",
+      "content": "La nostra applicazione va ben oltre una semplice interfaccia, poiché si radica all’interno di una community vivace e impegnata sul nostro server Discord dedicato. Questo spazio dinamico è il punto d’incontro dove i giocatori non solo possono condividere le proprie esperienze, ma anche contribuire attivamente allo sviluppo proponendo idee di miglioramento. È incoraggiato un dialogo aperto e costruttivo, che crea sinergia tra utenti e creatori. Inoltre, il nostro server Discord offre un supporto solido per chi desidera integrare l’applicazione dalla propria parte. Che si tratti di consigli tecnici, indicazioni strategiche o suggerimenti di personalizzazione, i nostri membri e il team di supporto sono sempre pronti ad aiutare, garantendo un’integrazione trasparente e di successo.",
+      "nav": "La Nostra Community",
+      "title": "La nostra piattaforma di scambio preferita!"
     },
     "github": {
       "button": "GitHub",
-      "content": "Au cœur de notre projet se trouve un engagement profond pour l'open source, reflété par notre code accessible à tous et notre équipe de développeurs actifs et réceptifs. Cette philosophie garantit une évolution constante de notre application, propulsée par une collaboration transparente et des échanges fructueux avec notre communauté. Les retours des joueurs sont une pierre angulaire de notre processus de développement, car ils nous permettent de peaufiner et d'améliorer notre offre, en veillant à ce qu'elle réponde précisément aux besoins et aux désirs de nos utilisateurs. L'ouverture aux suggestions et la capacité d'adaptation rapide de nos développeurs assurent que notre application reste à la pointe, tout en cultivant une relation de confiance et de respect mutuel avec notre communauté engagée.",
+      "content": "Al centro del nostro progetto c’è un profondo impegno per l’open source, riflesso nel nostro codice accessibile a tutti e nel nostro team di sviluppatori attivi e ricettivi. Questa filosofia garantisce un’evoluzione costante della nostra applicazione, guidata da una collaborazione trasparente e da scambi fruttuosi con la nostra comunità. Il feedback dei giocatori è una pietra angolare del nostro processo di sviluppo, poiché ci permette di perfezionare e migliorare la nostra offerta, assicurandoci che risponda con precisione ai bisogni e ai desideri degli utenti. L’apertura ai suggerimenti e la capacità dei nostri sviluppatori di adattarsi rapidamente garantiscono che la nostra applicazione resti all’avanguardia, coltivando al contempo un rapporto di fiducia e rispetto reciproco con la nostra comunità impegnata.",
       "nav": "Innovazione Collaborativa",
-      "title": "Notre engagement open source pour une application en constante évolution"
+      "title": "Il nostro impegno open source per un’applicazione in continua evoluzione"
     },
-    "title": "Nos valeurs et objectifs",
+    "title": "I nostri valori e obiettivi",
     "translation": {
       "button": "Crowdin",
-      "content": "Notre application embrasse la diversite<unk> et l'inclusivite<unk> a<unk> travers son de<unk> veloppement axe<unk> sur la norme i18n, ouvrant la porte aжdes traductions dans n'importe quelle langue par la communaute<unk> elle-me<unk> me. Cette approche garantit que notre application peut e<unk> tre facilement adapteжe et utiliseжe par des utilisateurs du monde entier, riflettendo notre fidanzamento a briser les barrie<unk> res linguistiques. En outre, nous avons mis en place un projet Crowdin pubblico, fournissant une plateforme intuitivo pour tous ceux deжsireux de contribuer aux efforts de traduction. L'iniziativa Cette favorisce una collaborazione internazionale, consente l'applicazione di s'enrichir des nuances culturelles et linguistiques de chaque contributeur. Ensemble, nous construisons une expe<unk> rience de jeu ve<unk> ritablement mondiale, accessible et engageante pour une communaute<unk> internationale en constante espansione.",
-      "nav": "Tradizionale Partecipante",
-      "title": "Unir les joueurs du monde entier grâce à i18n et Crowdin"
+      "content": "La nostra applicazione abbraccia la diversità e l’inclusività attraverso uno sviluppo basato sulla norma i18n, aprendo la strada a traduzioni in qualsiasi lingua direttamente da parte della comunità. Questo approccio garantisce che la nostra applicazione possa essere facilmente adattata e utilizzata dagli utenti di tutto il mondo, riflettendo il nostro impegno a superare le barriere linguistiche. Inoltre, abbiamo creato un progetto Crowdin pubblico, offrendo una piattaforma intuitiva per tutti coloro che desiderano contribuire agli sforzi di traduzione. Questa iniziativa favorisce la collaborazione internazionale, permettendo alla nostra applicazione di arricchirsi delle sfumature culturali e linguistiche di ciascun contributore. Insieme, costruiamo un’esperienza di gioco veramente globale, accessibile e coinvolgente per una comunità internazionale in continua espansione.",
+      "nav": "Traduzione Partecipativa",
+      "title": "Unire i giocatori di tutto il mondo grazie a i18n e Crowdin"
     }
   },
   "download": {
-    "now": "Manutenzione del caricabatterie de<unk> s"
+    "now": "Scarica ora"
   },
   "faq": {
-    "copy": "Lien copie<unk>",
-    "description": "Vous avez une question concernant BetterFleet ? Nous répondons ici aux questions les plus fréquentes",
+    "copy": "Link copiato",
+    "description": "Hai una domanda su BetterFleet? Qui rispondiamo alle domande più frequenti",
     "faq": "F.A.Q.",
-    "more": "Vous rencontrez des difficultés ou vous ne trouvez pas de réponse à votre problème ? Rendez-vous sur notre",
+    "more": "Hai difficoltà o non riesci a trovare una risposta al tuo problema? Visita il nostro",
     "question": {
       "alliance": {
-        "content1": "BetterFleet aide les joueurs à optimiser leurs créations d'alliances, mais ne garantit pas un accès instantané à un même serveur.",
-        "content2": "Le processus de recherche implique de nombreux facteurs que BetterFleet ne contrôle pas. Parmi eux : l'heure, le nombre de joueurs, la localisation, la connexion Internet, ainsi que le bon vouloir des serveurs de matchmaking de Sea of Thieves.",
-        "content3": "Pour le temps requis, nous observons une tendance variant entre 5 minutes pour les plus chanceux et 3 heures pour les malheureux. Ces estimations restent malgré tout approximatives et ne sont pas garanties.",
-        "content4": "Si toutefois vous avez les connaissances pour améliorer le système de recherche de BetterFleet, nous sommes enclins à étudier les propositions que vous pourrez faire sur Discord ou GitHub.",
-        "title": "BetterFleet garantit-il de rejoindre instantanément le même serveur ?"
+        "content1": "BetterFleet aiuta i giocatori a ottimizzare la creazione delle alleanze, ma non garantisce l’accesso immediato a un singolo server.",
+        "content2": "Il processo di ricerca comporta numerosi fattori su cui BetterFleet non ha controllo. Tra questi: l’orario, il numero di giocatori, la posizione, la connessione Internet e la disponibilità dei server di matchmaking di Sea of Thieves.",
+        "content3": "Per quanto riguarda il tempo necessario, osserviamo una tendenza che varia dai 5 minuti per i più fortunati fino a 3 ore per i meno fortunati. Tuttavia, queste stime rimangono approssimative e non sono garantite.",
+        "content4": "Tuttavia, se possiedi le conoscenze per migliorare il sistema di ricerca di BetterFleet, siamo disponibili a valutare le proposte che vorrai condividere su Discord o GitHub.",
+        "title": "BetterFleet garantisce di entrare istantaneamente nello stesso server?"
       },
       "bug": {
         "content1": "Si vous rencontrez des problèmes ou des bugs, nous vous encourageons à nous le signaler afin que nous puissions travailler à améliorer votre expérience. Voici comment nous contacter :",
-        "content2": "Discord : Rejoignez notre serveur Discord et partagez votre problème dans le canal dédié au support. Notre équipe est toujours prête à vous aider et à répondre à vos questions en temps réel.",
-        "content3": "GitHub : Si vous êtes familier avec GitHub, vous pouvez également ouvrir une \"issue\" sur notre dépôt GitHub. Cela nous permet de suivre les problèmes de manière structurée et d'assurer un suivi transparent et efficace.",
-        "content4": "Nous apprécions vos retours et nous engageons à résoudre les problèmes signalés dans les meilleurs délais.",
-        "title": "Commenta rapporter un <unk> e<unk> me ou un bug ?"
+        "content2": "Discord: Unisciti al nostro server Discord e condividi il tuo problema nel canale dedicato al supporto. Il nostro team è sempre pronto ad aiutarti e a rispondere alle tue domande in tempo reale.",
+        "content3": "GitHub: Se conosci GitHub, puoi anche aprire un “issue” sul nostro repository GitHub. Questo ci permette di monitorare i problemi in modo strutturato e garantire un follow-up trasparente ed efficace.",
+        "content4": "Apprezziamo il tuo feedback e ci impegniamo a risolvere i problemi segnalati nel più breve tempo possibile.",
+        "title": "Come segnalare un problema o un bug?"
       },
       "console": {
-        "content1": "Absolument ! Nous avons développé des fonctionnalités spécifiques pour améliorer l'expérience des joueurs Xbox et PlayStation. Voici ce que nous avons mis en place :",
-        "content2": "Décompte sonore : Nous avons intégré une composante sonore au décompte. Cette fonction permet aux utilisateurs de savoir exactement quand lever l'ancre, sans que le chef d'alliance n'ait à donner d'instructions vocales. Cela rend les sessions plus fluides tout en palliant le délai provoqué par les plateformes d'échange en ligne.",
-        "content3": "Indication visuelle du type de plateforme : Nous avons ajouté une icône qui permet aux utilisateurs de savoir si leurs coéquipiers utilisent une console. Cette fonctionnalité favorise une meilleure coordination et compréhension entre les joueurs de différentes plateformes.",
-        "content4": "Ces améliorations sont conçues pour rendre l'expérience de jeu plus intuitive et accessible pour les joueurs console, assurant ainsi une intégration harmonieuse au sein de communautés de jeu mixtes.",
-        "title": "Y a-t-il un intérêt pour les joueurs console ?"
+        "content1": "Assolutamente! Abbiamo sviluppato funzionalità specifiche per migliorare l’esperienza dei giocatori Xbox e PlayStation. Ecco cosa abbiamo implementato:",
+        "content2": "Conto alla rovescia sonoro: abbiamo integrato una componente sonora nel conto alla rovescia. Questa funzione permette agli utenti di sapere esattamente quando salpare, senza che il capo dell’alleanza debba dare istruzioni vocali. Ciò rende le sessioni più fluide, compensando al contempo i ritardi causati dalle piattaforme di scambio online.",
+        "content3": "Indicazione visiva del tipo di piattaforma: abbiamo aggiunto un’icona che permette agli utenti di sapere se i loro compagni di squadra utilizzano una console. Questa funzionalità favorisce una migliore coordinazione e comprensione tra i giocatori su piattaforme diverse.",
+        "content4": "Questi miglioramenti sono pensati per rendere l’esperienza di gioco più intuitiva e accessibile ai giocatori console, garantendo un’integrazione armoniosa all’interno delle comunità di gioco miste.",
+        "title": "È interessante per i giocatori su console?"
       },
       "data": {
-        "content1": "La confidentialité et la sécurité des données de nos utilisateurs sont, pour nous, de la plus haute importance. Voici notre politique concernant la gestion des données utilisateur :",
-        "content2": "Utilisation des données : Le nom d'utilisateur et l'adresse email sont les seuls éléments requis pour les besoins de l'application. Aucune autre donnée personnelle n'est collectée.",
-        "content3": "Sécurité et chiffrement : Les données collectées sont chiffrées et stockées de manière sécurisée pour prévenir tout accès non autorisé.",
-        "content4": "Cookies et revente : Nous n'utilisons aucun cookie, et nous ne vendons ni ne partageons les informations des utilisateurs avec des tiers.",
-        "content5": "Données anonymes et statistiques : Pour l'amélioration continue de notre application, nous utilisons des données anonymisées à des fins statistiques. Ces données ne permettent en aucun cas d'identifier personnellement les utilisateurs.",
-        "content6": "Nous nous engageons à maintenir une certaine transparence et à respecter la vie privée de nos utilisateurs en toute circonstance.",
-        "title": "Que fait-on des données utilisateur ?"
+        "content1": "La riservatezza e la sicurezza dei dati dei nostri utenti sono per noi di massima importanza. Ecco la nostra politica riguardo alla gestione dei dati degli utenti:",
+        "content2": "Uso dei dati: il username e l’indirizzo email sono gli unici elementi richiesti per il corretto funzionamento dell’applicazione. Nessun altro dato personale viene raccolto.",
+        "content3": "Sicurezza e crittografia: i dati raccolti sono criptati e conservati in modo sicuro per prevenire qualsiasi accesso non autorizzato.",
+        "content4": "Cookie e rivendita: non utilizziamo cookie e non vendiamo né condividiamo le informazioni degli utenti con terze parti.",
+        "content5": "Dati anonimi e statistiche: per il miglioramento continuo della nostra applicazione, utilizziamo dati anonimizzati a fini statistici. In nessun caso questi dati permettono di identificare personalmente gli utenti.",
+        "content6": "Ci impegniamo a mantenere un certo livello di trasparenza e a rispettare la privacy dei nostri utenti in ogni circostanza.",
+        "title": "Cosa facciamo con i dati degli utenti?"
       },
       "download": {
-        "content1": "Rendez-vous sur notre site officiel :",
-        "content2": "Cliquez sur le bouton \"Télécharger\".",
-        "content3": "Suivez les instructions à l'écran pour compléter l'installation.",
-        "content4": "Et voilà ! Après ces étapes, BetterFleet sera installé sur votre appareil.",
-        "title": "Commenta installatore BetterFleet ?"
+        "content1": "Visita il nostro sito ufficiale:",
+        "content2": "Clicca sul pulsante “Scarica”.",
+        "content3": "Segui le istruzioni sullo schermo per completare l’installazione.",
+        "content4": "Ed ecco fatto! Dopo questi passaggi, BetterFleet sarà installato sul tuo dispositivo.",
+        "title": "Come installare BetterFleet?"
       },
       "eac": {
-        "content1": "BetterFleet se rapproche plus d'un journal de bord qu'autre chose. Sa principale fonction automatique simule un simple clic de souris, tout comme le ferait une commande vocale, et ne constitue pas une macro à proprement parler. Les systèmes comme Easy Anti-Cheat (EAC) se concentrent surtout sur les manipulations de mémoire vive (la RAM) et n'ont donc pas de raison de condamner notre méthode.",
-        "content2": "De plus, le clic n'est jamais exécuté en jeu et n'intervient que dans les menus, conformément aux conditions d'utilisation de Sea of Thieves et de Xbox. Ces conditions sont vastes afin de couvrir juridiquement un maximum de situations, mais aucun point ne mentionne notre utilisation spécifique. L'option est toutefois désactivable au bon vouloir de l'utilisateur.",
-        "content3": "Il reste essentiel de comprendre que l'utilisation d'outils tels que BetterFleet et Fleet Creator n'est pas entièrement dénuée de risques, notamment concernant la détection d'IP qui reste un point sensible. Notre application est aussi sûre qu'une autre, mais n'étant ni reconnus de Rare ni de Microsoft, nous dépendons pleinement de leur seule volonté d'agir.",
-        "title": "Y a-t-il des risques avec Easy Anti-Cheat ? (EAC)"
+        "content1": "BetterFleet assomiglia più a un registro di bordo che a qualsiasi altra cosa. La sua principale funzione automatica simula un semplice clic del mouse, proprio come farebbe un comando vocale, e non costituisce tecnicamente una macro. Sistemi come Easy Anti-Cheat (EAC) si concentrano soprattutto sulla manipolazione della RAM e quindi non hanno motivo di sanzionare il nostro metodo.",
+        "content2": "Inoltre, il clic non viene mai eseguito durante il gioco e interviene solo nei menu, in conformità con i termini di servizio (Tos) di Sea of Thieves e Xbox. Questi termini sono abbastanza ampi da coprire giuridicamente il maggior numero possibile di situazioni, ma nessun punto menziona il nostro uso specifico. L’opzione, comunque, può essere disattivata a discrezione dell’utente.",
+        "content3": "Resta comunque fondamentale comprendere che l’utilizzo di strumenti come BetterFleet e Fleet Creator non è del tutto privo di rischi, in particolare per quanto riguarda il rilevamento degli IP, che rimane un punto delicato. La nostra applicazione è sicura quanto un’altra, ma non essendo riconosciuta né da Rare né da Microsoft, dipendiamo interamente dalla loro decisione di intervenire.",
+        "title": "Ci sono rischi con Easy Anti-Cheat (EAC)?"
       },
       "edge": {
-        "content1": "Si vous rencontrez des problèmes pour lancer l'application ou si celle-ci plante après une installation correcte, veuillez suivre ces étapes de dépannage :",
-        "content2": "Assurez-vous que votre système d'exploitation est Windows 10 ou Windows 11.",
-        "content3": "Vérifiez que Microsoft Edge et Microsoft Edge WebView2 sont correctement installés sur votre machine. Ces composants sont essentiels pour le bon fonctionnement de l'application.",
-        "content4": "Il se peut qu'un conflit existe avec votre antivirus. S'il le permet, excluez BetterFleet de la liste des menaces présentes. Autrement, désactivez votre antivirus et relancez l'application.",
-        "content5": "Si le problème persiste malgré ces vérifications, tentez de réinstaller l'application afin de corriger toute corruption potentielle.",
-        "content6": "Si après ces étapes l'application ne fonctionne toujours pas, n'hésitez pas à nous contacter sur notre serveur Discord pour une assistance plus personnalisée.",
-        "title": "Pourquoi mon application plante et/ou ne se lance pas ?"
+        "content1": "Se riscontri problemi nell’avviare l’applicazione o se questa si blocca dopo una corretta installazione, segui questi passaggi di risoluzione dei problemi:",
+        "content2": "Assicurati che il tuo sistema operativo sia Windows 10 o Windows 11.",
+        "content3": "Verifica che Microsoft Edge e Microsoft Edge WebView2 siano correttamente installati sul tuo dispositivo. Questi componenti sono essenziali per il corretto funzionamento dell’applicazione.",
+        "content4": "Potrebbe verificarsi un conflitto con il tuo antivirus. Se possibile, escludi BetterFleet dall’elenco delle minacce rilevate. In caso contrario, disattiva l’antivirus e riavvia l’applicazione.",
+        "content5": "Se il problema persiste nonostante questi controlli, prova a reinstallare l’applicazione per correggere eventuali file corrotti.",
+        "content6": "Se dopo questi passaggi l’applicazione continua a non funzionare, non esitare a contattarci sul nostro server Discord per un’assistenza più personalizzata.",
+        "title": "Perché la mia applicazione si blocca e/o non si avvia?"
       },
       "password": {
-        "content1": "BetterFleet ne permet malheureusement pas de récupérer votre mot de passe. Si cela arrive, vous pouvez nous contacter sur notre Discord et nous pourrons le réinitialiser pour vous. Cependant, nous vous recommandons plutôt de créer un nouveau compte, sauf si tenez absolument à récupérer l'ancien.",
-        "content2": "L'applicazione dispone di una fonctionnalite<unk> \"Mot de passe oublie<unk> \", mais nous ne disposons pas encore de l'infrastructure neжcessaire pour l'activer. Vous pouvez contribuer au projet via notre page GitHub pour nous aider a mettre en place.",
-        "title": "Que faire si j'ai oublié mon mot de passe ?"
+        "content1": "Sfortunatamente, BetterFleet non permette di recuperare la password persa. Se succede, puoi contattarci sul nostro Discord e provvederemo a reimpostarla per te. Tuttavia, ti consigliamo di creare un nuovo account, a meno che tu non voglia assolutamente recuperare quello vecchio.",
+        "content2": "L’applicazione dispone di una funzione “Password dimenticata”, ma non abbiamo ancora l’infrastruttura necessaria per attivarla. Puoi contribuire al progetto tramite la nostra pagina GitHub per aiutarci a implementarla.",
+        "title": "Cosa fare se ho dimenticato la password?"
       },
       "security": {
-        "content1": "Oui, notre application est conçue avec la sécurité des utilisateurs comme priorité absolue. Voici les mesures que nous avons mises en place pour garantir une utilisation sûre :",
-        "content2": "Authentification renforcée : Nous avons intégré une surcouche d'authentification pour renforcer la sécurité des comptes utilisateurs.",
-        "content3": "Open source : L'application est entièrement open source, offrant une transparence totale sur son utilisation et son fonctionnement. Cela permet à la communauté de vérifier et d'auditer notre code, renforçant ainsi la confiance dans notre produit.",
-        "content4": "Manutenzione proattiva: nn n s veloppeurs s'engagent a<unk> maintenir l application en condition de se<unk> curite<unk> optimale. La Cela comprenda la mise a<unk> jour re<unk> gulie<unk> re des de<unk> pendances et le suivi continu des potentielles failles de se<unk> curite<unk> pour pre<unk> venir tout risque.",
-        "content5": "Approche indépendante : BetterFleet n'étant pas sous licence Microsoft, il est soumis à Windows Defender lors de son installation. Notre application n'en est pas moins sécurisée et nous visons à nous adapter à ces contraintes dont nous n'avons pas le contrôle.",
-        "content6": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs.",
+        "content1": "Sì, la nostra applicazione è stata progettata con la sicurezza degli utenti come priorità assoluta. Ecco le misure che abbiamo implementato per garantire un utilizzo sicuro:",
+        "content2": "Autenticazione rafforzata: abbiamo integrato un ulteriore livello di autenticazione per aumentare la sicurezza degli account utenti.",
+        "content3": "Open source: l’applicazione è completamente open source, offrendo massima trasparenza sul suo utilizzo e funzionamento. Ciò permette alla comunità di verificare e controllare il nostro codice, rafforzando così la fiducia nel nostro prodotto.",
+        "content4": "Manutenzione proattiva: i nostri sviluppatori si impegnano a mantenere l’applicazione in condizioni di sicurezza ottimali. Ciò comprende aggiornamenti regolari delle dipendenze e monitoraggio continuo di eventuali vulnerabilità per prevenire qualsiasi rischio.",
+        "content5": "Approccio indipendente: poiché BetterFleet non è concesso in licenza da Microsoft, viene sottoposto a Windows Defender durante l’installazione. La nostra applicazione non è meno sicura e miriamo ad adattarci a queste restrizioni su cui non abbiamo pieno controllo.",
+        "content6": "Questi sforzi congiunti contribuiscono a creare una piattaforma affidabile e sicura per tutti i nostri utenti.",
         "title": "L'application est-elle seжcuriseжe ?"
       },
       "update": {
