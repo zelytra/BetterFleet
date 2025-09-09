@@ -114,88 +114,88 @@
         "content4": "Manutenzione proattiva: i nostri sviluppatori si impegnano a mantenere l’applicazione in condizioni di sicurezza ottimali. Ciò comprende aggiornamenti regolari delle dipendenze e monitoraggio continuo di eventuali vulnerabilità per prevenire qualsiasi rischio.",
         "content5": "Approccio indipendente: poiché BetterFleet non è concesso in licenza da Microsoft, viene sottoposto a Windows Defender durante l’installazione. La nostra applicazione non è meno sicura e miriamo ad adattarci a queste restrizioni su cui non abbiamo pieno controllo.",
         "content6": "Questi sforzi congiunti contribuiscono a creare una piattaforma affidabile e sicura per tutti i nostri utenti.",
-        "title": "L'application est-elle seжcuriseжe ?"
+        "title": "L’applicazione è sicura?"
       },
       "update": {
-        "content1": "Lorsqu'une mise à jour est disponible, une fenêtre pop-up apparaît au lancement de BetterFleet. Vous n'avez qu'à cliquer sur \"Oui\" pour lancer la mise à jour. L'application installera automatiquement la dernière version et redémarrera une fois la mise à jour terminée.",
-        "content2": "Dans le cas où une mise à jour est disponible alors que BetterFleet est déjà lancé, vous pouvez simplement fermer l'application. La mise à jour vous sera proposée au prochain lancement.",
-        "title": "Comment mettre à jour BetterFleet ?"
+        "content1": "Quando è disponibile un aggiornamento, all’avvio di BetterFleet appare una finestra pop-up. Basta cliccare su “Sì” per avviare l’aggiornamento. L’applicazione installerà automaticamente l’ultima versione e si riavvierà al termine dell’aggiornamento.",
+        "content2": "Nel caso in cui sia disponibile un aggiornamento mentre BetterFleet è già in esecuzione, puoi semplicemente chiudere l’applicazione. L’aggiornamento ti verrà proposto al successivo avvio.",
+        "title": "Come aggiornare BetterFleet?"
       }
     },
-    "title": "Domande Les Plus Fre<unk> quentes"
+    "title": "Domande Frequenti"
   },
   "footer": {
-    "content": "Rejoignez notre aventure mondiale - votre passion, notre technologie. Ensemble, transformons le jeu. Propulsé par la communauté et l'innovation ouverte.",
-    "discord": "Vous rencontrez un souci ? Contactez immédiatement notre équipe sur notre",
-    "github": "Vous êtes développeur et vous adorez naviguer sur Sea of Thieves ? Alors venez contribuer au projet !",
+    "content": "Unisciti alla nostra avventura globale – la tua passione, la nostra tecnologia. Insieme, trasformiamo il gioco. Alimentato dalla comunità e dall’innovazione aperta.",
+    "discord": "Hai riscontrato un problema? Contatta subito il nostro team sul nostro",
+    "github": "Sei uno sviluppatore e ami navigare su Sea of Thieves? Allora vieni a contribuire al progetto!",
     "warning": {
-      "content": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu. L'utilisateur engage seul sa responsabilité quant à son utilisation !",
-      "title": "Avertissement"
+      "content": "BetterFleet è un’applicazione non ufficiale di terze parti, senza alcun legame con il team di sviluppo di Sea of Thieves. Il suo utilizzo è completamente esterno e non influisce sull’esperienza di gioco. L’utente si assume la piena responsabilità del suo utilizzo!",
+      "title": "Avvertenza"
     }
   },
   "header": {
-    "details": "BetterFleet est officiellement sortie ! Testez l'application de<unk> s maintenant !"
+    "details": "BetterFleet è ufficialmente disponibile! Prova subito l’applicazione!"
   },
   "name": "BetterFleet",
   "nav": {
-    "documentation": "Découvrir",
-    "home": "Accueil",
+    "documentation": "Scopri",
+    "home": "Home",
     "support": "Supporto"
   },
   "presentation": {
-    "content": "Dive into the world of Sea of Thieves with the ultimate tool designed to forge alliances like never before. Our application revolutionises the way players log in, providing exceptional fluidity and significantly increasing your chances of finding an alliance, far surpassing the capabilities of other applications. Join our community and transform your gaming experience into an epic adventure, where bonding and sailing together becomes a reality accessible with every click.",
+    "content": "Immergiti nel mondo di Sea of Thieves con lo strumento definitivo, progettato per creare alleanze come mai prima d’ora. La nostra applicazione rivoluziona il modo in cui i giocatori effettuano l’accesso, offrendo un’incredibile fluidità e aumentando significativamente le tue possibilità di trovare un’alleanza, superando di gran lunga le capacità di altre applicazioni. Unisciti alla nostra comunità e trasforma la tua esperienza di gioco in un’avventura epica, dove legare e navigare insieme diventa una realtà accessibile con un semplice clic.",
     "title": "BetterFleet"
   },
   "stats": {
-    "download": "Downloads",
-    "players": "Online players",
-    "sessions": "Open sessions",
-    "title": "Statistics"
+    "download": "Download",
+    "players": "Giocatori online",
+    "sessions": "Sessioni aperte",
+    "title": "Statistiche"
   },
   "tutorial": {
     "end": {
-      "content": "Good wind! May you sail in honor of sailors and make a fortune at sea! But. - Beware of the mutins, they envy the fresh fragrance of the new riches!",
-      "title": "Once the server is found?"
+      "content": "Buon vento! Possa tu navigare insieme a marinai onesti e fare fortuna in mare! Ma… attenzione ai ribelli, invidiano il profumo fresco delle nuove ricchezze!",
+      "title": "Una volta trovato il server?"
     },
     "howTo": {
-      "content": "Afin de créer une alliance dans Sea of Thieves, les joueurs doivent coordonner leurs actions avec précision. L'organisation commence généralement bien avant de prendre la mer, à un moment convenu par tous les participants. La clef est de synchroniser dans les menus du jeu le moment précis où chacun clique sur le bouton \"Lever l'ancre\", ce qui permet potentiellement aux différents équipages de se retrouver sur le même serveur. C'est là que BetterFleet entre en scène. Afin de faciliter cette synchronisation, l'application offre une interface sur laquelle les joueurs peuvent planifier leurs actions de manière coordonnée.",
-      "title": "Commenta creжer une alliance ?"
+      "content": "Per creare un’alleanza in Sea of Thieves, i giocatori devono coordinare le proprie azioni con precisione. L’organizzazione inizia generalmente ben prima di salpare, in un momento concordato tra tutti i partecipanti. La chiave è sincronizzare nei menu di gioco il momento esatto in cui ciascuno clicca sul pulsante “Alza l’ancora”, permettendo così ai vari equipaggi di trovarsi sullo stesso server. Ed è qui che entra in gioco BetterFleet. Per facilitare questa sincronizzazione, l’app offre un’interfaccia tramite la quale i giocatori possono pianificare le proprie azioni in maniera coordinata.",
+      "title": "Come creare un’alleanza?"
     },
     "step": {
       "1": {
-        "content": "Tout d'abord, vous aurez besoin d'un compte. En ouvrant BetterFleet il vous sera demandé de vous connecter avec vos identifiants afin d'accéder à l'application.",
-        "title": "Connexion a‑l'Application"
+        "content": "Per prima cosa, avrai bisogno di un account. Aprendo BetterFleet ti verrà chiesto di effettuare il login con le tue credenziali per accedere all’applicazione.",
+        "title": "Accesso all’applicazione"
       },
       "2": {
-        "content": "Sélectionnez l'option 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
-        "title": "Sessione di Creжer une"
+        "content": "Seleziona l’opzione 'Crea una sessione' per creare un nuovo spazio in cui potrai invitare altri giocatori a unirsi alla tua alleanza.",
+        "title": "Crea sessione"
       },
       "3": {
-        "content": "Un code unique sera généré pour votre session. Communiquez ce code aux personnes que vous souhaitez inviter à faire partie de l'alliance.",
-        "title": "Partage du Code de Session"
+        "content": "Un codice unico sarà generato per la tua sessione. Comunica questo codice alle persone che desideri invitare a far parte dell’alleanza.",
+        "title": "Condivisione del codice della sessione"
       },
       "4": {
-        "content": "Demandez à tous les joueurs de se rendre dans le menu 'Lever l'Ancre' du jeu, où ils pourront se préparer à lancer la partie ensemble.",
-        "title": "Rassemblement dans le Menu 'Lever l'Ancre'"
+        "content": "Chiedi a tutti i giocatori di recarsi nel menu 'Salpa' del gioco, dove potranno prepararsi per avviare la partita insieme.",
+        "title": "Ritrovo nel menu 'Salpa'"
       },
       "5": {
-        "content": "Chaque joueur doit alors changer son statut pour le départ. Ce qu'il peut faire en sélectionnant l'option 'Prêt' dans l'interface de l'application.",
-        "title": "Confirmer que Tout le Monde est Prêt"
+        "content": "Ogni giocatore deve quindi modificare il proprio stato per la partenza, cosa che può fare selezionando l’opzione 'Pronto' nell’interfaccia dell’applicazione.",
+        "title": "Confermare che Tutti siano Pronti"
       },
       "6": {
-        "content": "Une fois tous les joueurs prêts, le maître de session initie un compte à rebours sur BetterFleet pour coordonner la simultanéité du clic sur 'Lever l'Ancre'.",
-        "title": "Lancement du Compte à Rebours"
+        "content": "Una volta che tutti i giocatori sono pronti, il master della sessione avvia un conto alla rovescia su BetterFleet per coordinare la simultaneità del clic su 'Salpa'.",
+        "title": "Avvio del conto alla rovescia"
       },
       "7": {
-        "content": "Une fois en jeu, il vous reste à vérifier si vous avez trouvé un serveur commun. BetterFleet regroupera dans la liste les joueurs qui sont ensemble. Si vous n'avez pas trouvé de serveur, répétez le processus à partir de l'étape 4 et ainsi de suite.",
-        "title": "Vérifier la Présence sur le Même Serveur"
+        "content": "Una volta in gioco, dovete verificare se avete trovato un server comune. BetterFleet raggrupperà nella lista i giocatori che si trovano insieme. Se non avete trovato un server, ripetete il processo a partire dal passaggio 4 e così via.",
+        "title": "Check Server Meme Presence"
       }
     },
-    "stepWord": "Étape",
-    "title": "Débuter sur BetterFleet",
+    "stepWord": "Fase",
+    "title": "Iniziare con BetterFleet",
     "whatIsIt": {
-      "content": "Un serveur alliance est un serveur de jeu où plusieurs équipages ont convenu de former une alliance stratégique en coopérant pour leur bénéfice mutuel. Sur ces serveurs, les joueurs partagent les mêmes objectifs, comme la collecte de trésors ou la complétion de quêtes, et s'accordent pour ne pas s'attaquer les uns les autres. L'idée est que chaque membre profite des récompenses, optimisant les gains et l'expérience de jeu de tous. Cela crée un environnement où les joueurs peuvent se concentrer sur la coopération et l'exploration plutôt que sur la compétition, offrant une aventure communautaire plus détendue.",
-      "title": "What is an alliance server on Sea of Thieves?"
+      "content": "Un server alleanza è un server di gioco in cui più equipaggi hanno deciso di formare un’alleanza strategica cooperando per il reciproco vantaggio. Su questi server, i giocatori condividono gli stessi obiettivi, come la raccolta di tesori o il completamento delle missioni, e concordano di non attaccarsi tra loro. L’idea è che ogni membro possa beneficiare delle ricompense, ottimizzando guadagni ed esperienza di gioco per tutti. Questo crea un ambiente in cui i giocatori possono concentrarsi sulla collaborazione e sull’esplorazione, piuttosto che sulla competizione, offrendo un’avventura comunitaria più rilassata.",
+      "title": "Cos’è un server alleanza in Sea of Thieves?"
     }
   }
 }
