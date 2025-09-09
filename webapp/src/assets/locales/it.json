@@ -111,7 +111,7 @@
     },
     "sound": {
       "check": "Abilita/Disabilita audio del conto alla rovescia",
-      "label": "Audio conto alla rovescia",
+      "label": "Audio del conto alla rovescia",
       "test": "Prova"
     },
     "subtitle": "Opzioni di preferenza",
