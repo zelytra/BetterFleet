@@ -2,7 +2,7 @@
   "alert": {
     "badRequest": {
       "content": "La query è corrotta o errata",
-      "title": "Interrogazione errata"
+      "title": "Query errata"
     },
     "emptySession": {
       "content": "Inserisci un ID di sessione",
@@ -22,7 +22,7 @@
     },
     "report": {
       "emptyMessage": {
-        "content": "Fai del tuo meglio per descrivere il tuo problema nella segnalazione di bug",
+        "content": "Fai del tuo meglio per descrivere il tuo problema nella segnalazione dei bug",
         "title": "Rapporto vuoto"
       },
       "send": {
@@ -46,11 +46,11 @@
     "session": {
       "notLeave": {
         "content": "Non puoi lasciare questa pagina",
-        "title": "Conto alla rovescia in esecuzione"
+        "title": "Conto alla rovescia in corso"
       }
     },
     "sessionNotFound": {
-      "content": "Verifica l'ID della sessione",
+      "content": "Verifica il tuo ID sessione",
       "title": "Sessione non trovata"
     },
     "socket": {
@@ -59,16 +59,16 @@
       "title": "Connessione persa"
     },
     "unsupportedMedia": {
-      "content": "Il supporto che stai cercando di inviare non è supportato dall'applicazione",
-      "title": "Media non supportati"
+      "content": "Il file multimediale che stai tentando di inviare non è supportato dall'applicazione",
+      "title": "Media non supportato"
     },
     "username": {
       "ignore": {
         "content": "Modifica nome utente annullata",
-        "title": "Conto alla rovescia in esecuzione"
+        "title": "Conto alla rovescia in corso"
       },
       "length": {
-        "content": "Il tuo nome utente non può essere vuoto o superare i 16 caratteri",
+        "content": "Il tuo username non può essere vuoto o superare i 16 caratteri",
         "title": "Formato username non valido"
       }
     },
@@ -89,7 +89,7 @@
     },
     "macro": {
       "check": "Avvio assistito",
-      "description": "Clicca automaticamente su \"Imposta vela\" alla fine del conto alla rovescia"
+      "description": "Clicca automaticamente su \"Salpa\" alla fine del conto alla rovescia"
     },
     "name": {
       "label": "Username",
@@ -102,7 +102,7 @@
     },
     "savebar": {
       "cancel": "Annulla le modifiche",
-      "content": "Tieni premuto lì! Vedo che hai fatto alcune modifiche!",
+      "content": "Aspetta un attimo! Vedo che hai fatto delle modifiche!",
       "save": "Salva"
     },
     "server": {
@@ -110,8 +110,8 @@
       "placeholder": "https://betterfleet.com/api"
     },
     "sound": {
-      "check": "Abilita/Disabilita conto alla rovescia audio",
-      "label": "Conto alla rovescia audio",
+      "check": "Abilita/Disabilita audio del conto alla rovescia",
+      "label": "Audio conto alla rovescia",
       "test": "Prova"
     },
     "subtitle": "Opzioni di preferenza",
@@ -119,7 +119,7 @@
   },
   "contextMenu": {
     "master": {
-      "demote": "Demota",
+      "demote": "Declassa",
       "kick": "Espelli",
       "promote": "Promuovi al master della sessione",
       "title": "Utente"
@@ -127,21 +127,21 @@
   },
   "credits": {
     "and": "e",
-    "description": "BetterFleet è stato sviluppato per facilitare la formazione di alleanze sul mare dei ladri",
+    "description": "BetterFleet è stato sviluppato per facilitare la formazione di alleanze su Sea of ​​Thieves",
     "designed": "Progettato da",
-    "details": "BetterFleet è un'applicazione non ufficiale di terze parti non correlata al team di sviluppo Sea of Thieves. Il suo uso è puramente esterno e non ha alcun impatto sull'esperienza di gioco. L'utente accetta di essere ritenuto unico responsabile per il suo uso!",
+    "details": "BetterFleet è un'applicazione di terze parti non ufficiale e non correlata al team di sviluppo di Sea of ​​Thieves. Il suo utilizzo è puramente esterno e non ha alcun impatto sull'esperienza di gioco. L'utente accetta di essere ritenuto l'unico responsabile del suo utilizzo!",
     "developed": "Sviluppato da",
     "socials": "Trovaci qui:",
     "sot": {
       "thanks": "Vorremmo rendere a",
-      "use": "quello che appartiene ai pirati per, come si può notare, usiamo il carattere e banner dal gioco!"
+      "use": "ciò che appartiene ai pirati per, come si può notare, usiamo il carattere e banner dal gioco!"
     },
     "title": "Riconoscimenti"
   },
   "firstLogin": {
     "button": {
-      "description": "Sollevare le vele, prendere il timone e andare a mare!",
-      "title": "Lasciate che il viaggio inizi"
+      "description": "Alzate le vele, prendete il timone e andate al largo!",
+      "title": "Che il viaggio abbia inizio"
     },
     "description": "Inserisci il tuo attuale gamertag per controllare il corretto svolgimento dell'alleanza",
     "tips": "Puoi cambiare il tuo nome utente in qualsiasi momento nelle impostazioni",
