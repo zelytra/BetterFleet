@@ -9,6 +9,6 @@ import source from "@assets/locales/source.json";
 export const tsi18n = createI18n({
   legacy: false, // you must set `false`, to use Composition API
   locale: "en", // set locale
-  fallbackLocale: "source", // set fallback locale
+  fallbackLocale: "en", // set fallback locale
   messages: { fr, en, es, de, it, source },
 });

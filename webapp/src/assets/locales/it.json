@@ -1,1 +1,358 @@
-{}
+{
+  "alert": {
+    "badRequest": {
+      "content": "La query è corrotta o errata",
+      "title": "Query errata"
+    },
+    "emptySession": {
+      "content": "Inserisci un ID di sessione",
+      "title": "ID sessione vuota"
+    },
+    "error": {
+      "content": "Si è verificato un errore",
+      "title": "Errore"
+    },
+    "forbidden": {
+      "content": "Non hai i permessi necessari per accedere a questa pagina",
+      "title": "Accesso negato"
+    },
+    "outdated": {
+      "content": "Aggiorna la tua applicazione",
+      "title": "Client obsoleto"
+    },
+    "report": {
+      "emptyMessage": {
+        "content": "Fai del tuo meglio per descrivere il tuo problema nella segnalazione dei bug",
+        "title": "Rapporto vuoto"
+      },
+      "send": {
+        "title": "Report inviato"
+      }
+    },
+    "research": {
+      "notInMenu": {
+        "content": "Non sei nel menu di gioco",
+        "title": "Avvio fallito"
+      },
+      "notReady": {
+        "content": "Non sei pronto",
+        "title": "Avvio fallito"
+      },
+      "offline": {
+        "content": "La tua partita è chiusa",
+        "title": "Avvio fallito"
+      }
+    },
+    "session": {
+      "notLeave": {
+        "content": "Non puoi lasciare questa pagina",
+        "title": "Conto alla rovescia in corso"
+      }
+    },
+    "sessionNotFound": {
+      "content": "Verifica il tuo ID sessione",
+      "title": "Sessione non trovata"
+    },
+    "socket": {
+      "connectionFailed": "La connessione al server non è riuscita",
+      "random": "Il WebSocket si è chiuso inaspettatamente",
+      "title": "Connessione persa"
+    },
+    "unsupportedMedia": {
+      "content": "Il file multimediale che stai tentando di inviare non è supportato dall'applicazione",
+      "title": "Media non supportato"
+    },
+    "username": {
+      "ignore": {
+        "content": "Modifica nome utente annullata",
+        "title": "Conto alla rovescia in corso"
+      },
+      "length": {
+        "content": "Il tuo username non può essere vuoto o superare i 16 caratteri",
+        "title": "Formato username non valido"
+      }
+    },
+    "websocketAuthFailed": {
+      "content": "Autenticazione WebSocket fallita",
+      "title": "Connessione fallita"
+    }
+  },
+  "appName": "BetterFleet",
+  "config": {
+    "device": {
+      "label": "Piattaforma"
+    },
+    "devmode": "Abilita la modalità sviluppatore",
+    "disconnect": "Disconnetti",
+    "lang": {
+      "label": "Lingua"
+    },
+    "macro": {
+      "check": "Avvio assistito",
+      "description": "Clicca automaticamente su \"Salpa\" alla fine del conto alla rovescia"
+    },
+    "name": {
+      "label": "Username",
+      "placeholder": "Username"
+    },
+    "part": {
+      "audio": "Audio",
+      "developer": "Sviluppatore",
+      "general": "Generale"
+    },
+    "savebar": {
+      "cancel": "Annulla le modifiche",
+      "content": "Aspetta un attimo! Vedo che hai fatto delle modifiche!",
+      "save": "Salva"
+    },
+    "server": {
+      "label": "Indirizzo del server",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "sound": {
+      "check": "Abilita/Disabilita audio del conto alla rovescia",
+      "label": "Audio del conto alla rovescia",
+      "test": "Prova"
+    },
+    "subtitle": "Opzioni di preferenza",
+    "title": "Impostazioni"
+  },
+  "contextMenu": {
+    "master": {
+      "demote": "Declassa",
+      "kick": "Espelli",
+      "promote": "Promuovi al master della sessione",
+      "title": "Utente"
+    }
+  },
+  "credits": {
+    "and": "e",
+    "description": "BetterFleet è stato sviluppato per facilitare la formazione di alleanze su Sea of ​​Thieves",
+    "designed": "Progettato da",
+    "details": "BetterFleet è un'applicazione di terze parti non ufficiale e non correlata al team di sviluppo di Sea of ​​Thieves. Il suo utilizzo è puramente esterno e non ha alcun impatto sull'esperienza di gioco. L'utente accetta di essere ritenuto l'unico responsabile del suo utilizzo!",
+    "developed": "Sviluppato da",
+    "socials": "Trovaci qui:",
+    "sot": {
+      "thanks": "Vorremmo rendere a",
+      "use": "ciò che appartiene ai pirati per, come si può notare, usiamo il carattere e banner dal gioco!"
+    },
+    "title": "Riconoscimenti"
+  },
+  "firstLogin": {
+    "button": {
+      "description": "Ragazzi, alzate le vele, afferrate il timone e prendete il largo!",
+      "title": "Che il viaggio abbia inizio"
+    },
+    "description": "Inserisci il tuo attuale gamertag per controllare il corretto svolgimento dell'alleanza",
+    "tips": "Puoi cambiare il tuo username in qualsiasi momento nelle impostazioni",
+    "title": "Come ti chiami, ragazzo?"
+  },
+  "loading": {
+    "loading": "Caricamento...",
+    "targetGame": "Rilevamento del gioco in corso",
+    "targetLoading": "Gioco rilevato. Navi in preparazione.",
+    "tips": "Questo processo potrebbe richiedere un po' di tempo, assicurati che il tuo gioco sia avviato"
+  },
+  "locales": {
+    "de": "Deutsch",
+    "en": "Inglese",
+    "es": "Español",
+    "fr": "Franc<unk> ais",
+    "it": "Italiano"
+  },
+  "login": {
+    "continue": "Continua",
+    "description": "Benvenuti su BetterFleet! Siamo entusiasti di averti tra noi. Per accedere all'applicazione, accedi al tuo account o creane uno!",
+    "disconnect": "Questo non è il tuo account?",
+    "loginButton": "Accedi",
+    "succeed": "Accesso Riuscito!",
+    "userWelcome": "Benvenuto",
+    "welcome": "Benvenuto in"
+  },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "Annulla",
+        "confirm": "Salpa",
+        "content": "Non tutti i giocatori sono pronti! Sei sicuro di voler salpare?",
+        "title": "ATTENZIONE!"
+      },
+      "leave": {
+        "cancel": "Annulla",
+        "confirm": "Lascia la sessione",
+        "content": "Sei sicuro di voler lasciare la sessione?",
+        "title": "LASCIARE LA SESSIONE"
+      }
+    }
+  },
+  "report": {
+    "bug": {
+      "button": "Invia report",
+      "content1": "Le tue segnalazioni ci aiutano a correggere eventuali bug e anomalie che potresti riscontrare durante la navigazione nell'applicazione. Se questo è il tuo caso, ti invitiamo a essere il più preciso possibile e a descrivere il tuo problema nel riquadro sottostante.",
+      "content2": "Vale la pena notare che oltre al messaggio, la tua segnalazione ci invierà in forma anonima dati utili per identificare il problema.",
+      "title": "Segnalare un bug"
+    },
+    "faq": {
+      "button": {
+        "discord": "Discord",
+        "faq": "F.A.Q."
+      },
+      "content": "Consulta la pagina delle FAQ del nostro sito web: potresti già trovare lì la risposta al tuo problema! In alternativa, puoi contattarci sul nostro Discord. Se si tratta di un bug, tieni presente che ti verrà sicuramente chiesto di inviarci una segnalazione!",
+      "title": "Hai una domanda?"
+    }
+  },
+  "session": {
+    "choice": {
+      "createComment": "Dai un morso alla libertà e domina il mare dei ladri!",
+      "createSession": "Crea una sessione",
+      "joinComment": "Prendi un boccale, sali a bordo e unisciti all'equipaggio!",
+      "joinSession": "Entra in una sessione",
+      "modal": {
+        "button": "Entra nella sessione",
+        "comment": "Ogni sessione è privata e richiede un codice identificativo. Richiedilo all'organizzatore della sessione a cui desideri unirti!",
+        "title": "Inserisci un ID sessione"
+      }
+    },
+    "contributor": {
+      "alpha_tester": "Alfa Tester",
+      "designer": "Designer",
+      "developer": "Sviluppatore",
+      "translator": "Traduttore"
+    },
+    "countdown": "La ricerca inizia tra...",
+    "id": "ID sessione",
+    "idCopy": "Copiato!",
+    "informations": {
+      "success": "Tasso di successo",
+      "title": "Informazioni",
+      "totalPlayer": "Giocatori pronti",
+      "tryNumber": "Numero di tentativi"
+    },
+    "leave": "Lascia la sessione",
+    "name": {
+      "0": "La Nave Fantasma",
+      "1": "Il Tesoro Nascosto",
+      "10": "Il Cannocchiale Graffiato",
+      "11": "L'Imbarco Notturno",
+      "12": "Il Coraggio del Capitano",
+      "13": "L'Equipaggio Ribelle",
+      "14": "L'Onda Crescente",
+      "15": "Il Bottino Rubato",
+      "16": "Il Rum del Contrabbandiere",
+      "17": "La Vela Ombrosa",
+      "18": "L'Ancora Arrugginita",
+      "19": "Il Porto Improvvisato",
+      "2": "Il Dado Truccato",
+      "20": "La Leggenda Dimenticata",
+      "21": "Il Relitto Velato",
+      "22": "Il Gancio Scintillante",
+      "23": "La Tempesta Torrenziale",
+      "24": "L'Asse Scivolosa",
+      "25": "Il Ruscello Segreto",
+      "26": "Il Mercato Nero",
+      "27": "La Caccia al Tesoro",
+      "28": "L'Albero Traballante",
+      "29": "La Pistola a Pietra Focaia",
+      "3": "L'Isola Misteriosa",
+      "30": "Il Calamaro Gigante",
+      "31": "Il Codice Pirata",
+      "32": "Il Pugnale Insanguinato",
+      "33": "Il Vento Favorevole",
+      "34": "Il Fugitivo Zoppo",
+      "35": "La Cartuccia Rustica",
+      "36": "Il Duello Improvvisato",
+      "37": "La Fiamma Furiosa",
+      "38": "Il Cuore dell'Oceano",
+      "39": "La Storia del Passato",
+      "4": "Il Pappagallo Chiacchierone",
+      "40": "L'Ammutinamento Selvaggio",
+      "41": "La Tartaruga di Mare",
+      "42": "Il Piano Infallibile",
+      "43": "Polvere da Sparo Imbevuta",
+      "44": "Il Galleone Spagnolo",
+      "45": "La Baia Celeste",
+      "46": "L'Elmo Scheggiato",
+      "47": "La Stella del Nord",
+      "48": "La Promessa Vendicativa",
+      "49": "Il Banchetto Scandaloso",
+      "5": "La Bussola Disorientata",
+      "50": "Il Moschetto Fumante",
+      "51": "Il Canto Marinaro",
+      "52": "Il Dubbioso Sartiame",
+      "53": "Il Medaglione Azteco",
+      "54": "La Mappa Enigmatica",
+      "55": "Il Messaggio in Bottiglia",
+      "56": "La Lanterna della Tempesta",
+      "57": "L'Antica Pergamena",
+      "58": "L'Alba Crepuscolare",
+      "59": "Il Filibustiere Volpino",
+      "6": "La Sciabola Affilata",
+      "60": "La Pericolosa Traversata",
+      "61": "Il Bucaniero Astuto",
+      "62": "Lo Scellino Splendente",
+      "63": "Il Consiglio dei Pirati",
+      "64": "L'Anima Errante",
+      "65": "La Prigione Fortificata",
+      "66": "L'Amuleto Maledetto",
+      "67": "La Battaglia Navale",
+      "68": "Il Lampo Verde",
+      "69": "Il Forziere del Morto",
+      "7": "Il Cannone Rimbombante",
+      "70": "La Fontana della Giovinezza",
+      "71": "La Costa Inesplorata",
+      "72": "La Moneta Contraffatta",
+      "73": "Il Patto di Sangue",
+      "74": "L'Alleanza Distrutta",
+      "75": "Il Vecchio Manoscritto",
+      "76": "La Parola d'Onore",
+      "77": "L'Olandese Volante",
+      "78": "Pirateria Reale",
+      "79": "Il Miraggio del Mare",
+      "8": "La Bandiera Nera",
+      "80": "L'Eco Stridente",
+      "81": "La Sabbia Dorata",
+      "82": "L'Orizzonte Perforante",
+      "83": "Il Ticchettio Inquietante",
+      "84": "Il Sole al Tamonto",
+      "85": "La Notte Senza Luna",
+      "86": "L'Alta Marea",
+      "87": "Il Respiro Abissale",
+      "88": "La Tempesta Minacciosa",
+      "89": "La Nave Distrutta",
+      "9": "Il Baule di Davy Jones",
+      "90": "Il Rifugio dei Ladri",
+      "91": "L'Attacco Opportuno",
+      "92": "La Fuga Temeraria",
+      "93": "La Fortuna Smarrita",
+      "94": "Il Pezzo da Otto",
+      "95": "Il Racconto Eroico",
+      "96": "Il Mantello Sgargiante",
+      "97": "Il Corsaro Giurato",
+      "98": "La Laguna Blu",
+      "99": "La Missione Maliziosa"
+    },
+    "player": {
+      "notReady": "Non pronto",
+      "ready": "Pronto",
+      "status": {
+        "closed": "Offline",
+        "in-game": "In gioco",
+        "main-menu": "Nel menu di gioco",
+        "started": "Partita avviata"
+      }
+    },
+    "run": "Salpa",
+    "status": {
+      "countdown": "Avvia in",
+      "ready": "Pronto",
+      "waiting": "In Attesa"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "Impostazioni",
+      "fleet": "Sessione",
+      "home": "Pagina iniziale"
+    }
+  }
+}

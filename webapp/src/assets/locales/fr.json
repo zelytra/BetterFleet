@@ -68,8 +68,8 @@
         "title": "Lancement en cours"
       },
       "length": {
-        "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
-        "title": "Format de pseudo invalide"
+        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
+        "title": "Mauvais format de pseudo"
       }
     },
     "websocketAuthFailed": {
@@ -148,7 +148,7 @@
     "title": "Comment tu t'appelles l'ami ?"
   },
   "loading": {
-    "loading": "Chargement en cours...",
+    "loading": "Chargement...",
     "targetGame": "Détection du jeu en cours",
     "targetLoading": "Jeu détecté. Préparation des navires.",
     "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé"
@@ -157,7 +157,8 @@
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
-    "fr": "Français"
+    "fr": "Français",
+    "it": "Italiano"
   },
   "login": {
     "continue": "Continuer",
@@ -340,8 +341,6 @@
         "started": "Jeu lancé"
       }
     },
-    "playersLabel": "Joueurs",
-    "playerLabel": "Joueur",
     "run": "Lever l'ancre",
     "status": {
       "countdown": "Lancement dans",
