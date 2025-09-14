@@ -68,8 +68,8 @@
         "title": "Lancement en cours"
       },
       "length": {
-        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
-        "title": "Mauvais format de pseudo"
+        "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
+        "title": "Format de pseudo invalide"
       }
     },
     "websocketAuthFailed": {
@@ -128,8 +128,8 @@
   "credits": {
     "and": "et",
     "description": "BetterFleet a été développé dans le but de faciliter la création d'alliances sur Sea of Thieves",
-    "designed": "Designé par",
-    "details": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu. L'utilisateur engage seul sa responsabilité quant à son utilisation !",
+    "designed": "Design par",
+    "details": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son usage est externe et n'impacte aucunement l'expérience en jeu. L'utilisateur engage seul sa responsabilité quant à son utilisation !",
     "developed": "Développé par",
     "socials": "Retrouvez-nous ici :",
     "sot": {
@@ -148,7 +148,7 @@
     "title": "Comment tu t'appelles l'ami ?"
   },
   "loading": {
-    "loading": "Chargement...",
+    "loading": "Chargement en cours...",
     "targetGame": "Détection du jeu en cours",
     "targetLoading": "Jeu détecté. Préparation des navires.",
     "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé"
@@ -270,7 +270,7 @@
       "42": "Le Plan Infaillible",
       "43": "La Poudre Mouillée",
       "44": "Le Galion Espagnol",
-      "45": "La Baie Paradisiaque",
+      "45": "La Baie Céleste",
       "46": "Le Gouvernail Ébréché",
       "47": "L'Étoile Polaire",
       "48": "La Promesse Vengeresse",
@@ -285,9 +285,9 @@
       "56": "La Lampe-Tempête",
       "57": "Le Parchemin Antique",
       "58": "L'Aube Crépusculaire",
-      "59": "Le Flibustier Fourbe",
+      "59": "Le Fourbe Flibustier",
       "6": "Le Sabre Aiguisé",
-      "60": "La Traversée Périlleuse",
+      "60": "La Périlleuse Traversée",
       "61": "La Ruse du Boucanier",
       "62": "Le Shilling Étincelant",
       "63": "Le Conseil Pirate",
@@ -312,7 +312,7 @@
       "80": "L'Écho Hurlant",
       "81": "Le Sable d'Or",
       "82": "L'Horizon Perçant",
-      "83": "Le Tic Tac Incessant",
+      "83": "L'Incessant Tic Tac",
       "84": "Le Soleil Couchant",
       "85": "La Nuit Sans Lune",
       "86": "La Marée Haute",
@@ -322,7 +322,7 @@
       "9": "L'Antre de Davy Jones",
       "90": "Le Refuge des Voleurs",
       "91": "L'Attaque Opportune",
-      "92": "L'Évasion Intrépide",
+      "92": "L'Intrépide Évasion",
       "93": "La Fortune Égarée",
       "94": "La Pièce de Huit",
       "95": "Le Récit Héroïque",
