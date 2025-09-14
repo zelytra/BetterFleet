@@ -5,8 +5,6 @@ import SupportComponent from "@/components/SupportComponent.vue";
 import ReportsComponent from "@/components/ReportsComponent.vue";
 import TutorialComponent from "@/components/TutorialComponent.vue";
 
-const { t } = tsi18n.global;
-
 declare module "vue-router" {
   interface RouteMeta {
     displayInNav: boolean;
