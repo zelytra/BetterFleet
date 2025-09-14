@@ -155,7 +155,7 @@
   "tutorial": {
     "end": {
       "content": "Good wind! May you sail in honor of sailors and make a fortune at sea! But. - Beware of the mutins, they envy the fresh fragrance of the new riches!",
-      "title": "Once the server is found?"
+      "title": "Once you found the server?"
     },
     "howTo": {
       "content": "In order to create an alliance in Sea of Thieves, players must coordinate their actions accurately. The organization starts well before taking the sea, at an agreed moment by all participants. The key is to synchronize in the game menus at the given moment or each click on the \"Anchor raise\" button, This potentially allows the different crews to find themselves on the same server. This is where BetterFleet enters the seal. In order to facilitate this synchronization, the app offers an interface over which players can plan their actions in a coordinated manner.",
@@ -163,28 +163,28 @@
     },
     "step": {
       "1": {
-        "content": "First you will need an account. By opening BetterFleet you will be asked to log in with your credentials in order to access the application.",
+        "content": "First and foremost, you need an account. Upon opening BetterFleet you will be asked to log in with your details so you can access the application.",
         "title": "Log into the Application"
       },
       "2": {
-        "content": "Select the 'Create a session' option to set up a new space where you can invite other players to join your alliance.",
-        "title": "Create Session"
+        "content": "Select 'Create a session' to set up a new space where you will be able to invite other players to join your alliance.",
+        "title": "Create a Session"
       },
       "3": {
-        "content": "A unique code will be managed for your session. Give this code to the people you want to invite to join the alliance.",
+        "content": "A unique ID will be generated for your session. Communicate this ID to the people you wish to invite and be part of the alliance.",
         "title": "Share the Session ID"
       },
       "4": {
-        "content": "Ask all players to go to the 'Raise Anchor' menu of the game, or they will be able to prepare to start the game together.",
+        "content": "Ask all players to go to the 'Set sail' menu of the game, where they will be able to prepare to start the game together.",
         "title": "Meeting in the 'Set Sail' Menu"
       },
       "5": {
-        "content": "Each player then has to change their status for the start, and what they can do by selecting the Preview option in the application interface.",
-        "title": "Confirm Everyone is Precious"
+        "content": "Every player must then change their status for the start, which they can do by selecting 'Ready' in the application interface.",
+        "title": "Confirm Everyone is Ready"
       },
       "6": {
-        "content": "Once all players are ready, the Mayor of the session initiates a countdown on BetterFleet to coordinate the simultaneity of the click on 'raise the Anchor'.",
-        "title": "Countdown Launch"
+        "content": "Once all players are ready, the session host initiates a countdown on BetterFleet so that everyone clicks 'Set sail' simultaneously.",
+        "title": "Initiating Countdown"
       },
       "7": {
         "content": "Once in game, you'll have to check whether you have found a common server. BetterFleet will group players who ended up together in the list. On the off chance you did not find a server, repeat the process from step 4 and so on.",
