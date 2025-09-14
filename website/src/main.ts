@@ -15,7 +15,7 @@ import VueKinesis from "vue-kinesis";
 export const i18n = createI18n({
   legacy: false, // you must set `false`, to use Composition API
   locale: "en", // set locale
-  fallbackLocale: "source", // set fallback locale
+  fallbackLocale: "en", // set fallback locale
   messages: { fr, en, es, de, it, source },
 });
 

@@ -16,7 +16,7 @@ import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 export const i18n = createI18n({
   legacy: false, // you must set `false`, to use Composition API
   locale: "fr", // set locale
-  fallbackLocale: "source", // set fallback locale
+  fallbackLocale: "en", // set fallback locale
   messages: { fr, en, es, de, it, source },
 });
 
