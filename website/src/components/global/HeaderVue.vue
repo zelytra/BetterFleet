@@ -8,7 +8,7 @@
         class="router-link"
         :to="route.path"
       >
-        {{ route.name }}
+        {{ t(route.name) }}
       </router-link>
     </nav>
     <a
