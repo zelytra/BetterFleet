@@ -16,7 +16,7 @@ declare module "vue-router" {
 export const routes = [
   {
     path: "/",
-    name: t("nav.home"),
+    name: "nav.home",
     component: HomeComponent,
     meta: {
       displayInNav: true,
@@ -24,7 +24,7 @@ export const routes = [
   },
   {
     path: "/support",
-    name: t("nav.support"),
+    name: "nav.support",
     component: SupportComponent,
     meta: {
       displayInNav: true,
@@ -32,7 +32,7 @@ export const routes = [
   },
   {
     path: "/tutorial",
-    name: t("nav.documentation"),
+    name: "nav.documentation",
     component: TutorialComponent,
     meta: {
       displayInNav: true,

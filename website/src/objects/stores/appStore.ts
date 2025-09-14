@@ -3,6 +3,7 @@ import { AxiosResponse } from "axios";
 import { GithubRelease } from "@/objects/Github.ts";
 import { HTTPAxios } from "@/objects/HTTPAxios.ts";
 import { i18n } from "@/main.ts";
+import { tsi18n } from "@/objects/i18n";
 
 export const AppStore = reactive({
   githubRelease: {} as GithubRelease,
@@ -13,6 +14,8 @@ export const AppStore = reactive({
         this.githubRelease = response.data as GithubRelease;
       });
     const browserLang = navigator.language.substring(0, 2);
-    i18n.global.locale.value = browserLang as "fr" | "en" | "es" | "de";
+    document.documentElement.lang = browserLang;
+    i18n.global.locale.value = browserLang as "fr" | "en" | "es" | "de" | "it";
+    tsi18n.global.locale.value = browserLang as "fr" | "en" | "es" | "de" | "it";
   },
 });
