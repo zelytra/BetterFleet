@@ -16,6 +16,11 @@ export const AppStore = reactive({
     const browserLang = navigator.language.substring(0, 2);
     document.documentElement.lang = browserLang;
     i18n.global.locale.value = browserLang as "fr" | "en" | "es" | "de" | "it";
-    tsi18n.global.locale.value = browserLang as "fr" | "en" | "es" | "de" | "it";
+    tsi18n.global.locale.value = browserLang as
+      | "fr"
+      | "en"
+      | "es"
+      | "de"
+      | "it";
   },
 });
