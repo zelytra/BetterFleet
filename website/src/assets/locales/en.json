@@ -187,8 +187,8 @@
         "title": "Countdown Launch"
       },
       "7": {
-        "content": "Once in play, you have to check if you found a common server. BetterFleet will list players who are together. If you did not find a server, repeat the process from step 4 and so on.",
-        "title": "Check Server Meme Presence"
+        "content": "Once in game, you'll have to check whether you have found a common server. BetterFleet will group players who ended up together in the list. On the off chance you did not find a server, repeat the process from step 4 and so on.",
+        "title": "Presence Check on a Common Server"
       }
     },
     "stepWord": "Step",
