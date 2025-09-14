@@ -167,7 +167,7 @@
         "title": "Connexion à l'Application"
       },
       "2": {
-        "content": "Sélectionnez l'option 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
+        "content": "Sélectionnez 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
         "title": "Créer une Session"
       },
       "3": {
@@ -179,11 +179,11 @@
         "title": "Rassemblement dans le Menu 'Lever l'Ancre'"
       },
       "5": {
-        "content": "Chaque joueur doit alors changer son statut pour le départ. Ce qu'il peut faire en sélectionnant l'option 'Prêt' dans l'interface de l'application.",
+        "content": "Chaque joueur doit alors changer son statut pour le départ, ce qu'il peut faire en sélectionnant 'Prêt' dans l'interface de l'application.",
         "title": "Confirmer que Tout le Monde est Prêt"
       },
       "6": {
-        "content": "Une fois tous les joueurs prêts, le maître de session initie un compte à rebours sur BetterFleet pour coordonner la simultanéité du clic sur 'Lever l'Ancre'.",
+        "content": "Une fois tous les joueurs prêts, l'hôte de la session initie un compte à rebours sur BetterFleet pour que tout le monde clique sur 'Lever l'Ancre' simultanément.",
         "title": "Lancement du Compte à Rebours"
       },
       "7": {
