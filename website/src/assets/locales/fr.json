@@ -11,7 +11,7 @@
   },
   "credits": {
     "and": "&",
-    "designed": "Designé par",
+    "designed": "Design par",
     "developed": "Développé par",
     "license": "Licence"
   },
@@ -129,12 +129,12 @@
     "discord": "Vous rencontrez un souci ? Contactez immédiatement notre équipe sur notre",
     "github": "Vous êtes développeur et vous adorez naviguer sur Sea of Thieves ? Alors venez contribuer au projet !",
     "warning": {
-      "content": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu. L'utilisateur engage seul sa responsabilité quant à son utilisation !",
+      "content": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son usage est externe et n'impacte aucunement l'expérience en jeu. L'utilisateur engage seul sa responsabilité quant à son utilisation !",
       "title": "Avertissement"
     }
   },
   "header": {
-    "details": "BetterFleet est officiellement sortie ! Testez l'application dès maintenant !"
+    "details": "BetterFleet est officiellement disponible ! Testez l'application dès maintenant !"
   },
   "name": "BetterFleet",
   "nav": {
@@ -158,7 +158,7 @@
       "title": "Une fois le serveur trouvé ?"
     },
     "howTo": {
-      "content": "Afin de créer une alliance dans Sea of Thieves, les joueurs doivent coordonner leurs actions avec précision. L'organisation commence généralement bien avant de prendre la mer, à un moment convenu par tous les participants. La clef est de synchroniser dans les menus du jeu le moment précis où chacun clique sur le bouton \"Lever l'ancre\", ce qui permet potentiellement aux différents équipages de se retrouver sur le même serveur. C'est là que BetterFleet entre en scène. Afin de faciliter cette synchronisation, l'application offre une interface sur laquelle les joueurs peuvent planifier leurs actions de manière coordonnée.",
+      "content": "Afin de créer une alliance dans Sea of Thieves, les joueurs doivent coordonner leurs actions avec précision. L'organisation commence généralement bien avant de prendre la mer, à un moment convenu par tous les participants. La clef est de synchroniser le moment précis où chacun clique sur \"Lever l'ancre\" dans les menus du jeu, ce qui permet potentiellement aux différents équipages de se retrouver sur le même serveur. C'est là que BetterFleet entre en scène. Afin de faciliter cette synchronisation, l'application offre une interface sur laquelle les joueurs peuvent planifier leurs actions de manière coordonnée.",
       "title": "Comment créer une alliance ?"
     },
     "step": {
