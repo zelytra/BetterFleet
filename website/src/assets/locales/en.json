@@ -89,7 +89,7 @@
       },
       "eac": {
         "content1": "BetterFleet ressembles more a logbook than anything else. Its main automatic feature simulates a fairly simple mouse click, just like a voice command would, and does not technically constitute a macro in itself. Systems like Easy Anti-Cheat (EAC) mostly focus on RAM manipulation and therefore have no reason to condemn our method.",
-        "content2": "Besides, the click is never executed in game and only occurs in the menu, in accordance with the Sea of Thieves and Xbox terms of service (TOS). These terms are broad enough to juridically cover as many situations as possible, but no point mentions our specific use. The option can however be disabled at the user's discretion.",
+        "content2": "Besides, the click is never executed in game and only occurs in the menu, in accordance with the Sea of Thieves and Xbox terms of service (TOS). These terms are broad enough to juridically cover as many situations as possible, but no point mentions our specific use. The option can however be disabled at user's discretion.",
         "content3": "It is still essential to understand that using tools such as BetterFleet and Fleet Creator is not entirely devoid of risks, especially regarding IP detection which remains a sensitive point. Our application is as safe as another, but being neither recognised by Rare nor by Microsoft, we fully depend on their sole decision to take action.",
         "title": "Is there any risk with Easy Anti-Cheat? (EAC)"
       },
@@ -113,7 +113,7 @@
         "content3": "Open source: The application is completely open source, offering total transparency concerning its use and operation. This allows the community to verify and audit our code, therefore strengthening confidence in our product.",
         "content4": "Proactive maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes regular dependencies updates and continuously monitoring potential security breaches to prevent any risk.",
         "content5": "Independent approach: As BetterFleet is not licenced by Microsoft, it is subjected to Windows Defender upon installation. Our application is no less secure and we set our sights on adapting to these constraints we cannot quite control.",
-        "content6": "These joint efforts contribute to a reliable and secure platform for every one our users.",
+        "content6": "These joint efforts contribute to a reliable and secure platform for every one of our users.",
         "title": "Is the application secure?"
       },
       "update": {
@@ -134,7 +134,7 @@
     }
   },
   "header": {
-    "details": "BetterFleet has officially been released! Test the app now!"
+    "details": "BetterFleet is officially available! Try out the application now!"
   },
   "name": "BetterFleet",
   "nav": {
@@ -158,7 +158,7 @@
       "title": "Once you found the server?"
     },
     "howTo": {
-      "content": "In order to create an alliance in Sea of Thieves, players must coordinate their actions accurately. The organization starts well before taking the sea, at an agreed moment by all participants. The key is to synchronize in the game menus at the given moment or each click on the \"Anchor raise\" button, This potentially allows the different crews to find themselves on the same server. This is where BetterFleet enters the seal. In order to facilitate this synchronization, the app offers an interface over which players can plan their actions in a coordinated manner.",
+      "content": "In order to create an alliance in Sea of Thieves, players must coordinate their actions with precision. Organisation generally starts long before putting out to sea, at a time all participants agreed upon. The key is to synchronise the exact moment everyone clicks \"Set sail\" in the game menu, which potentially allows the different crews to find themselves on the same server. This is where BetterFleet comes into play. So as to help this synchronisation along, the application offers an interface on which players can plan their actions in a coordinatied fashion.",
       "title": "How to create an alliance?"
     },
     "step": {
