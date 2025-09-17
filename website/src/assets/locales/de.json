@@ -54,7 +54,7 @@
         "content1": "BetterFleet hilft Spielern dabei, Allianzen zu finden, garantiert jedoch keinen sofortigen Zugriff auf denselben Server.",
         "content2": "Beim Zusammenführen mehrerer Spieler in einer Gruppe spielen viele Faktoren eine Rolle, auf die BetterFleet keinen Einfluss hat. Darunter: Zeit, Anzahl der suchenden Spieler, Standort, Internetverbindung und das Wohlwollen der Matchmaking-Server von Sea of Thieves.",
         "content3": "Wir beobachten einen Trend, bei dem die Suchzeit zwischen 5 Minuten für die Glücklichen und bis zu 3 Stunden für die weniger Glücklichen variiert. Diese Schätzungen sind jedoch nur annähernd und können nicht garantiert werden.",
-        "content4": "BetterFleet verbindet Sie nicht automatisch sofort mit demselben Server, erleichtert Ihre Suche jedoch, indem es den Vorgang optimiert.",
+        "content4": "Dennoch, wenn Sie wissen, wie Sie das Suchsystem für BetterFleet verbessern können, wir sind geneigt, jeden Vorschlag, den du auf Discord oder GitHub machen kannst, zu studieren.",
         "title": "Garantiert BetterFleet, dass man sich sofort demselben Server anschließt?"
       },
       "bug": {
@@ -89,7 +89,7 @@
       },
       "eac": {
         "content1": "Better Fleet ist eher ein Logbuch als alles andere. Seine Hauptautomatikfunktion simuliert einen einfachen Mausklick, genau wie ein Sprachbefehl, und ist per se kein Makro. Systeme wie Easy Anti-Cheat (EAC) konzentrieren sich hauptsächlich auf die Manipulation des Arbeitsspeichers und haben daher keinen Grund, unsere Methode zu verurteilen.",
-        "content2": "Darüber hinaus wird der Klick niemals im Spiel ausgeführt und erfolgt gemäß den Nutzungsbedingungen von Sea of Thieves und Xbox nur in Menüs. Diese Bedingungen sind weit gefasst, um möglichst viele Situationen rechtlich abzudecken, aber an keiner Stelle wird unsere spezifische Verwendung erwähnt. Die Option kann jedoch nach eigenem Ermessen des Benutzers deaktiviert werden.",
+        "content2": "Außerdem wird der Klick nie im Spiel ausgeführt und erscheint nur im Menü, in Übereinstimmung mit dem Meer der Diebe und Xbox Nutzungsbedingungen (TOS). Diese Begriffe sind breit genug, um juristisch so viele Situationen wie möglich abzudecken, aber kein Sinn erwähnt unsere spezifische Verwendung. Die Option kann jedoch nach eigenem Ermessen deaktiviert werden.",
         "content3": "Es bleibt wichtig zu verstehen, dass der Einsatz von Tools wie Better Fleet und Fleet Creator nicht ganz ohne Risiken ist, insbesondere im Hinblick auf die IP-Erkennung, die nach wie vor ein sensibler Punkt ist. Unsere Anwendung ist genauso sicher wie jede andere, aber da sie weder von Rare noch von Microsoft anerkannt wird, sind wir vollständig auf deren alleinige Handlungsbereitschaft angewiesen.",
         "title": "Gibt es Risiken bei Easy Anti-Cheat? (EAC)"
       },
@@ -113,7 +113,7 @@
         "content3": "Open Source: Die Anwendung ist vollständig Open Source und bietet vollständige Transparenz über ihre Verwendung und Funktionsweise. Dadurch kann die Community unseren Code verifizieren und prüfen und so Vertrauen in unser Produkt aufbauen.",
         "content4": "Proaktive Wartung: Unsere Entwickler sind bestrebt, die Anwendung in einem optimalen Sicherheitszustand zu halten. Dazu gehört die regelmäßige Aktualisierung von Abhängigkeiten und die kontinuierliche Überwachung potenzieller Sicherheitslücken, um etwaigen Risiken vorzubeugen.",
         "content5": "Unabhängiger Ansatz: Da Better Fleet nicht von Microsoft lizenziert ist, unterliegt es bei der Installation dem Windows Defender. Unsere Anwendung ist nicht weniger sicher und wir sind bestrebt, uns an diese Einschränkungen anzupassen, auf die wir keinen Einfluss haben.",
-        "content6": "Diese gemeinsamen Bemühungen tragen zu einer zuverlässigen und sicheren Plattform für alle unsere Benutzer bei.",
+        "content6": "Diese gemeinsamen Anstrengungen tragen zu einer zuverlässigen und sicheren Plattform für jeden unserer Nutzer bei.",
         "title": "Ist die Anwendung sicher?"
       },
       "update": {
@@ -134,7 +134,7 @@
     }
   },
   "header": {
-    "details": "Better Fleet befindet sich derzeit in der Beta! Testen Sie die App jetzt!"
+    "details": "BetterFleet ist offiziell verfügbar! Probieren Sie die Anwendung jetzt aus!"
   },
   "name": "BetterFleet",
   "nav": {
@@ -154,47 +154,47 @@
   },
   "tutorial": {
     "end": {
-      "content": "Viel Glück und mögen die Reichtümer der Meere Ihnen gehören. Profitieren Sie von der Kameradschaft und Zusammenarbeit, die diese Allianz bietet!",
-      "title": "Sobald der Server gefunden ist?"
+      "content": "Godspeed! Möge du unter ehrlichen Seeleuten segeln und ein Vermögen am Meer machen! Still... Hüte dich vor Mutineern, sie segeln nach der süßen Fahne des neu gefundenen Reichtums!",
+      "title": "Sobald du den Server gefunden hast?"
     },
     "howTo": {
-      "content": "Um in Sea of Thieves eine Allianz zu bilden, müssen Spieler ihre Aktionen präzise koordinieren. Die Organisation beginnt in der Regel lange vor dem Auslaufen, oft am Morgen oder zu einem von allen Teilnehmern vereinbarten Zeitpunkt. Der Schlüssel besteht darin, zu synchronisieren, wann jeder im Spiel auf die Schaltfläche „Anker wiegen“ klickt, wodurch möglicherweise verschiedene Crews auf demselben Server landen können. Hier kommt BetterFleet ins Spiel, um diese Synchronisierung zu erleichtern. BetterFleet bietet eine Plattform, auf der Besatzungen kommunizieren und ihre Aktionen koordiniert planen können.",
+      "content": "Um eine Allianz im Meer der Diebe zu gründen, müssen die Spieler ihre Aktionen präzise koordinieren. Die Organisation beginnt in der Regel lange bevor sie auf See geht, zu einem Zeitpunkt, an dem sich alle Teilnehmer einig waren. Der Schlüssel ist, den genauen Moment zu synchronisieren, in dem jeder auf \"Segel setzen\" im Spielmenü klickt, die es den verschiedenen Crews ermöglicht, sich auf dem gleichen Server wiederzufinden. Hier kommt die BetterFleet ins Spiel. Um diese Synchronisation zu unterstützen, bietet die Anwendung eine Schnittstelle, auf der Spieler ihre Aktionen koordiniert planen können.",
       "title": "Wie gründe ich eine Allianz?"
     },
     "step": {
       "1": {
-        "content": "Öffnen Sie die BetterFleet-App und melden Sie sich mit Ihren Zugangsdaten an, um auf Ihr persönliches Konto zuzugreifen.",
+        "content": "Zuallererst benötigen Sie einen Account. Beim Öffnen von BetterFleet werden Sie aufgefordert, sich mit Ihren Daten anzumelden, damit Sie auf die Anwendung zugreifen können.",
         "title": "In der Anwendung anmelden"
       },
       "2": {
-        "content": "Wählen Sie die Option 'Sitzung erstellen' aus, um einen neuen Raum einzurichten, in dem Sie andere Spieler einladen können, Ihrer Allianz beizutreten.",
+        "content": "Wähle 'Erstelle eine Sitzung', um einen neuen Raum einzurichten, in dem du andere Spieler zu deiner Allianz einladen kannst.",
         "title": "Erstellen einer Sitzung"
       },
       "3": {
-        "content": "Für Ihre Sitzung wird ein eindeutiger Code generiert. Teilen Sie diesen Code den Freunden mit, die Sie zur Mitgliedschaft in der Allianz einladen möchten.",
+        "content": "Eine eindeutige ID wird für Ihre Sitzung generiert. Teilen Sie diese ID den Personen mit, die Sie einladen möchten und Teil der Allianz sein möchten.",
         "title": "Teilen von Sitzungscodes"
       },
       "4": {
-        "content": "Bitten Sie alle Spieler, das Menü „Raising Anchor“ des Spiels aufzurufen, wo sie sich darauf vorbereiten können, das Spiel gemeinsam zu starten.",
+        "content": "Bitten Sie alle Spieler, zum Menü 'Segel setzen' des Spiels zu gehen, wo sie sich auf den Start des Spiels vorbereiten können.",
         "title": "Treffen im Menü „Anker heben“."
       },
       "5": {
-        "content": "Jeder Spieler muss dann angeben, dass er bereit ist. Dies geschieht normalerweise durch Auswahl der Option „Bereit“ in der Anwendungsoberfläche.",
+        "content": "Jeder Spieler muss dann seinen Status für den Start ändern, was er tun kann, indem er \"Ready\" in der Anwendungsoberfläche auswählt.",
         "title": "Bestätigung der Bereitschaft"
       },
       "6": {
-        "content": "Sobald alle Spieler bereit sind, startet der Sitzungsleiter (oder Leiter) einen Countdown auf BetterFleet, um die Gleichzeitigkeit des Klickens auf „Anker weben“ zu koordinieren.",
-        "title": "Start des Countdowns durch den Session Master"
+        "content": "Sobald alle Spieler bereit sind, startet der Session-Host einen Countdown auf BetterFleet, so dass jeder gleichzeitig auf 'Segel setzen' klickt.",
+        "title": "Initiiere Countdown"
       },
       "7": {
-        "content": "Nach dem Beitritt zum Spiel müssen die Spieler überprüfen, ob sie sich alle auf demselben Server befinden. Dies kann über die BetterFleet-Funktionen oder durch Treffen an einem vereinbarten Treffpunkt im Spiel bestätigt werden. Wenn Spieler nicht auf demselben Server landen, wiederholen Sie den Vorgang ab Schritt 5, bis der gewünschte Server gefunden wird.",
-        "title": "Überprüfen der Präsenz auf demselben Server"
+        "content": "Sobald du im Spiel bist, musst du überprüfen, ob du einen gemeinsamen Server gefunden hast. BetterFleet wird Spieler gruppieren, die in der Liste landeten. Bei der Off-Chance haben Sie keinen Server gefunden, wiederholen Sie den Prozess von Schritt 4 und so weiter.",
+        "title": "Presence-Check auf einem Common Server"
       }
     },
     "stepWord": "Schritt",
     "title": "Anfang auf BetterFleet",
     "whatIsIt": {
-      "content": "Ein Allianzserver in Sea of Thieves ist ein Spielserver, auf dem mehrere Crews vereinbart haben, eine strategische Allianz zu bilden und zum gegenseitigen Vorteil zusammenzuarbeiten. Auf diesen Servern verfolgen die Besatzungen die gleichen Ziele, wie etwa das Sammeln von Schätzen oder das Abschließen von Quests, und vereinbaren, sich gegenseitig nicht anzugreifen. Die Idee ist, dass alle Mitglieder der Allianz von den Belohnungen profitieren, was die Gewinne und das Spielerlebnis für alle Teilnehmer optimiert. Dies schafft eine Umgebung, in der sich die Spieler auf Zusammenarbeit und Erkundung statt auf Wettbewerb konzentrieren können, was zu einem entspannteren und gemeinschaftlicheren Erlebnis führen kann.",
+      "content": "Ein Allianzserver ist ein Spielserver. Mehrere Mannschaften haben sich darauf geeinigt, eine strategische Allianz zu bilden und zum gegenseitigen Nutzen zusammenzuarbeiten. Auf diesen Servern teilen sich die Spieler die gleichen Ziele, wie zum Beispiel das Sammeln von Schätzen oder das Beenden von Quests, und schütteln die Hände darauf, sich nicht gegenseitig anzugreifen. Die Idee ist, dass jedes Mitglied von den Prämien profitiert und damit das Gewinn- und Spielerlebnis für jeden optimiert. Dies schafft einen Freiraum, in dem Spieler sich auf Teamarbeit und Erkundung konzentrieren können, anstatt konkurrenzfähig zu sein und ein entspannteres Community-basiertes Abenteuer zu bieten.",
       "title": "Was ist ein Allianzserver in Sea Of Thieves?"
     }
   }
