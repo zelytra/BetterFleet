@@ -168,7 +168,7 @@
       },
       "2": {
         "content": "Select 'Create a session' to set up a new space where you will be able to invite other players to join your alliance.",
-        "title": "Créer une Session"
+        "title": "Create a Session"
       },
       "3": {
         "content": "A unique ID will be generated for your session. Communicate this ID to the people you wish to invite and be part of the alliance.",
@@ -180,7 +180,7 @@
       },
       "5": {
         "content": "Every player must then change their status for the start, which they can do by selecting 'Ready' in the application interface.",
-        "title": "Confirmer que Tout le Monde est Prêt"
+        "title": "Confirm Everyone is Ready"
       },
       "6": {
         "content": "Once all players are ready, the session host initiates a countdown on BetterFleet so that everyone clicks 'Set sail' simultaneously.",
