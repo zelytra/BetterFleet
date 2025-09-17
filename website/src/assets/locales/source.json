@@ -54,7 +54,7 @@
         "content1": "BetterFleet helps players optimise their alliance creation, but it does not guarantee instant access to a single server.",
         "content2": "The search process entails numerous factors over which BetterFleet has no control. Among which: time of the day, number of players, location, Internet connection, as well as the goodwill of Sea of Thieves matchmaking servers.",
         "content3": "As for how long is needed, we observe a tendency varying between 5 minutes for the luckiest and up to 3 hours for the least fortunate. However, these estimations remain approximate and are not guaranteed.",
-        "content4": "Nethertheless, if you are knowledgeable on how to improve the search system for BetterFleet, we are inclined to study any suggestion you can make on Discord or GitHub.",
+        "content4": "Nevertheless, if you are knowledgeable on how to improve the search system for BetterFleet, we are inclined to study any suggestion you can make on Discord or GitHub.",
         "title": "Does BetterFleet guarantee to join the same server instantly?"
       },
       "bug": {
@@ -89,7 +89,7 @@
       },
       "eac": {
         "content1": "BetterFleet ressembles more a logbook than anything else. Its main automatic feature simulates a fairly simple mouse click, just like a voice command would, and does not technically constitute a macro in itself. Systems like Easy Anti-Cheat (EAC) mostly focus on RAM manipulation and therefore have no reason to condemn our method.",
-        "content2": "Besides, the click is never executed in game and only occurs in the menu, in accordance with the Sea of Thieves and Xbox terms of service (TOS). These terms are broad enough to juridically cover as many situations as possible, but no point mentions our specific use. The option can however be disabled at the user's discretion.",
+        "content2": "Besides, the click is never executed in game and only occurs in the menu, in accordance with the Sea of Thieves and Xbox terms of service (TOS). These terms are broad enough to juridically cover as many situations as possible, but no point mentions our specific use. The option can however be disabled at user's discretion.",
         "content3": "It is still essential to understand that using tools such as BetterFleet and Fleet Creator is not entirely devoid of risks, especially regarding IP detection which remains a sensitive point. Our application is as safe as another, but being neither recognised by Rare nor by Microsoft, we fully depend on their sole decision to take action.",
         "title": "Is there any risk with Easy Anti-Cheat? (EAC)"
       },
@@ -113,7 +113,7 @@
         "content3": "Open source: The application is completely open source, offering total transparency concerning its use and operation. This allows the community to verify and audit our code, therefore strengthening confidence in our product.",
         "content4": "Proactive maintenance: Our developers are committed to maintaining the application in optimal security conditions. This includes regular dependencies updates and continuously monitoring potential security breaches to prevent any risk.",
         "content5": "Independent approach: As BetterFleet is not licenced by Microsoft, it is subjected to Windows Defender upon installation. Our application is no less secure and we set our sights on adapting to these constraints we cannot quite control.",
-        "content6": "These joint efforts contribute to a reliable and secure platform for every one our users.",
+        "content6": "These joint efforts contribute to a reliable and secure platform for every one of our users.",
         "title": "Is the application secure?"
       },
       "update": {
@@ -134,7 +134,7 @@
     }
   },
   "header": {
-    "details": "BetterFleet has officially been released! Test the app now!"
+    "details": "BetterFleet is officially available! Try out the application now!"
   },
   "name": "BetterFleet",
   "nav": {
@@ -154,47 +154,47 @@
   },
   "tutorial": {
     "end": {
-      "content": "Good wind! May you sail in honor of sailors and make a fortune at sea! But. - Beware of the mutins, they envy the fresh fragrance of the new riches!",
-      "title": "Once the server is found?"
+      "content": "Godspeed! May you sail amongst honest seamen and make a fortune at sea! Still... Beware of mutineers, they crave the sweet flagrance of newfound richness!",
+      "title": "Once you found the server?"
     },
     "howTo": {
-      "content": "In order to create an alliance in Sea of Thieves, players must coordinate their actions accurately. The organization starts well before taking the sea, at an agreed moment by all participants. The key is to synchronize in the game menus at the given moment or each click on the \"Anchor raise\" button, This potentially allows the different crews to find themselves on the same server. This is where BetterFleet enters the seal. In order to facilitate this synchronization, the app offers an interface over which players can plan their actions in a coordinated manner.",
+      "content": "In order to create an alliance in Sea of Thieves, players must coordinate their actions with precision. Organisation generally starts long before putting out to sea, at a time all participants agreed upon. The key is to synchronise the exact moment everyone clicks \"Set sail\" in the game menu, which potentially allows the different crews to find themselves on the same server. This is where BetterFleet comes into play. So as to help this synchronisation along, the application offers an interface on which players can plan their actions in a coordinatied fashion.",
       "title": "How to create an alliance?"
     },
     "step": {
       "1": {
-        "content": "First you will need an account. By opening BetterFleet you will be asked to log in with your credentials in order to access the application.",
+        "content": "First and foremost, you need an account. Upon opening BetterFleet you will be asked to log in with your details so you can access the application.",
         "title": "Log into the Application"
       },
       "2": {
-        "content": "Select the 'Create a session' option to set up a new space where you can invite other players to join your alliance.",
-        "title": "Create Session"
+        "content": "Select 'Create a session' to set up a new space where you will be able to invite other players to join your alliance.",
+        "title": "Create a Session"
       },
       "3": {
-        "content": "A unique code will be managed for your session. Give this code to the people you want to invite to join the alliance.",
+        "content": "A unique ID will be generated for your session. Communicate this ID to the people you wish to invite and be part of the alliance.",
         "title": "Share the Session ID"
       },
       "4": {
-        "content": "Ask all players to go to the 'Raise Anchor' menu of the game, or they will be able to prepare to start the game together.",
+        "content": "Ask all players to go to the 'Set sail' menu of the game, where they will be able to prepare to start the game together.",
         "title": "Meeting in the 'Set Sail' Menu"
       },
       "5": {
-        "content": "Each player then has to change their status for the start, and what they can do by selecting the Preview option in the application interface.",
-        "title": "Confirm Everyone is Precious"
+        "content": "Every player must then change their status for the start, which they can do by selecting 'Ready' in the application interface.",
+        "title": "Confirm Everyone is Ready"
       },
       "6": {
-        "content": "Once all players are ready, the Mayor of the session initiates a countdown on BetterFleet to coordinate the simultaneity of the click on 'raise the Anchor'.",
-        "title": "Countdown Launch"
+        "content": "Once all players are ready, the session host initiates a countdown on BetterFleet so that everyone clicks 'Set sail' simultaneously.",
+        "title": "Initiating Countdown"
       },
       "7": {
-        "content": "Once in play, you have to check if you found a common server. BetterFleet will list players who are together. If you did not find a server, repeat the process from step 4 and so on.",
-        "title": "Check Server Meme Presence"
+        "content": "Once in game, you'll have to check whether you have found a common server. BetterFleet will group players who ended up together in the list. On the off chance you did not find a server, repeat the process from step 4 and so on.",
+        "title": "Presence Check on a Common Server"
       }
     },
     "stepWord": "Step",
     "title": "Beginning on BetterFleet",
     "whatIsIt": {
-      "content": "An alliance server is a game server or several teams have agreed to form a strategic alliance by combining for their mutual benefit. On these servers, players share the same goals, such as the collection of treasures, or the completeness of queens, and agree not to attack each other. The idea is for each member to benefit from the rewards, optimizing the winnings and the gaming experience of all. This creates an environment where players can focus on teamwork and exploration rather than on competency, offering a more extensive community adventure.",
+      "content": "An alliance server is a game server where several crews agreed on forming a strategic alliance and cooperating for their mutual benefit. On these servers, players share the same objectives, such as collecting treasures or bringing quests to completion, and shake hands on not attacking each other. The idea is that each and every member benefits from the rewards, therefore optimising profit and gaming experience for everyone. This creates an envrionment where players can focus on teamwork and exploration rather than being competitive, offering a more laid-back community-based adventure.",
       "title": "What is an alliance server on Sea of Thieves?"
     }
   }
