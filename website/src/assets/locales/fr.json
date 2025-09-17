@@ -11,7 +11,7 @@
   },
   "credits": {
     "and": "&",
-    "designed": "Designé par",
+    "designed": "Design par",
     "developed": "Développé par",
     "license": "Licence"
   },
@@ -129,12 +129,12 @@
     "discord": "Vous rencontrez un souci ? Contactez immédiatement notre équipe sur notre",
     "github": "Vous êtes développeur et vous adorez naviguer sur Sea of Thieves ? Alors venez contribuer au projet !",
     "warning": {
-      "content": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu. L'utilisateur engage seul sa responsabilité quant à son utilisation !",
+      "content": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son usage est externe et n'impacte aucunement l'expérience en jeu. L'utilisateur engage seul sa responsabilité quant à son utilisation !",
       "title": "Avertissement"
     }
   },
   "header": {
-    "details": "BetterFleet est officiellement sortie ! Testez l'application dès maintenant !"
+    "details": "BetterFleet est officiellement disponible ! Testez l'application dès maintenant !"
   },
   "name": "BetterFleet",
   "nav": {
@@ -154,11 +154,11 @@
   },
   "tutorial": {
     "end": {
-      "content": "Bon vent ! Puissiez-vous voguer auprès d'honnêtes marins et faire fortune en mer ! Mais... Gare aux mutins, ils envient le parfum frais des nouvelles richesses !",
+      "content": "Bon vent ! Puissiez-vous voguer auprès d'honnêtes marins et faire fortune en mer ! Mais... Gare aux mutins, ils envient le doux parfum des nouvelles richesses !",
       "title": "Une fois le serveur trouvé ?"
     },
     "howTo": {
-      "content": "Afin de créer une alliance dans Sea of Thieves, les joueurs doivent coordonner leurs actions avec précision. L'organisation commence généralement bien avant de prendre la mer, à un moment convenu par tous les participants. La clef est de synchroniser dans les menus du jeu le moment précis où chacun clique sur le bouton \"Lever l'ancre\", ce qui permet potentiellement aux différents équipages de se retrouver sur le même serveur. C'est là que BetterFleet entre en scène. Afin de faciliter cette synchronisation, l'application offre une interface sur laquelle les joueurs peuvent planifier leurs actions de manière coordonnée.",
+      "content": "Afin de créer une alliance dans Sea of Thieves, les joueurs doivent coordonner leurs actions avec précision. L'organisation commence généralement bien avant de prendre la mer, à un moment convenu par tous les participants. La clef est de synchroniser le moment précis où chacun clique sur \"Lever l'ancre\" dans les menus du jeu, ce qui permet potentiellement aux différents équipages de se retrouver sur le même serveur. C'est là que BetterFleet entre en scène. Afin de faciliter cette synchronisation, l'application offre une interface sur laquelle les joueurs peuvent planifier leurs actions de manière coordonnée.",
       "title": "Comment créer une alliance ?"
     },
     "step": {
@@ -167,7 +167,7 @@
         "title": "Connexion à l'Application"
       },
       "2": {
-        "content": "Sélectionnez l'option 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
+        "content": "Sélectionnez 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
         "title": "Créer une Session"
       },
       "3": {
@@ -179,11 +179,11 @@
         "title": "Rassemblement dans le Menu 'Lever l'Ancre'"
       },
       "5": {
-        "content": "Chaque joueur doit alors changer son statut pour le départ. Ce qu'il peut faire en sélectionnant l'option 'Prêt' dans l'interface de l'application.",
+        "content": "Chaque joueur doit alors changer son statut pour le départ, ce qu'il peut faire en sélectionnant 'Prêt' dans l'interface de l'application.",
         "title": "Confirmer que Tout le Monde est Prêt"
       },
       "6": {
-        "content": "Une fois tous les joueurs prêts, le maître de session initie un compte à rebours sur BetterFleet pour coordonner la simultanéité du clic sur 'Lever l'Ancre'.",
+        "content": "Une fois tous les joueurs prêts, l'hôte de la session initie un compte à rebours sur BetterFleet pour que tout le monde clique sur 'Lever l'Ancre' simultanément.",
         "title": "Lancement du Compte à Rebours"
       },
       "7": {
