@@ -209,7 +209,7 @@
       "joinSession": "Unirse a una sesión",
       "modal": {
         "button": "Únete a la sesión",
-        "comment": "Cada sesión es privada y requiere un código de identificación. ¡Pregúntale al anfitrión de la sesión a la que deseas unirte!",
+        "comment": "Cada sesión es privada y requiere un código de identificación. ¡Pídele al anfitrión de la sesión que desea unirse para el ID!",
         "title": "Ingrese una ID de sesión"
       }
     },
