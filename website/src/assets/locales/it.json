@@ -175,15 +175,15 @@
         "title": "Condividi l'ID della sessione"
       },
       "4": {
-        "content": "Invita tutti i giocatori ad aprire il menu ‘Salpa’ del gioco, dove potranno prepararsi per partire insieme.",
-        "title": "Riunione nel menu 'Imposta vela'"
+        "content": "Chiedete a tutti i giocatori di andare al menu \"Salpa\" del gioco, dove potranno prepararsi per iniziare la partita insieme.",
+        "title": "Riunitevi nel menu \"Salpa\""
       },
       "5": {
         "content": "Ogni giocatore deve quindi cambiare il proprio stato per l’avvio, selezionando ‘Pronto’ nell’interfaccia dell’applicazione.",
         "title": "Conferma che Tutti siano Pronti"
       },
       "6": {
-        "content": "Quando tutti i giocatori sono pronti, l'organizzatore della sessione avvia il conto alla rovescia su BetterFleet, in modo che tutti clicchino su ‘Salpa’ contemporaneamente.",
+        "content": "Una volta che tutti i giocatori sono pronti, l'organizzatore della sessione avvia un conto alla rovescia su BetterFleet in modo che tutti clicchino simultaneamente su \"Salpa\".",
         "title": "Avvio del Conto alla Rovescia"
       },
       "7": {
