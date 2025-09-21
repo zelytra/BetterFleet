@@ -54,7 +54,7 @@
         "content1": "BetterFleet aide les joueurs à optimiser leurs créations d'alliances, mais ne garantit pas un accès instantané à un même serveur.",
         "content2": "Le processus de recherche implique de nombreux facteurs que BetterFleet ne contrôle pas. Parmi eux : l'heure, le nombre de joueurs, la localisation, la connexion Internet, ainsi que le bon vouloir des serveurs de matchmaking de Sea of Thieves.",
         "content3": "Pour le temps requis, nous observons une tendance variant entre 5 minutes pour les plus chanceux et 3 heures pour les malheureux. Ces estimations restent malgré tout approximatives et ne sont pas garanties.",
-        "content4": "Nevertheless, if you are knowledgeable on how to improve the search system for BetterFleet, we are inclined to study any suggestion you can make on Discord or GitHub.",
+        "content4": "Si toutefois vous avez les connaissances pour améliorer le système de recherche de BetterFleet, nous sommes enclins à étudier les propositions que vous pourrez faire sur Discord ou GitHub.",
         "title": "BetterFleet garantit-il de rejoindre instantanément le même serveur ?"
       },
       "bug": {
@@ -89,7 +89,7 @@
       },
       "eac": {
         "content1": "BetterFleet se rapproche plus d'un journal de bord qu'autre chose. Sa principale fonction automatique simule un simple clic de souris, tout comme le ferait une commande vocale, et ne constitue pas une macro à proprement parler. Les systèmes comme Easy Anti-Cheat (EAC) se concentrent surtout sur les manipulations de mémoire vive (la RAM) et n'ont donc pas de raison de condamner notre méthode.",
-        "content2": "Besides, the click is never executed in game and only occurs in the menu, in accordance with the Sea of Thieves and Xbox terms of service (TOS). These terms are broad enough to juridically cover as many situations as possible, but no point mentions our specific use. The option can however be disabled at user's discretion.",
+        "content2": "De plus, le clic n'est jamais exécuté en jeu et n'intervient que dans les menus, conformément aux conditions d'utilisation de Sea of Thieves et de Xbox. Ces conditions sont vastes afin de couvrir juridiquement un maximum de situations, mais aucun point ne mentionne notre utilisation spécifique. L'option est toutefois désactivable au bon vouloir de l'utilisateur.",
         "content3": "Il reste essentiel de comprendre que l'utilisation d'outils tels que BetterFleet et Fleet Creator n'est pas entièrement dénuée de risques, notamment concernant la détection d'IP qui reste un point sensible. Notre application est aussi sûre qu'une autre, mais n'étant ni reconnus de Rare ni de Microsoft, nous dépendons pleinement de leur seule volonté d'agir.",
         "title": "Y a-t-il des risques avec Easy Anti-Cheat ? (EAC)"
       },
@@ -113,7 +113,7 @@
         "content3": "Open source : L'application est entièrement open source, offrant une transparence totale sur son utilisation et son fonctionnement. Cela permet à la communauté de vérifier et d'auditer notre code, renforçant ainsi la confiance dans notre produit.",
         "content4": "Maintenance proactive : Nos développeurs s'engagent à maintenir l'application en condition de sécurité optimale. Cela comprend la mise à jour régulière des dépendances et le suivi continu des potentielles failles de sécurité pour prévenir tout risque.",
         "content5": "Approche indépendante : BetterFleet n'étant pas sous licence Microsoft, il est soumis à Windows Defender lors de son installation. Notre application n'en est pas moins sécurisée et nous visons à nous adapter à ces contraintes dont nous n'avons pas le contrôle.",
-        "content6": "These joint efforts contribute to a reliable and secure platform for every one of our users.",
+        "content6": "Ces efforts conjoints contribuent à une plateforme fiable et sécurisée pour tous nos utilisateurs.",
         "title": "L'application est-elle sécurisée ?"
       },
       "update": {
@@ -134,7 +134,7 @@
     }
   },
   "header": {
-    "details": "BetterFleet is officially available! Try out the application now!"
+    "details": "BetterFleet est officiellement disponible ! Testez l'application dès maintenant !"
   },
   "name": "BetterFleet",
   "nav": {
@@ -154,20 +154,20 @@
   },
   "tutorial": {
     "end": {
-      "content": "Godspeed! May you sail amongst honest seamen and make a fortune at sea! Still... Beware of mutineers, they crave the sweet flagrance of newfound richness!",
-      "title": "Once you found the server?"
+      "content": "Bon vent ! Puissiez-vous voguer auprès d'honnêtes marins et faire fortune en mer ! Mais... Gare aux mutins, ils envient le doux parfum des nouvelles richesses !",
+      "title": "Une fois le serveur trouvé ?"
     },
     "howTo": {
-      "content": "In order to create an alliance in Sea of Thieves, players must coordinate their actions with precision. Organisation generally starts long before putting out to sea, at a time all participants agreed upon. The key is to synchronise the exact moment everyone clicks \"Set sail\" in the game menu, which potentially allows the different crews to find themselves on the same server. This is where BetterFleet comes into play. So as to help this synchronisation along, the application offers an interface on which players can plan their actions in a coordinatied fashion.",
+      "content": "Afin de créer une alliance dans Sea of Thieves, les joueurs doivent coordonner leurs actions avec précision. L'organisation commence généralement bien avant de prendre la mer, à un moment convenu par tous les participants. La clef est de synchroniser le moment précis où chacun clique sur \"Lever l'ancre\" dans les menus du jeu, ce qui permet potentiellement aux différents équipages de se retrouver sur le même serveur. C'est là que BetterFleet entre en jeu. Afin de faciliter cette synchronisation, l'application offre une interface sur laquelle les joueurs peuvent planifier leurs actions de manière coordonnée.",
       "title": "Comment créer une alliance ?"
     },
     "step": {
       "1": {
-        "content": "First and foremost, you need an account. Upon opening BetterFleet you will be asked to log in with your details so you can access the application.",
+        "content": "Tout d'abord, vous aurez besoin d'un compte. En ouvrant BetterFleet il vous sera demandé de vous connecter avec vos identifiants afin d'accéder à l'application.",
         "title": "Connexion à l'Application"
       },
       "2": {
-        "content": "Select 'Create a session' to set up a new space where you will be able to invite other players to join your alliance.",
+        "content": "Sélectionnez 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
         "title": "Create a Session"
       },
       "3": {
