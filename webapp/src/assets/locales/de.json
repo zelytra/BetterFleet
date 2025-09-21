@@ -209,7 +209,7 @@
       "joinSession": "Nehmen Sie an einer Sitzung teil",
       "modal": {
         "button": "Nehmen Sie an der Sitzung teil",
-        "comment": "Jede Sitzung ist privat und erfordert einen Identifikationscode. Fragen Sie den Moderator der Sitzung, an der Sie teilnehmen möchten!",
+        "comment": "Jede Sitzung ist privat und benötigt einen Identifikationscode. Fragen Sie den Gastgeber der Sitzung, an der Sie teilnehmen möchten, für die ID!",
         "title": "Geben Sie eine Sitzungs-ID ein"
       }
     },

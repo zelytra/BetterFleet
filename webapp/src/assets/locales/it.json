@@ -209,7 +209,7 @@
       "joinSession": "Entra in una sessione",
       "modal": {
         "button": "Entra nella sessione",
-        "comment": "Ogni sessione è privata e richiede un codice identificativo. Richiedilo all'organizzatore della sessione a cui desideri unirti!",
+        "comment": "Ogni sessione è privata e richiede un codice identificativo. Chiedi all'organizzatore della sessione a cui vuoi partecipare l’ID!",
         "title": "Inserisci un ID sessione"
       }
     },

@@ -158,7 +158,7 @@
       "title": "Une fois le serveur trouvé ?"
     },
     "howTo": {
-      "content": "Afin de créer une alliance dans Sea of Thieves, les joueurs doivent coordonner leurs actions avec précision. L'organisation commence généralement bien avant de prendre la mer, à un moment convenu par tous les participants. La clef est de synchroniser le moment précis où chacun clique sur \"Lever l'ancre\" dans les menus du jeu, ce qui permet potentiellement aux différents équipages de se retrouver sur le même serveur. C'est là que BetterFleet entre en scène. Afin de faciliter cette synchronisation, l'application offre une interface sur laquelle les joueurs peuvent planifier leurs actions de manière coordonnée.",
+      "content": "Afin de créer une alliance dans Sea of Thieves, les joueurs doivent coordonner leurs actions avec précision. L'organisation commence généralement bien avant de prendre la mer, à un moment convenu par tous les participants. La clef est de synchroniser le moment précis où chacun clique sur \"Lever l'ancre\" dans les menus du jeu, ce qui permet potentiellement aux différents équipages de se retrouver sur le même serveur. C'est là que BetterFleet entre en jeu. Afin de faciliter cette synchronisation, l'application offre une interface sur laquelle les joueurs peuvent planifier leurs actions de manière coordonnée.",
       "title": "Comment créer une alliance ?"
     },
     "step": {
@@ -183,12 +183,12 @@
         "title": "Confirmer que Tout le Monde est Prêt"
       },
       "6": {
-        "content": "Une fois tous les joueurs prêts, l'hôte de la session initie un compte à rebours sur BetterFleet pour que tout le monde clique sur 'Lever l'Ancre' simultanément.",
+        "content": "Une fois tous les joueurs prêts, l'hôte de la session initie un compte à rebours sur BetterFleet afin que tout le monde clique sur \"Lever l'Ancre\" simultanément.",
         "title": "Lancement du Compte à Rebours"
       },
       "7": {
         "content": "Une fois en jeu, il vous reste à vérifier si vous avez trouvé un serveur commun. BetterFleet regroupera dans la liste les joueurs qui sont ensemble. Si vous n'avez pas trouvé de serveur, répétez le processus à partir de l'étape 4 et ainsi de suite.",
-        "title": "Vérifier la Présence sur le Même Serveur"
+        "title": "Vérifier la Présence sur un Même Serveur"
       }
     },
     "stepWord": "Étape",

@@ -54,7 +54,7 @@
         "content1": "BetterFleet ayuda a los jugadores a encontrar alianzas, pero no garantiza acceso instantáneo al mismo servidor.",
         "content2": "Al agrupar a varios jugadores, entran en juego muchos factores que están fuera del control de BetterFleet. Entre ellos: el tiempo, la cantidad de jugadores que buscan, la ubicación, la conexión a Internet y la buena voluntad de los servidores de emparejamiento de Sea of Thieves.",
         "content3": "Observamos una tendencia donde el tiempo de búsqueda varía entre 5 minutos para los afortunados y hasta 3 horas para los menos afortunados. Sin embargo, estas estimaciones siguen siendo aproximadas y no están garantizadas.",
-        "content4": "BetterFleet no lo une automáticamente al mismo servidor de forma instantánea, pero facilita su búsqueda al agilizar el proceso.",
+        "content4": "Sin embargo, si tiene conocimientos sobre cómo mejorar el sistema de búsqueda de BetterFleet, estamos inclinados a estudiar cualquier sugerencia que puedas hacer en Discord o GitHub.",
         "title": "¿BetterFleet garantiza unirse al mismo servidor instantáneamente?"
       },
       "bug": {
@@ -89,7 +89,7 @@
       },
       "eac": {
         "content1": "Nuestra aplicación está diseñada para simular un clic del mouse, replicando así la acción de un usuario que usaría físicamente un mouse. Este método es indetectable por sistemas como Easy Anti-Cheat (EAC), porque nuestra técnica no constituye una macro estrictamente hablando. EAC se centra principalmente en detectar manipulaciones de la memoria de acceso aleatorio (RAM) y no en el uso de simuladores de clic.",
-        "content2": "Además, el clic nunca se realiza en el juego en sí, sino solo en los menús, lo que cumple con los Términos de servicio (TOS) del juego y de Xbox. Los TOS están redactados de forma lo suficientemente amplia como para cubrir tantas situaciones como sea posible desde un punto de vista legal.",
+        "content2": "Además, el clic nunca se ejecuta en el juego y sólo ocurre en el menú, de acuerdo con las condiciones de servicio de Sea of Thieves y Xbox (TOS). Estos términos son suficientemente amplios para cubrir jurídicamente tantas situaciones como sea posible, pero ningún punto menciona nuestro uso específico. Sin embargo, la opción puede desactivarse a discreción del usuario.",
         "content3": "Es fundamental entender que el uso de nuestro simulador conlleva riesgos similares a los de cualquier otra aplicación del mismo tipo, como FleetCreator, especialmente en lo que respecta a la detección de IP, que sigue siendo un punto sensible. Usar nuestra aplicación es tan seguro como usar aplicaciones similares, siempre que sigas las pautas y los TOS mencionados.",
         "title": "¿Existe algún riesgo con EAC (Easy Anti-Cheat)?"
       },
@@ -113,7 +113,7 @@
         "content3": "Código abierto: La aplicación es completamente de código abierto, proporcionando total transparencia sobre su uso y funcionamiento. Esto permite a la comunidad verificar y auditar nuestro código, generando confianza en nuestro producto.",
         "content4": "Mantenimiento proactivo: Nuestros desarrolladores se comprometen a mantener la aplicación en óptimas condiciones de seguridad. Esto incluye actualizar periódicamente las dependencias y monitorear continuamente las posibles vulnerabilidades de seguridad para evitar cualquier riesgo.",
         "content5": "defensor de windows blabla",
-        "content6": "Estos esfuerzos conjuntos contribuyen a una plataforma confiable y segura para todos nuestros usuarios.",
+        "content6": "Estos esfuerzos conjuntos contribuyen a una plataforma fiable y segura para cada uno de nuestros usuarios.",
         "title": "¿La aplicación es segura?"
       },
       "update": {
@@ -134,7 +134,7 @@
     }
   },
   "header": {
-    "details": "BetterFleet est actuellement en alpha ! Testez l’application dès maintenant !"
+    "details": "¡BetterFleet está oficialmente disponible! ¡Pruebe la aplicación ahora!"
   },
   "name": "Mejor flota",
   "nav": {
@@ -154,47 +154,47 @@
   },
   "tutorial": {
     "end": {
-      "content": "¡Buena suerte y que las riquezas de los mares sean tuyas, aprovecha al máximo la camaradería y cooperación que ofrece esta alianza!",
-      "title": "¿Una vez encontrado el servidor?"
+      "content": "¡Buena velocidad! ¡Que naveges entre los marineros honestos y hacer una fortuna en el mar! Aún más... ¡Cuidado con los mutineros, anhelan el dulce sabor de la nueva riqueza encontrada!",
+      "title": "Una vez que has encontrado el servidor?"
     },
     "howTo": {
-      "content": "Para crear una alianza en Sea of Thieves, los jugadores deben coordinar sus acciones con precisión. La organización generalmente comienza mucho antes de zarpar, muchas veces por la mañana o a una hora acordada por todos los participantes. La clave es sincronizar cuando todos hacen clic en el botón \"Levar ancla\" en el juego, lo que potencialmente permite que diferentes equipos terminen en el mismo servidor. Aquí es donde entra BetterFleet para facilitar esta sincronización. BetterFleet proporciona una plataforma donde las tripulaciones pueden comunicarse y planificar sus acciones de manera coordinada.",
+      "content": "Para crear una alianza en Mar de los Ladrones, los jugadores deben coordinar sus acciones con precisión. La organización generalmente comienza mucho antes de salir al mar, en un momento en que todos los participantes se pusieron de acuerdo. La clave es sincronizar el momento exacto en el que todo el mundo hace clic en \"Establecer navegación\" en el menú del juego, que potencialmente permite a las diferentes tripulaciones encontrarse en el mismo servidor. Aquí es donde entra en juego BetterFleet. Con el fin de ayudar a esta sincronización, la aplicación ofrece una interfaz en la que los jugadores pueden planificar sus acciones de forma coordinada.",
       "title": "¿Cómo crear una alianza?"
     },
     "step": {
       "1": {
-        "content": "Abra la aplicación BetterFleet e inicie sesión con sus credenciales para acceder a su cuenta personal.",
+        "content": "En primer lugar, usted necesita una cuenta. Al abrir BetterFleet se le pedirá que inicie sesión con sus datos para que pueda acceder a la aplicación.",
         "title": "Inicie sesión en la aplicación"
       },
       "2": {
-        "content": "Selecciona la opción 'Crear sesión' para configurar un nuevo espacio donde puedas invitar a otros jugadores a unirse a tu alianza.",
+        "content": "Selecciona 'Crear una sesión' para configurar un nuevo espacio donde podrás invitar a otros jugadores a unirse a tu alianza.",
         "title": "Creando una sesión"
       },
       "3": {
-        "content": "Se generará un código único para su sesión. Comunica este código a los amigos que deseas invitar a formar parte de la alianza.",
+        "content": "Se generará un ID único para tu sesión. Indica este ID a las personas que quieras invitar y formar parte de la alianza.",
         "title": "Código de sesión compartido"
       },
       "4": {
-        "content": "Haz que todos los jugadores vayan al menú \"Levantando anclas\" del juego, donde pueden prepararse para comenzar el juego juntos.",
+        "content": "Pide a todos los jugadores que vayan al menú \"Establecer vela\" del juego, donde podrán prepararse para empezar el juego juntos.",
         "title": "Reuniéndose en el menú 'Levantando anclas'"
       },
       "5": {
-        "content": "Luego, cada jugador debe indicar que está listo. Esto generalmente se hace seleccionando la opción \"Listo\" en la interfaz de la aplicación.",
+        "content": "Cada jugador debe entonces cambiar su estado para el comienzo, lo que puede hacer seleccionando 'Listo' en la interfaz de la aplicación.",
         "title": "Confirmación de preparación"
       },
       "6": {
-        "content": "Una vez que todos los jugadores están listos, el maestro de sesión (o líder) inicia una cuenta regresiva en BetterFleet para coordinar la simultaneidad de hacer clic en 'Tejer ancla'.",
-        "title": "Lanzamiento de la cuenta atrás por parte del Session Master"
+        "content": "Una vez que todos los jugadores están listos, el host de la sesión inicia una cuenta regresiva en BetterFleet para que todo el mundo haga clic en 'Establecer vela' simultáneamente.",
+        "title": "Iniciando cuenta atrás"
       },
       "7": {
-        "content": "Después de unirse al juego, los jugadores deben verificar si todos están en el mismo servidor. Esto se puede confirmar a través de las funciones de BetterFleet o reuniéndose en un punto de encuentro acordado en el juego. Si los jugadores no terminan en el mismo servidor, repita el proceso desde el paso 5 hasta encontrar el servidor deseado.",
-        "title": "Comprobando presencia en el mismo servidor"
+        "content": "Una vez en el juego, tendrás que comprobar si has encontrado un servidor común. BetterFleet agrupará a jugadores que terminaron juntos en la lista. En la posibilidad de no encontrar un servidor, repetir el proceso desde el paso 4 y así sucesivamente.",
+        "title": "Comprobar presencia en un servidor común"
       }
     },
     "stepWord": "Escenario",
     "title": "Empezando con BetterFleet",
     "whatIsIt": {
-      "content": "Un servidor de alianza en Sea of Thieves es un servidor de juegos en el que varias tripulaciones han acordado formar una alianza estratégica y cooperar para beneficio mutuo. En estos servidores, las tripulaciones comparten los mismos objetivos, como recolectar tesoros o completar misiones, y acuerdan no atacarse entre sí. La idea es que todos los miembros de la alianza se beneficien de las recompensas, lo que optimiza las ganancias y la experiencia de juego para todos los participantes. Esto crea un entorno en el que los jugadores pueden centrarse en la cooperación y la exploración en lugar de la competencia, lo que puede proporcionar una experiencia más relajada y comunitaria.",
+      "content": "Un servidor de alianza es un servidor de juegos donde varias tripulaciones acordaron formar una alianza estratégica y cooperar para su beneficio mutuo. En estos servidores, los jugadores comparten los mismos objetivos, como recolectar tesoros o llevar las misiones a la finalización, y sacude las manos para no atacarse mutuamente. La idea es que todos y cada uno de los miembros se beneficien de las recompensas, por lo tanto optimizando la experiencia de ganancia y juego para todos. Esto crea una envidia donde los jugadores pueden centrarse en el trabajo en equipo y la exploración en lugar de ser competitivos, ofreciendo una aventura más relajada basada en la comunidad.",
       "title": "¿Qué es un servidor de alianza en Sea Of Thieves?"
     }
   }
