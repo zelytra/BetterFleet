@@ -103,7 +103,7 @@
         "title": "Perché la mia applicazione si blocca e/o non avvia?"
       },
       "password": {
-        "content1": "Sfortunatamente, BetterFleet non può recuperare la tua password persa. Se accade, puoi contattarci sul nostro Discord e la resetteremo per te. Tuttavia, si consiglia di creare un nuovo account, a meno che non si desidera davvero recuperare quello vecchio.",
+        "content1": "Sfortunatamente, BetterFleet non può recuperare la tua password persa. Se accade, puoi contattarci sul nostro Discord e la resetteremo per te. Tuttavia, si consiglia di creare un nuovo account, a meno che non si desideri davvero recuperare quello vecchio.",
         "content2": "L'applicazione ha una funzione \"Password dimenticata\", ma non abbiamo ancora l'infrastruttura necessaria per abilitarla. Puoi contribuire al progetto tramite la nostra pagina GitHub per aiutarci a configurarlo.",
         "title": "Cosa devo fare se ho dimenticato la password?"
       },
