@@ -4,7 +4,7 @@ export interface SingleSelectInterface {
 }
 
 export interface InputData {
-  image: any;
+  image?: any;
   display: string;
   id: string;
 }

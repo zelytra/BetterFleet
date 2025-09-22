@@ -11,10 +11,10 @@
 </template>
 
 <script setup lang="ts">
-import FleetLobby from "@/components/fleet/session/FleetLobby.vue";
+import FleetLobby from "@/components/fleet/session/lobby/FleetLobby.vue";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { UserStore } from "@/objects/stores/UserStore.ts";
-import PublicFleetSessions from "@/components/fleet/session/PublicFleetSessions.vue";
+import PublicFleetSessions from "@/components/fleet/session/menu/PublicFleetSessions.vue";
 </script>
 
 <style scoped lang="scss">
