@@ -66,7 +66,7 @@
       },
       "console": {
         "content1": "Assolutamente! Abbiamo sviluppato funzionalità specifiche per migliorare l'esperienza dei giocatori di Xbox e PlayStation. Ecco cosa abbiamo implementato:",
-        "content2": "Conto alla rovescia audio: Abbiamo incorporato un componente sonoro nel conto alla rovescia. Questa funzione permette agli utenti di sapere esattamente quando impostare la vela, senza mettere il leader dell'alleanza per dare istruzioni vocali. Questo rende le sessioni eseguite senza intoppi durante il giro latenza causata dalle piattaforme di scambio online.",
+        "content2": "Conto alla rovescia audio: abbiamo integrato una componente audio per il conto alla rovescia. Questa funzione permette agli utenti di sapere esattamente quando salpare, senza dover chiedere istruzioni vocali al leader dell'alleanza. Questo fa sì che le sessioni si svolgano senza intoppi, aggirando al contempo la latenza causata dalle piattaforme online di chat.",
         "content3": "Indicazione visiva della piattaforma utilizzata: Abbiamo aggiunto un'icona per far sapere agli utenti se i loro compagni di squadra sono su una console. Questa funzione promuove un migliore coordinamento e comprensione tra i giocatori che utilizzano piattaforme diverse.",
         "content4": "Questi miglioramenti sono progettati per rendere l'esperienza di gioco più intuitiva e accessibile per i giocatori di console, garantendo un'integrazione armoniosa all'interno delle comunità di gioco miste.",
         "title": "È degno di interesse per i giocatori di console?"
@@ -103,7 +103,7 @@
         "title": "Perché la mia applicazione si blocca e/o non avvia?"
       },
       "password": {
-        "content1": "Sfortunatamente, BetterFleet non può recuperare la tua password persa. Se accade, puoi contattarci sul nostro Discord e la resetteremo per te. Tuttavia, si consiglia di creare un nuovo account, a meno che non si desidera davvero recuperare quello vecchio.",
+        "content1": "Sfortunatamente, BetterFleet non può recuperare la tua password persa. Se accade, puoi contattarci sul nostro Discord e la resetteremo per te. Tuttavia, si consiglia di creare un nuovo account, a meno che non si desideri davvero recuperare quello vecchio.",
         "content2": "L'applicazione ha una funzione \"Password dimenticata\", ma non abbiamo ancora l'infrastruttura necessaria per abilitarla. Puoi contribuire al progetto tramite la nostra pagina GitHub per aiutarci a configurarlo.",
         "title": "Cosa devo fare se ho dimenticato la password?"
       },
@@ -158,7 +158,7 @@
       "title": "Hai trovato il server?"
     },
     "howTo": {
-      "content": "Per creare un’alleanza in Sea of Thieves, i giocatori devono coordinare le proprie azioni con precisione. L’organizzazione inizia di solito molto prima di salpare, in un momento concordato da tutti i partecipanti. La chiave è sincronizzare l’esatto momento in cui ciascuno clicca su “Salpa” nel menu di gioco, il che permette, potenzialmente, alle diverse ciurme di trovarsi sullo stesso server. Ed è qui che entra in gioco BetterFleet. Per facilitare questa sincronizzazione, l’applicazione offre un’interfaccia che permette ai giocatori di pianificare le proprie azioni in modo coordinato.",
+      "content": "Per creare un'alleanza in Sea of ​​Thieves, i giocatori devono coordinare le loro azioni con precisione. L'organizzazione inizia generalmente molto prima di salpare, in un momento concordato da tutti i partecipanti. La chiave è sincronizzare il momento esatto in cui tutti cliccano su \"Salpa\" nel menu di gioco, il che potenzialmente consente ai diversi equipaggi di trovarsi sullo stesso server. È qui che entra in gioco BetterFleet. Per facilitare questa sincronizzazione, l'applicazione offre un'interfaccia tramite la quale i giocatori possono pianificare le proprie azioni in modo coordinato.",
       "title": "Come creare un'alleanza?"
     },
     "step": {
@@ -175,15 +175,15 @@
         "title": "Condividi l'ID della sessione"
       },
       "4": {
-        "content": "Invita tutti i giocatori ad aprire il menu ‘Salpa’ del gioco, dove potranno prepararsi per partire insieme.",
-        "title": "Riunione nel menu 'Imposta vela'"
+        "content": "Chiedete a tutti i giocatori di andare al menu \"Salpa\" del gioco, dove potranno prepararsi per iniziare la partita insieme.",
+        "title": "Riunitevi nel menu \"Salpa\""
       },
       "5": {
         "content": "Ogni giocatore deve quindi cambiare il proprio stato per l’avvio, selezionando ‘Pronto’ nell’interfaccia dell’applicazione.",
         "title": "Conferma che Tutti siano Pronti"
       },
       "6": {
-        "content": "Quando tutti i giocatori sono pronti, l'organizzatore della sessione avvia il conto alla rovescia su BetterFleet, in modo che tutti clicchino su ‘Salpa’ contemporaneamente.",
+        "content": "Una volta che tutti i giocatori sono pronti, l'organizzatore della sessione avvia un conto alla rovescia su BetterFleet in modo che tutti clicchino simultaneamente su \"Salpa\".",
         "title": "Avvio del Conto alla Rovescia"
       },
       "7": {
