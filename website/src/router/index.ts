@@ -1,11 +1,8 @@
 import { createWebHistory, createRouter } from "vue-router";
 import HomeComponent from "@/components/HomeComponent.vue";
-import { tsi18n } from "@/objects/i18n";
 import SupportComponent from "@/components/SupportComponent.vue";
 import ReportsComponent from "@/components/ReportsComponent.vue";
 import TutorialComponent from "@/components/TutorialComponent.vue";
-
-const { t } = tsi18n.global;
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -16,7 +13,7 @@ declare module "vue-router" {
 export const routes = [
   {
     path: "/",
-    name: t("nav.home"),
+    name: "nav.home",
     component: HomeComponent,
     meta: {
       displayInNav: true,
@@ -24,7 +21,7 @@ export const routes = [
   },
   {
     path: "/support",
-    name: t("nav.support"),
+    name: "nav.support",
     component: SupportComponent,
     meta: {
       displayInNav: true,
@@ -32,7 +29,7 @@ export const routes = [
   },
   {
     path: "/tutorial",
-    name: t("nav.documentation"),
+    name: "nav.documentation",
     component: TutorialComponent,
     meta: {
       displayInNav: true,

@@ -103,7 +103,7 @@
     "savebar": {
       "cancel": "Descartar los cambios",
       "content": "¡Salto, salto, salto! ¡Vi que hiciste algunos cambios!",
-      "save": "Ahorrar"
+      "save": "Guardar"
     },
     "server": {
       "label": "Dirección del servidor",
@@ -120,7 +120,7 @@
   "contextMenu": {
     "master": {
       "demote": "Eliminar maestro",
-      "kick": "Expulsar",
+      "kick": "Patear",
       "promote": "Asignar maestro",
       "title": "Usuario"
     }
@@ -128,15 +128,15 @@
   "credits": {
     "and": "y",
     "description": "BetterFleet se desarrolló para facilitar la formación de alianzas en Sea Of Thieves",
-    "designed": "Diseñada por",
+    "designed": "Designar por",
     "details": "BetterFleet es una aplicación de terceros no oficial y no relacionada con el equipo de desarrollo de Sea Of Thieves. ¡Su uso es puramente externo y no tiene ningún impacto en la experiencia de juego!",
-    "developed": "Desarrollado por",
+    "developed": "Desarrollar por",
     "socials": "Encuéntranos aquí:",
     "sot": {
       "thanks": "Nos gustaría agradecer",
       "use": "para permitirnos usar la fuente y los banners de su juego"
     },
-    "title": "Créditos"
+    "title": "Crédito"
   },
   "firstLogin": {
     "button": {
@@ -157,15 +157,16 @@
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
-    "fr": "Français"
+    "fr": "Français",
+    "it": "Italiano"
   },
   "login": {
     "continue": "seguir",
     "description": "¡Bienvenidos a Mejor Flota! Estamos encantados de tenerte entre nosotros. Para poder utilizar la aplicación por completo, es necesario iniciar sesión en su cuenta o crear una.",
     "disconnect": "¿Esta no es tu cuenta? ",
     "loginButton": "Conectarse",
-    "succeed": "¡Conexión exitosa!",
-    "userWelcome": "Bienvenido",
+    "succeed": "¡Inicio de sesión exitoso!",
+    "userWelcome": "Bienvenida",
     "welcome": "Bienvenido a"
   },
   "modal": {
@@ -174,13 +175,13 @@
         "cancel": "anular",
         "confirm": "Levantar el ancla",
         "content": "¡No todos los jugadores están preparados! ¿Estás seguro de que quieres levar anclas?",
-        "title": "ATENCIÓN !"
+        "title": "¡ATENCIÓN!"
       },
       "leave": {
         "cancel": "anular",
-        "confirm": "Salir de la sesión",
+        "confirm": "Abandonar la sesión",
         "content": "¿Estás seguro de que quieres abandonar la sesión?",
-        "title": "SALIR DE LA SESIÓN"
+        "title": "LIMPIAR LA SESIÓN"
       }
     }
   },
@@ -208,7 +209,7 @@
       "joinSession": "Unirse a una sesión",
       "modal": {
         "button": "Únete a la sesión",
-        "comment": "Cada sesión es privada y requiere un código de identificación. ¡Pregúntale al anfitrión de la sesión a la que deseas unirte!",
+        "comment": "Cada sesión es privada y requiere un código de identificación. ¡Pídele al anfitrión de la sesión que desea unirse para el ID!",
         "title": "Ingrese una ID de sesión"
       }
     },
@@ -267,7 +268,7 @@
       "40": "Equipo de motín",
       "41": "Tortuga marina",
       "42": "plan secreto",
-      "43": "Polvo húmedo",
+      "43": "Pólvora empapada",
       "44": "Galeón Español",
       "45": "Bahía tranquila",
       "46": "Timón roto",

@@ -157,7 +157,8 @@
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
-    "fr": "Français"
+    "fr": "Français",
+    "it": "Italiano"
   },
   "login": {
     "continue": "Continue",
@@ -208,7 +209,7 @@
       "joinSession": "Join a session",
       "modal": {
         "button": "Join the session",
-        "comment": "Each session is private and requires an identification code. Ask it to the host of the session you wish to join!",
+        "comment": "Each session is private and requires an identification code. Ask the host of the session you wish to join for the ID!",
         "title": "Enter a session ID"
       }
     },

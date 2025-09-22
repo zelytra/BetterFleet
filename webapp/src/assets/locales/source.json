@@ -1,364 +1,365 @@
 {
   "alert": {
     "badRequest": {
-      "content": "La requête est corrompue ou incorrecte",
-      "title": "Mauvaise requête"
+      "content": "The query is corrupted or incorrect",
+      "title": "Bad query"
     },
     "emptySession": {
-      "content": "Veuillez entrer un code de session",
-      "title": "Code de session vide"
+      "content": "Please enter a session ID",
+      "title": "Empty session ID"
     },
     "error": {
-      "content": "Une erreur est survenue",
-      "title": "Erreur"
+      "content": "An error has occurred",
+      "title": "Error"
     },
     "forbidden": {
-      "content": "Vous ne disposez pas des autorisations nécessaires pour accéder à cette page",
-      "title": "Accès refusé"
+      "content": "You do not have the necessary permission to access this page",
+      "title": "Access denied"
     },
     "outdated": {
-      "content": "Veuillez mettre à jour votre application",
-      "title": "Client obsolète"
+      "content": "Please update your application",
+      "title": "Outdated client"
     },
     "report": {
       "emptyMessage": {
-        "content": "Veuillez décrire au mieux votre problème dans le rapport de bug",
-        "title": "Rapport vide"
+        "content": "Please do your best to describe your issue in the bug report",
+        "title": "Empty report"
       },
       "send": {
-        "title": "Rapport envoyé"
+        "title": "Report sent"
       }
     },
     "research": {
       "notInMenu": {
-        "content": "Vous n'êtes pas dans le menu du jeu",
-        "title": "Échec du lancement"
+        "content": "You are not in the game menu",
+        "title": "Launch failed"
       },
       "notReady": {
-        "content": "Vous n'êtes pas prêt",
-        "title": "Échec du lancement"
+        "content": "You are not ready",
+        "title": "Launch failed"
       },
       "offline": {
-        "content": "Votre jeu est fermé",
-        "title": "Échec du lancement"
+        "content": "Your game is closed",
+        "title": "Launch failed"
       }
     },
     "session": {
       "notLeave": {
-        "content": "Vous ne pouvez pas quitter cette page",
-        "title": "Lancement en cours"
+        "content": "You cannot leave this page",
+        "title": "Countdown running"
       }
     },
     "sessionNotFound": {
-      "content": "Vérifiez votre code de session",
-      "title": "Session introuvable"
+      "content": "Verify your session ID",
+      "title": "Session not found"
     },
     "socket": {
-      "connectionFailed": "Échec de la connexion au serveur",
-      "random": "Le WebSocket s'est fermé de façon inattendue",
-      "title": "Connexion perdue"
+      "connectionFailed": "The connection to the server failed",
+      "random": "The WebSocket closed unexpectedly",
+      "title": "Connection lost"
     },
     "unsupportedMedia": {
-      "content": "Le média que vous tentez d'envoyer n'est pas supporté par l'application",
-      "title": "Média non supporté"
+      "content": "The media you are trying to send is not supported by the application",
+      "title": "Unsupported media"
     },
     "username": {
       "ignore": {
-        "content": "Votre pseudonyme n'a pas été changé",
-        "title": "Lancement en cours"
+        "content": "Username modification cancelled",
+        "title": "Countdown running"
       },
       "length": {
-        "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
-        "title": "Format de pseudo invalide"
+        "content": "Your username cannot be empty or go over 16 characters",
+        "title": "Invalid username format"
       }
     },
     "websocketAuthFailed": {
-      "content": "L'authentification au WebSocket a échoué",
-      "title": "Connexion impossible"
+      "content": "The WebSocket authentication failed",
+      "title": "Connection failed"
     }
   },
   "appName": "BetterFleet",
   "config": {
     "device": {
-      "label": "Plateforme"
+      "label": "Platform"
     },
-    "devmode": "Activer le mode développeur",
-    "disconnect": "Se déconnecter",
+    "devmode": "Enable developer mode",
+    "disconnect": "Disconnect",
     "lang": {
-      "label": "Langue"
+      "label": "Language"
     },
     "macro": {
-      "check": "Lancement assisté",
-      "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte"
+      "check": "Assisted launch",
+      "description": "Automatically clicks on \"Set sail\" at the end of the countdown"
     },
     "name": {
-      "label": "Pseudonyme",
-      "placeholder": "Pseudonyme"
+      "label": "Username",
+      "placeholder": "Username"
     },
     "part": {
       "audio": "Audio",
-      "developer": "Développeur",
-      "general": "Général"
+      "developer": "Developer",
+      "general": "General"
     },
     "savebar": {
-      "cancel": "Annuler les modifications",
-      "content": "Hop hop hop ! J’ai vu que tu as fait des modifications !",
-      "save": "Enregistrer"
+      "cancel": "Cancel modifications",
+      "content": "Hold on there! I see you've made some changes!",
+      "save": "Save"
     },
     "server": {
-      "label": "Adresse du serveur",
+      "label": "Server address",
       "placeholder": "https://betterfleet.com/api"
     },
     "sound": {
-      "check": "Activer/Désactiver le décompte sonore",
-      "label": "Décompte sonore",
-      "test": "Tester"
+      "check": "Enable/Disable audio countdown",
+      "label": "Audio countdown",
+      "test": "Test"
     },
-    "subtitle": "Options de préférence",
-    "title": "Paramètres"
+    "subtitle": "Preference options",
+    "title": "Settings"
   },
   "contextMenu": {
     "master": {
-      "demote": "Rétrograder",
-      "kick": "Expulser",
-      "promote": "Promouvoir en maître de session",
-      "title": "Utilisateur"
+      "demote": "Demote",
+      "kick": "Kick",
+      "promote": "Promote to session master",
+      "title": "User"
     }
   },
   "credits": {
-    "and": "et",
-    "description": "BetterFleet a été développé dans le but de faciliter la création d'alliances sur Sea of Thieves",
-    "designed": "Designé par",
-    "details": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son utilisation est externe et n'impacte aucunement l'expérience en jeu. L'utilisateur engage seul sa responsabilité quant à son utilisation !",
-    "developed": "Développé par",
-    "socials": "Retrouvez-nous ici :",
+    "and": "and",
+    "description": "BetterFleet was developed in order to facilitate the formation of alliances on Sea of Thieves",
+    "designed": "Designed by",
+    "details": "BetterFleet is a non-official third party application unrelated to the Sea of Thieves development team. Its use is purely external and has no impact on gameplay experience. The user agrees to be held sole responsible for its use!",
+    "developed": "Developed by",
+    "socials": "Find us here:",
     "sot": {
-      "thanks": "Nous tenons à rendre à",
-      "use": "ce qui appartient aux pirates car, vous pouvez le constater, nous utilisons la police et les bannières du jeu !"
+      "thanks": "We would like to render unto",
+      "use": "that which belongs to pirates for, as you may notice, we use the font and banners from the game!"
     },
-    "title": "Crédits"
+    "title": "Credits"
   },
   "firstLogin": {
     "button": {
-      "description": "Hissons les voiles, main à la barre et cap sur le large !",
-      "title": "Commencer l’aventure"
+      "description": "Hoist the sails lads, take the helm and head out to sea!",
+      "title": "Let the journey begin"
     },
-    "description": "Veuillez saisir votre gamertag actuel afin de veiller au bon déroulement de l'alliance",
-    "tips": "Vous pouvez modifier votre pseudo à tout moment dans les paramètres",
-    "title": "Comment tu t'appelles l'ami ?"
+    "description": "Please enter your current gamertag to oversee the smooth running of the alliance",
+    "tips": "You can change your username at any moment in the settings",
+    "title": "What's your name lad?"
   },
   "loading": {
-    "loading": "Chargement en cours...",
-    "targetGame": "Détection du jeu en cours",
-    "targetLoading": "Jeu détecté. Préparation des navires.",
-    "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé"
+    "loading": "Loading...",
+    "targetGame": "Game detection in progress",
+    "targetLoading": "Game detected. Ships in preparation.",
+    "tips": "This process might take a while, please make sure your game is launched"
   },
   "locales": {
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
-    "fr": "Français"
+    "fr": "Français",
+    "it": "Italiano"
   },
   "login": {
-    "continue": "Continuer",
-    "description": "Bienvenue sur BetterFleet ! Nous sommes ravis de vous compter parmi nous. Afin d'utiliser l'application, merci de vous connecter à votre compte ou d'en créer un !",
-    "disconnect": "Ce n’est pas votre compte ?",
-    "loginButton": "Se connecter",
-    "succeed": "Connexion réussie !",
-    "userWelcome": "Bienvenue",
-    "welcome": "Bienvenue sur"
+    "continue": "Continue",
+    "description": "Welcome to BetterFleet! We are thrilled to have you figure among us. In order to access the application, please log in to your account or create one!",
+    "disconnect": "This is not your account?",
+    "loginButton": "Sign in",
+    "succeed": "Login Successful!",
+    "userWelcome": "Welcome",
+    "welcome": "Welcome to"
   },
   "modal": {
     "confirm": {
       "launch": {
-        "cancel": "Annuler",
-        "confirm": "Lever l'ancre",
-        "content": "Tout le monde n'est pas prêt ! Êtes-vous sûr de vouloir lever l'ancre ?",
-        "title": "ATTENTION !"
+        "cancel": "Cancel",
+        "confirm": "Set sail",
+        "content": "Not all players are ready! Are you sure you want to set sail?",
+        "title": "WARNING!"
       },
       "leave": {
-        "cancel": "Annuler",
-        "confirm": "Quitter la session",
-        "content": "Êtes-vous sûr de vouloir quitter la session ?",
-        "title": "QUITTER LA SESSION"
+        "cancel": "Cancel",
+        "confirm": "Leave the session",
+        "content": "Are you sure you want to leave the session?",
+        "title": "LEAVE THE SESSION"
       }
     }
   },
   "report": {
     "bug": {
-      "button": "Envoyer le rapport",
-      "content1": "Vos rapports nous aident à corriger tout bug et fonctionnement anormal que vous venez à rencontrer sur l'application. Si tel est votre cas, nous vous invitons à décrire clairement et en détail votre problème dans l'encadré ci-dessous.",
-      "content2": "À noter qu'en plus du message, votre rapport nous transmettra anonymement des données utiles à l'identification du problème.",
-      "title": "Rapporter un bug"
+      "button": "Submit report",
+      "content1": "Your reports help us fix any bugs and abnormal functioning you may encounter while browsing the application. If this is your case, we invite you to be as precise as can be and describe your problem in the box below.",
+      "content2": "It is worth noting that besides the message, your report will anonymously send us useful data for identifying the problem.",
+      "title": "Reporting a bug"
     },
     "faq": {
       "button": {
         "discord": "Discord",
         "faq": "F.A.Q."
       },
-      "content": "Rendez-vous sur la page F.A.Q. de notre site web, vous y trouverez peut-être déjà une réponse à votre problème ! Autrement vous pouvez nous contacter sur notre Discord. Veuillez noter qu'en cas de bug un rapport vous sera très certainement demandé !",
-      "title": "Vous avez une question ?"
+      "content": "Check out the F.A.Q. page of our website, you might already find an answer to your problem there! You can otherwise contact us on our Discord. If it is regarding a bug, please note that you will most certainly be asked to send a report!",
+      "title": "Do you have a question?"
     }
   },
   "session": {
     "choice": {
-      "createComment": "Goûte à la liberté de régner sur les flots en pirate !",
-      "createSession": "Créer une session",
-      "joinComment": "Prends une chope, monte à bord et rejoins l'équipage !",
-      "joinSession": "Rejoindre une session",
+      "createComment": "Take a bite at freedom and rule on the sea of thieves!",
+      "createSession": "Create a session",
+      "joinComment": "Grab a tankard, come aboard and join the crew!",
+      "joinSession": "Join a session",
       "modal": {
-        "button": "Rejoindre la session",
-        "comment": "Chaque session est privée et requiert un code. Demandez-le à l'hôte de la session que vous souhaitez rejoindre !",
-        "title": "Entrez un code de session"
+        "button": "Join the session",
+        "comment": "Each session is private and requires an identification code. Ask the host of the session you wish to join for the ID!",
+        "title": "Enter a session ID"
       }
     },
     "contributor": {
-      "alpha_tester": "Alpha-Testeur",
+      "alpha_tester": "Alpha Tester",
       "designer": "Designer",
-      "developer": "Développeur",
-      "translator": "Traducteur"
+      "developer": "Developer",
+      "translator": "Translator"
     },
-    "countdown": "La recherche commence dans...",
-    "id": "Code de session",
-    "idCopy": "Copié !",
+    "countdown": "The research begins in...",
+    "id": "Session ID",
+    "idCopy": "Copied!",
     "informations": {
-      "success": "Chance de succès",
-      "title": "Informations",
-      "totalPlayer": "Joueurs prêts",
-      "tryNumber": "Nombre d'essais"
+      "success": "Success rate",
+      "title": "Information",
+      "totalPlayer": "Players ready",
+      "tryNumber": "Number of tries"
     },
-    "issue": "Si vous rencontrez le moindre problème, rejoignez notre",
-    "leave": "Quitter la session",
+    "issue": "If you uncounted a problem, join our",
+    "leave": "Leave the session",
     "name": {
-      "0": "Le Navire Fantôme",
-      "1": "Le Trésor Caché",
-      "10": "La Longue-vue Rayée",
-      "11": "L'Abordage Nocturne",
-      "12": "La Bravoure du Capitaine",
-      "13": "L'Équipage Mutin",
-      "14": "La Vague Déferlante",
-      "15": "Le Butin Dérobé",
-      "16": "Le Rhum du Contrebandier",
-      "17": "La Voile Ombrageuse",
-      "18": "L'Ancre Rouillée",
-      "19": "Le Port de Fortune",
-      "2": "Les Dés Pipés",
-      "20": "La Légende Oubliée",
-      "21": "L'Épave Voilée",
-      "22": "Le Crochet Scintillant",
-      "23": "La Tempête Diluvienne",
-      "24": "La Planche Glissante",
-      "25": "La Crique Secrète",
-      "26": "Le Marché Noir",
-      "27": "La Chasse au Trésor",
-      "28": "Le Mât Chancelant",
-      "29": "Le Pistolet à Silex",
-      "3": "L'Île Mystérieuse",
-      "30": "Le Calmar Géant",
-      "31": "Le Code des Pirates",
-      "32": "La Dague Sanglante",
-      "33": "Le Vent Favorable",
-      "34": "Le Fugitif Boiteux",
-      "35": "La Cartouche Rustique",
-      "36": "Le Duel Improvisé",
-      "37": "La Flamme Ardente",
-      "38": "Le Cœur de l'Océan",
-      "39": "L'Histoire du Passé",
-      "4": "Le Perroquet Bavard",
-      "40": "La Mutinerie Sauvage",
-      "41": "La Tortue de Mer",
-      "42": "Le Plan Infaillible",
-      "43": "La Poudre Mouillée",
-      "44": "Le Galion Espagnol",
-      "45": "La Baie Paradisiaque",
-      "46": "Le Gouvernail Ébréché",
-      "47": "L'Étoile Polaire",
-      "48": "La Promesse Vengeresse",
-      "49": "Le Banquet Outrancier",
-      "5": "La Boussole Désorientée",
-      "50": "Le Mousquet Fumant",
-      "51": "Le Chant Marin",
-      "52": "Le Gréement Douteux",
-      "53": "Le Médaillon Aztèque",
-      "54": "La Carte Énigmatique",
-      "55": "Le Message en Bouteille",
-      "56": "La Lampe-Tempête",
-      "57": "Le Parchemin Antique",
-      "58": "L'Aube Crépusculaire",
-      "59": "Le Flibustier Fourbe",
-      "6": "Le Sabre Aiguisé",
-      "60": "La Traversée Périlleuse",
-      "61": "La Ruse du Boucanier",
-      "62": "Le Shilling Étincelant",
-      "63": "Le Conseil Pirate",
-      "64": "L'Âme Errante",
-      "65": "La Prison Fortifiée",
-      "66": "L'Amulette Maudite",
-      "67": "La Bataille Navale",
-      "68": "Le Rayon Vert",
-      "69": "Le Coffre du Mort",
-      "7": "Le Canon Grondant",
-      "70": "La Fontaine de Jouvence",
-      "71": "Le Rivage Inconnu",
-      "72": "La Monnaie Factice",
-      "73": "Le Pacte de Sang",
-      "74": "L'Alliance Brisée",
-      "75": "Le Vieux Manuscrit",
-      "76": "La Parole d'Honneur",
-      "77": "Le Hollandais Volant",
-      "78": "La Piraterie Royale",
-      "79": "Le Mirage Marin",
-      "8": "Le Pavillon Noir",
-      "80": "L'Écho Hurlant",
-      "81": "Le Sable d'Or",
-      "82": "L'Horizon Perçant",
-      "83": "Le Tic Tac Incessant",
-      "84": "Le Soleil Couchant",
-      "85": "La Nuit Sans Lune",
-      "86": "La Marée Haute",
-      "87": "Le Souffle Abyssal",
-      "88": "L'Orage Menaçant",
-      "89": "Le Vaisseau Naufragé",
-      "9": "L'Antre de Davy Jones",
-      "90": "Le Refuge des Voleurs",
-      "91": "L'Attaque Opportune",
-      "92": "L'Évasion Intrépide",
-      "93": "La Fortune Égarée",
-      "94": "La Pièce de Huit",
-      "95": "Le Récit Héroïque",
-      "96": "La Cape Flamboyante",
-      "97": "Le Corsaire Assermenté",
-      "98": "Le Lagon Bleu",
-      "99": "La Mission Malicieuse"
+      "0": "The Ghost Ship",
+      "1": "The Hidden Treasure",
+      "10": "The Scratched Spyglass",
+      "11": "The Night Boarding",
+      "12": "The Captain's Bravery",
+      "13": "The Mutinous Crew",
+      "14": "The Surging Wave",
+      "15": "The Stolen Booty",
+      "16": "The Bootlegger's Rum",
+      "17": "The Umbrageous Sail",
+      "18": "The Rusty Anchor",
+      "19": "The Makeshift Port",
+      "2": "The Loaded Dice",
+      "20": "The Forgotten Legend",
+      "21": "The Veiled Wreck",
+      "22": "The Sparkling Hook",
+      "23": "The Torrential Tempest",
+      "24": "The Slippery Plank",
+      "25": "The Secret Creek",
+      "26": "The Black Market",
+      "27": "The Treasure Hunt",
+      "28": "The Wobbly Mast",
+      "29": "The Flintlock Pistol",
+      "3": "The Mysterious Isle",
+      "30": "The Gargantuan Squid",
+      "31": "The Pirate Code",
+      "32": "The Bloody Dagger",
+      "33": "The Favourable Wind",
+      "34": "The Lame Fugitive",
+      "35": "The Rustic Cartridge",
+      "36": "The Improvised Duel",
+      "37": "The Raging Flame",
+      "38": "The Heart of the Ocean",
+      "39": "The Story of the Past",
+      "4": "The Chatty Parrot",
+      "40": "The Savage Mutiny",
+      "41": "The Sea Turtle",
+      "42": "The infallible Plan",
+      "43": "Soaked Gunpowder",
+      "44": "The Spanish Galleon",
+      "45": "The Heavenly Bay",
+      "46": "The Chipped Helm",
+      "47": "The North Star",
+      "48": "The Vengeful Promise",
+      "49": "The Outrageous Banquet",
+      "5": "The Disorientated Compass",
+      "50": "The Smoking Musket",
+      "51": "The Sea Shanty",
+      "52": "The Dubious Rigging",
+      "53": "The Aztec Medallion",
+      "54": "The Enigmatic Map",
+      "55": "The Bottled Message",
+      "56": "The Storm Lantern",
+      "57": "The Ancient Parchment",
+      "58": "The Crepuscular Dawn",
+      "59": "The Foxy Filibuster",
+      "6": "The Sharp Sabre",
+      "60": "The Perilous Crossing",
+      "61": "The Crafty Buccaneer",
+      "62": "The Blazing Shilling",
+      "63": "The Pirate Council",
+      "64": "The Errant Soul",
+      "65": "The Fortified Prison",
+      "66": "The Cursed Amulet",
+      "67": "The Naval Battle",
+      "68": "The Green Flash",
+      "69": "The Dead Man's Chest",
+      "7": "The Rumbling Cannon",
+      "70": "The Fountain of Youth",
+      "71": "The Uncharted Shore",
+      "72": "The Factitious Coinage",
+      "73": "The Blood Covenant",
+      "74": "The Shattered Alliance",
+      "75": "The Old Manuscript",
+      "76": "The Word of Honour",
+      "77": "The Flying Dutchman",
+      "78": "Royal Piracy",
+      "79": "The Sea Mirage",
+      "8": "The Black Flag",
+      "80": "The Screeching Echo",
+      "81": "The Gilded Sand",
+      "82": "The Piercing Horizon",
+      "83": "The Relentless Ticking",
+      "84": "The Setting Sun",
+      "85": "The Moonless Night",
+      "86": "The High Tide",
+      "87": "The Abyssal Breath",
+      "88": "The Ominous Storm",
+      "89": "The Wrecked Vessel",
+      "9": "Davy Jones' Locker",
+      "90": "The Thieves' Haven",
+      "91": "The Opportune Attack",
+      "92": "The Dauntless Escape",
+      "93": "The Misplaced Fortune",
+      "94": "The Piece of Eight",
+      "95": "The Heroic Tale",
+      "96": "The Flamboyant Cloak",
+      "97": "The Sworn Privateer",
+      "98": "The Blue Lagoon",
+      "99": "The Mischievous Mission"
     },
     "or": "OR",
     "player": {
-      "notReady": "Pas prêt",
-      "online": "Joueur connecté",
-      "onlines": "Joueurs connectés",
-      "ready": "Prêt",
+      "notReady": "Not ready",
+      "ready": "Ready",
+      "online": "Connected player",
+      "onlines": "Connected players",
       "status": {
-        "closed": "Hors ligne",
-        "in-game": "En jeu",
-        "main-menu": "Dans les menus du jeu",
-        "started": "Jeu lancé"
+        "closed": "Offline",
+        "in-game": "In game",
+        "main-menu": "In the game menu",
+        "started": "Game launched"
       }
     },
-    "playerLabel": "Joueur",
-    "playersLabel": "Joueurs",
-    "refresh": "Raffraichir",
-    "run": "Lever l'ancre",
+    "playerLabel": "Player",
+    "playersLabel": "Players",
+    "refresh": "Refresh",
+    "run": "Set sail",
     "status": {
-      "countdown": "Lancement dans",
-      "ready": "Prêt",
-      "waiting": "En attente"
+      "countdown": "Launch in",
+      "ready": "Ready",
+      "waiting": "Waiting"
     }
   },
   "tooltips": {
     "navbar": {
-      "config": "Paramètres",
+      "config": "Settings",
       "fleet": "Session",
-      "home": "Page d'accueil"
+      "home": "Home page"
     }
   }
 }

@@ -5,6 +5,7 @@ import en from "@/assets/locales/en.json";
 import fr from "@/assets/locales/fr.json";
 import es from "@/assets/locales/es.json";
 import de from "@/assets/locales/de.json";
+import it from "@/assets/locales/it.json";
 import source from "@/assets/locales/source.json";
 import { createI18n } from "vue-i18n";
 import App from "./App.vue";
@@ -13,9 +14,9 @@ import VueKinesis from "vue-kinesis";
 
 export const i18n = createI18n({
   legacy: false, // you must set `false`, to use Composition API
-  locale: "fr", // set locale
-  fallbackLocale: "source", // set fallback locale
-  messages: { fr, en, es, de, source },
+  locale: "en", // set locale
+  fallbackLocale: "en", // set fallback locale
+  messages: { fr, en, es, de, it, source },
 });
 
 const app = createApp(App);
