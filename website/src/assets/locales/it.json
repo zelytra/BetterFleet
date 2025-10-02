@@ -158,7 +158,7 @@
       "title": "Hai trovato il server?"
     },
     "howTo": {
-      "content": "Per creare un'alleanza in Sea of ​​Thieves, i giocatori devono coordinare le loro azioni con precisione. L'organizzazione inizia generalmente molto prima di salpare, in un momento concordato da tutti i partecipanti. La chiave è sincronizzare il momento esatto in cui tutti cliccano su \"Salpa\" nel menu di gioco, il che potenzialmente consente ai diversi equipaggi di trovarsi sullo stesso server. È qui che entra in gioco BetterFleet. Per facilitare questa sincronizzazione, l'applicazione offre un'interfaccia tramite la quale i giocatori possono pianificare le proprie azioni in modo coordinato.",
+      "content": "Per creare un’alleanza in Sea of Thieves, i giocatori devono coordinare le proprie azioni con precisione. L’organizzazione inizia di solito molto prima di salpare, in un momento concordato da tutti i partecipanti. La chiave è sincronizzare l’esatto momento in cui ciascuno clicca su “Salpa” nel menu di gioco, il che permette, potenzialmente, alle diverse ciurme di trovarsi sullo stesso server. Ed è qui che entra in gioco BetterFleet. Per facilitare questa sincronizzazione, l’applicazione offre un’interfaccia che permette ai giocatori di pianificare le proprie azioni in modo coordinato.",
       "title": "Come creare un'alleanza?"
     },
     "step": {
@@ -175,7 +175,7 @@
         "title": "Condividi l'ID della sessione"
       },
       "4": {
-        "content": "Chiedete a tutti i giocatori di andare al menu \"Salpa\" del gioco, dove potranno prepararsi per iniziare la partita insieme.",
+        "content": "Invita tutti i giocatori ad aprire il menu ‘Salpa’ del gioco, dove potranno prepararsi per partire insieme.",
         "title": "Riunitevi nel menu \"Salpa\""
       },
       "5": {
@@ -183,7 +183,7 @@
         "title": "Conferma che Tutti siano Pronti"
       },
       "6": {
-        "content": "Una volta che tutti i giocatori sono pronti, l'organizzatore della sessione avvia un conto alla rovescia su BetterFleet in modo che tutti clicchino simultaneamente su \"Salpa\".",
+        "content": "Quando tutti i giocatori sono pronti, l'organizzatore della sessione avvia il conto alla rovescia su BetterFleet, in modo che tutti clicchino su ‘Salpa’ contemporaneamente.",
         "title": "Avvio del Conto alla Rovescia"
       },
       "7": {
