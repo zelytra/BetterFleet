@@ -16,7 +16,7 @@
     "license": "Licenza"
   },
   "descriptions": {
-    "globe": "BetterFleet combina design ed efficienza. Ispirato dal mare dei ladri direzione artistica, vi sentirete come navigare all'interno di un'estensione del gioco all'altezza della reattività.",
+    "globe": "BetterFleet combina design ed efficienza. Ispirato alla direzione artistica di Sea of Thieves, vi sentirete come navigare all'interno di un'estensione del gioco all'altezza della reattività.",
     "hourglass": "La nostra funzione di auto-click sincronizzato implementa un conto alla rovescia perfettamente coordinato per ogni giocatore della sessione, garantendo una ricerca server estremamente efficiente che abbassa al minimo i tempi di attesa.",
     "key": "La nostra applicazione garantisce la sicurezza degli utenti grazie al suo codice open source, consentendo la massima trasparenza, e un team di sviluppatori attivi dedicati agli aggiornamenti regolari e alla manutenzione della sicurezza."
   },
@@ -125,9 +125,9 @@
     "title": "Domande Frequenti"
   },
   "footer": {
-    "content": "Unisciti alla nostra avventura mondiale: la tua passione, la nostra tecnologia. Insieme, trasformiamo il gioco. Alimentato dalla comunità e dall'innovazione aperta.",
+    "content": "Unisciti alla nostra avventura globale – la tua passione, la nostra tecnologia. Insieme, trasformiamo il gioco. Alimentato dalla community e dall’innovazione aperta.",
     "discord": "Stai avendo dei problemi? Contatta immediatamente il nostro team sul nostro",
-    "github": "Sei uno sviluppatore e ami navigare sul mare dei ladri? Allora vieni a contribuire al progetto!",
+    "github": "Sei uno sviluppatore e ami navigare in Sea of Thieves? Allora vieni a contribuire al progetto!",
     "warning": {
       "content": "BetterFleet è un'applicazione non ufficiale di terze parti non correlata al team di sviluppo Sea of Thieves. Il suo uso è puramente esterno e non ha alcun impatto sull'esperienza di gioco. L'utente accetta di essere ritenuto unico responsabile per il suo uso!",
       "title": "Disclaimer"
@@ -143,13 +143,13 @@
     "support": "Supporto"
   },
   "presentation": {
-    "content": "Immergetevi nel mondo del Mare dei Ladri con lo strumento ultimo progettato per forgiare alleanze come mai prima d'ora. La nostra applicazione rivoluziona il modo in cui i giocatori accedono, fornendo una fluidità eccezionale e aumentando significativamente le vostre possibilità di trovare un'alleanza, superando di gran lunga le capacità di altre applicazioni. Unisciti alla nostra comunità e trasforma la tua esperienza di gioco in un'avventura epica, dove il legame e la vela insieme diventano una realtà accessibile con ogni clic.",
+    "content": "Immergetevi nel mondo di Sea of Thieves con lo strumento definitivo, progettato per creare alleanze come mai prima d’ora. La nostra applicazione rivoluziona il modo in cui i giocatori effettuano l’accesso, offrendo un’esperienza estremamente fluida e aumentando in modo significativo le possibilità di trovare un’alleanza, superando di gran lunga le capacità delle altre applicazioni. Unisciti alla nostra community e trasforma la tua esperienza di gioco in un’epica avventura, dove stringere legami e salpare insieme diventa una realtà accessibile con ogni clic.",
     "title": "BetterFleet"
   },
   "stats": {
     "download": "Download",
     "players": "Giocatori online",
-    "sessions": "Apri sessioni",
+    "sessions": "Sessioni aperte",
     "title": "Statistiche"
   },
   "tutorial": {
@@ -158,7 +158,7 @@
       "title": "Hai trovato il server?"
     },
     "howTo": {
-      "content": "Per creare un'alleanza in Sea of ​​Thieves, i giocatori devono coordinare le loro azioni con precisione. L'organizzazione inizia generalmente molto prima di salpare, in un momento concordato da tutti i partecipanti. La chiave è sincronizzare il momento esatto in cui tutti cliccano su \"Salpa\" nel menu di gioco, il che potenzialmente consente ai diversi equipaggi di trovarsi sullo stesso server. È qui che entra in gioco BetterFleet. Per facilitare questa sincronizzazione, l'applicazione offre un'interfaccia tramite la quale i giocatori possono pianificare le proprie azioni in modo coordinato.",
+      "content": "Per creare un’alleanza in Sea of Thieves, i giocatori devono coordinare le proprie azioni con precisione. L’organizzazione inizia di solito molto prima di salpare, in un momento concordato da tutti i partecipanti. La chiave è sincronizzare l’esatto momento in cui ciascuno clicca su “Salpa” nel menu di gioco, il che permette, potenzialmente, alle diverse ciurme di trovarsi sullo stesso server. Ed è qui che entra in gioco BetterFleet. Per facilitare questa sincronizzazione, l’applicazione offre un’interfaccia che permette ai giocatori di pianificare le proprie azioni in modo coordinato.",
       "title": "Come creare un'alleanza?"
     },
     "step": {
@@ -175,15 +175,15 @@
         "title": "Condividi l'ID della sessione"
       },
       "4": {
-        "content": "Chiedete a tutti i giocatori di andare al menu \"Salpa\" del gioco, dove potranno prepararsi per iniziare la partita insieme.",
-        "title": "Riunitevi nel menu \"Salpa\""
+        "content": "Invita tutti i giocatori ad aprire il menu ‘Salpa’ del gioco, dove potranno prepararsi per partire insieme.",
+        "title": "Riunitevi nel menu 'Salpa'"
       },
       "5": {
         "content": "Ogni giocatore deve quindi cambiare il proprio stato per l’avvio, selezionando ‘Pronto’ nell’interfaccia dell’applicazione.",
         "title": "Conferma che Tutti siano Pronti"
       },
       "6": {
-        "content": "Una volta che tutti i giocatori sono pronti, l'organizzatore della sessione avvia un conto alla rovescia su BetterFleet in modo che tutti clicchino simultaneamente su \"Salpa\".",
+        "content": "Quando tutti i giocatori sono pronti, l'organizzatore della sessione avvia il conto alla rovescia su BetterFleet, in modo che tutti clicchino su ‘Salpa’ contemporaneamente.",
         "title": "Avvio del Conto alla Rovescia"
       },
       "7": {
@@ -192,10 +192,10 @@
       }
     },
     "stepWord": "Passo",
-    "title": "A partire da BetterFleet",
+    "title": "Come iniziare su BetterFleet",
     "whatIsIt": {
-      "content": "Un server di alleanza è un server di gioco in cui diverse ciurme hanno concordato di formare un’alleanza strategica e cooperare per il reciproco vantaggio. Su questi server, i giocatori condividono gli stessi obiettivi, come raccogliere tesori o completare missioni, e si impegnano a non attaccarsi a vicenda. L’idea è che tutti i membri traggano beneficio dalle ricompense, ottimizzando così il profitto e l’esperienza di gioco per ciascuno. Questo crea un ambiente in cui i giocatori possono concentrarsi sul lavoro di squadra e sull’esplorazione, piuttosto che sulla competizione, offrendo un’avventura più rilassata e basata sulla comunità.",
-      "title": "Cos'è un server dell'alleanza sul mare dei ladri?"
+      "content": "Un 'server alleanza' è un server di gioco in cui diverse ciurme hanno concordato di formare un’alleanza strategica e cooperare per il reciproco vantaggio. Su questi server, i giocatori condividono gli stessi obiettivi, come raccogliere tesori o completare missioni, e si impegnano a non attaccarsi a vicenda. L’idea è che tutti i membri traggano beneficio dalle ricompense, ottimizzando così il profitto e l’esperienza di gioco per ciascuno. Questo crea un ambiente in cui i giocatori possono concentrarsi sul lavoro di squadra e sull’esplorazione, piuttosto che sulla competizione, offrendo un’avventura più rilassata e basata sulla comunità.",
+      "title": "Cos'è un server dell'alleanza in Sea of Thieves?"
     }
   }
 }
