@@ -228,6 +228,7 @@
       "totalPlayer": "Players ready",
       "tryNumber": "Number of tries"
     },
+    "issue": "If you uncounted a problem, join our",
     "leave": "Leave the session",
     "name": {
       "0": "The Ghost Ship",
@@ -331,9 +332,12 @@
       "98": "The Blue Lagoon",
       "99": "The Mischievous Mission"
     },
+    "or": "OR",
     "player": {
       "notReady": "Not ready",
       "ready": "Ready",
+      "online": "Connected player",
+      "onlines": "Connected players",
       "status": {
         "closed": "Offline",
         "in-game": "In game",
@@ -341,6 +345,9 @@
         "started": "Game launched"
       }
     },
+    "playerLabel": "Player",
+    "playersLabel": "Players",
+    "refresh": "Refresh",
     "run": "Set sail",
     "status": {
       "countdown": "Launch in",
