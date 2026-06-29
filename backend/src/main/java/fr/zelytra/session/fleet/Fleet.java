@@ -82,7 +82,7 @@ public class Fleet {
      */
     public Player getPlayerFromUsername(String username) {
         for (Player player : this.players) {
-            if (player.getUsername().equals(username)) return player;
+            if (player.getUsername().equalsIgnoreCase(username)) return player;
         }
         return null;
     }

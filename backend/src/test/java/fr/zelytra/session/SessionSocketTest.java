@@ -3,6 +3,7 @@ package fr.zelytra.session;
 import fr.zelytra.session.client.BetterFleetClient;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.Player;
+import fr.zelytra.session.player.PlayerAction;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.security.SocketSecurityEntity;
 import io.quarkus.test.InjectMock;
@@ -50,6 +51,10 @@ class SessionSocketTest {
     @BeforeEach
     void setup() throws URISyntaxException, DeploymentException, IOException {
         Mockito.doReturn(null).when(executorService).submit(any(Runnable.class));
+        sessionManager.getSessions().clear();
+        sessionManager.getSotServers().clear();
+        SocketSecurityEntity.websocketUser.clear();
+        SessionSocket.sessionTimeoutTasks.clear();
         SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
         this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/");
         betterFleetClient = new BetterFleetClient();
@@ -178,6 +183,94 @@ class SessionSocketTest {
 
         assertTrue(playerClient.getLatch().await(1, TimeUnit.SECONDS));
         assertEquals(0, sessionManager.getSessions().size());
+    }
+
+    @Test
+    void nonMasterCannotKickPlayer() throws Exception {
+        Player master = connectPlayer("Master");
+        String sessionId = master.getSessionId();
+
+        BetterFleetClient memberClient = connectClient(sessionId);
+        Player member = new Player();
+        member.setUsername("Member");
+        member.setClientVersion(appVersion.get(0));
+        memberClient.sendMessage(MessageType.CONNECT, member);
+        assertTrue(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+        member.setSessionId(sessionId);
+
+        assertEquals(2, sessionManager.getFleetFromId(sessionId).getPlayers().size());
+
+        memberClient.setLatch(new CountDownLatch(1));
+        memberClient.sendMessage(MessageType.KICK_PLAYER, new PlayerAction("Master", sessionId));
+        assertFalse(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+        assertEquals(2, sessionManager.getFleetFromId(sessionId).getPlayers().size());
+    }
+
+    @Test
+    void masterCanKickPlayer() throws Exception {
+        Player master = connectPlayer("Master");
+        String sessionId = master.getSessionId();
+
+        BetterFleetClient memberClient = connectClient(sessionId);
+        Player member = new Player();
+        member.setUsername("Member");
+        member.setClientVersion(appVersion.get(0));
+        memberClient.sendMessage(MessageType.CONNECT, member);
+        assertTrue(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.KICK_PLAYER, new PlayerAction("Member", sessionId));
+        assertTrue(betterFleetClient.getLatch().await(2, TimeUnit.SECONDS));
+        assertEquals(1, sessionManager.getFleetFromId(sessionId).getPlayers().size());
+    }
+
+    @Test
+    void kickNonExistentPlayerDoesNotThrow() throws Exception {
+        Player master = connectPlayer("Master");
+        String sessionId = master.getSessionId();
+
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.KICK_PLAYER, new PlayerAction("Nobody", sessionId));
+        assertFalse(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        assertEquals(1, sessionManager.getFleetFromId(sessionId).getPlayers().size());
+    }
+
+    @Test
+    void nonMasterCannotStartCountdown() throws Exception {
+        Player master = connectPlayer("Master");
+        String sessionId = master.getSessionId();
+
+        BetterFleetClient memberClient = connectClient(sessionId);
+        Player member = new Player();
+        member.setUsername("Member");
+        member.setClientVersion(appVersion.get(0));
+        memberClient.sendMessage(MessageType.CONNECT, member);
+        assertTrue(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+        member.setSessionId(sessionId);
+
+        memberClient.setLatch(new CountDownLatch(1));
+        memberClient.sendMessage(MessageType.START_COUNTDOWN, null);
+        assertFalse(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+        assertEquals(0, sessionManager.getFleetFromId(sessionId).getStats().getTryAmount());
+    }
+
+    private Player connectPlayer(String username) throws Exception {
+        Player player = new Player();
+        player.setUsername(username);
+        player.setClientVersion(appVersion.get(0));
+        betterFleetClient.sendMessage(MessageType.CONNECT, player);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        String sessionId = betterFleetClient.getMessageReceived(Fleet.class).getSessionId();
+        player.setSessionId(sessionId);
+        return player;
+    }
+
+    private BetterFleetClient connectClient(String sessionId) throws Exception {
+        BetterFleetClient client = new BetterFleetClient();
+        SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
+        URI uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/" + sessionId);
+        ContainerProvider.getWebSocketContainer().connectToServer(client, uri);
+        return client;
     }
 
     private List<Player> generateFakePlayer(int amount) {

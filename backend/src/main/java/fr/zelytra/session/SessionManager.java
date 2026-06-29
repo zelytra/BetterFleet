@@ -95,9 +95,9 @@ public class SessionManager {
     @Lock(value = Lock.Type.WRITE, time = 200)
     public Fleet joinSession(String sessionId, Player player) {
 
-        // First, leave any session the player might currently be in
+        // First, leave any session the player might currently be in (keep the new socket open)
         if (getFleetByPlayerName(player.getUsername()) != null) {
-            leaveSession(player);
+            leaveSession(player, false);
         }
 
         Fleet fleet = getFleetFromId(sessionId);
@@ -125,8 +125,20 @@ public class SessionManager {
      */
     @Lock(value = Lock.Type.WRITE, time = 200)
     public void leaveSession(Player player) {
+        leaveSession(player, true);
+    }
+
+    @Lock(value = Lock.Type.WRITE, time = 200)
+    void leaveSession(Player player, boolean closeSocket) {
 
         Fleet fleet = getFleetByPlayerName(player.getUsername());
+        if (fleet == null) {
+            Log.warn("Cannot leave session, player not found: " + player.getUsername());
+            if (closeSocket) {
+                closePlayerSocket(player);
+            }
+            return;
+        }
 
         SotServer sotServer = getSotServerFromPlayer(player);
         if (sotServer != null) {
@@ -140,11 +152,13 @@ public class SessionManager {
                 playerToRemove.add(fleetPlayer);
             }
         }
+        boolean masterLeaving = playerToRemove.stream().anyMatch(Player::isMaster);
         fleet.getPlayers().removeAll(playerToRemove);
-        fleet.getServers().forEach((key, value) -> value.getConnectedPlayers().remove(player));
+        fleet.getServers().forEach((key, value) ->
+                value.getConnectedPlayers().removeIf(p -> p.getUsername().equalsIgnoreCase(player.getUsername())));
 
         // Check if player was master, then give another user the master role
-        if (player.isMaster() && !fleet.getPlayers().isEmpty()) {
+        if (masterLeaving && !fleet.getPlayers().isEmpty()) {
             Player newMaster = fleet.getPlayers().get(0);
             newMaster.setMaster(true);
             Log.info("[" + fleet.getSessionId() + "] Master as left, giving the role to " + newMaster.getUsername());
@@ -162,7 +176,15 @@ public class SessionManager {
             Log.info("[" + fleet.getSessionId() + "] Has been disbanded");
         }
 
-        //Close the socket if not yet closed
+        for (Player removed : playerToRemove) {
+            closePlayerSocket(removed);
+        }
+        if (closeSocket) {
+            closePlayerSocket(player);
+        }
+    }
+
+    private void closePlayerSocket(Player player) {
         if (player.getSocket() != null && player.getSocket().isOpen()) {
             try {
                 player.getSocket().close();
@@ -170,7 +192,6 @@ public class SessionManager {
                 throw new RuntimeException(e);
             }
         }
-
     }
 
     /**
@@ -192,7 +213,8 @@ public class SessionManager {
     public SotServer getSotServerFromPlayer(Player player) {
         for (Fleet fleet : sessions.values()) {
             for (SotServer server : fleet.getServers().values()) {
-                if (server.getConnectedPlayers().contains(player)) {
+                if (server.getConnectedPlayers().stream()
+                        .anyMatch(p -> p.getUsername().equalsIgnoreCase(player.getUsername()))) {
                     return server;
                 }
             }
@@ -225,7 +247,7 @@ public class SessionManager {
         for (Map.Entry<String, Fleet> sessionEntry : sessions.entrySet()) {
             Fleet fleet = sessionEntry.getValue();
             for (Player player : fleet.getPlayers()) {
-                if (player.getSocket().getId().equals(sessionId)) {
+                if (player.getSocket() != null && player.getSocket().getId().equals(sessionId)) {
                     return player;
                 }
             }
@@ -244,7 +266,7 @@ public class SessionManager {
         for (Map.Entry<String, Fleet> sessionEntry : sessions.entrySet()) {
             Fleet fleet = sessionEntry.getValue();
             for (Player player : fleet.getPlayers()) {
-                if (player.getUsername().equals(username)) {
+                if (player.getUsername().equalsIgnoreCase(username)) {
                     return fleet; // Return the Fleet containing the player
                 }
             }
@@ -277,14 +299,9 @@ public class SessionManager {
     public SotServer getServerFromHashing(SotServer server) {
         String hash = server.generateHash();
 
-        // Return cached SOT server
-        if (sotServers.containsKey(hash)) {
-            return sotServers.get(hash).copy();
-        }
-        // The object inject may not be completed, so we're creating fresh one to make sure all data has been initialized
-        SotServer newServer = new SotServer(server.getIp(), server.getPort());
-        sotServers.put(newServer.getHash(), newServer);
-        return newServer.copy();
+        // Cache stores metadata only; each fleet gets its own copy with isolated connectedPlayers
+        SotServer cached = sotServers.computeIfAbsent(hash, h -> new SotServer(server.getIp(), server.getPort()));
+        return cached.copy();
     }
 
     @Lock(value = Lock.Type.WRITE, time = 200)
@@ -299,14 +316,17 @@ public class SessionManager {
             fleet.getServers().put(findedSotServer.getHash(), findedSotServer);
         }
 
+        SotServer fleetServer = fleet.getServers().get(findedSotServer.getHash());
+
         // Do not add player if already in
-        if (fleet.getServers().get(findedSotServer.getHash()).getConnectedPlayers().contains(player)) {
+        if (fleetServer.getConnectedPlayers().stream()
+                .anyMatch(p -> p.getUsername().equalsIgnoreCase(player.getUsername()))) {
             return;
         }
 
         // Add player to SotServer in Fleet and broadcast update
-        fleet.getServers().get(findedSotServer.getHash()).getConnectedPlayers().add(player);
-        Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " join the SotServer: " + fleet.getServers().get(findedSotServer.getHash()).getHash());
+        fleetServer.getConnectedPlayers().add(player);
+        Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " join the SotServer: " + fleetServer.getHash());
         broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
@@ -336,7 +356,10 @@ public class SessionManager {
         assert fleet != null;
 
         SotServer fleetFindedServer = fleet.getServers().get(findedSotServer.getHash());
-        fleetFindedServer.getConnectedPlayers().remove(player);
+        if (fleetFindedServer == null) {
+            return;
+        }
+        fleetFindedServer.getConnectedPlayers().removeIf(p -> p.getUsername().equalsIgnoreCase(player.getUsername()));
 
         // If SotServer empty remove server from the list
         if (fleetFindedServer.getConnectedPlayers().isEmpty()) {
@@ -395,8 +418,8 @@ public class SessionManager {
             }
 
             if (!player.getSocket().isOpen()) {
-                Log.error("Unable to send message socket is closed");
-                return;
+                Log.error("Unable to send message to " + player.getUsername() + ", socket is closed");
+                continue;
             }
 
             player.getSocket().getAsyncRemote().sendText(json, result -> {
