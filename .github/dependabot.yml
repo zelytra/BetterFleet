@@ -1,9 +1,10 @@
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/webapp" # Location of package manifests
+  - package-ecosystem: "npm"
+    directory: "/webapp"
     schedule:
       interval: "monthly"
+    open-pull-requests-limit: 5
     ignore:
       - dependency-name: "@tauri-apps/api"
         versions: ">=1.5.4"
@@ -12,30 +13,54 @@ updates:
       - dependency-name: "tauri-plugin-log-api"
         versions: "*"
     groups:
-      npm:
+      webapp-dependencies:
         applies-to: version-updates
         patterns:
           - "*"
 
-  - package-ecosystem: "maven" # See documentation for possible values
-    directory: "/backend" # Location of package manifests
+  - package-ecosystem: "maven"
+    directory: "/backend"
     schedule:
       interval: "monthly"
+    open-pull-requests-limit: 5
     groups:
-      npm:
+      backend-dependencies:
         applies-to: version-updates
         patterns:
           - "*"
 
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/website" # Location of package manifests
+  - package-ecosystem: "npm"
+    directory: "/website"
     schedule:
       interval: "monthly"
+    open-pull-requests-limit: 5
     ignore:
       - dependency-name: "@tauri-apps/api"
         versions: ">=1.5.4"
     groups:
-      npm:
+      website-dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: "cargo"
+    directory: "/webapp/src-tauri"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    groups:
+      tauri-dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
         applies-to: version-updates
         patterns:
           - "*"
