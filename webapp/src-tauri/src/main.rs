@@ -12,9 +12,10 @@ use std::time::Duration;
 use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
 use serde::Serialize;
+use tauri::Manager;
 use tauri::State;
 use tauri_plugin_log::fern::colors::ColoredLevelConfig;
-use tauri_plugin_log::{LogTarget, RotationStrategy};
+use tauri_plugin_log::{RotationStrategy, Target, TargetKind};
 use tokio::sync::RwLock;
 use winapi::um::winuser::FindWindowA;
 use crate::api::{Api, GameStatus};
@@ -39,7 +40,7 @@ struct GameObject {
     status: GameStatus
 }
 
-// Here's how to call Rust functions from frontend : https://tauri.app/v1/guides/features/command/
+// Here's how to call Rust functions from frontend : https://tauri.app/develop/calling-rust/
 
 
 lazy_static! {
@@ -57,23 +58,27 @@ async fn main() {
     }));
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(move |app| {
-            let log_path = app.path_resolver().app_log_dir().unwrap();
+            let log_path = app.path().app_log_dir().unwrap();
             *LOG_PATH.lock().unwrap() = log_path;
             Ok(())
         })
         .manage(api_arc)
         .plugin(
-            tauri_plugin_log::Builder::default().targets([
-                LogTarget::LogDir,
-                LogTarget::Stdout,
-                LogTarget::Webview,
-            ])
-            .max_file_size(2_000) //Seems 2MB
-            .with_colors(ColoredLevelConfig::default())
-            .level(LOG_LEVEL)
-            .rotation_strategy(RotationStrategy::KeepAll)
-            .build()
+            tauri_plugin_log::Builder::new()
+                .targets([
+                    Target::new(TargetKind::LogDir { file_name: None }),
+                    Target::new(TargetKind::Stdout),
+                    Target::new(TargetKind::Webview),
+                ])
+                .max_file_size(2_000) //Seems 2MB
+                .with_colors(ColoredLevelConfig::default())
+                .level(LOG_LEVEL)
+                .rotation_strategy(RotationStrategy::KeepAll)
+                .build()
         )
         .invoke_handler(tauri::generate_handler![
             get_game_status,

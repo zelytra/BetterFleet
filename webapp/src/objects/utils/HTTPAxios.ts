@@ -1,6 +1,12 @@
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
-import { fetch, ResponseType } from "@tauri-apps/api/http";
-import { info } from "tauri-plugin-log-api";
+import { fetch } from "@tauri-apps/plugin-http";
+import { info } from "@tauri-apps/plugin-log";
+
+export enum ResponseType {
+  JSON = "json",
+  Text = "text",
+  Binary = "binary",
+}
 
 export class HTTPAxios {
   private readonly path: string;
@@ -18,21 +24,40 @@ export class HTTPAxios {
   async get(responseType?: ResponseType) {
     const urlPath = this.url + this.path;
     info("[HTTPAxios.ts][GET] " + urlPath);
-    return await fetch(urlPath, {
+    const response = await fetch(urlPath, {
       method: "GET",
       headers: HTTPAxios.header,
-      responseType: responseType ? responseType : ResponseType.JSON,
     });
+    const type = responseType ?? ResponseType.JSON;
+    const data = await this.parseResponse(response, type);
+    return { data, status: response.status };
   }
 
   async post(body: any) {
     const urlPath = this.url + this.path;
     info("[HTTPAxios.ts][POST] " + urlPath);
-    return await fetch(urlPath, {
+    const response = await fetch(urlPath, {
       method: "POST",
-      body: { type: "Json", payload: body },
-      headers: HTTPAxios.header,
+      body: JSON.stringify(body),
+      headers: {
+        ...HTTPAxios.header,
+        "Content-Type": "application/json",
+      },
     });
+    const data = await this.parseResponse(response, ResponseType.JSON).catch(
+      () => null,
+    );
+    return { data, status: response.status };
+  }
+
+  private async parseResponse(response: Response, type: ResponseType) {
+    if (type === ResponseType.Text) {
+      return await response.text();
+    }
+    if (type === ResponseType.Binary) {
+      return await response.arrayBuffer();
+    }
+    return await response.json();
   }
 
   /*

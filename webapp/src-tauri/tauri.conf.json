@@ -1,85 +1,67 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "BetterFleet",
+  "version": "1.2.0",
+  "identifier": "fr.zelytra",
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
-    "devPath": "http://localhost:5173",
-    "distDir": "../dist"
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist"
   },
-  "package": {
-    "productName": "BetterFleet",
-    "version": "1.2.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": true,
-        "execute": true,
-        "sidecar": true,
-        "open": true
-      },
-      "http": {
-        "all": true,
-        "request": true,
-        "scope": [
-          "http://**",
-          "https://**"
-        ]
+  "app": {
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 760,
+        "resizable": true,
+        "title": "BetterFleet",
+        "width": 1260,
+        "transparent": true
       }
-    },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "fr.zelytra",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": [
-        "nsis",
-        "updater"
-      ],
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": "",
-        "nsis": {
-          "installerIcon": "icons/installer-icon.ico",
-          "sidebarImage": "icons/installer-banner.bmp"
-        }
-      }
-    },
+    ],
     "security": {
-      "csp": null,
-      "dangerousRemoteDomainIpcAccess": [
-        {
-          "domain": "localhost",
-          "windows": [
-            "main"
-          ],
-          "enableTauriAPI": true
-        }
-      ]
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "category": "DeveloperTool",
+    "copyright": "",
+    "createUpdaterArtifacts": "v1Compatible",
+    "deb": {
+      "depends": []
     },
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "longDescription": "",
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "resources": [],
+    "shortDescription": "",
+    "targets": ["nsis", "updater"],
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "",
+      "nsis": {
+        "installerIcon": "icons/installer-icon.ico",
+        "sidebarImage": "icons/installer-banner.bmp"
+      }
+    }
+  },
+  "plugins": {
     "updater": {
       "active": true,
       "endpoints": [
@@ -90,16 +72,6 @@
       "windows": {
         "installMode": "passive"
       }
-    },
-    "windows": [
-      {
-        "fullscreen": false,
-        "height": 760,
-        "resizable": true,
-        "title": "BetterFleet",
-        "width": 1260,
-        "transparent": true
-      }
-    ]
+    }
   }
 }

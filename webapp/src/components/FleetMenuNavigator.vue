@@ -18,7 +18,7 @@ import { LocalKey } from "@/objects/stores/LocalStore.ts";
 import { onUnmounted, watch } from "vue";
 import { PlayerStates } from "@/objects/fleet/Player.ts";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { RustSotServer } from "@/objects/fleet/SotServer.ts";
 import { Utils } from "@/objects/utils/Utils.ts";
 import router from "@/router";

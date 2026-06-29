@@ -39,7 +39,7 @@ import PirateButton from "@/vue/form/PirateButton.vue";
 import { inject, ref } from "vue";
 import { BugReport, ReportInterface } from "@/objects/report/Report.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 const { t } = useI18n();
 const reportMessage = ref("");
@@ -60,12 +60,12 @@ async function sendReport() {
     logs: "",
     message: reportMessage.value,
   };
-  await invoke("get_logs", { maxLines: 5000 }).then((logs) => {
-    report.logs = logs as string;
+  await invoke<string>("get_logs", { maxLines: 5000 }).then((logs) => {
+    report.logs = logs;
   });
 
-  await invoke("get_system_info").then((system) => {
-    report.device = system as string;
+  await invoke<string>("get_system_info").then((system) => {
+    report.device = system;
   });
 
   new BugReport(report).sendReport();

@@ -1,0 +1,33 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default capabilities for BetterFleet",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:default",
+    "log:default",
+    "updater:default",
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [{ "url": "http://**" }, { "url": "https://**" }]
+    },
+    {
+      "identifier": "allow-app-commands",
+      "description": "Allow all BetterFleet custom commands",
+      "commands": {
+        "allow": [
+          "get_game_status",
+          "get_server_ip",
+          "get_server_port",
+          "get_game_object",
+          "get_last_updated_server_ip",
+          "rise_anchor",
+          "get_logs",
+          "get_system_info"
+        ]
+      }
+    }
+  ]
+}
