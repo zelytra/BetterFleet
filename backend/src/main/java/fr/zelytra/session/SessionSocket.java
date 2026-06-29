@@ -30,6 +30,8 @@ public class SessionSocket {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     public static final ConcurrentMap<String, Future<?>> sessionTimeoutTasks = new ConcurrentHashMap<>();
     private static final int RISE_ANCHOR_TIMER = 3; // in seconds
+    // 90s idle timeout: client sends KEEP_ALIVE every 30s, allowing up to 2 missed intervals
+    private static final long WEBSOCKET_IDLE_TIMEOUT_MS = 90_000L;
     public static String PROXY_API_KEY = "";
 
     @ConfigProperty(name = "app.version")
@@ -87,15 +89,15 @@ public class SessionSocket {
             }
             case KICK_PLAYER -> {
                 PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
-                handleKick(player);
+                handleKick(session, player);
             }
             case PROMOTE_PLAYER -> {
                 PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
-                handlePromote(player, true);
+                handlePromote(session, player, true);
             }
             case DEMOTE_PLAYER -> {
                 PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
-                handlePromote(player, false);
+                handlePromote(session, player, false);
             }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
@@ -114,24 +116,50 @@ public class SessionSocket {
         }
     }
 
-    private void handleKick(PlayerAction player) {
-        SessionManager manager = sessionManager;
-        Fleet fleet = manager.getFleetByPlayerName(player.username());
-        Player foundedPlayer = manager.getPlayerFromUsername(player.username());
+    private boolean authorizeMasterAction(Session session, String targetSessionId) {
+        Player emitter = sessionManager.getPlayerFromSessionId(session.getId());
+        if (emitter == null || !emitter.isMaster()) {
+            Log.warn("Unauthorized action: player is not master");
+            return false;
+        }
+        Fleet fleet = sessionManager.getFleetByPlayerName(emitter.getUsername());
+        if (fleet == null || !fleet.getSessionId().equals(targetSessionId)) {
+            Log.warn("Unauthorized action: player is not in target session");
+            return false;
+        }
+        return true;
+    }
+
+    private void handleKick(Session session, PlayerAction player) {
+        if (!authorizeMasterAction(session, player.sessionId())) {
+            return;
+        }
+        Fleet fleet = sessionManager.getFleetFromId(player.sessionId());
+        if (fleet == null) {
+            Log.warn("Cannot kick player, session not found: " + player.sessionId());
+            return;
+        }
+        Player foundedPlayer = fleet.getPlayerFromUsername(player.username());
 
         if (foundedPlayer != null) {
             Log.info("[" + fleet.getSessionId() + "] " + player.username() + " has been kicked from the session");
-            manager.leaveSession(foundedPlayer);
+            sessionManager.leaveSession(foundedPlayer);
         } else {
             Log.warn("[" + fleet.getSessionId() + "] " + player.username() + " cannot be kicked, not found");
         }
 
     }
 
-    private void handlePromote(PlayerAction player, boolean master) {
-        SessionManager manager = sessionManager;
-        Fleet fleet = manager.getFleetByPlayerName(player.username());
-        Player foundedPlayer = manager.getPlayerFromUsername(player.username());
+    private void handlePromote(Session session, PlayerAction player, boolean master) {
+        if (!authorizeMasterAction(session, player.sessionId())) {
+            return;
+        }
+        Fleet fleet = sessionManager.getFleetFromId(player.sessionId());
+        if (fleet == null) {
+            Log.warn("Cannot " + (master ? "promote" : "demote") + " player, session not found: " + player.sessionId());
+            return;
+        }
+        Player foundedPlayer = fleet.getPlayerFromUsername(player.username());
 
         if (foundedPlayer != null) {
             Log.info("[" + fleet.getSessionId() + "] " + player.username() + " has been " + (master ? "promoted" : "demoted"));
@@ -144,9 +172,15 @@ public class SessionSocket {
 
     private void handleClearStatus(Session session) {
 
-        SessionManager manager = sessionManager;
-        Player player = manager.getPlayerFromSessionId(session.getId());
-        Fleet fleet = manager.getFleetByPlayerName(player.getUsername());
+        Player player = sessionManager.getPlayerFromSessionId(session.getId());
+        if (player == null || !player.isMaster()) {
+            Log.warn("Unauthorized clear status attempt");
+            return;
+        }
+        Fleet fleet = sessionManager.getFleetByPlayerName(player.getUsername());
+        if (fleet == null) {
+            return;
+        }
         fleet.getPlayers().forEach((playerInList) -> {
             playerInList.setReady(false);
         });
@@ -156,9 +190,15 @@ public class SessionSocket {
 
     private void handleStartCountdown(Session session) {
 
-        SessionManager manager = sessionManager;
-        Player player = manager.getPlayerFromSessionId(session.getId());
-        Fleet fleet = manager.getFleetByPlayerName(player.getUsername());
+        Player player = sessionManager.getPlayerFromSessionId(session.getId());
+        if (player == null || !player.isMaster()) {
+            Log.warn("Unauthorized countdown attempt");
+            return;
+        }
+        Fleet fleet = sessionManager.getFleetByPlayerName(player.getUsername());
+        if (fleet == null) {
+            return;
+        }
         fleet.getStats().addTry();
 
         sqlExecutor.submit(sessionManager::incrementTry);
@@ -170,16 +210,20 @@ public class SessionSocket {
 
     // Extracted method to handle JOIN_SERVER messages
     private void handleJoinServerMessage(Session session, SotServer sotServer) {
-        SessionManager manager = sessionManager;
-        Player player = manager.getPlayerFromSessionId(session.getId());
-        manager.playerJoinSotServer(player, sotServer);
+        Player player = sessionManager.getPlayerFromSessionId(session.getId());
+        if (player == null) {
+            return;
+        }
+        sessionManager.playerJoinSotServer(player, sotServer);
     }
 
     // Extracted method to handle LEAVE_SERVER messages
     private void handleLeaveServerMessage(Session session, SotServer sotServer) {
-        SessionManager manager = sessionManager;
-        Player player = manager.getPlayerFromSessionId(session.getId());
-        manager.playerLeaveSotServer(player, sotServer);
+        Player player = sessionManager.getPlayerFromSessionId(session.getId());
+        if (player == null) {
+            return;
+        }
+        sessionManager.playerLeaveSotServer(player, sotServer);
     }
 
     // Extracted method to handle CONNECT messages
@@ -191,6 +235,7 @@ public class SessionSocket {
         }
 
         // Checking security
+        SocketSecurityEntity.cleanupExpiredTokens();
         SocketSecurityEntity socketSecurity = SocketSecurityEntity.websocketUser.get(token);
         if (socketSecurity == null || !socketSecurity.isValid()) {
             Log.info("Invalid token, session will be closed");
@@ -218,7 +263,7 @@ public class SessionSocket {
             return;
         }
 
-        session.setMaxIdleTimeout(30000); // 1h of timeout
+        session.setMaxIdleTimeout(WEBSOCKET_IDLE_TIMEOUT_MS);
 
         SessionManager manager = sessionManager;
 
@@ -243,10 +288,16 @@ public class SessionSocket {
     }
 
     private void handleUpdateMessage(Player player) {
-        SessionManager manager = sessionManager;
-        Fleet fleet = manager.getFleetFromId(player.getSessionId());
-        assert fleet != null;
+        Fleet fleet = sessionManager.getFleetFromId(player.getSessionId());
+        if (fleet == null) {
+            Log.warn("Cannot update player data, session not found: " + player.getSessionId());
+            return;
+        }
         Player foundedplayer = fleet.getPlayerFromUsername(player.getUsername());
+        if (foundedplayer == null) {
+            Log.warn("Cannot update player data, player not found: " + player.getUsername());
+            return;
+        }
 
         foundedplayer.setReady(player.isReady());
         foundedplayer.setStatus(player.getStatus());

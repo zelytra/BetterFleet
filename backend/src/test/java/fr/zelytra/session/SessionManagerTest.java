@@ -4,12 +4,14 @@ package fr.zelytra.session;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
+import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.statistics.StatisticsEntity;
 import fr.zelytra.statistics.StatisticsRepository;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.oidc.server.OidcWiremockTestResource;
+import jakarta.websocket.RemoteEndpoint;
 import jakarta.websocket.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,8 @@ import java.util.concurrent.ExecutorService;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @QuarkusTest
@@ -302,5 +306,204 @@ public class SessionManagerTest {
         sessionManager.joinSession(sessionId1, player);
 
         assertTrue(sessionManager.isPlayerInSession(player, sessionId1), "The player is not in the session");
+    }
+
+    @Test
+    public void leaveSession_PlayerNotInAnySession_NoException() {
+        Session session = Mockito.mock();
+        when(session.getId()).thenReturn("123");
+        when(session.isOpen()).thenReturn(false);
+
+        Player player = new Player();
+        player.setUsername("Ghost Player");
+        player.setSocket(session);
+
+        assertDoesNotThrow(() -> sessionManager.leaveSession(player));
+    }
+
+    @Test
+    public void broadcastDataToSession_OneSocketClosed_StillBroadcastsToOthers() {
+        RemoteEndpoint.Async asyncOpen = Mockito.mock(RemoteEndpoint.Async.class);
+        Session openSession = Mockito.mock();
+        when(openSession.getId()).thenReturn("open");
+        when(openSession.isOpen()).thenReturn(true);
+        when(openSession.getAsyncRemote()).thenReturn(asyncOpen);
+
+        Session closedSession = Mockito.mock();
+        when(closedSession.getId()).thenReturn("closed");
+        when(closedSession.isOpen()).thenReturn(false);
+        when(closedSession.getAsyncRemote()).thenReturn(Mockito.mock(RemoteEndpoint.Async.class));
+
+        String sessionId = sessionManager.createSession();
+        Player openPlayer = new Player();
+        openPlayer.setUsername("Open Player");
+        openPlayer.setSocket(openSession);
+        Player closedPlayer = new Player();
+        closedPlayer.setUsername("Closed Player");
+        closedPlayer.setSocket(closedSession);
+
+        sessionManager.joinSession(sessionId, openPlayer);
+        sessionManager.joinSession(sessionId, closedPlayer);
+
+        sessionManager.broadcastDataToSession(sessionId, MessageType.UPDATE, sessionManager.getFleetFromId(sessionId));
+
+        verify(asyncOpen).sendText(anyString(), any());
+    }
+
+    @Test
+    public void playerJoinSotServer_TwoFleetsSameServer_IsolatedConnectedPlayers() {
+        Session session1 = Mockito.mock();
+        when(session1.getId()).thenReturn("1");
+        when(session1.getAsyncRemote()).thenReturn(null);
+        Session session2 = Mockito.mock();
+        when(session2.getId()).thenReturn("2");
+        when(session2.getAsyncRemote()).thenReturn(null);
+
+        String sessionId1 = sessionManager.createSession();
+        String sessionId2 = sessionManager.createSession();
+
+        Player player1 = new Player();
+        player1.setUsername("Player 1");
+        player1.setSocket(session1);
+        Player player2 = new Player();
+        player2.setUsername("Player 2");
+        player2.setSocket(session2);
+
+        sessionManager.joinSession(sessionId1, player1);
+        sessionManager.joinSession(sessionId2, player2);
+
+        SotServer server = new SotServer("1.1.1.1", 8080);
+        sessionManager.playerJoinSotServer(player1, server);
+        sessionManager.playerJoinSotServer(player2, server);
+
+        String serverHash = server.getHash();
+        assertEquals(1, sessionManager.getSessions().get(sessionId1).getServers().get(serverHash).getConnectedPlayers().size());
+        assertEquals(1, sessionManager.getSessions().get(sessionId2).getServers().get(serverHash).getConnectedPlayers().size());
+        assertEquals(0, sessionManager.getSotServers().get(serverHash).getConnectedPlayers().size());
+    }
+
+    @Test
+    public void joinSession_ReconnectingPlayer_KeepsNewSocketOpen() throws Exception {
+        RemoteEndpoint.Async asyncOld = Mockito.mock(RemoteEndpoint.Async.class);
+        Session oldSession = Mockito.mock();
+        when(oldSession.getId()).thenReturn("old");
+        when(oldSession.isOpen()).thenReturn(true);
+        when(oldSession.getAsyncRemote()).thenReturn(asyncOld);
+
+        RemoteEndpoint.Async asyncNew = Mockito.mock(RemoteEndpoint.Async.class);
+        Session newSession = Mockito.mock();
+        when(newSession.getId()).thenReturn("new");
+        when(newSession.isOpen()).thenReturn(true);
+        when(newSession.getAsyncRemote()).thenReturn(asyncNew);
+
+        String sessionId1 = sessionManager.createSession();
+        String sessionId2 = sessionManager.createSession();
+
+        Player oldConnection = new Player();
+        oldConnection.setUsername("Player 1");
+        oldConnection.setSocket(oldSession);
+        sessionManager.joinSession(sessionId1, oldConnection);
+
+        Player newConnection = new Player();
+        newConnection.setUsername("Player 1");
+        newConnection.setSocket(newSession);
+        sessionManager.joinSession(sessionId2, newConnection);
+
+        verify(oldSession).close();
+        verify(newSession, Mockito.never()).close();
+        assertNull(sessionManager.getFleetFromId(sessionId1));
+        assertTrue(sessionManager.getFleetFromId(sessionId2).getPlayers().contains(newConnection));
+    }
+
+    @Test
+    public void joinSession_DifferentUsernameCase_ReplacesExistingPlayer() {
+        Session session1 = Mockito.mock();
+        when(session1.getId()).thenReturn("1");
+        when(session1.getAsyncRemote()).thenReturn(null);
+
+        Session session2 = Mockito.mock();
+        when(session2.getId()).thenReturn("2");
+        when(session2.isOpen()).thenReturn(true);
+        when(session2.getAsyncRemote()).thenReturn(null);
+
+        String sessionId1 = sessionManager.createSession();
+        String sessionId2 = sessionManager.createSession();
+
+        Player existing = new Player();
+        existing.setUsername("PlayerOne");
+        existing.setSocket(session1);
+
+        Player reconnecting = new Player();
+        reconnecting.setUsername("playerone");
+        reconnecting.setSocket(session2);
+
+        sessionManager.joinSession(sessionId1, existing);
+        sessionManager.joinSession(sessionId2, reconnecting);
+
+        assertNull(sessionManager.getFleetFromId(sessionId1));
+        assertEquals(1, sessionManager.getFleetFromId(sessionId2).getPlayers().size());
+    }
+
+    @Test
+    public void leaveSession_MasterReconnecting_PromotesRemainingPlayer() {
+        Session oldSession = Mockito.mock();
+        when(oldSession.getId()).thenReturn("old");
+        when(oldSession.isOpen()).thenReturn(true);
+        when(oldSession.getAsyncRemote()).thenReturn(null);
+
+        Session memberSession = Mockito.mock();
+        when(memberSession.getId()).thenReturn("member");
+        when(memberSession.getAsyncRemote()).thenReturn(null);
+
+        Session newSession = Mockito.mock();
+        when(newSession.getId()).thenReturn("new");
+        when(newSession.isOpen()).thenReturn(true);
+        when(newSession.getAsyncRemote()).thenReturn(null);
+
+        String sessionId = sessionManager.createSession();
+
+        Player master = new Player();
+        master.setUsername("Master");
+        master.setMaster(true);
+        master.setSocket(oldSession);
+
+        Player member = new Player();
+        member.setUsername("Member");
+        member.setSocket(memberSession);
+
+        sessionManager.joinSession(sessionId, master);
+        sessionManager.joinSession(sessionId, member);
+
+        Player reconnectingMaster = new Player();
+        reconnectingMaster.setUsername("Master");
+        reconnectingMaster.setSocket(newSession);
+
+        String otherSessionId = sessionManager.createSession();
+        sessionManager.joinSession(otherSessionId, reconnectingMaster);
+
+        assertTrue(sessionManager.getFleetFromId(sessionId).getPlayers().get(0).isMaster());
+    }
+
+    @Test
+    public void playerLeaveSotServer_RemovesByUsername_NotReference() {
+        Session session = Mockito.mock();
+        when(session.getId()).thenReturn("123");
+        when(session.getAsyncRemote()).thenReturn(null);
+
+        Player player = new Player();
+        player.setUsername("Player 1");
+        player.setSocket(session);
+
+        String sessionId = sessionManager.createSession();
+        sessionManager.joinSession(sessionId, player);
+
+        SotServer server = new SotServer("1.1.1.1", 8080);
+        sessionManager.playerJoinSotServer(player, server);
+
+        Player staleReference = new Player();
+        staleReference.setUsername("Player 1");
+        sessionManager.playerLeaveSotServer(staleReference, server);
+
+        assertNull(sessionManager.getSessions().get(sessionId).getServers().get(server.getHash()));
     }
 }

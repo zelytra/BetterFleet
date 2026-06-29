@@ -30,7 +30,9 @@ public class StatsEndpoints {
         Log.info("[GET] /stats/online-users");
         AtomicInteger totalUser = new AtomicInteger();
         sessionManager.getSessions().forEach((key, value) -> {
-            totalUser.addAndGet(value.getPlayers().size());
+            totalUser.addAndGet((int) value.getPlayers().stream()
+                    .filter(player -> player.getSocket() != null && player.getSocket().isOpen())
+                    .count());
         });
         return Response.ok(totalUser.get()).build();
     }

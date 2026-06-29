@@ -7,8 +7,10 @@ import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
+import jakarta.websocket.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,13 +34,21 @@ public class StatsEndpointsTest {
     public void setup() {
         ConcurrentHashMap<String, Fleet> fleetConcurrentHashMap = new ConcurrentHashMap<>();
         Fleet fleet = new Fleet();
-        fleet.getPlayers().add(new Player());
-        fleet.getPlayers().add(new Player());
+        fleet.getPlayers().add(playerWithOpenSocket());
+        fleet.getPlayers().add(playerWithOpenSocket());
         fleetConcurrentHashMap.put("1", fleet);
         fleetConcurrentHashMap.put("2", fleet);
         fleetConcurrentHashMap.put("3", fleet);
 
         when(sessionManager.getSessions()).thenReturn(fleetConcurrentHashMap);
+    }
+
+    private Player playerWithOpenSocket() {
+        Session session = Mockito.mock(Session.class);
+        when(session.isOpen()).thenReturn(true);
+        Player player = new Player();
+        player.setSocket(session);
+        return player;
     }
 
 
@@ -48,6 +58,24 @@ public class StatsEndpointsTest {
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertEquals(6, response.getEntity());
+    }
+
+    @Test
+    public void getTotalOnlineUsers_IgnoresDisconnectedPlayers() {
+        ConcurrentHashMap<String, Fleet> fleetConcurrentHashMap = new ConcurrentHashMap<>();
+        Fleet fleet = new Fleet();
+        fleet.getPlayers().add(playerWithOpenSocket());
+        Session closedSession = Mockito.mock(Session.class);
+        when(closedSession.isOpen()).thenReturn(false);
+        Player ghost = new Player();
+        ghost.setSocket(closedSession);
+        fleet.getPlayers().add(ghost);
+        fleetConcurrentHashMap.put("1", fleet);
+        when(sessionManager.getSessions()).thenReturn(fleetConcurrentHashMap);
+
+        Response response = statsEndpoints.getTotalOnlineUsers();
+
+        assertEquals(1, response.getEntity());
     }
 
     @Test
