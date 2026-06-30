@@ -29,9 +29,6 @@
     "category": "DeveloperTool",
     "copyright": "",
     "createUpdaterArtifacts": "v1Compatible",
-    "deb": {
-      "depends": []
-    },
     "externalBin": [],
     "icon": [
       "icons/32x32.png",
@@ -40,6 +37,11 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    },
     "longDescription": "",
     "macOS": {
       "entitlements": null,
@@ -50,7 +52,7 @@
     },
     "resources": [],
     "shortDescription": "",
-    "targets": ["nsis", "updater"],
+    "targets": ["nsis"],
     "windows": {
       "certificateThumbprint": null,
       "digestAlgorithm": "sha256",
