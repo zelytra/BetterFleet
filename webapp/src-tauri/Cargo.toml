@@ -22,7 +22,7 @@ tauri-plugin-shell = "2"
 tauri-plugin-http = "2"
 tauri-plugin-updater = "2"
 anyhow = "1.0.80"
-socket2 = "0.5.6"
+socket2 = "=0.5.10"
 tokio = { version = "1.43.1", features = ["full"] }
 winapi = { version = "0.3.9", features = ["winsock2", "winuser"] }
 etherparse = "0.15.0"
