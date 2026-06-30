@@ -2,12 +2,12 @@ name: "Publish"
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
   publish-tauri:
-    if: "contains(github.event.head_commit.message, 'release')"
     name: Tauri app
     permissions:
       contents: write
@@ -49,14 +49,13 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
+          tagName: v__VERSION__
           releaseName: "BetterFleet v__VERSION__"
           releaseBody: "See the assets to download this version and install."
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
 
   publish-backend:
-    if: "contains(github.event.head_commit.message, 'release')"
     name: Backend app
     runs-on: ubuntu-latest
     steps:
@@ -71,15 +70,23 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set Docker tags
+        id: docker-tags
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "tags=zelytra/better-fleet-backend:latest,zelytra/better-fleet-backend:${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tags=zelytra/better-fleet-backend:latest" >> "$GITHUB_OUTPUT"
+          fi
       - name: Build
         uses: docker/build-push-action@v4
         with:
           context: backend/
           push: true
-          tags: zelytra/better-fleet-backend:latest
+          tags: ${{ steps.docker-tags.outputs.tags }}
 
   publish-website:
-    if: "contains(github.event.head_commit.message, 'release')"
+    name: Website app
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -93,9 +100,17 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set Docker tags
+        id: docker-tags
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "tags=zelytra/better-fleet-website:latest,zelytra/better-fleet-website:${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tags=zelytra/better-fleet-website:latest" >> "$GITHUB_OUTPUT"
+          fi
       - name: Build
         uses: docker/build-push-action@v4
         with:
           context: website/
           push: true
-          tags: zelytra/better-fleet-website:latest
+          tags: ${{ steps.docker-tags.outputs.tags }}
