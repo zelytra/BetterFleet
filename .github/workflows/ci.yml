@@ -169,7 +169,7 @@ jobs:
           node-version: 20
 
       - name: Install Rust Stable
-        uses: dtolnay/rust-toolchain@1.79
+        uses: dtolnay/rust-toolchain@stable
 
       - uses: Swatinem/rust-cache@v2
         with:
