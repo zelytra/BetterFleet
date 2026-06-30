@@ -17,10 +17,6 @@ export const AppStore = reactive({
     document.documentElement.lang = browserLang;
     i18n.global.locale.value = browserLang as "fr" | "en" | "es" | "de" | "it";
     tsi18n.global.locale.value = browserLang as
-      | "fr"
-      | "en"
-      | "es"
-      | "de"
-      | "it";
+      "fr" | "en" | "es" | "de" | "it";
   },
 });
