@@ -2,22 +2,65 @@ name: "Publish"
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version (e.g. 1.2.0 or v1.2.0). Defaults to latest v* tag."
+        required: false
+        type: string
 
 jobs:
+  resolve-version:
+    name: Resolve version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      tag: ${{ steps.resolve.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            RAW="${{ github.ref_name }}"
+          elif [ -n "${{ inputs.version }}" ]; then
+            RAW="${{ inputs.version }}"
+          else
+            RAW="$(git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || true)"
+          fi
+
+          if [ -z "${RAW}" ]; then
+            echo "No version found. Push a v* tag or pass workflow_dispatch version input." >&2
+            exit 1
+          fi
+
+          VERSION="${RAW#v}"
+          if ! [[ "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid semver: ${VERSION}" >&2
+            exit 1
+          fi
+
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "tag=v${VERSION}" >> "${GITHUB_OUTPUT}"
+
   publish-tauri:
-    if: "contains(github.event.head_commit.message, 'release')"
+    needs: resolve-version
     name: Tauri app
     permissions:
       contents: write
     strategy:
       fail-fast: false
       matrix:
-        platform: [ windows-latest ]
+        platform: [windows-latest]
     defaults:
       run:
-        working-directory: 'webapp'
+        working-directory: webapp
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v7
@@ -27,12 +70,16 @@ jobs:
         with:
           node-version: 20
 
+      - name: Set version from tag
+        working-directory: ${{ github.workspace }}
+        run: node .github/scripts/set-version-from-tag.mjs "${{ needs.resolve-version.outputs.tag }}"
+
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: 'webapp/src-tauri'
+          workspaces: webapp/src-tauri
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
@@ -49,53 +96,146 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version
+          tagName: v__VERSION__
           releaseName: "BetterFleet v__VERSION__"
           releaseBody: "See the assets to download this version and install."
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
 
   publish-backend:
-    if: "contains(github.event.head_commit.message, 'release')"
+    needs: resolve-version
     name: Backend app
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Set version from tag
+        run: node .github/scripts/set-version-from-tag.mjs "${{ needs.resolve-version.outputs.tag }}"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
+
       - name: Login to Docker Hub
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set Docker tags
+        id: docker-tags
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "tags=zelytra/better-fleet-backend:latest,zelytra/better-fleet-backend:${{ needs.resolve-version.outputs.tag }}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "tags=zelytra/better-fleet-backend:latest" >> "${GITHUB_OUTPUT}"
+          fi
+
       - name: Build
         uses: docker/build-push-action@v7
         with:
           context: backend/
           push: true
-          tags: zelytra/better-fleet-backend:latest
+          tags: ${{ steps.docker-tags.outputs.tags }}
 
   publish-website:
-    if: "contains(github.event.head_commit.message, 'release')"
+    needs: resolve-version
+    name: Website app
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Set version from tag
+        run: node .github/scripts/set-version-from-tag.mjs "${{ needs.resolve-version.outputs.tag }}"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
+
       - name: Login to Docker Hub
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set Docker tags
+        id: docker-tags
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            echo "tags=zelytra/better-fleet-website:latest,zelytra/better-fleet-website:${{ needs.resolve-version.outputs.tag }}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "tags=zelytra/better-fleet-website:latest" >> "${GITHUB_OUTPUT}"
+          fi
+
       - name: Build
         uses: docker/build-push-action@v7
         with:
           context: website/
           push: true
-          tags: zelytra/better-fleet-website:latest
+          tags: ${{ steps.docker-tags.outputs.tags }}
+
+  sync-version-to-master:
+    needs:
+      - resolve-version
+      - publish-tauri
+      - publish-backend
+      - publish-website
+    if: github.ref_type == 'tag'
+    name: Sync version to master
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - name: setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Set version from tag
+        run: node .github/scripts/set-version-from-tag.mjs "${{ needs.resolve-version.outputs.tag }}"
+
+      - name: Commit version bump to master
+        env:
+          VERSION: ${{ needs.resolve-version.outputs.version }}
+        run: |
+          if git diff --quiet -- \
+            webapp/package.json \
+            webapp/src-tauri/Cargo.toml \
+            webapp/src-tauri/tauri.conf.json \
+            backend/src/main/resources/application.properties \
+            website/package.json; then
+            echo "Version files already up to date on master."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add \
+            webapp/package.json \
+            webapp/src-tauri/Cargo.toml \
+            webapp/src-tauri/tauri.conf.json \
+            backend/src/main/resources/application.properties \
+            website/package.json
+          git commit -m "chore: bump version to ${VERSION} [skip ci]"
+          git push origin HEAD:master
