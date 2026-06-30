@@ -24,6 +24,17 @@ fn main() {
     </assembly>
     "#);
     tauri_build::try_build(
-      tauri_build::Attributes::new().windows_attributes(windows)
+      tauri_build::Attributes::new()
+        .windows_attributes(windows)
+        .app_manifest(tauri_build::AppManifest::new().commands(&[
+          "get_game_status",
+          "get_server_ip",
+          "get_server_port",
+          "get_game_object",
+          "get_last_updated_server_ip",
+          "rise_anchor",
+          "get_logs",
+          "get_system_info",
+        ])),
     ).expect("failed to run build script");
 }

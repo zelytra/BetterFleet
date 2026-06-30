@@ -1,0 +1,18 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default capabilities for BetterFleet",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:default",
+    "log:default",
+    "updater:default",
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [{ "url": "http://**" }, { "url": "https://**" }]
+    },
+    "allow-app-commands"
+  ]
+}

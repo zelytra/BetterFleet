@@ -18,7 +18,7 @@ import { LocalTime } from "@js-joda/core";
 import { useI18n } from "vue-i18n";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { PlayerStates } from "@/objects/fleet/Player.ts";
 import { onBeforeRouteLeave } from "vue-router";
 import countdownSound from "@assets/sounds/countdown.mp3";

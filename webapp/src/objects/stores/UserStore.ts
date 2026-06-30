@@ -5,7 +5,7 @@ import { tsi18n } from "@/objects/i18n/index.ts";
 import { Player, PlayerDevice } from "@/objects/fleet/Player.ts";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
-import { info } from "tauri-plugin-log-api";
+import { info } from "@tauri-apps/plugin-log";
 
 export const UserStore = reactive({
   player: {} as Player,

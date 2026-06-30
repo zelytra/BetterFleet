@@ -7,17 +7,20 @@ license = ""
 repository = ""
 default-run = "better_fleet"
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.77"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5.1", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.6.0", features = [ "http-all", "updater", "shell-all"] }
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+tauri-plugin-http = "2"
+tauri-plugin-updater = "2"
 anyhow = "1.0.80"
 socket2 = "0.5.6"
 tokio = { version = "1.43.1", features = ["full"] }
@@ -28,11 +31,11 @@ sysinfo = "0.30.6"
 netstat2 = "0.9.1"
 idna = "1.0.3"
 log = "^0.4"
-tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"] }
+tauri-plugin-log = { version = "2", features = ["colored"] }
 lazy_static = "1.4.0"
 
 [features]
-# this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
+# this feature is used for production builds or when `devUrl` points to the filesystem and the built-in dev server is disabled.
 # If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.
 # DO NOT REMOVE!!
-custom-protocol = [ "tauri/custom-protocol" ]
+custom-protocol = ["tauri/custom-protocol"]

@@ -1,0 +1,13 @@
+[[permission]]
+identifier = "allow-app-commands"
+description = "Allow all BetterFleet custom commands"
+commands.allow = [
+  "get_game_status",
+  "get_server_ip",
+  "get_server_port",
+  "get_game_object",
+  "get_last_updated_server_ip",
+  "rise_anchor",
+  "get_logs",
+  "get_system_info",
+]
