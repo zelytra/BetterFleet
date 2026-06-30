@@ -4,7 +4,7 @@ updates:
     directory: "/webapp"
     schedule:
       interval: "monthly"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     ignore:
       - dependency-name: "@tauri-apps/api"
         versions: ">=1.5.4"
@@ -14,7 +14,6 @@ updates:
         versions: "*"
     groups:
       webapp-dependencies:
-        applies-to: version-updates
         patterns:
           - "*"
 
@@ -22,10 +21,9 @@ updates:
     directory: "/backend"
     schedule:
       interval: "monthly"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     groups:
       backend-dependencies:
-        applies-to: version-updates
         patterns:
           - "*"
 
@@ -33,13 +31,12 @@ updates:
     directory: "/website"
     schedule:
       interval: "monthly"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     ignore:
       - dependency-name: "@tauri-apps/api"
         versions: ">=1.5.4"
     groups:
       website-dependencies:
-        applies-to: version-updates
         patterns:
           - "*"
 
@@ -47,10 +44,9 @@ updates:
     directory: "/webapp/src-tauri"
     schedule:
       interval: "monthly"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     groups:
       tauri-dependencies:
-        applies-to: version-updates
         patterns:
           - "*"
 
@@ -58,9 +54,8 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
     groups:
       github-actions:
-        applies-to: version-updates
         patterns:
           - "*"
