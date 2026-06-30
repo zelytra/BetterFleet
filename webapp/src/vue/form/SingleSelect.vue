@@ -5,7 +5,11 @@
       :class="{ 'input-wrapper': true, disabled: lock, deploy: isOpen }"
       @click="isOpen = true"
     >
-      <img :src="data.selectedValue.image" alt="flag" />
+      <img
+        v-if="data.selectedValue.image"
+        :src="data.selectedValue.image"
+        alt="flag"
+      />
       <p>{{ data.selectedValue.display }}</p>
     </div>
     <transition>
@@ -22,7 +26,7 @@
           :key="option.id"
           @click="updateData(option)"
         >
-          <img :src="option.image" alt="flag" />
+          <img v-if="option.image" :src="option.image" alt="flag" />
           {{ option.display }}
         </span>
       </div>
