@@ -25,6 +25,40 @@ use log::{info, warn, error};
 
 const SIO_RCVALL: DWORD = 0x98000001;
 
+/// Returns true when a remote UDP port falls in the range Sea of Thieves game servers use.
+/// Extracted as a pure function so the core detection heuristic can be unit-tested.
+fn is_plausible_sot_port(port: u16) -> bool {
+    port >= 30000 && port < 40000
+}
+
+/// Whether an out-of-range remote port is worth logging. Port 0 means "no matching packet"
+/// and 3075 is the transient port seen when switching to the in-game "rise anchor" interface,
+/// so both are treated as noise and suppressed.
+fn should_warn_unexpected_port(port: u16) -> bool {
+    port != 0 && port != 3075
+}
+
+/// Poll interval (in milliseconds) for the detection loop, adapted to the current game state.
+fn dynamic_sleep_ms(status: &GameStatus) -> u64 {
+    match status {
+        GameStatus::Closed => 5000,
+        GameStatus::Started => 3000,
+        GameStatus::MainMenu => 500,
+        GameStatus::InGame => 3000,
+        GameStatus::Unknown => 2000,
+    }
+}
+
+/// Given exactly two UDP ports and the known main-menu port, returns the "listen" port — the
+/// one that is not the main menu, i.e. the active server connection.
+fn select_listen_port(connections: &[u16], main_menu_port: u16) -> u16 {
+    if connections[0] == main_menu_port {
+        connections[1]
+    } else {
+        connections[0]
+    }
+}
+
 
 pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
     let api_base = Arc::new(RwLock::new(Api::new()));
@@ -80,11 +114,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     if port_count == 2 {
                         // Easy classical case with 2 udp connections
                         // Get UDP Listen port, that's the other one that is not main_menu_port
-                        if udp_connections[0] == main_menu_port {
-                            listen_ports = vec![udp_connections[1]];
-                        } else {
-                            listen_ports = vec![udp_connections[0]];
-                        }
+                        listen_ports = vec![select_listen_port(&udp_connections, main_menu_port)];
                     } else {
                         // More than 2 udp connections, this becomes more complex
                         // We're gonna try every ports except main menu
@@ -138,13 +168,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
 
             }
 
-            let dynamic_time = match game_status {
-                GameStatus::Closed => 5000,
-                GameStatus::Started => 3000,
-                GameStatus::MainMenu => 500,
-                GameStatus::InGame => 3000,
-                GameStatus::Unknown => 2000,
-            };
+            let dynamic_time = dynamic_sleep_ms(&game_status);
 
             info!("Sleeping for {} | Game status: {:?} ", dynamic_time, game_status);
             tokio::time::sleep(Duration::from_millis(dynamic_time)).await;
@@ -359,13 +383,13 @@ async fn capture_ip(socket: UdpSocket, listen_ports: Vec<u16>) -> Option<(String
                                     local_port = destination_port;
                                 }
 
-                                if remote_port >= 30000 && remote_port < 40000 {
+                                if is_plausible_sot_port(remote_port) {
                                     // Got a plausible result
                                     Some((remote_ip, remote_port, local_port))
                                 } else {
                                     // Result make no sense for SoT
                                     // port 3075 may happen when switching from main menu to "rise anchor" interface.
-                                    if remote_port != 0 && remote_port != 3075 {
+                                    if should_warn_unexpected_port(remote_port) {
                                         warn!("Result make no sense for SoT: {} {} (Local port {})", remote_ip, remote_port, local_port);
                                     }
                                     continue;
@@ -447,4 +471,51 @@ pub async fn create_raw_socket(socket_addr: SocketAddr) -> Result<UdpSocket> {
 
     let socket = UdpSocket::from_std(socket)?;
     Ok(socket)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn plausible_sot_ports_are_in_the_expected_range() {
+        // Sea of Thieves game servers live in [30000, 40000)
+        assert!(is_plausible_sot_port(30000));
+        assert!(is_plausible_sot_port(35000));
+        assert!(is_plausible_sot_port(39999));
+
+        assert!(!is_plausible_sot_port(29999));
+        assert!(!is_plausible_sot_port(40000));
+        assert!(!is_plausible_sot_port(0));
+        assert!(!is_plausible_sot_port(3075));
+        assert!(!is_plausible_sot_port(443));
+    }
+
+    #[test]
+    fn unexpected_ports_are_only_warned_when_meaningful() {
+        // 0 = no matching packet, 3075 = rise-anchor transition: both are noise.
+        assert!(!should_warn_unexpected_port(0));
+        assert!(!should_warn_unexpected_port(3075));
+
+        assert!(should_warn_unexpected_port(8080));
+        assert!(should_warn_unexpected_port(29999));
+        assert!(should_warn_unexpected_port(40000));
+    }
+
+    #[test]
+    fn listen_port_is_the_non_main_menu_socket() {
+        // Main menu is the first socket -> the other one is the server connection.
+        assert_eq!(select_listen_port(&[5000, 6000], 5000), 6000);
+        // Main menu is the second socket.
+        assert_eq!(select_listen_port(&[6000, 5000], 5000), 6000);
+    }
+
+    #[test]
+    fn dynamic_sleep_matches_game_state() {
+        assert_eq!(dynamic_sleep_ms(&GameStatus::Closed), 5000);
+        assert_eq!(dynamic_sleep_ms(&GameStatus::Started), 3000);
+        assert_eq!(dynamic_sleep_ms(&GameStatus::MainMenu), 500);
+        assert_eq!(dynamic_sleep_ms(&GameStatus::InGame), 3000);
+        assert_eq!(dynamic_sleep_ms(&GameStatus::Unknown), 2000);
+    }
 }
