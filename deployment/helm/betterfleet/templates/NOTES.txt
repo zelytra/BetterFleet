@@ -1,0 +1,50 @@
+BetterFleet has been deployed as release "{{ .Release.Name }}" in namespace "{{ .Release.Namespace }}".
+
+Chart version : {{ .Chart.Version }}
+App version   : {{ .Chart.AppVersion }}
+
+Workloads:
+  - backend       ({{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }})
+  - website       ({{ .Values.website.image.repository }}:{{ .Values.website.image.tag | default .Chart.AppVersion }})
+  - keycloak      ({{ .Values.keycloak.image.repository }}:{{ .Values.keycloak.image.tag }})
+{{- if .Values.postgresApp.enabled }}
+  - postgres-app  ({{ .Values.postgresApp.image.repository }}:{{ .Values.postgresApp.image.tag }})  db="{{ .Values.postgresApp.database }}"
+{{- end }}
+{{- if .Values.postgresAuth.enabled }}
+  - postgres-auth ({{ .Values.postgresAuth.image.repository }}:{{ .Values.postgresAuth.image.tag }})  db="{{ .Values.postgresAuth.database }}"
+{{- end }}
+
+{{- if .Values.ingress.enabled }}
+
+Ingress ({{ .Values.ingress.className | default "default" }}) on host "{{ .Values.ingress.host }}":
+  {{ if .Values.ingress.tls.enabled }}https{{ else }}http{{ end }}://{{ .Values.ingress.host }}/       -> website
+  {{ if .Values.ingress.tls.enabled }}https{{ else }}http{{ end }}://{{ .Values.ingress.host }}/api    -> backend  {{ if .Values.ingress.api.stripPrefix }}(/api stripped){{ end }}
+  {{ if .Values.ingress.tls.enabled }}https{{ else }}http{{ end }}://{{ .Values.ingress.host }}/auth   -> keycloak
+
+Public URLs handed to the app:
+  backend  : {{ include "betterfleet.backendPublicUrl" . }}
+  keycloak : {{ include "betterfleet.keycloakPublicUrl" . }}
+
+Point DNS for "{{ .Values.ingress.host }}" at your k3s node's IP, or for a quick
+local test add it to /etc/hosts and browse to the URL above.
+{{- else }}
+
+Ingress is disabled. Reach the UI by port-forwarding the website Service:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "betterfleet.componentName" (dict "root" $ "component" "website") }} 8080:{{ .Values.website.service.port }}
+{{- end }}
+
+{{- if .Values.ingress.websockets.enabled }}
+
+WebSockets (/api/sessions/...): Traefik upgrades WebSocket connections
+automatically. For very long-lived sessions, raise the Traefik entrypoint
+timeouts (they are NOT set on the Ingress object). See the chart README section
+"WebSockets & long timeouts".
+{{- end }}
+
+{{- if not .Values.secrets.existingSecret }}
+
+SECURITY: default credentials from values.yaml are in use. Override every value
+under `secrets.*` (or set `secrets.existingSecret`) before exposing this to the
+internet. Inspect with:
+  kubectl -n {{ .Release.Namespace }} get secret {{ include "betterfleet.secretName" . }} -o yaml
+{{- end }}

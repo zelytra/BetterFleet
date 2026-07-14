@@ -1,0 +1,63 @@
+# =============================================================================
+# Example values for a minimal single-node k3s install.
+# =============================================================================
+# k3s ships, out of the box:
+#   - Traefik as the default IngressClass ("traefik")
+#   - the "local-path" provisioner as the default StorageClass
+# so this file mostly just supplies real credentials and your hostname.
+#
+# Usage:
+#   helm install betterfleet ./deployment/helm/betterfleet \
+#     --namespace betterfleet --create-namespace \
+#     -f ./deployment/helm/betterfleet/values-k3s.yaml
+# =============================================================================
+
+# --- Credentials (REPLACE ALL OF THESE) --------------------------------------
+secrets:
+  postgresUser: "betterfleet"
+  postgresPassword: "REPLACE-with-a-strong-postgres-password"
+  keycloakAdminUser: "admin"
+  keycloakAdminPassword: "REPLACE-with-a-strong-admin-password"
+  microsoftClientId: "REPLACE-with-your-azure-app-client-id"
+  microsoftClientSecret: "REPLACE-with-your-azure-app-client-secret"
+  proxyCheckApiKey: "REPLACE-with-your-proxycheck.io-key"   # optional; leave "" to disable
+
+# --- Ingress -----------------------------------------------------------------
+ingress:
+  enabled: true
+  className: "traefik"
+  host: "betterfleet.fr"          # <- your public hostname; DNS must point at the node
+  api:
+    stripPrefix: true
+  tls:
+    # Start with HTTP. To enable HTTPS, install cert-manager, create a
+    # ClusterIssuer, then set:
+    #   enabled: true
+    #   certManager.clusterIssuer: "letsencrypt-prod"
+    enabled: false
+
+# publicUrls are auto-derived from ingress.host (http://betterfleet.fr/api and
+# /auth). Uncomment to override, e.g. when TLS is terminated upstream:
+# publicUrls:
+#   backend: "https://betterfleet.fr/api"
+#   keycloak: "https://betterfleet.fr/auth"
+
+# --- Storage (local-path defaults are fine; sizes shown for clarity) ---------
+postgresApp:
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: null            # null => k3s "local-path"
+postgresAuth:
+  persistence:
+    enabled: true
+    size: 2Gi
+    storageClass: null
+
+# --- Modest footprint for a single node --------------------------------------
+backend:
+  replicaCount: 1
+website:
+  replicaCount: 1
+keycloak:
+  replicaCount: 1

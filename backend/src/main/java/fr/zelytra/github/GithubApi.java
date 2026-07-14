@@ -19,7 +19,7 @@ public class GithubApi {
         this.githubRelease = parseGithubRelease(getJsonString(new URL(RELEASE_URL)));
     }
 
-    public GithubRelease parseGithubRelease(String jsonString) {
+    public static GithubRelease parseGithubRelease(String jsonString) {
         // Parse JSON response
         Gson gson = new Gson();
         TauriRelease tauriRelease = gson.fromJson(jsonString, TauriRelease.class);

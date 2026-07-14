@@ -1,0 +1,382 @@
+# =============================================================================
+# BetterFleet Helm chart - default values
+# =============================================================================
+# This chart mirrors deployment/docker-compose.yml. Each of the five workloads
+# (backend, website, postgres-app, postgres-auth, keycloak) is configured under
+# its own key below. See README.md for the full walkthrough and a k3s quickstart.
+# =============================================================================
+
+# -- Override the chart name (defaults to "betterfleet").
+nameOverride: ""
+# -- Override the fully-qualified release name (defaults to "<release>-betterfleet").
+fullnameOverride: ""
+
+global:
+  # -- Optional registry prefix prepended to every image (e.g. "registry.example.com").
+  imageRegistry: ""
+  # -- Image pull secrets applied to every workload's pod spec.
+  imagePullSecrets: []
+
+serviceAccount:
+  # -- Create a dedicated ServiceAccount shared by all workloads.
+  create: true
+  # -- Name of the ServiceAccount to use. If empty and create=true, the fullname is used.
+  name: ""
+  annotations: {}
+
+# -----------------------------------------------------------------------------
+# Public URLs (browser-facing, terminated by the ingress).
+# -----------------------------------------------------------------------------
+# These replace PUBLIC_QUARKUS_HOSTNAME / PUBLIC_KEYCLOAK_HOSTNAME from the .env.
+# Leave empty to derive them automatically from `ingress.host` and the TLS setting:
+#   backend  -> <http|https>://<ingress.host>/api
+#   keycloak -> <http|https>://<ingress.host>/auth
+# Set explicitly only when the public hostname differs from the ingress host
+# (e.g. split DNS, an external edge proxy, or per-service subdomains).
+publicUrls:
+  backend: ""
+  keycloak: ""
+
+# -----------------------------------------------------------------------------
+# Secrets - credentials shared across workloads.
+# -----------------------------------------------------------------------------
+# NOTHING here is hardcoded into templates. Either:
+#   (a) set `existingSecret` to the name of a Secret you manage out-of-band, OR
+#   (b) fill the values below and let the chart render a Secret for you.
+# The Secret must expose these keys:
+#   POSTGRES_USER, POSTGRES_PASSWORD, KEYCLOAK_ADMIN, KEYCLOAK_ADMIN_PASSWORD,
+#   MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET, PROXY_CHECK_API_KEY
+# As in docker-compose, POSTGRES_USER/POSTGRES_PASSWORD are shared by BOTH
+# databases and consumed by the backend (DB_USER/DB_PASSWORD) and Keycloak
+# (KC_DB_USERNAME/KC_DB_PASSWORD).
+secrets:
+  # -- Reference a pre-existing Secret instead of rendering one. When set, all
+  # values below are ignored and no Secret is created by this chart.
+  existingSecret: ""
+
+  # Shared PostgreSQL superuser (both databases).
+  postgresUser: "betterfleet"
+  postgresPassword: "change-me-postgres-password"
+
+  # Keycloak bootstrap admin.
+  keycloakAdminUser: "admin"
+  keycloakAdminPassword: "change-me-keycloak-admin"
+
+  # Microsoft (Azure AD) identity-provider credentials. Substituted into the
+  # realm JSON at import time via ${MICROSOFT_CLIENT_ID}/${MICROSOFT_CLIENT_SECRET}.
+  microsoftClientId: ""
+  microsoftClientSecret: ""
+
+  # proxycheck.io API key used by the backend anti-VPN check.
+  proxyCheckApiKey: ""
+
+# =============================================================================
+# backend - Quarkus API (zelytra/better-fleet-backend)
+# =============================================================================
+backend:
+  replicaCount: 1
+  image:
+    repository: zelytra/better-fleet-backend
+    # -- Image tag. Defaults to .Chart.AppVersion ("1.2.0") when empty.
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  # Database the backend connects to.
+  database:
+    # -- In-cluster host override. Empty => the bundled postgres-app Service.
+    host: ""
+    name: "BetterFleet"
+  service:
+    type: ClusterIP
+    port: 8080
+  # -- Extra environment variables (list of {name,value} or valueFrom maps).
+  extraEnv: []
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+  # Probes hit "GET /" which returns "Pong!" (fr.zelytra.PublicEndpoints).
+  probes:
+    enabled: true
+    liveness:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 20
+      periodSeconds: 15
+      timeoutSeconds: 3
+      failureThreshold: 6
+    readiness:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# =============================================================================
+# website - static SPA served by nginx (zelytra/better-fleet-website)
+# =============================================================================
+website:
+  replicaCount: 1
+  image:
+    repository: zelytra/better-fleet-website
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+  # VITE_BACKEND_HOST / VITE_KEYCLOAK_HOST are derived from publicUrls above and
+  # injected at container start by the image entrypoint. Add more here if needed.
+  extraEnv: []
+  resources:
+    requests:
+      cpu: 25m
+      memory: 32Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+  probes:
+    enabled: true
+    liveness:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 10
+      periodSeconds: 15
+      timeoutSeconds: 3
+      failureThreshold: 3
+    readiness:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# =============================================================================
+# postgres-app - application database "BetterFleet" (postgres:14.2-alpine)
+# =============================================================================
+postgresApp:
+  # -- Set false to use an external application database (see backend.database.host).
+  enabled: true
+  image:
+    repository: postgres
+    tag: "14.2-alpine"
+    pullPolicy: IfNotPresent
+  # POSTGRES_DB created on first boot; init.sql adds the "betterfleet" schema.
+  database: "BetterFleet"
+  service:
+    # Headless service gives the StatefulSet a stable DNS name.
+    port: 5432
+  persistence:
+    enabled: true
+    size: 5Gi
+    # -- StorageClass. null => cluster default (k3s "local-path").
+    storageClass: null
+    accessModes:
+      - ReadWriteOnce
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+  probes:
+    enabled: true
+    liveness:
+      exec:
+        command: ["sh", "-c", "exec pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" -h 127.0.0.1"]
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      timeoutSeconds: 5
+      failureThreshold: 6
+    readiness:
+      exec:
+        command: ["sh", "-c", "exec pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" -h 127.0.0.1"]
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# =============================================================================
+# postgres-auth - Keycloak database "Keycloak" (postgres:14.2-alpine)
+# =============================================================================
+postgresAuth:
+  # -- Set false to use an external Keycloak database (see keycloak.database.host).
+  enabled: true
+  image:
+    repository: postgres
+    tag: "14.2-alpine"
+    pullPolicy: IfNotPresent
+  database: "Keycloak"
+  service:
+    port: 5432
+  persistence:
+    enabled: true
+    size: 2Gi
+    storageClass: null
+    accessModes:
+      - ReadWriteOnce
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+  probes:
+    enabled: true
+    liveness:
+      exec:
+        command: ["sh", "-c", "exec pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" -h 127.0.0.1"]
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      timeoutSeconds: 5
+      failureThreshold: 6
+    readiness:
+      exec:
+        command: ["sh", "-c", "exec pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\" -h 127.0.0.1"]
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# =============================================================================
+# keycloak - identity provider (quay.io/keycloak/keycloak:24.0)
+# =============================================================================
+keycloak:
+  replicaCount: 1
+  image:
+    # To ship the custom "betterfleet" login theme, build a derived image
+    # (see README "Custom login theme") and point repository/tag at it.
+    repository: quay.io/keycloak/keycloak
+    tag: "24.0"
+    pullPolicy: IfNotPresent
+  # Startup command. Mirrors compose `command: start --import-realm`.
+  command: ["start", "--import-realm"]
+  database:
+    # -- In-cluster host override. Empty => the bundled postgres-auth Service.
+    host: ""
+    name: "Keycloak"
+  # Import the realm from files/betterfleet-realm.json via a generated ConfigMap.
+  realmImport:
+    enabled: true
+  service:
+    type: ClusterIP
+    port: 8080
+  # -- Extra env. Note: compose's KC_VAULT_FILE and KC_OVERRIDE were intentionally
+  # dropped (no-ops / unmounted in the original). Re-add them here if you rely on them.
+  extraEnv: []
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  # Keycloak health endpoints are disabled by default (KC_HEALTH_ENABLED unset),
+  # so probes use a TCP check on the HTTP port. Set keycloak.health.enabled=true
+  # to expose /health and switch to httpGet probes on the management port.
+  health:
+    enabled: false
+    port: 9000
+  probes:
+    enabled: true
+    startup:
+      tcpSocket:
+        port: http
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 30
+    liveness:
+      tcpSocket:
+        port: http
+      periodSeconds: 15
+      timeoutSeconds: 3
+      failureThreshold: 6
+    readiness:
+      httpGet:
+        path: /auth/realms/master
+        port: http
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 6
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+# =============================================================================
+# Ingress - replaces deployment/nginx.conf (target: k3s default Traefik)
+# =============================================================================
+# Routing on a single host:
+#   /      -> website  :80
+#   /api   -> backend  :8080   (with the "/api" prefix STRIPPED, + WebSocket support)
+#   /auth  -> keycloak :8080
+ingress:
+  enabled: true
+  # -- IngressClass. k3s default Traefik is "traefik".
+  className: "traefik"
+  # -- Public host all three routes are served under.
+  host: "betterfleet.fr"
+  # -- Extra annotations merged onto the Ingress (advanced/edge cases).
+  annotations: {}
+
+  api:
+    # -- Strip the "/api" prefix before proxying to the backend, replicating
+    # nginx `rewrite ^/api/(.*) /$1`. Implemented as a Traefik stripPrefix
+    # Middleware (templates/middleware-stripprefix.yaml).
+    stripPrefix: true
+
+  # WebSocket / long-lived connections (/api/sessions/...). Traefik upgrades
+  # WebSockets automatically; the request/idle timeouts, however, live on the
+  # Traefik *entrypoint* (static config), not on this Ingress object. On k3s,
+  # raise them with a HelmChartConfig - see README "WebSockets & long timeouts".
+  # This flag only documents intent and is surfaced in NOTES.txt.
+  websockets:
+    enabled: true
+
+  tls:
+    # -- Enable TLS. Default off (plain HTTP), matching the compose setup where
+    # TLS was terminated by an external/host proxy.
+    enabled: false
+    # -- Name of the Secret holding tls.crt/tls.key. Required if certManager is unused.
+    secretName: "betterfleet-tls"
+    certManager:
+      # -- When set, adds cert-manager.io/cluster-issuer so a certificate is issued
+      # automatically. Leave empty to supply `secretName` yourself.
+      clusterIssuer: ""

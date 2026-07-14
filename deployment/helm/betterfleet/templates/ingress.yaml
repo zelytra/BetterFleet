@@ -1,0 +1,101 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "betterfleet.fullname" . -}}
+{{- $host := .Values.ingress.host -}}
+{{- $websiteSvc := include "betterfleet.componentName" (dict "root" $ "component" "website") -}}
+{{- $backendSvc := include "betterfleet.componentName" (dict "root" $ "component" "backend") -}}
+{{- $keycloakSvc := include "betterfleet.componentName" (dict "root" $ "component" "keycloak") -}}
+{{- $websitePort := .Values.website.service.port -}}
+{{- $backendPort := .Values.backend.service.port -}}
+{{- $keycloakPort := .Values.keycloak.service.port -}}
+{{- $mwName := include "betterfleet.componentName" (dict "root" $ "component" "stripprefix-api") -}}
+# ==============================================================================
+# Web routes: "/" -> website, "/auth" -> keycloak. No prefix rewriting.
+# ==============================================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "betterfleet.labels" (dict "root" $ "component" "ingress") | nindent 4 }}
+  {{- if or (and .Values.ingress.tls.enabled .Values.ingress.tls.certManager.clusterIssuer) .Values.ingress.annotations }}
+  annotations:
+    {{- if and .Values.ingress.tls.enabled .Values.ingress.tls.certManager.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.certManager.clusterIssuer | quote }}
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ $host | quote }}
+      secretName: {{ .Values.ingress.tls.secretName | quote }}
+  {{- end }}
+  rules:
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $keycloakSvc }}
+                port:
+                  number: {{ $keycloakPort }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $websiteSvc }}
+                port:
+                  number: {{ $websitePort }}
+---
+# ==============================================================================
+# API route: "/api" -> backend, with the "/api" prefix stripped (Traefik
+# stripPrefix Middleware) and WebSocket upgrades (handled natively by Traefik).
+# Kept as a SEPARATE Ingress so the stripPrefix middleware applies ONLY to /api
+# and never to "/" or "/auth".
+# ==============================================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-api
+  labels:
+    {{- include "betterfleet.labels" (dict "root" $ "component" "ingress") | nindent 4 }}
+  annotations:
+    {{- if .Values.ingress.api.stripPrefix }}
+    traefik.ingress.kubernetes.io/router.middlewares: {{ .Release.Namespace }}-{{ $mwName }}@kubernetescrd
+    {{- end }}
+    {{- if and .Values.ingress.tls.enabled .Values.ingress.tls.certManager.clusterIssuer }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls.certManager.clusterIssuer | quote }}
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ $host | quote }}
+      secretName: {{ .Values.ingress.tls.secretName | quote }}
+  {{- end }}
+  rules:
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $backendSvc }}
+                port:
+                  number: {{ $backendPort }}
+{{- end }}

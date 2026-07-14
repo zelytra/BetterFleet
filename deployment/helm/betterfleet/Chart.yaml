@@ -1,0 +1,31 @@
+apiVersion: v2
+name: betterfleet
+description: |
+  BetterFleet - Sea of Thieves fleet management platform.
+  Deploys the full stack (backend API, website, Keycloak, and two PostgreSQL
+  databases) as modelled on the project's production docker-compose topology,
+  targeting a single-node k3s cluster with the default Traefik ingress.
+type: application
+
+# Version of this chart. Bump on every chart change (SemVer).
+version: 0.1.0
+
+# Version of the BetterFleet application shipped by default. Matches the highest
+# supported client version declared in backend application.properties (app.version).
+appVersion: "1.2.0"
+
+home: https://betterfleet.fr
+sources:
+  - https://github.com/Zelytra/BetterFleet
+keywords:
+  - betterfleet
+  - sea-of-thieves
+  - quarkus
+  - keycloak
+  - k3s
+maintainers:
+  - name: BetterFleet
+    url: https://betterfleet.fr
+
+# k3s ships Kubernetes >= 1.21; the Ingress + apps/v1 APIs used here are stable there.
+kubeVersion: ">=1.21.0-0"

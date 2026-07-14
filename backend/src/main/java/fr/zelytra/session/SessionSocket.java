@@ -86,16 +86,16 @@ public class SessionSocket {
                 handleUpdateMessage(player);
             }
             case KICK_PLAYER -> {
-                PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
-                handleKick(player);
+                PlayerAction action = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
+                handleKick(session, action);
             }
             case PROMOTE_PLAYER -> {
-                PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
-                handlePromote(player, true);
+                PlayerAction action = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
+                handlePromote(session, action, true);
             }
             case DEMOTE_PLAYER -> {
-                PlayerAction player = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
-                handlePromote(player, false);
+                PlayerAction action = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
+                handlePromote(session, action, false);
             }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
@@ -114,39 +114,71 @@ public class SessionSocket {
         }
     }
 
-    private void handleKick(PlayerAction player) {
-        SessionManager manager = sessionManager;
-        Fleet fleet = manager.getFleetByPlayerName(player.username());
-        Player foundedPlayer = manager.getPlayerFromUsername(player.username());
-
-        if (foundedPlayer != null) {
-            Log.info("[" + fleet.getSessionId() + "] " + player.username() + " has been kicked from the session");
-            manager.leaveSession(foundedPlayer);
-        } else {
-            Log.warn("[" + fleet.getSessionId() + "] " + player.username() + " cannot be kicked, not found");
+    /**
+     * Kicks a player from the requester's fleet. The action is only honored when the caller is
+     * resolved from its own socket and holds the master role of that fleet, and the target must
+     * belong to the same fleet — the client is never trusted to assert this itself.
+     */
+    private void handleKick(Session session, PlayerAction action) {
+        Player requester = sessionManager.getPlayerFromSessionId(session.getId());
+        if (requester == null) {
+            return;
         }
-
+        Fleet fleet = sessionManager.getFleetByPlayerName(requester.getUsername());
+        if (fleet == null) {
+            return;
+        }
+        if (!requester.isMaster()) {
+            Log.warn("[" + fleet.getSessionId() + "] " + requester.getUsername() + " attempted to kick " + action.username() + " without master rights, ignored");
+            return;
+        }
+        Player target = fleet.getPlayerFromUsername(action.username());
+        if (target == null) {
+            Log.warn("[" + fleet.getSessionId() + "] " + action.username() + " cannot be kicked, not a member of this fleet");
+            return;
+        }
+        Log.info("[" + fleet.getSessionId() + "] " + action.username() + " has been kicked by " + requester.getUsername());
+        sessionManager.leaveSession(target);
     }
 
-    private void handlePromote(PlayerAction player, boolean master) {
-        SessionManager manager = sessionManager;
-        Fleet fleet = manager.getFleetByPlayerName(player.username());
-        Player foundedPlayer = manager.getPlayerFromUsername(player.username());
-
-        if (foundedPlayer != null) {
-            Log.info("[" + fleet.getSessionId() + "] " + player.username() + " has been " + (master ? "promoted" : "demoted"));
-            foundedPlayer.setMaster(master);
-            sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
-        } else {
-            Log.warn("[" + fleet.getSessionId() + "] " + player.username() + " cannot be " + (master ? "promoted" : "demoted") + ", not found");
+    /**
+     * Promotes or demotes a player within the requester's fleet. Same authorization rules as
+     * {@link #handleKick}: the caller must be a master of the fleet and the target a member of it.
+     */
+    private void handlePromote(Session session, PlayerAction action, boolean master) {
+        Player requester = sessionManager.getPlayerFromSessionId(session.getId());
+        if (requester == null) {
+            return;
         }
+        Fleet fleet = sessionManager.getFleetByPlayerName(requester.getUsername());
+        if (fleet == null) {
+            return;
+        }
+        if (!requester.isMaster()) {
+            Log.warn("[" + fleet.getSessionId() + "] " + requester.getUsername() + " attempted to " + (master ? "promote" : "demote") + " " + action.username() + " without master rights, ignored");
+            return;
+        }
+        Player target = fleet.getPlayerFromUsername(action.username());
+        if (target == null) {
+            Log.warn("[" + fleet.getSessionId() + "] " + action.username() + " cannot be " + (master ? "promoted" : "demoted") + ", not a member of this fleet");
+            return;
+        }
+        target.setMaster(master);
+        Log.info("[" + fleet.getSessionId() + "] " + action.username() + " has been " + (master ? "promoted" : "demoted") + " by " + requester.getUsername());
+        sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
     private void handleClearStatus(Session session) {
 
         SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
+        if (player == null) {
+            return;
+        }
         Fleet fleet = manager.getFleetByPlayerName(player.getUsername());
+        if (fleet == null) {
+            return;
+        }
         fleet.getPlayers().forEach((playerInList) -> {
             playerInList.setReady(false);
         });
@@ -158,7 +190,13 @@ public class SessionSocket {
 
         SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
+        if (player == null) {
+            return;
+        }
         Fleet fleet = manager.getFleetByPlayerName(player.getUsername());
+        if (fleet == null) {
+            return;
+        }
         fleet.getStats().addTry();
 
         sqlExecutor.submit(sessionManager::incrementTry);
@@ -245,8 +283,15 @@ public class SessionSocket {
     private void handleUpdateMessage(Player player) {
         SessionManager manager = sessionManager;
         Fleet fleet = manager.getFleetFromId(player.getSessionId());
-        assert fleet != null;
+        if (fleet == null) {
+            Log.warn("[" + player.getUsername() + "] Update ignored, session " + player.getSessionId() + " no longer exists");
+            return;
+        }
         Player foundedplayer = fleet.getPlayerFromUsername(player.getUsername());
+        if (foundedplayer == null) {
+            Log.warn("[" + player.getUsername() + "] Update ignored, not a member of session " + player.getSessionId());
+            return;
+        }
 
         foundedplayer.setReady(player.isReady());
         foundedplayer.setStatus(player.getStatus());

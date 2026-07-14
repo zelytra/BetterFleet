@@ -1,0 +1,17 @@
+{{- $component := "website" -}}
+{{- $ctx := dict "root" $ "component" $component -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "betterfleet.componentName" $ctx }}
+  labels:
+    {{- include "betterfleet.labels" $ctx | nindent 4 }}
+spec:
+  type: {{ .Values.website.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.website.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "betterfleet.selectorLabels" $ctx | nindent 4 }}

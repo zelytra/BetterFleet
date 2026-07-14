@@ -1,0 +1,13 @@
+{{- if .Values.postgresApp.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "betterfleet.componentName" (dict "root" $ "component" "postgres-app-init") }}
+  labels:
+    {{- include "betterfleet.labels" (dict "root" $ "component" "postgres-app") | nindent 4 }}
+data:
+  # Mounted into /docker-entrypoint-initdb.d/; runs once on an empty data dir.
+  # Mirrors deployment/init.sql (creates the "betterfleet" schema).
+  init.sql: |
+    CREATE SCHEMA IF NOT EXISTS betterfleet;
+{{- end }}

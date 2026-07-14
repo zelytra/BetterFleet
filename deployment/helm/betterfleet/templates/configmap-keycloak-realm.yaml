@@ -1,0 +1,19 @@
+{{- if and .Values.keycloak.realmImport.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "betterfleet.componentName" (dict "root" $ "component" "keycloak-realm") }}
+  labels:
+    {{- include "betterfleet.labels" (dict "root" $ "component" "keycloak") | nindent 4 }}
+data:
+  # Realm definition mounted into /opt/keycloak/data/import and applied by
+  # `start --import-realm`. The ${MICROSOFT_CLIENT_ID}/${MICROSOFT_CLIENT_SECRET}
+  # placeholders inside are substituted by Keycloak from the container env at
+  # import time (see the keycloak Deployment env, sourced from the Secret).
+  #
+  # NOTE: text only. The custom login theme referenced by this realm
+  # ("loginTheme": "betterfleet") ships binary TTF fonts that do NOT belong in a
+  # ConfigMap - build a derived Keycloak image instead (see README).
+  betterfleet-realm.json: |-
+{{ .Files.Get "files/betterfleet-realm.json" | indent 4 }}
+{{- end }}

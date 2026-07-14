@@ -289,6 +289,38 @@ public class SessionManagerTest {
     }
 
     @Test
+    public void joinSession_SameAccountJoinsSameSessionTwice_DuplicateRefusedAndSessionIntact() {
+        // Regression test for issue #436: a second live connection from the same account joining
+        // the session it is already in must be refused, and must NOT tear down the fleet.
+        Session socket1 = Mockito.mock();
+        when(socket1.getId()).thenReturn("1");
+        when(socket1.isOpen()).thenReturn(true); // the original member is still connected
+
+        Session socket2 = Mockito.mock();
+        when(socket2.getId()).thenReturn("2");
+        when(socket2.getAsyncRemote()).thenReturn(null); // refusal frame is sent here; null -> handled gracefully
+
+        String sessionId = sessionManager.createSession();
+
+        Player first = new Player();
+        first.setUsername("Dupe");
+        first.setSocket(socket1);
+        sessionManager.joinSession(sessionId, first);
+
+        Player duplicate = new Player();
+        duplicate.setUsername("Dupe");
+        duplicate.setSocket(socket2);
+        Fleet result = sessionManager.joinSession(sessionId, duplicate);
+
+        assertNull(result, "A duplicate join into the same session must be refused");
+
+        Fleet fleet = sessionManager.getFleetFromId(sessionId);
+        assertNotNull(fleet, "The session must survive a duplicate join (must not be disbanded)");
+        assertEquals(1, fleet.getPlayers().size(), "The duplicate must not be added to the fleet");
+        assertTrue(fleet.getPlayers().contains(first), "The original member must remain untouched");
+    }
+
+    @Test
     public void isPlayerInSession_PlayerIsInASession_True() {
         Session session = Mockito.mock();
         when(session.getId()).thenReturn("123");

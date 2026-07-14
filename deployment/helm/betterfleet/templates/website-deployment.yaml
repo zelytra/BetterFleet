@@ -1,0 +1,73 @@
+{{- $component := "website" -}}
+{{- $ctx := dict "root" $ "component" $component -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "betterfleet.componentName" $ctx }}
+  labels:
+    {{- include "betterfleet.labels" $ctx | nindent 4 }}
+spec:
+  replicas: {{ .Values.website.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "betterfleet.selectorLabels" $ctx | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "betterfleet.selectorLabels" $ctx | nindent 8 }}
+      {{- with .Values.website.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "betterfleet.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.website.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $component }}
+          image: {{ include "betterfleet.image" (dict "root" $ "image" .Values.website.image) }}
+          imagePullPolicy: {{ .Values.website.image.pullPolicy }}
+          {{- with .Values.website.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            # Injected into the built JS at container start by the image entrypoint.
+            # Derived from publicUrls (mirrors PUBLIC_QUARKUS_HOSTNAME / PUBLIC_KEYCLOAK_HOSTNAME).
+            - name: VITE_BACKEND_HOST
+              value: {{ include "betterfleet.backendPublicUrl" . | quote }}
+            - name: VITE_KEYCLOAK_HOST
+              value: {{ include "betterfleet.keycloakPublicUrl" . | quote }}
+            {{- with .Values.website.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.website.probes.enabled }}
+          livenessProbe:
+            {{- toYaml .Values.website.probes.liveness | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.website.probes.readiness | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.website.resources | nindent 12 }}
+      {{- with .Values.website.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.website.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.website.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
