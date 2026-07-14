@@ -1,0 +1,20 @@
+{{- if .Values.postgresApp.enabled -}}
+{{- $component := "postgres-app" -}}
+{{- $ctx := dict "root" $ "component" $component -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "betterfleet.componentName" $ctx }}
+  labels:
+    {{- include "betterfleet.labels" $ctx | nindent 4 }}
+spec:
+  # Headless: governs the StatefulSet and resolves directly to the pod IP.
+  clusterIP: None
+  ports:
+    - name: postgres
+      port: {{ .Values.postgresApp.service.port }}
+      targetPort: postgres
+      protocol: TCP
+  selector:
+    {{- include "betterfleet.selectorLabels" $ctx | nindent 4 }}
+{{- end }}

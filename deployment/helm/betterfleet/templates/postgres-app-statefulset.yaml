@@ -1,0 +1,114 @@
+{{- if .Values.postgresApp.enabled -}}
+{{- $component := "postgres-app" -}}
+{{- $ctx := dict "root" $ "component" $component -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "betterfleet.componentName" $ctx }}
+  labels:
+    {{- include "betterfleet.labels" $ctx | nindent 4 }}
+spec:
+  serviceName: {{ include "betterfleet.componentName" $ctx }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "betterfleet.selectorLabels" $ctx | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "betterfleet.selectorLabels" $ctx | nindent 8 }}
+      {{- with .Values.postgresApp.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "betterfleet.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postgresApp.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $component }}
+          image: {{ include "betterfleet.image" (dict "root" $ "image" .Values.postgresApp.image) }}
+          imagePullPolicy: {{ .Values.postgresApp.image.pullPolicy }}
+          {{- with .Values.postgresApp.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresApp.database | quote }}
+            # PGDATA points at a sub-directory so a fresh PVC's mount root
+            # (possibly containing lost+found) does not block initdb.
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+            - name: init-sql
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+          {{- if .Values.postgresApp.probes.enabled }}
+          livenessProbe:
+            {{- toYaml .Values.postgresApp.probes.liveness | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.postgresApp.probes.readiness | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.postgresApp.resources | nindent 12 }}
+      volumes:
+        - name: init-sql
+          configMap:
+            name: {{ include "betterfleet.componentName" (dict "root" $ "component" "postgres-app-init") }}
+        {{- if not .Values.postgresApp.persistence.enabled }}
+        {{- /* Fall back to ephemeral storage when persistence is disabled. */}}
+        - name: data
+          emptyDir: {}
+        {{- end }}
+      {{- with .Values.postgresApp.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postgresApp.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postgresApp.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.postgresApp.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{- include "betterfleet.selectorLabels" $ctx | nindent 10 }}
+      spec:
+        accessModes:
+          {{- toYaml .Values.postgresApp.persistence.accessModes | nindent 10 }}
+        {{- if .Values.postgresApp.persistence.storageClass }}
+        storageClassName: {{ .Values.postgresApp.persistence.storageClass | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.postgresApp.persistence.size | quote }}
+  {{- end }}
+{{- end }}

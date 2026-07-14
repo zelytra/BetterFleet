@@ -1,0 +1,19 @@
+{{- if and .Values.ingress.enabled .Values.ingress.api.stripPrefix -}}
+{{- $ctx := dict "root" $ "component" "keycloak" -}}
+# Traefik Middleware replicating nginx `rewrite ^/api/(.*) /$1` - strips the
+# "/api" prefix so the backend receives paths WITHOUT it (e.g. /api/servers/ip
+# -> /servers/ip, /api/sessions/{token}/{id} -> /sessions/{token}/{id}).
+#
+# k3s v1.21+ ships Traefik v2.10+/v3 which uses the "traefik.io" API group.
+# On very old Traefik (< v2.6) change this to "traefik.containo.us/v1alpha1".
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "betterfleet.componentName" (dict "root" $ "component" "stripprefix-api") }}
+  labels:
+    {{- include "betterfleet.labels" (dict "root" $ "component" "ingress") | nindent 4 }}
+spec:
+  stripPrefix:
+    prefixes:
+      - /api
+{{- end }}

@@ -1,0 +1,23 @@
+# Patterns to ignore when building Helm packages.
+.DS_Store
+.git/
+.gitignore
+.bzr/
+.hg/
+.hgignore
+.svn/
+*.tmp
+*.bak
+*.swp
+*.orig
+*~
+# CI / editor
+.vscode/
+.idea/
+*.tmproj
+# Development / test scaffolding
+ci/
+tests/
+*.tgz
+# Example / non-default value files are kept in the repo but excluded from packages
+values-k3s.yaml

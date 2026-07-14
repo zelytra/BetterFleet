@@ -1,0 +1,150 @@
+{{- $component := "keycloak" -}}
+{{- $ctx := dict "root" $ "component" $component -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "betterfleet.componentName" $ctx }}
+  labels:
+    {{- include "betterfleet.labels" $ctx | nindent 4 }}
+spec:
+  replicas: {{ .Values.keycloak.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "betterfleet.selectorLabels" $ctx | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "betterfleet.selectorLabels" $ctx | nindent 8 }}
+      annotations:
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- if .Values.keycloak.realmImport.enabled }}
+        checksum/realm: {{ include (print $.Template.BasePath "/configmap-keycloak-realm.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.keycloak.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "betterfleet.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keycloak.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $component }}
+          image: {{ include "betterfleet.image" (dict "root" $ "image" .Values.keycloak.image) }}
+          imagePullPolicy: {{ .Values.keycloak.image.pullPolicy }}
+          {{- with .Values.keycloak.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          args:
+            {{- toYaml .Values.keycloak.command | nindent 12 }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            {{- if .Values.keycloak.health.enabled }}
+            - name: management
+              containerPort: {{ .Values.keycloak.health.port }}
+              protocol: TCP
+            {{- end }}
+          env:
+            # --- Hostname / proxy (edge TLS terminated by the ingress) ---
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
+            - name: KC_HTTP_RELATIVE_PATH
+              value: /auth
+            - name: PROXY_ADDRESS_FORWARDING
+              value: "true"
+            - name: KC_PROXY
+              value: edge
+            # --- Database ---
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_URL_HOST
+              value: {{ include "betterfleet.authDbHost" . | quote }}
+            - name: KC_DB_URL_DATABASE
+              value: {{ .Values.keycloak.database.name | quote }}
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: POSTGRES_USER
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: POSTGRES_PASSWORD
+            # --- Bootstrap admin ---
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: KEYCLOAK_ADMIN
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: KEYCLOAK_ADMIN_PASSWORD
+            # --- Microsoft IdP (substituted into the realm JSON at import) ---
+            - name: MICROSOFT_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: MICROSOFT_CLIENT_ID
+            - name: MICROSOFT_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: MICROSOFT_CLIENT_SECRET
+            {{- if .Values.keycloak.health.enabled }}
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            {{- end }}
+            {{- with .Values.keycloak.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.keycloak.realmImport.enabled }}
+          volumeMounts:
+            - name: realm-import
+              mountPath: /opt/keycloak/data/import
+              readOnly: true
+          {{- end }}
+          {{- if .Values.keycloak.probes.enabled }}
+          {{- with .Values.keycloak.probes.startup }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.keycloak.probes.liveness }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.keycloak.probes.readiness }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.keycloak.resources | nindent 12 }}
+      {{- if .Values.keycloak.realmImport.enabled }}
+      volumes:
+        - name: realm-import
+          configMap:
+            name: {{ include "betterfleet.componentName" (dict "root" $ "component" "keycloak-realm") }}
+      {{- end }}
+      {{- with .Values.keycloak.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keycloak.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.keycloak.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

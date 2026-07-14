@@ -1,0 +1,105 @@
+{{- if .Values.postgresAuth.enabled -}}
+{{- $component := "postgres-auth" -}}
+{{- $ctx := dict "root" $ "component" $component -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "betterfleet.componentName" $ctx }}
+  labels:
+    {{- include "betterfleet.labels" $ctx | nindent 4 }}
+spec:
+  serviceName: {{ include "betterfleet.componentName" $ctx }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "betterfleet.selectorLabels" $ctx | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "betterfleet.selectorLabels" $ctx | nindent 8 }}
+      {{- with .Values.postgresAuth.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "betterfleet.serviceAccountName" . }}
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postgresAuth.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $component }}
+          image: {{ include "betterfleet.image" (dict "root" $ "image" .Values.postgresAuth.image) }}
+          imagePullPolicy: {{ .Values.postgresAuth.image.pullPolicy }}
+          {{- with .Values.postgresAuth.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              value: {{ .Values.postgresAuth.database | quote }}
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          {{- if .Values.postgresAuth.probes.enabled }}
+          livenessProbe:
+            {{- toYaml .Values.postgresAuth.probes.liveness | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.postgresAuth.probes.readiness | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.postgresAuth.resources | nindent 12 }}
+      {{- if not .Values.postgresAuth.persistence.enabled }}
+      volumes:
+        - name: data
+          emptyDir: {}
+      {{- end }}
+      {{- with .Values.postgresAuth.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postgresAuth.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postgresAuth.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{- if .Values.postgresAuth.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{- include "betterfleet.selectorLabels" $ctx | nindent 10 }}
+      spec:
+        accessModes:
+          {{- toYaml .Values.postgresAuth.persistence.accessModes | nindent 10 }}
+        {{- if .Values.postgresAuth.persistence.storageClass }}
+        storageClassName: {{ .Values.postgresAuth.persistence.storageClass | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.postgresAuth.persistence.size | quote }}
+  {{- end }}
+{{- end }}
