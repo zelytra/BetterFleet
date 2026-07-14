@@ -12,6 +12,11 @@ updates:
         versions: ">=2.1.1"
       - dependency-name: "tauri-plugin-log-api"
         versions: "*"
+      # typescript-eslint and vue-tsc do not support a new TypeScript major yet, so a grouped
+      # major bump (e.g. 6 -> 7) breaks peer resolution and the whole group fails to install.
+      # Keep TypeScript on its current major until the lint/type-check toolchain catches up.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     groups:
       webapp-dependencies:
         patterns:
@@ -35,6 +40,10 @@ updates:
     ignore:
       - dependency-name: "@tauri-apps/api"
         versions: ">=1.5.4"
+      # Same as webapp: keep TypeScript on its current major until typescript-eslint / vue-tsc
+      # support the next one, otherwise the grouped update fails peer resolution.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     groups:
       website-dependencies:
         patterns:
