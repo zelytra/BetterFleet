@@ -95,8 +95,24 @@ public class SessionManager {
     @Lock(value = Lock.Type.WRITE, time = 200)
     public Fleet joinSession(String sessionId, Player player) {
 
-        // First, leave any session the player might currently be in
-        if (getFleetByPlayerName(player.getUsername()) != null) {
+        Fleet currentFleet = getFleetByPlayerName(player.getUsername());
+        if (currentFleet != null && currentFleet.getSessionId().equals(sessionId)) {
+            // The account is already a member of the very session it is trying to join
+            // (e.g. the same account connected from a second device/socket). Refuse the
+            // duplicate join and leave the existing members untouched instead of tearing
+            // the fleet down — see issue #436. A lingering ghost (already-closed socket)
+            // is not a real duplicate, so in that case we fall through and replace it.
+            Player existing = currentFleet.getPlayerFromUsername(player.getUsername());
+            if (existing != null && existing.getSocket() != null && existing.getSocket().isOpen()) {
+                Log.warn("[" + sessionId + "] " + player.getUsername() + " is already connected to this session, duplicate join refused");
+                sendDataToPlayer(player.getSocket(), MessageType.CONNECTION_REFUSED, null);
+                closeSocketQuietly(player.getSocket());
+                return null;
+            }
+            leaveSession(existing != null ? existing : player);
+        } else if (currentFleet != null) {
+            // The account is in a different session; a player can only be in one session at
+            // a time, so leave the previous one before joining the new one.
             leaveSession(player);
         }
 
@@ -127,6 +143,12 @@ public class SessionManager {
     public void leaveSession(Player player) {
 
         Fleet fleet = getFleetByPlayerName(player.getUsername());
+        if (fleet == null) {
+            // Nothing to leave (already removed or never joined); still make sure the socket
+            // is not left dangling.
+            closeSocketQuietly(player.getSocket());
+            return;
+        }
 
         SotServer sotServer = getSotServerFromPlayer(player);
         if (sotServer != null) {
@@ -163,14 +185,24 @@ public class SessionManager {
         }
 
         //Close the socket if not yet closed
-        if (player.getSocket() != null && player.getSocket().isOpen()) {
-            try {
-                player.getSocket().close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        closeSocketQuietly(player.getSocket());
+    }
 
+    /**
+     * Closes a WebSocket session if it is still open, swallowing any I/O error so that a failure
+     * to close one player's socket never interrupts session bookkeeping or a broadcast loop.
+     *
+     * @param socket the session to close; may be {@code null}
+     */
+    private void closeSocketQuietly(@Nullable Session socket) {
+        if (socket == null || !socket.isOpen()) {
+            return;
+        }
+        try {
+            socket.close();
+        } catch (IOException e) {
+            Log.error("Failed to close socket [" + socket.getId() + "]: " + e.getMessage());
+        }
     }
 
     /**
@@ -292,7 +324,10 @@ public class SessionManager {
         SotServer findedSotServer = getServerFromHashing(server);
 
         Fleet fleet = getFleetByPlayerName(player.getUsername());
-        assert fleet != null;
+        if (fleet == null) {
+            Log.warn("Cannot join SoT server: no fleet found for player " + player.getUsername());
+            return;
+        }
 
         // Detect if the server is not already know by the fleet
         if (!fleet.getServers().containsKey(findedSotServer.getHash())) {
@@ -333,9 +368,16 @@ public class SessionManager {
         SotServer findedSotServer = getServerFromHashing(server);
 
         Fleet fleet = getFleetByPlayerName(player.getUsername());
-        assert fleet != null;
+        if (fleet == null) {
+            Log.warn("Cannot leave SoT server: no fleet found for player " + player.getUsername());
+            return;
+        }
 
         SotServer fleetFindedServer = fleet.getServers().get(findedSotServer.getHash());
+        if (fleetFindedServer == null) {
+            // The fleet is not (or no longer) tracking this server; nothing to remove.
+            return;
+        }
         fleetFindedServer.getConnectedPlayers().remove(player);
 
         // If SotServer empty remove server from the list
@@ -383,7 +425,10 @@ public class SessionManager {
             return;
         }
         Fleet fleet = getFleetFromId(sessionId);
-        assert fleet != null;
+        if (fleet == null) {
+            Log.info("[" + sessionId + "] Failed to broadcast, fleet vanished");
+            return;
+        }
 
         String json = formatMessage(messageType, data);
 
@@ -394,9 +439,12 @@ public class SessionManager {
                 continue;
             }
 
+            // Skip players whose socket is already closed instead of aborting the whole
+            // broadcast — a single dead/ghost socket must not stop the other members from
+            // receiving the update (see issue #436).
             if (!player.getSocket().isOpen()) {
-                Log.error("Unable to send message socket is closed");
-                return;
+                Log.warn("Skipping closed socket of " + player.getUsername());
+                continue;
             }
 
             player.getSocket().getAsyncRemote().sendText(json, result -> {

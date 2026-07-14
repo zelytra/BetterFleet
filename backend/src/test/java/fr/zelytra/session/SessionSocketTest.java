@@ -3,6 +3,7 @@ package fr.zelytra.session;
 import fr.zelytra.session.client.BetterFleetClient;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.Player;
+import fr.zelytra.session.player.PlayerAction;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.security.SocketSecurityEntity;
 import io.quarkus.test.InjectMock;
@@ -13,6 +14,7 @@ import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.EncodeException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -54,6 +56,14 @@ class SessionSocketTest {
         this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/");
         betterFleetClient = new BetterFleetClient();
         ContainerProvider.getWebSocketContainer().connectToServer(betterFleetClient, uri);
+    }
+
+    @AfterEach
+    void tearDown() {
+        // The SessionManager is an application-scoped singleton shared across every test method,
+        // so clear any residual sessions to keep global session-count assertions deterministic
+        // regardless of method ordering or lingering websocket connections.
+        sessionManager.getSessions().clear();
     }
 
     @Test
@@ -178,6 +188,134 @@ class SessionSocketTest {
 
         assertTrue(playerClient.getLatch().await(1, TimeUnit.SECONDS));
         assertEquals(0, sessionManager.getSessions().size());
+    }
+
+    @Test
+    void sameAccountJoiningSameSession_secondConnectionRefusedAndSessionSurvives() throws Exception {
+        // End-to-end regression test for issue #436.
+        Player player = new Player();
+        player.setUsername("Dupe");
+        player.setClientVersion(appVersion.get(0));
+
+        betterFleetClient.sendMessage(MessageType.CONNECT, player);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        String sessionId = betterFleetClient.getMessageReceived(Fleet.class).getSessionId();
+
+        // A second socket on the same account joins the SAME session id.
+        BetterFleetClient secondClient = new BetterFleetClient();
+        SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
+        URI dupeUri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort()
+                + "/sessions/" + socketSecurity.getKey() + "/" + sessionId);
+        ContainerProvider.getWebSocketContainer().connectToServer(secondClient, dupeUri);
+
+        Player duplicate = new Player();
+        duplicate.setUsername("Dupe");
+        duplicate.setClientVersion(appVersion.get(0));
+        secondClient.sendMessage(MessageType.CONNECT, duplicate);
+
+        // The duplicate is refused and its socket closed (latch trips on the refusal/close).
+        assertTrue(secondClient.getLatch().await(2, TimeUnit.SECONDS));
+
+        Fleet fleet = sessionManager.getSessions().get(sessionId);
+        assertNotNull(fleet, "The original session must survive a duplicate join (issue #436)");
+        assertEquals(1, fleet.getPlayers().size(), "The duplicate account must not be added to the fleet");
+    }
+
+    @Test
+    void nonMasterCannotKickAnotherPlayer() throws Exception {
+        String sessionId = createSessionAsMaster("Master");
+        BetterFleetClient memberClient = connectMember("Member", sessionId);
+
+        Player member = new Player();
+        member.setUsername("Member");
+        member.setClientVersion(appVersion.get(0));
+        member.setSessionId(sessionId);
+
+        // The non-master tries to kick the master, then sends a benign UPDATE. Messages on a
+        // single socket are processed in order, so once the UPDATE round-trips the (ignored)
+        // kick has already been handled.
+        memberClient.setLatch(new CountDownLatch(1));
+        memberClient.sendMessage(MessageType.KICK_PLAYER, new PlayerAction("Master", sessionId));
+        memberClient.sendMessage(MessageType.UPDATE, member);
+        assertTrue(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        Fleet fleet = sessionManager.getSessions().get(sessionId);
+        assertNotNull(fleet);
+        assertNotNull(fleet.getPlayerFromUsername("Master"), "A non-master must not be able to kick the master");
+        assertEquals(2, fleet.getPlayers().size(), "Both players must still be present");
+    }
+
+    @Test
+    void nonMasterCannotPromoteThemselves() throws Exception {
+        String sessionId = createSessionAsMaster("Master");
+        BetterFleetClient memberClient = connectMember("Member", sessionId);
+
+        Player member = new Player();
+        member.setUsername("Member");
+        member.setClientVersion(appVersion.get(0));
+        member.setSessionId(sessionId);
+
+        memberClient.setLatch(new CountDownLatch(1));
+        memberClient.sendMessage(MessageType.PROMOTE_PLAYER, new PlayerAction("Member", sessionId));
+        memberClient.sendMessage(MessageType.UPDATE, member);
+        assertTrue(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        Fleet fleet = sessionManager.getSessions().get(sessionId);
+        assertNotNull(fleet);
+        assertFalse(fleet.getPlayerFromUsername("Member").isMaster(), "A non-master must not be able to promote itself");
+    }
+
+    @Test
+    void masterCanKickMember() throws Exception {
+        String sessionId = createSessionAsMaster("Master");
+        connectMember("Member", sessionId);
+
+        // The master kicks the member; leaveSession broadcasts an UPDATE back to the master.
+        betterFleetClient.sendMessage(MessageType.KICK_PLAYER, new PlayerAction("Member", sessionId));
+
+        awaitCondition(() -> {
+            Fleet f = sessionManager.getSessions().get(sessionId);
+            return f != null && f.getPlayerFromUsername("Member") == null;
+        }, 2000);
+
+        Fleet fleet = sessionManager.getSessions().get(sessionId);
+        assertNotNull(fleet);
+        assertNull(fleet.getPlayerFromUsername("Member"), "The master must be able to kick a member");
+        assertEquals(1, fleet.getPlayers().size(), "Only the master should remain");
+    }
+
+    private String createSessionAsMaster(String username) throws Exception {
+        Player master = new Player();
+        master.setUsername(username);
+        master.setClientVersion(appVersion.get(0));
+        betterFleetClient.sendMessage(MessageType.CONNECT, master);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        return betterFleetClient.getMessageReceived(Fleet.class).getSessionId();
+    }
+
+    private BetterFleetClient connectMember(String username, String sessionId) throws Exception {
+        BetterFleetClient client = new BetterFleetClient();
+        SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
+        URI memberUri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort()
+                + "/sessions/" + socketSecurity.getKey() + "/" + sessionId);
+        ContainerProvider.getWebSocketContainer().connectToServer(client, memberUri);
+
+        Player member = new Player();
+        member.setUsername(username);
+        member.setClientVersion(appVersion.get(0));
+        client.sendMessage(MessageType.CONNECT, member);
+        assertTrue(client.getLatch().await(1, TimeUnit.SECONDS));
+        return client;
+    }
+
+    private static void awaitCondition(java.util.function.BooleanSupplier condition, long timeoutMillis) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + timeoutMillis;
+        while (System.currentTimeMillis() < deadline) {
+            if (condition.getAsBoolean()) {
+                return;
+            }
+            Thread.sleep(20);
+        }
     }
 
     private List<Player> generateFakePlayer(int amount) {
