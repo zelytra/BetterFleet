@@ -198,6 +198,7 @@ export class Fleet {
     UserStore.player.isMaster = player.isMaster;
     UserStore.player.isReady = player.isReady;
     UserStore.player.device = player.device;
+    UserStore.player.boatSize = player.boatSize;
     // Every readiness / master change flows through here, so this is the single
     // place that reacts to "all players ready" regardless of the mounted view.
     this.evaluateAutoSetSail();

@@ -78,6 +78,13 @@
     }
   },
   "appName": "Mejor flota",
+  "boatSize": {
+    "brigantine": "Bergantín",
+    "galleon": "Galeón",
+    "label": "Tamaño del barco",
+    "none": "No especificado",
+    "sloop": "Balandra"
+  },
   "config": {
     "device": {
       "label": "Plataformas"

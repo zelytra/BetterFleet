@@ -2,6 +2,7 @@ package fr.zelytra.session;
 
 import fr.zelytra.session.client.BetterFleetClient;
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.player.BoatSize;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.player.PlayerAction;
 import fr.zelytra.session.socket.MessageType;
@@ -119,6 +120,63 @@ class SessionSocketTest {
         assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
         Fleet socketMessage = betterFleetClient.getMessageReceived(Fleet.class);
         assertEquals(1, socketMessage.getReadyPlayers().size());
+    }
+
+    @Test
+    void updateBoatSize_boatSizeStoredAndBroadcastToFleet() throws IOException, InterruptedException, EncodeException {
+        // Covers issue #405: a player's selected boat size must be stored server-side and echoed
+        // back on the UPDATE broadcast so it can be rendered next to the player in the lobby.
+        Player player = new Player();
+        player.setUsername("Player 1");
+        player.setClientVersion(appVersion.get(0));
+
+        betterFleetClient.sendMessage(MessageType.CONNECT, player);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        String sessionId = betterFleetClient.getMessageReceived(Fleet.class).getSessionId();
+        player.setSessionId(sessionId);
+
+        // The player picks a boat size and spikes (UPDATE)
+        player.setBoatSize(BoatSize.BRIGANTINE);
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.UPDATE, player);
+
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        Fleet broadcast = betterFleetClient.getMessageReceived(Fleet.class);
+
+        // Present in the broadcast fleet the lobby renders from...
+        assertEquals(BoatSize.BRIGANTINE, broadcast.getPlayerFromUsername("Player 1").getBoatSize());
+        // ...and stored on the authoritative server-side copy of the player.
+        assertEquals(BoatSize.BRIGANTINE, sessionManager.getSessions().get(sessionId).getPlayerFromUsername("Player 1").getBoatSize());
+    }
+
+    @Test
+    void updateBoatSize_canBeEditedAfterInitialSelection() throws IOException, InterruptedException, EncodeException {
+        // Covers issue #405: the boat size must remain editable after the initial spike.
+        Player player = new Player();
+        player.setUsername("Player 1");
+        player.setClientVersion(appVersion.get(0));
+
+        betterFleetClient.sendMessage(MessageType.CONNECT, player);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        String sessionId = betterFleetClient.getMessageReceived(Fleet.class).getSessionId();
+        player.setSessionId(sessionId);
+
+        // Initial selection
+        player.setBoatSize(BoatSize.SLOOP);
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.UPDATE, player);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        assertEquals(BoatSize.SLOOP, betterFleetClient.getMessageReceived(Fleet.class).getPlayerFromUsername("Player 1").getBoatSize());
+
+        // Edit the selection to a different boat size
+        player.setBoatSize(BoatSize.GALLEON);
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.UPDATE, player);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        Fleet broadcast = betterFleetClient.getMessageReceived(Fleet.class);
+        assertEquals(BoatSize.GALLEON, broadcast.getPlayerFromUsername("Player 1").getBoatSize());
+        assertEquals(BoatSize.GALLEON, sessionManager.getSessions().get(sessionId).getPlayerFromUsername("Player 1").getBoatSize());
     }
 
     @Test
@@ -282,6 +340,37 @@ class SessionSocketTest {
         assertNotNull(fleet);
         assertNull(fleet.getPlayerFromUsername("Member"), "The master must be able to kick a member");
         assertEquals(1, fleet.getPlayers().size(), "Only the master should remain");
+    }
+
+    @Test
+    void outdatedClient_connectionRefusedAndNoSessionCreated() throws Exception {
+        Player player = new Player();
+        player.setUsername("OldClient");
+        player.setClientVersion("0.0.0-unsupported"); // not part of app.version
+
+        betterFleetClient.sendMessage(MessageType.CONNECT, player);
+        // The server answers OUTDATED_CLIENT and closes the socket, tripping the latch.
+        assertTrue(betterFleetClient.getLatch().await(2, TimeUnit.SECONDS));
+
+        assertTrue(sessionManager.getSessions().isEmpty(), "No session must be created for an outdated client");
+    }
+
+    @Test
+    void invalidToken_connectionRefusedAndNoSessionCreated() throws Exception {
+        BetterFleetClient client = new BetterFleetClient();
+        URI badUri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort()
+                + "/sessions/not-a-registered-token/");
+        ContainerProvider.getWebSocketContainer().connectToServer(client, badUri);
+
+        Player player = new Player();
+        player.setUsername("Player 1");
+        player.setClientVersion(appVersion.get(0));
+        client.sendMessage(MessageType.CONNECT, player);
+
+        // The server answers CONNECTION_REFUSED and closes the socket, tripping the latch.
+        assertTrue(client.getLatch().await(2, TimeUnit.SECONDS));
+
+        assertTrue(sessionManager.getSessions().isEmpty(), "No session must be created with an invalid token");
     }
 
     private String createSessionAsMaster(String username) throws Exception {

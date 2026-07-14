@@ -15,12 +15,20 @@ export enum PlayerDevice {
   PLAYSTATION = "PLAYSTATION",
 }
 
+export enum BoatSize {
+  NONE = "NONE",
+  SLOOP = "SLOOP",
+  BRIGANTINE = "BRIGANTINE",
+  GALLEON = "GALLEON",
+}
+
 export interface Player extends Preferences {
   username: string;
   status: PlayerStates;
   isReady: boolean;
   isMaster: boolean;
   device: PlayerDevice;
+  boatSize: BoatSize;
   fleet?: Fleet;
   sessionId?: string;
   serverHostName?: string;

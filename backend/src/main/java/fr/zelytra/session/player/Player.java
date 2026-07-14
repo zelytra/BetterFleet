@@ -24,6 +24,8 @@ public class Player {
 
     private PlayerDevice device;
 
+    private BoatSize boatSize;
+
     // Constructor
     public Player() {
     }
@@ -92,6 +94,14 @@ public class Player {
 
     public void setDevice(PlayerDevice device) {
         this.device = device;
+    }
+
+    public BoatSize getBoatSize() {
+        return boatSize;
+    }
+
+    public void setBoatSize(BoatSize boatSize) {
+        this.boatSize = boatSize;
     }
 
     @Override

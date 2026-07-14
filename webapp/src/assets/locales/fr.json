@@ -78,6 +78,13 @@
     }
   },
   "appName": "BetterFleet",
+  "boatSize": {
+    "brigantine": "Brigantin",
+    "galleon": "Galion",
+    "label": "Taille du navire",
+    "none": "Non spécifié",
+    "sloop": "Sloop"
+  },
   "config": {
     "device": {
       "label": "Plateforme"

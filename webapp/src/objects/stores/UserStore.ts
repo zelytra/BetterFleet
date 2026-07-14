@@ -2,7 +2,7 @@ import { reactive } from "vue";
 import LocalStore, { LocalKey } from "@/objects/stores/LocalStore.ts";
 import { i18n } from "@/main.ts";
 import { tsi18n } from "@/objects/i18n/index.ts";
-import { Player, PlayerDevice } from "@/objects/fleet/Player.ts";
+import { BoatSize, Player, PlayerDevice } from "@/objects/fleet/Player.ts";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 import { info } from "tauri-plugin-log-api";
@@ -20,6 +20,7 @@ export const UserStore = reactive({
       ...readPlayer,
       lang: readPlayer.lang || browserLang,
       device: readPlayer.device || PlayerDevice.MICROSOFT,
+      boatSize: readPlayer.boatSize || BoatSize.NONE,
       username: keycloakStore.user.username,
       soundEnable:
         readPlayer.soundEnable !== undefined ? readPlayer.soundEnable : true,

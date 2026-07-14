@@ -78,6 +78,13 @@
     }
   },
   "appName": "Bessere Flotte",
+  "boatSize": {
+    "brigantine": "Brigantine",
+    "galleon": "Galeone",
+    "label": "Schiffsgröße",
+    "none": "Nicht angegeben",
+    "sloop": "Schaluppe"
+  },
   "config": {
     "device": {
       "label": "Plattformen"

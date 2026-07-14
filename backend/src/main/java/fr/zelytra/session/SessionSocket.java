@@ -296,6 +296,7 @@ public class SessionSocket {
         foundedplayer.setReady(player.isReady());
         foundedplayer.setStatus(player.getStatus());
         foundedplayer.setDevice(player.getDevice());
+        foundedplayer.setBoatSize(player.getBoatSize());
 
         sessionManager.broadcastDataToSession(player.getSessionId(), MessageType.UPDATE, fleet);
 
