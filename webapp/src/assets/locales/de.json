@@ -202,6 +202,10 @@
     }
   },
   "session": {
+    "autoSetSail": {
+      "description": "Setzt automatisch die Segel, sobald alle Spieler bereit sind",
+      "label": "Automatisch Segel setzen"
+    },
     "choice": {
       "createComment": "Genießen Sie die Freiheit und herrschen Sie über das Meer der Diebe!",
       "createSession": "Erstellen Sie eine Sitzung",

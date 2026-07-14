@@ -202,6 +202,10 @@
     }
   },
   "session": {
+    "autoSetSail": {
+      "description": "Lève l'ancre automatiquement lorsque tous les joueurs sont prêts",
+      "label": "Lancement automatique"
+    },
     "choice": {
       "createComment": "Goûte à la liberté de régner sur les flots en pirate !",
       "createSession": "Créer une session",

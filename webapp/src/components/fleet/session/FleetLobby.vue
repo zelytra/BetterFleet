@@ -96,6 +96,19 @@
                 {{ session.stats.tryAmount }}
               </p>
             </div>
+            <label v-if="UserStore.player.isMaster" class="auto-set-sail">
+              <input
+                type="checkbox"
+                :checked="session.autoSetSail"
+                @change="onToggleAutoSetSail"
+              />
+              <div class="label-wrapper">
+                <p>{{ t("session.autoSetSail.label") }}</p>
+                <p class="description">
+                  {{ t("session.autoSetSail.description") }}
+                </p>
+              </div>
+            </label>
           </div>
           <button class="session-status" @click="leaveConfirmation = true">
             <p>{{ t("session.leave") }}</p>
@@ -218,6 +231,10 @@ function startSession() {
     return;
   }
   props.session!.runCountDown();
+}
+
+function onToggleAutoSetSail(event: Event) {
+  props.session.setAutoSetSail((event.target as HTMLInputElement).checked);
 }
 
 function getFilteredPlayerList() {
@@ -488,6 +505,67 @@ function onContextAction(action: string) {
             p {
               span {
                 color: var(--primary);
+              }
+            }
+          }
+
+          .auto-set-sail {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 16px;
+            cursor: pointer;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+
+            .label-wrapper {
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+              text-align: left;
+
+              p.description {
+                color: var(--secondary-text);
+                font-size: 12px;
+              }
+            }
+
+            input[type="checkbox"] {
+              appearance: none;
+              border: 1px solid var(--primary);
+              border-radius: 4px;
+              min-width: 20px;
+              width: 20px;
+              height: 20px;
+              margin-top: 2px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              cursor: pointer;
+
+              &:before {
+                content: "";
+                width: 10px;
+                height: 10px;
+                transform: scale(0);
+                background: var(--primary-text);
+                clip-path: polygon(
+                  14% 44%,
+                  0 65%,
+                  50% 100%,
+                  100% 16%,
+                  80% 0%,
+                  43% 62%
+                );
+                transform-origin: bottom left;
+              }
+
+              &:checked {
+                background: var(--primary);
+                border: 2px solid var(--primary);
+
+                &:before {
+                  transform: scale(1);
+                }
               }
             }
           }
