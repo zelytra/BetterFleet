@@ -201,6 +201,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -218,24 +219,40 @@ jobs:
       - name: Commit version bump to master
         env:
           VERSION: ${{ needs.resolve-version.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if git diff --quiet -- \
-            webapp/package.json \
-            webapp/src-tauri/Cargo.toml \
-            webapp/src-tauri/tauri.conf.json \
-            backend/src/main/resources/application.properties \
-            website/package.json; then
+          set -euo pipefail
+          FILES=(
+            webapp/package.json
+            webapp/src-tauri/Cargo.toml
+            webapp/src-tauri/tauri.conf.json
+            backend/src/main/resources/application.properties
+            website/package.json
+          )
+
+          if git diff --quiet -- "${FILES[@]}"; then
             echo "Version files already up to date on master."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add \
-            webapp/package.json \
-            webapp/src-tauri/Cargo.toml \
-            webapp/src-tauri/tauri.conf.json \
-            backend/src/main/resources/application.properties \
-            website/package.json
+          git add "${FILES[@]}"
           git commit -m "chore: bump version to ${VERSION} [skip ci]"
-          git push origin HEAD:master
+
+          # master may be a protected branch that rejects direct pushes. Try a direct push
+          # first; if it is rejected, fall back to opening a PR so this trailing sync step
+          # never marks an otherwise-successful release as failed.
+          if git push origin HEAD:master; then
+            echo "Pushed version bump directly to master."
+          else
+            echo "Direct push to master was rejected (protected branch?). Opening a pull request instead."
+            BRANCH="chore/bump-version-${VERSION}"
+            git push -f origin "HEAD:${BRANCH}"
+            gh pr create \
+              --base master \
+              --head "${BRANCH}" \
+              --title "chore: bump version to ${VERSION}" \
+              --body "Automated version bump to ${VERSION} following the \`v${VERSION}\` release. A direct push to \`master\` was rejected, so this PR carries the change." \
+              || echo "A pull request for this version bump already exists."
+          fi

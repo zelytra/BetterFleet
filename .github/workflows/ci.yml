@@ -152,7 +152,7 @@ jobs:
   test-tauri:
     name: Tauri Build Test
     runs-on: ${{ matrix.platform }}
-    needs: [webapp-build]
+    needs: [paths, webapp-build]
     if: ${{ needs.paths.outputs.webapp == 'true' }}
     strategy:
       fail-fast: false
