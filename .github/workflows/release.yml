@@ -262,6 +262,11 @@ jobs:
         with:
           ref: master
           fetch-depth: 0
+          # Push to the protected master branch authenticated as an admin, which bypasses the
+          # "require a pull request" rule (enforce_admins is off). Set a RELEASE_PAT secret to a
+          # fine-grained PAT (Contents: read/write on this repo) owned by an admin. Falls back to
+          # GITHUB_TOKEN when the secret is absent — the push then simply warns instead of syncing.
+          token: ${{ secrets.RELEASE_PAT || secrets.GITHUB_TOKEN }}
 
       - name: setup node
         uses: actions/setup-node@v6
