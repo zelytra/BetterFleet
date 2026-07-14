@@ -89,7 +89,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: 'npm'
@@ -108,7 +108,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: 'npm'
@@ -128,7 +128,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: 'npm'
@@ -147,7 +147,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Use Node.js 20
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 20
           cache: 'npm'
@@ -171,7 +171,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 20
 
@@ -192,7 +192,7 @@ jobs:
         run: npm ci
 
       - name: Build Tauri App
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
