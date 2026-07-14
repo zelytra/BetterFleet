@@ -257,7 +257,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -275,9 +274,8 @@ jobs:
       - name: Commit version bump to master
         env:
           VERSION: ${{ needs.resolve-version.outputs.version }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           FILES=(
             webapp/package.json
             webapp/src-tauri/Cargo.toml
@@ -296,19 +294,12 @@ jobs:
           git add "${FILES[@]}"
           git commit -m "chore: bump version to ${VERSION} [skip ci]"
 
-          # master may be a protected branch that rejects direct pushes. Try a direct push
-          # first; if it is rejected, fall back to opening a PR so this trailing sync step
-          # never marks an otherwise-successful release as failed.
+          # Pushing to master requires github-actions[bot] to be on the bypass list of master's
+          # branch protection AND its ruleset. If the push is rejected, warn and exit 0 so this
+          # trailing sync never fails an otherwise-successful release — the version is already
+          # correct in every published artifact.
           if git push origin HEAD:master; then
-            echo "Pushed version bump directly to master."
+            echo "Pushed version bump to master."
           else
-            echo "Direct push to master was rejected (protected branch?). Opening a pull request instead."
-            BRANCH="chore/bump-version-${VERSION}"
-            git push -f origin "HEAD:${BRANCH}"
-            gh pr create \
-              --base master \
-              --head "${BRANCH}" \
-              --title "chore: bump version to ${VERSION}" \
-              --body "Automated version bump to ${VERSION} following the \`v${VERSION}\` release. A direct push to \`master\` was rejected, so this PR carries the change." \
-              || echo "A pull request for this version bump already exists."
+            echo "::warning::Could not push the version bump to master. Add github-actions[bot] to the branch-protection AND ruleset bypass lists to enable it. Version ${VERSION} is already correct in all published artifacts."
           fi
