@@ -2,6 +2,7 @@ package fr.zelytra.session;
 
 
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import fr.zelytra.statistics.StatisticsEntity;
@@ -41,6 +42,9 @@ public class SessionManagerTest {
         MockitoAnnotations.openMocks(this);
         Mockito.doReturn(null).when(executorService).submit(any(Runnable.class));
         sessionManager = new SessionManager();
+        // Keep server creation offline: no proxycheck.io call, deterministic location.
+        sessionManager.proxyCheckAPI = Mockito.mock(ProxyCheckAPI.class);
+        when(sessionManager.proxyCheckAPI.resolveLocation(any())).thenReturn("");
     }
 
     @Test

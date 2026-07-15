@@ -2,6 +2,7 @@ package fr.zelytra.session;
 
 import fr.zelytra.session.client.BetterFleetClient;
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.BoatSize;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.player.PlayerAction;
@@ -46,6 +47,9 @@ class SessionSocketTest {
     @InjectMock
     ExecutorService executorService;
 
+    @InjectMock
+    ProxyCheckAPI proxyCheckAPI;
+
     @Inject
     SessionManager sessionManager;
 
@@ -55,6 +59,8 @@ class SessionSocketTest {
     @BeforeEach
     void setup() throws URISyntaxException, DeploymentException, IOException {
         Mockito.doReturn(null).when(executorService).submit(any(Runnable.class));
+        // Keep the JOIN_SERVER path offline: no proxycheck.io call, deterministic location.
+        Mockito.when(proxyCheckAPI.resolveLocation(any())).thenReturn("Test Land");
         SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
         this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/");
         betterFleetClient = new BetterFleetClient();
@@ -385,6 +391,9 @@ class SessionSocketTest {
         assertEquals(1, broadcast.getServers().size(), "The detected server must appear in the fleet");
         assertTrue(onlyServerHolds(broadcast, "Sailor"),
                 "The player must be grouped under the server they joined");
+        SotServer server = broadcast.getServers().values().iterator().next();
+        assertEquals("Test Land", server.getLocation(),
+                "The resolved geolocation must be attached to the server");
         // The server-side truth mirrors the broadcast the lobby renders from.
         assertEquals(1, sessionManager.getSessions().get(sessionId).getServers().size());
     }
