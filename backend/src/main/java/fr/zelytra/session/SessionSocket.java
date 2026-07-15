@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.fleet.SessionNameFilter;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.player.PlayerAction;
 import fr.zelytra.session.server.SotServer;
@@ -103,6 +104,10 @@ public class SessionSocket {
                     handleSetVisibility(session, isPrivate);
                 }
             }
+            case RENAME_SESSION -> {
+                String name = objectMapper.convertValue(socketMessage.data(), String.class);
+                handleRenameSession(session, name);
+            }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
             case KEEP_ALIVE -> {
@@ -195,6 +200,39 @@ public class SessionSocket {
         }
         fleet.setPrivate(isPrivate);
         Log.info("[" + fleet.getSessionId() + "] visibility set to " + (isPrivate ? "private" : "public") + " by " + requester.getUsername());
+        sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        sessionManager.publishDirectoryChange();
+    }
+
+    /**
+     * Sets (or clears) the session's custom name. Master-only, like the other session-level
+     * controls. The name is trimmed and length-capped, and rejected when it trips the content
+     * filter — public names are visible to everyone (issue #604). An empty name clears the custom
+     * name and falls back to the default localized pirate name.
+     */
+    private void handleRenameSession(Session session, String name) {
+        Player requester = sessionManager.getPlayerFromSessionId(session.getId());
+        if (requester == null) {
+            return;
+        }
+        Fleet fleet = sessionManager.getFleetByPlayerName(requester.getUsername());
+        if (fleet == null) {
+            return;
+        }
+        if (!requester.isMaster()) {
+            Log.warn("[" + fleet.getSessionId() + "] " + requester.getUsername() + " attempted to rename the session without master rights, ignored");
+            return;
+        }
+        String cleaned = SessionNameFilter.clean(name);
+        if (cleaned.isEmpty()) {
+            fleet.setCustomName(null); // revert to the default localized pirate name
+        } else if (!SessionNameFilter.isAllowed(cleaned)) {
+            Log.warn("[" + fleet.getSessionId() + "] rename rejected by the content filter, ignored");
+            return;
+        } else {
+            fleet.setCustomName(cleaned);
+        }
+        Log.info("[" + fleet.getSessionId() + "] renamed to '" + fleet.getCustomName() + "' by " + requester.getUsername());
         sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
         sessionManager.publishDirectoryChange();
     }

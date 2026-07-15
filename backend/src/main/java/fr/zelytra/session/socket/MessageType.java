@@ -16,4 +16,5 @@ public enum MessageType {
     KICK_PLAYER,
     DEMOTE_PLAYER,
     SET_VISIBILITY, // Master toggles the session public/private visibility
+    RENAME_SESSION, // Master sets a custom, everyone-visible session name
 }

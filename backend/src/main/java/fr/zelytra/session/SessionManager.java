@@ -457,8 +457,10 @@ public class SessionManager {
         List<String> admins = fleet.getMasters().stream()
                 .map(Player::getUsername)
                 .collect(Collectors.toList());
-        // #604 will carry a free-text custom name; until then the browser localizes this seed.
-        String name = String.valueOf(fleet.getSessionName());
+        // A master-set custom name wins; otherwise the browser localizes the pirate-name seed.
+        String name = (fleet.getCustomName() != null && !fleet.getCustomName().isBlank())
+                ? fleet.getCustomName()
+                : String.valueOf(fleet.getSessionName());
         return new PublicSession(
                 primaryRegion(fleet),
                 admins,
