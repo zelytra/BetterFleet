@@ -209,6 +209,24 @@
     }
   },
   "session": {
+    "empty": {
+      "comment": "No hay barco para surcar los mares…",
+      "title": "¡Caramba!"
+    },
+    "filter": {
+      "all": "Todas",
+      "private": "Privada",
+      "public": "Pública"
+    },
+    "issue": "Si tienes algún problema, únete a nuestro",
+    "or": "O",
+    "player": {
+      "online": "Jugadores conectados"
+    },
+    "playerLabel": "Jugador",
+    "playersLabel": "Jugadores",
+    "refresh": "Actualizar",
+    "searchPlaceholder": "Buscar una sesión…",
     "autoSetSail": {
       "description": "Zarpa automáticamente cuando todos los jugadores están listos",
       "label": "Zarpar automáticamente"

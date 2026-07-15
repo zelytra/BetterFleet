@@ -209,6 +209,24 @@
     }
   },
   "session": {
+    "empty": {
+      "comment": "Kein Schiff in Sicht, um die Meere zu befahren…",
+      "title": "Verflixt!"
+    },
+    "filter": {
+      "all": "Alle",
+      "private": "Privat",
+      "public": "Öffentlich"
+    },
+    "issue": "Wenn du auf Probleme stößt, tritt unserem",
+    "or": "ODER",
+    "player": {
+      "online": "Verbundene Spieler"
+    },
+    "playerLabel": "Spieler",
+    "playersLabel": "Spieler",
+    "refresh": "Aktualisieren",
+    "searchPlaceholder": "Sitzung suchen…",
     "autoSetSail": {
       "description": "Setzt automatisch die Segel, sobald alle Spieler bereit sind",
       "label": "Automatisch Segel setzen"

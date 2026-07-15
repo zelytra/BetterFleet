@@ -209,6 +209,24 @@
     }
   },
   "session": {
+    "empty": {
+      "comment": "Nessuna nave per solcare i mari…",
+      "title": "Perbacco!"
+    },
+    "filter": {
+      "all": "Tutte",
+      "private": "Privata",
+      "public": "Pubblica"
+    },
+    "issue": "Se riscontri problemi, unisciti al nostro",
+    "or": "O",
+    "player": {
+      "online": "Giocatori connessi"
+    },
+    "playerLabel": "Giocatore",
+    "playersLabel": "Giocatori",
+    "refresh": "Aggiorna",
+    "searchPlaceholder": "Cerca una sessione…",
     "autoSetSail": {
       "description": "Salpa automaticamente quando tutti i giocatori sono pronti",
       "label": "Salpa automaticamente"

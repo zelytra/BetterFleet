@@ -106,7 +106,13 @@ const displayName = computed(() =>
     display: flex;
     align-items: center;
     gap: 10px;
-    white-space: nowrap;
+    min-width: 0;
+
+    p {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     &.left {
       justify-self: start;
