@@ -80,7 +80,7 @@ const displayName = computed(() =>
   cursor: pointer;
 
   &:hover {
-    scale: 1.008;
+    filter: brightness(1.06);
   }
 
   .banner {
