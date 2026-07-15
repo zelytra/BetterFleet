@@ -220,9 +220,7 @@
     },
     "issue": "If you encounter any issues, join our",
     "or": "OR",
-    "player": {
-      "online": "Connected players"
-    },
+    "connectedPlayers": "Connected players",
     "playerLabel": "Player",
     "playersLabel": "Players",
     "refresh": "Refresh",

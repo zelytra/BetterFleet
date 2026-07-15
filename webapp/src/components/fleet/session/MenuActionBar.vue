@@ -5,7 +5,7 @@
     </div>
     <div class="player-count">
       <h3>{{ store.state.connectedPlayers }}</h3>
-      <p>{{ t("session.player.online") }}</p>
+      <p>{{ t("session.connectedPlayers") }}</p>
     </div>
     <div class="session create" @click="emits('createSession')">
       <p>{{ t("session.choice.createSession") }}</p>
@@ -106,18 +106,42 @@ const emits = defineEmits(["createSession"]);
       filter: brightness(1.1);
     }
 
+    // Dark scrim: the banner artwork is light, so the light label washed out on it. Masked to the
+    // banner's own torn shape so it never spills past the edges.
+    &:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      pointer-events: none;
+      z-index: 1;
+      mask-size: cover;
+      -webkit-mask-size: cover;
+    }
+
     &.create {
       background-image: url("@assets/banners/create_session.svg");
+
+      &:after {
+        mask-image: url("@assets/banners/create_session.svg");
+        -webkit-mask-image: url("@assets/banners/create_session.svg");
+      }
     }
 
     &.join {
       background-image: url("@assets/banners/join_session.svg");
       background-blend-mode: darken;
+
+      &:after {
+        mask-image: url("@assets/banners/join_session.svg");
+        -webkit-mask-image: url("@assets/banners/join_session.svg");
+      }
     }
 
     p {
       z-index: 2;
       text-align: center;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 
       &.description {
         color: var(--secondary-text);

@@ -37,6 +37,7 @@ import { PublicSessionsStore } from "@/objects/fleet/PublicSessionsStore.ts";
 import { SessionFilter } from "@/objects/fleet/PublicSessionsFilter.ts";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
 import lockIcon from "@/assets/icons/lock.svg";
+import lockOpenIcon from "@/assets/icons/lock_open.svg";
 
 const { t } = useI18n();
 defineEmits(["join"]);
@@ -44,16 +45,18 @@ defineEmits(["join"]);
 const store = PublicSessionsStore;
 const visible = computed(() => store.visible);
 
+// Open padlock = public, closed padlock = private (same language as the session rows); "All"
+// carries no padlock at all.
 const filterData = reactive<SingleSelectInterface>({
   data: [
-    { id: "all", display: t("session.filter.all"), image: lockIcon },
-    { id: "public", display: t("session.filter.public"), image: lockIcon },
+    { id: "all", display: t("session.filter.all"), image: "" },
+    { id: "public", display: t("session.filter.public"), image: lockOpenIcon },
     { id: "private", display: t("session.filter.private"), image: lockIcon },
   ],
   selectedValue: {
     id: "all",
     display: t("session.filter.all"),
-    image: lockIcon,
+    image: "",
   },
 });
 

@@ -519,6 +519,13 @@ class SessionSocketTest {
         assertTrue(listed.admin().contains("Host"), "The master must be listed as an admin");
         assertEquals("xx", listed.region(), "Region must come from the detected server's country code");
         assertEquals(sessionId, listed.sessionId(), "The joinable session code must be exposed");
+
+        // The connected-player count rides the same snapshot, so the SSE moves it live instead of
+        // it only updating when the user hits Refresh.
+        assertEquals(1, sessionManager.getPublicSessionsSnapshot().connectedPlayers(),
+                "The snapshot must carry the global connected-player count");
+        assertEquals(1, sessionManager.getPublicSessionsSnapshot().sessions().size(),
+                "The snapshot must carry the public sessions");
     }
 
     @Test

@@ -25,34 +25,41 @@ const state = reactive<PublicSessionsState>({
 let stream: EventSource | undefined;
 
 /**
- * REST snapshot: the guaranteed path (goes through the Tauri http plugin, like every other
- * backend call). Loads the public list + the global connected-players count. Used on mount and
- * by the Refresh button; the last known list is kept on failure.
+ * The backend sends the session list and the connected-players count together, so both stay in
+ * sync whether the snapshot arrives by REST or over the SSE stream.
+ */
+function applySnapshot(snapshot: any): void {
+  if (!snapshot) {
+    return;
+  }
+  if (Array.isArray(snapshot.sessions)) {
+    state.sessions = snapshot.sessions as PublicSession[];
+  }
+  if (typeof snapshot.connectedPlayers === "number") {
+    state.connectedPlayers = snapshot.connectedPlayers;
+  }
+}
+
+/**
+ * REST snapshot: the guaranteed path (goes through the Tauri http plugin, like every other backend
+ * call). Used on mount and by the Refresh button; the last known snapshot is kept on failure.
  */
 async function refresh(): Promise<void> {
   state.loading = true;
   try {
-    const list = await new HTTPAxios("public-sessions").get();
-    if (Array.isArray(list.data)) {
-      state.sessions = list.data as PublicSession[];
-    }
+    const response = await new HTTPAxios("public-sessions").get();
+    applySnapshot(response.data);
   } catch {
-    /* keep the last known list */
-  }
-  try {
-    const online = await new HTTPAxios("stats/online-users").get();
-    state.connectedPlayers = Number(online.data) || 0;
-  } catch {
-    /* keep the last known count */
+    /* keep the last known snapshot */
   }
   state.loading = false;
 }
 
 /**
- * Live updates: the backend pushes a fresh public-sessions snapshot on every structural change
- * (issue #599). The webview already opens direct WebSocket connections to the backend, so an
- * EventSource to the same origin is allowed; if it ever fails, refresh()/the Refresh button keep
- * the list usable.
+ * Live updates: the backend pushes a fresh snapshot — the list *and* the connected-players count —
+ * on every structural change (issue #599), so the counter moves as players come and go instead of
+ * only on Refresh. The webview already opens direct WebSocket connections to the backend, so an
+ * EventSource to the same origin is allowed; if it ever fails, refresh() keeps the browser usable.
  */
 function connectStream(): void {
   disconnect();
@@ -62,10 +69,7 @@ function connectStream(): void {
     );
     stream.onmessage = (event: MessageEvent) => {
       try {
-        const snapshot = JSON.parse(event.data);
-        if (Array.isArray(snapshot)) {
-          state.sessions = snapshot as PublicSession[];
-        }
+        applySnapshot(JSON.parse(event.data));
       } catch {
         /* ignore a malformed frame */
       }
