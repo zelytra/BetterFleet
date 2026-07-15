@@ -78,6 +78,15 @@ public class SotServer {
         return location;
     }
 
+    /**
+     * Set once the geolocation lands, which happens after the server is already visible to the
+     * fleet. Not part of {@link #generateHash()} (that is ip:port), so filling it in later keeps
+     * the server's identity stable.
+     */
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     public List<Player> getConnectedPlayers() {
         return connectedPlayers;
     }
