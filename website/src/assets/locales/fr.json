@@ -5,7 +5,7 @@
     "downloadHere": "Télécharger ici"
   },
   "comparison": {
-    "description": "BetterFleet est conçu pour trouver votre serveur de jeu rapidement. Dans notre benchmark, la détection prend environ 5 secondes, soit 3 à 4 fois plus vite que Fleet Creator : vous attendez moins entre chaque tentative quand vous alignez vos équipages. Le graphique compare les temps de détection : plus la barre est basse, mieux c'est.",
+    "description": "BetterFleet est conçu pour trouver votre serveur de jeu rapidement, et de manière fiable. Dans notre benchmark, la détection prend environ 5 secondes, soit 3 à 4 fois plus vite que Fleet Creator. Il continue aussi de fonctionner là où Fleet Creator décroche : les dernières mises à jour de Sea of Thieves et leurs nouveaux serveurs relais (SDR) ont rendu sa méthode de détection caduque, qui affiche désormais souvent un serveur erroné ou \"corrompu\". Notre nouvelle analyse basée sur le trafic a été pensée pour ces serveurs : elle continue de pointer le bon. Le graphique compare les temps de détection : plus la barre est basse, mieux c'est.",
     "subtitle": "Une détection de serveur plus rapide : moins de temps dans les menus, plus de temps en mer.",
     "title": "Comparaison avec Fleet Creator"
   },

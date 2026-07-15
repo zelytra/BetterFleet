@@ -5,7 +5,7 @@
     "downloadHere": "Download here"
   },
   "comparison": {
-    "description": "BetterFleet is built to find your game server fast. In our benchmark it detects the server in about 5 seconds — roughly 3 to 4 times quicker than Fleet Creator — so there's less waiting between attempts while you line your crews up. The chart compares detection times side by side: the lower the bar, the better.",
+    "description": "BetterFleet is built to find your game server quickly — and reliably. In our benchmark it detects the server in about 5 seconds, roughly 3 to 4 times faster than Fleet Creator. It also keeps working where Fleet Creator no longer does: recent Sea of Thieves updates and their new relay servers (SDR) broke its detection method, which now often reports a wrong or \"corrupted\" server. Our new traffic-based analysis was built around those servers, so it keeps pointing you to the right one. The chart compares detection times side by side: the lower the bar, the better.",
     "subtitle": "Faster server detection — less time in menus, more time at sea.",
     "title": "Comparison with Fleet Creator"
   },
