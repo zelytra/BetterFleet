@@ -27,7 +27,7 @@ const SIO_RCVALL: DWORD = 0x98000001;
 
 /// Returns true when a remote UDP port falls in the range Sea of Thieves game servers use.
 /// Extracted as a pure function so the core detection heuristic can be unit-tested.
-fn is_plausible_sot_port(port: u16) -> bool {
+pub(crate) fn is_plausible_sot_port(port: u16) -> bool {
     port >= 30000 && port < 40000
 }
 
@@ -227,7 +227,7 @@ fn spawn_thread(socket_addr: SocketAddr, api_clone: Arc<RwLock<Api>>, listen_por
 }
 
 // Fetch game UDP connections
-fn get_udp_connections(target_pid: usize) -> Vec<u16> {
+pub(crate) fn get_udp_connections(target_pid: usize) -> Vec<u16> {
     let af_flags = AddressFamilyFlags::IPV4 | AddressFamilyFlags::IPV6;
     let proto_flags = ProtocolFlags::UDP;
     let sockets_info = match get_sockets_info(af_flags, proto_flags) {
@@ -254,7 +254,7 @@ fn get_udp_connections(target_pid: usize) -> Vec<u16> {
 }
 
 // In this netstat powershell command, we get the UDP endpoints of a process
-fn get_udp_connections_powershell(pid: usize) -> Vec<u16> {
+pub(crate) fn get_udp_connections_powershell(pid: usize) -> Vec<u16> {
     let ps_script = format!(
         "Get-NetUDPEndpoint -OwningProcess {} | Select-Object -ExpandProperty LocalPort",
         pid
