@@ -520,6 +520,63 @@ class SessionSocketTest {
         assertEquals("xx", listed.region(), "Region must come from the detected server's country code");
     }
 
+    @Test
+    void masterCanRenameSession_broadcastAndReflectedInDirectory() throws Exception {
+        createSessionAsMaster("Host");
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.RENAME_SESSION, "Rum Runners");
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        assertEquals("Rum Runners", betterFleetClient.getMessageReceived(Fleet.class).getCustomName(),
+                "The broadcast fleet must carry the new custom name");
+        assertEquals("Rum Runners", sessionManager.getPublicSessions().get(0).name(),
+                "The custom name must show in the public directory");
+    }
+
+    @Test
+    void nonMasterCannotRenameSession() throws Exception {
+        String sessionId = createSessionAsMaster("Master");
+        BetterFleetClient memberClient = connectMember("Member", sessionId);
+
+        Player member = new Player();
+        member.setUsername("Member");
+        member.setClientVersion(appVersion.get(0));
+        member.setSessionId(sessionId);
+
+        // Rename attempt, then a benign UPDATE. One socket, ordered: once UPDATE round-trips the
+        // (ignored) rename has already been handled.
+        memberClient.setLatch(new CountDownLatch(1));
+        memberClient.sendMessage(MessageType.RENAME_SESSION, "Hacked");
+        memberClient.sendMessage(MessageType.UPDATE, member);
+        assertTrue(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        assertNull(sessionManager.getSessions().get(sessionId).getCustomName(),
+                "A non-master must not be able to rename the session");
+    }
+
+    @Test
+    void renameWithBlockedWord_isRejected() throws Exception {
+        String sessionId = createSessionAsMaster("Host");
+
+        Player host = new Player();
+        host.setUsername("Host");
+        host.setClientVersion(appVersion.get(0));
+        host.setSessionId(sessionId);
+
+        // The rejected rename sends no broadcast; an ordered UPDATE lets us wait deterministically.
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.RENAME_SESSION, "Shit Crew");
+        betterFleetClient.sendMessage(MessageType.UPDATE, host);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        assertNull(sessionManager.getSessions().get(sessionId).getCustomName(),
+                "A name tripping the content filter must be rejected");
+    }
+
     private String createSessionAsMaster(String username) throws Exception {
         Player master = new Player();
         master.setUsername(username);

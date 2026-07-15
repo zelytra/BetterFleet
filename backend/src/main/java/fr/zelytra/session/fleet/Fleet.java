@@ -19,6 +19,10 @@ public class Fleet {
 
     private int banner;
 
+    // Optional free-text name set by the master (issue #604); null/blank falls back to the
+    // localized pirate name derived from sessionName.
+    private String customName;
+
     private List<Player> players;
     private final Map<String, SotServer> servers;
     private FleetStats stats;
@@ -72,6 +76,14 @@ public class Fleet {
 
     public void setBanner(int banner) {
         this.banner = banner;
+    }
+
+    public String getCustomName() {
+        return customName;
+    }
+
+    public void setCustomName(String customName) {
+        this.customName = customName;
     }
 
     public List<Player> getPlayers() {
