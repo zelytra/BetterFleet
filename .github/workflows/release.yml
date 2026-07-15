@@ -146,7 +146,9 @@ jobs:
 
       - name: Build & publish Tauri release
         if: ${{ !inputs.dry_run }}
-        uses: tauri-apps/tauri-action@v1
+        # Pinned to v0: tauri-action v1 assumes a Tauri v2 config (top-level "identifier")
+        # and fails this Tauri v1 project with "base config has no bundle identifier".
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
