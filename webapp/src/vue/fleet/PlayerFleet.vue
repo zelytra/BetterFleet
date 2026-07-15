@@ -70,14 +70,14 @@
         <p>{{ t("boatSize." + player.boatSize.toLowerCase()) }}</p>
       </template>
     </div>
-    <div class="content">
+    <div class="content state">
       <p
         :class="{ status: true, offline: player.status == PlayerStates.CLOSED }"
       >
         {{ t("session.player.status." + Fleet.getFormatedStatus(player)) }}
       </p>
     </div>
-    <div class="content">
+    <div class="content ready-col">
       <span v-if="player.isReady" class="player-status ready">{{
         t("session.player.ready")
       }}</span>
@@ -128,7 +128,7 @@ onUpdated(() => {
 .player-fleet-wrapper {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   background: var(--primary-background-static);
   padding: 8px 13px;
   border-radius: 5px;
@@ -146,6 +146,7 @@ onUpdated(() => {
 
     &.username {
       width: 240px;
+      flex-shrink: 0;
 
       .user-icon {
         border-radius: 50%;
@@ -193,6 +194,7 @@ onUpdated(() => {
 
     &.boat {
       width: 130px;
+      flex-shrink: 0;
       gap: 8px;
       color: var(--secondary-text);
 
@@ -207,19 +209,27 @@ onUpdated(() => {
       }
     }
 
-    p,
-    span {
-      &.status {
+    // Game state ("état du jeu") lives in its own flexible column that keeps the
+    // same width on every row, so the text sits on a stable axis instead of being
+    // absolutely centred on the row (which shifted the shorter labels around).
+    &.state {
+      flex: 1;
+      min-width: 0;
+      justify-content: center;
+
+      .status {
         color: var(--primary);
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        white-space: nowrap;
 
         &.offline {
           color: var(--secondary-text);
         }
       }
+    }
+
+    // Readiness badge stays pinned to the right edge of the row.
+    &.ready-col {
+      flex-shrink: 0;
     }
 
     .player-status {
