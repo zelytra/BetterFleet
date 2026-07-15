@@ -5,70 +5,72 @@
       'is-player': UserStore.player.username == player.username,
     }"
   >
-    <div class="content username">
-      <span
-        class="user-icon"
-        :style="{ backgroundColor: Utils.generateRandomColor() }"
-        >{{ player.username.charAt(0).toUpperCase() }}</span
-      >
-      <p>{{ player.username }}</p>
+    <div class="left-group">
+      <div class="content username">
+        <span
+          class="user-icon"
+          :style="{ backgroundColor: Utils.generateRandomColor() }"
+          >{{ player.username.charAt(0).toUpperCase() }}</span
+        >
+        <p>{{ player.username }}</p>
 
-      <!-- Device user icon -->
-      <img
-        v-if="player.device == PlayerDevice.XBOX"
-        src="@/assets/icons/xbox.svg"
-      />
-      <img
-        v-if="player.device == PlayerDevice.PLAYSTATION"
-        src="@/assets/icons/playstation.svg"
-      />
+        <!-- Device user icon -->
+        <img
+          v-if="player.device == PlayerDevice.XBOX"
+          src="@/assets/icons/xbox.svg"
+        />
+        <img
+          v-if="player.device == PlayerDevice.PLAYSTATION"
+          src="@/assets/icons/playstation.svg"
+        />
 
-      <!-- Contributor user icon -->
-      <div class="contrib-wrapper">
-        <img
-          v-if="contributor == ContributorType.DEVELOPER"
-          class="contributor"
-          src="@/assets/icons/contributors/developer.svg"
-          alt="developer"
-          @mouseenter="displayContrib = true"
-          @mouseleave="displayContrib = false"
-        />
-        <img
-          v-if="contributor == ContributorType.DESIGNER"
-          class="contributor"
-          src="@/assets/icons/contributors/designer.svg"
-          alt="designer"
-          @mouseenter="displayContrib = true"
-          @mouseleave="displayContrib = false"
-        />
-        <img
-          v-if="contributor == ContributorType.TRANSLATOR"
-          class="contributor"
-          src="@/assets/icons/contributors/translator.svg"
-          alt="translator"
-          @mouseenter="displayContrib = true"
-          @mouseleave="displayContrib = false"
-        />
-        <img
-          v-if="contributor == ContributorType.ALPHA_TESTER"
-          class="contributor"
-          src="@/assets/icons/contributors/alpha-tester.svg"
-          alt="alpha-tester"
-          @mouseenter="displayContrib = true"
-          @mouseleave="displayContrib = false"
-        />
-        <span v-if="displayContrib && contributor">{{
-          t("session.contributor." + contributor.toLowerCase())
-        }}</span>
+        <!-- Contributor user icon -->
+        <div class="contrib-wrapper">
+          <img
+            v-if="contributor == ContributorType.DEVELOPER"
+            class="contributor"
+            src="@/assets/icons/contributors/developer.svg"
+            alt="developer"
+            @mouseenter="displayContrib = true"
+            @mouseleave="displayContrib = false"
+          />
+          <img
+            v-if="contributor == ContributorType.DESIGNER"
+            class="contributor"
+            src="@/assets/icons/contributors/designer.svg"
+            alt="designer"
+            @mouseenter="displayContrib = true"
+            @mouseleave="displayContrib = false"
+          />
+          <img
+            v-if="contributor == ContributorType.TRANSLATOR"
+            class="contributor"
+            src="@/assets/icons/contributors/translator.svg"
+            alt="translator"
+            @mouseenter="displayContrib = true"
+            @mouseleave="displayContrib = false"
+          />
+          <img
+            v-if="contributor == ContributorType.ALPHA_TESTER"
+            class="contributor"
+            src="@/assets/icons/contributors/alpha-tester.svg"
+            alt="alpha-tester"
+            @mouseenter="displayContrib = true"
+            @mouseleave="displayContrib = false"
+          />
+          <span v-if="displayContrib && contributor">{{
+            t("session.contributor." + contributor.toLowerCase())
+          }}</span>
+        </div>
+
+        <img v-if="player.isMaster" src="@/assets/icons/key.svg" />
       </div>
-
-      <img v-if="player.isMaster" src="@/assets/icons/key.svg" />
-    </div>
-    <div class="content boat">
-      <template v-if="player.boatSize && player.boatSize !== BoatSize.NONE">
-        <img src="@/assets/icons/boat.svg" alt="boat" />
-        <p>{{ t("boatSize." + player.boatSize.toLowerCase()) }}</p>
-      </template>
+      <div class="content boat">
+        <template v-if="player.boatSize && player.boatSize !== BoatSize.NONE">
+          <img src="@/assets/icons/boat.svg" alt="boat" />
+          <p>{{ t("boatSize." + player.boatSize.toLowerCase()) }}</p>
+        </template>
+      </div>
     </div>
     <div class="content state">
       <p
@@ -126,7 +128,8 @@ onUpdated(() => {
 
 <style scoped lang="scss">
 .player-fleet-wrapper {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 12px;
   background: var(--primary-background-static);
@@ -137,6 +140,14 @@ onUpdated(() => {
   &.is-player {
     border: 1px solid var(--primary);
     //background: rgba(50, 212, 153, 0.10);
+  }
+
+  // Pseudo + boat grouped on the left column so the boat sits next to the name.
+  .left-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
   }
 
   .content {
@@ -209,13 +220,11 @@ onUpdated(() => {
       }
     }
 
-    // Game state ("état du jeu") lives in its own flexible column that keeps the
-    // same width on every row, so the text sits on a stable axis instead of being
-    // absolutely centred on the row (which shifted the shorter labels around).
+    // Game state ("état du jeu") sits in the centre grid column. The two side
+    // columns are equal (1fr), so it stays centred on the row's axis on every
+    // row, and it reserves its own width so long labels never overlap the pseudo.
     &.state {
-      flex: 1;
-      min-width: 0;
-      justify-content: center;
+      justify-self: center;
 
       .status {
         color: var(--primary);
@@ -229,7 +238,7 @@ onUpdated(() => {
 
     // Readiness badge stays pinned to the right edge of the row.
     &.ready-col {
-      flex-shrink: 0;
+      justify-self: end;
     }
 
     .player-status {
