@@ -5,79 +5,81 @@
       'is-player': UserStore.player.username == player.username,
     }"
   >
-    <div class="content username">
-      <span
-        class="user-icon"
-        :style="{ backgroundColor: Utils.generateRandomColor() }"
-        >{{ player.username.charAt(0).toUpperCase() }}</span
-      >
-      <p>{{ player.username }}</p>
+    <div class="left-group">
+      <div class="content username">
+        <span
+          class="user-icon"
+          :style="{ backgroundColor: Utils.generateRandomColor() }"
+          >{{ player.username.charAt(0).toUpperCase() }}</span
+        >
+        <p>{{ player.username }}</p>
 
-      <!-- Device user icon -->
-      <img
-        v-if="player.device == PlayerDevice.XBOX"
-        src="@/assets/icons/xbox.svg"
-      />
-      <img
-        v-if="player.device == PlayerDevice.PLAYSTATION"
-        src="@/assets/icons/playstation.svg"
-      />
+        <!-- Device user icon -->
+        <img
+          v-if="player.device == PlayerDevice.XBOX"
+          src="@/assets/icons/xbox.svg"
+        />
+        <img
+          v-if="player.device == PlayerDevice.PLAYSTATION"
+          src="@/assets/icons/playstation.svg"
+        />
 
-      <!-- Contributor user icon -->
-      <div class="contrib-wrapper">
-        <img
-          v-if="contributor == ContributorType.DEVELOPER"
-          class="contributor"
-          src="@/assets/icons/contributors/developer.svg"
-          alt="developer"
-          @mouseenter="displayContrib = true"
-          @mouseleave="displayContrib = false"
-        />
-        <img
-          v-if="contributor == ContributorType.DESIGNER"
-          class="contributor"
-          src="@/assets/icons/contributors/designer.svg"
-          alt="designer"
-          @mouseenter="displayContrib = true"
-          @mouseleave="displayContrib = false"
-        />
-        <img
-          v-if="contributor == ContributorType.TRANSLATOR"
-          class="contributor"
-          src="@/assets/icons/contributors/translator.svg"
-          alt="translator"
-          @mouseenter="displayContrib = true"
-          @mouseleave="displayContrib = false"
-        />
-        <img
-          v-if="contributor == ContributorType.ALPHA_TESTER"
-          class="contributor"
-          src="@/assets/icons/contributors/alpha-tester.svg"
-          alt="alpha-tester"
-          @mouseenter="displayContrib = true"
-          @mouseleave="displayContrib = false"
-        />
-        <span v-if="displayContrib && contributor">{{
-          t("session.contributor." + contributor.toLowerCase())
-        }}</span>
+        <!-- Contributor user icon -->
+        <div class="contrib-wrapper">
+          <img
+            v-if="contributor == ContributorType.DEVELOPER"
+            class="contributor"
+            src="@/assets/icons/contributors/developer.svg"
+            alt="developer"
+            @mouseenter="displayContrib = true"
+            @mouseleave="displayContrib = false"
+          />
+          <img
+            v-if="contributor == ContributorType.DESIGNER"
+            class="contributor"
+            src="@/assets/icons/contributors/designer.svg"
+            alt="designer"
+            @mouseenter="displayContrib = true"
+            @mouseleave="displayContrib = false"
+          />
+          <img
+            v-if="contributor == ContributorType.TRANSLATOR"
+            class="contributor"
+            src="@/assets/icons/contributors/translator.svg"
+            alt="translator"
+            @mouseenter="displayContrib = true"
+            @mouseleave="displayContrib = false"
+          />
+          <img
+            v-if="contributor == ContributorType.ALPHA_TESTER"
+            class="contributor"
+            src="@/assets/icons/contributors/alpha-tester.svg"
+            alt="alpha-tester"
+            @mouseenter="displayContrib = true"
+            @mouseleave="displayContrib = false"
+          />
+          <span v-if="displayContrib && contributor">{{
+            t("session.contributor." + contributor.toLowerCase())
+          }}</span>
+        </div>
+
+        <img v-if="player.isMaster" src="@/assets/icons/key.svg" />
       </div>
-
-      <img v-if="player.isMaster" src="@/assets/icons/key.svg" />
+      <div class="content boat">
+        <template v-if="player.boatSize && player.boatSize !== BoatSize.NONE">
+          <img src="@/assets/icons/boat.svg" alt="boat" />
+          <p>{{ t("boatSize." + player.boatSize.toLowerCase()) }}</p>
+        </template>
+      </div>
     </div>
-    <div class="content boat">
-      <template v-if="player.boatSize && player.boatSize !== BoatSize.NONE">
-        <img src="@/assets/icons/boat.svg" alt="boat" />
-        <p>{{ t("boatSize." + player.boatSize.toLowerCase()) }}</p>
-      </template>
-    </div>
-    <div class="content">
+    <div class="content state">
       <p
         :class="{ status: true, offline: player.status == PlayerStates.CLOSED }"
       >
         {{ t("session.player.status." + Fleet.getFormatedStatus(player)) }}
       </p>
     </div>
-    <div class="content">
+    <div class="content ready-col">
       <span v-if="player.isReady" class="player-status ready">{{
         t("session.player.ready")
       }}</span>
@@ -126,9 +128,10 @@ onUpdated(() => {
 
 <style scoped lang="scss">
 .player-fleet-wrapper {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   background: var(--primary-background-static);
   padding: 8px 13px;
   border-radius: 5px;
@@ -139,6 +142,14 @@ onUpdated(() => {
     //background: rgba(50, 212, 153, 0.10);
   }
 
+  // Pseudo + boat grouped on the left column so the boat sits next to the name.
+  .left-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
   .content {
     display: flex;
     align-items: center;
@@ -146,6 +157,7 @@ onUpdated(() => {
 
     &.username {
       width: 240px;
+      flex-shrink: 0;
 
       .user-icon {
         border-radius: 50%;
@@ -193,6 +205,7 @@ onUpdated(() => {
 
     &.boat {
       width: 130px;
+      flex-shrink: 0;
       gap: 8px;
       color: var(--secondary-text);
 
@@ -207,19 +220,25 @@ onUpdated(() => {
       }
     }
 
-    p,
-    span {
-      &.status {
+    // Game state ("état du jeu") sits in the centre grid column. The two side
+    // columns are equal (1fr), so it stays centred on the row's axis on every
+    // row, and it reserves its own width so long labels never overlap the pseudo.
+    &.state {
+      justify-self: center;
+
+      .status {
         color: var(--primary);
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        white-space: nowrap;
 
         &.offline {
           color: var(--secondary-text);
         }
       }
+    }
+
+    // Readiness badge stays pinned to the right edge of the row.
+    &.ready-col {
+      justify-self: end;
     }
 
     .player-status {
