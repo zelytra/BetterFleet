@@ -36,6 +36,7 @@ import SessionRow from "@/components/fleet/session/SessionRow.vue";
 import { PublicSessionsStore } from "@/objects/fleet/PublicSessionsStore.ts";
 import { SessionFilter } from "@/objects/fleet/PublicSessionsFilter.ts";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
+import lockIcon from "@/assets/icons/lock.svg";
 
 const { t } = useI18n();
 defineEmits(["join"]);
@@ -45,11 +46,15 @@ const visible = computed(() => store.visible);
 
 const filterData = reactive<SingleSelectInterface>({
   data: [
-    { id: "all", display: t("session.filter.all"), image: "" },
-    { id: "public", display: t("session.filter.public"), image: "" },
-    { id: "private", display: t("session.filter.private"), image: "" },
+    { id: "all", display: t("session.filter.all"), image: lockIcon },
+    { id: "public", display: t("session.filter.public"), image: lockIcon },
+    { id: "private", display: t("session.filter.private"), image: lockIcon },
   ],
-  selectedValue: { id: "all", display: t("session.filter.all"), image: "" },
+  selectedValue: {
+    id: "all",
+    display: t("session.filter.all"),
+    image: lockIcon,
+  },
 });
 
 function onFilterChange(data: SingleSelectInterface): void {
@@ -70,6 +75,7 @@ onUnmounted(() => store.disconnect());
   gap: 12px;
   width: 100%;
   height: 100%;
+  min-height: 0;
   box-sizing: border-box;
 
   .toolbar {
@@ -88,6 +94,7 @@ onUnmounted(() => store.disconnect());
 
   .list {
     flex: 1;
+    min-height: 0;
     background: var(--secondary-background);
     padding: 8px;
     border-radius: 5px;

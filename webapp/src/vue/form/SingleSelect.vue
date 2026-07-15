@@ -121,7 +121,7 @@ function updateData(option: InputData) {
     background: var(--secondary-background);
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: absolute;
-    top: 70px;
+    top: calc(100% + 4px);
     display: flex;
     flex-direction: column;
     width: 100%;
