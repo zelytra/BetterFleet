@@ -373,6 +373,12 @@
       "countdown": "Starten in",
       "ready": "Bereit",
       "waiting": "Warten"
+    },
+    "visibility": {
+      "description": "Öffentliche Sitzungen erscheinen in der Liste und stehen allen offen.",
+      "label": "Öffentliche Sitzung",
+      "private": "Privat",
+      "public": "Öffentlich"
     }
   },
   "tooltips": {

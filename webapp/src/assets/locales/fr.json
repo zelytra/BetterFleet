@@ -373,6 +373,12 @@
       "countdown": "Lancement dans",
       "ready": "Prêt",
       "waiting": "En attente"
+    },
+    "visibility": {
+      "description": "Les sessions publiques sont visibles dans la liste et ouvertes à tous.",
+      "label": "Session publique",
+      "private": "Privée",
+      "public": "Publique"
     }
   },
   "tooltips": {

@@ -373,6 +373,12 @@
       "countdown": "Launch in",
       "ready": "Ready",
       "waiting": "Waiting"
+    },
+    "visibility": {
+      "description": "Public sessions are listed in the browser for anyone to join.",
+      "label": "Public session",
+      "private": "Private",
+      "public": "Public"
     }
   },
   "tooltips": {

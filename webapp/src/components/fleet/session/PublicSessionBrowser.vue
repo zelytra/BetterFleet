@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
 import InputText from "@/vue/form/InputText.vue";
@@ -47,7 +47,7 @@ const visible = computed(() => store.visible);
 
 // Open padlock = public, closed padlock = private (same language as the session rows); "All"
 // carries no padlock at all.
-const filterData = reactive<SingleSelectInterface>({
+const filterData = ref<SingleSelectInterface>({
   data: [
     { id: "all", display: t("session.filter.all"), image: "" },
     { id: "public", display: t("session.filter.public"), image: lockOpenIcon },
@@ -60,7 +60,10 @@ const filterData = reactive<SingleSelectInterface>({
   },
 });
 
+// The select emits the pick without touching what it was given, so applying it here
+// is what both moves the label and drives the list.
 function onFilterChange(data: SingleSelectInterface): void {
+  filterData.value = data;
   store.state.filter = (data.selectedValue?.id as SessionFilter) ?? "all";
 }
 

@@ -23,6 +23,7 @@ export interface FleetStatistics {
 export interface FleetInterface {
   sessionId: string;
   sessionName: string;
+  isPrivate: boolean;
   players: Player[];
   servers: Map<string, SotServer>;
   socket?: WebSocket;
@@ -32,6 +33,9 @@ export interface FleetInterface {
 export class Fleet {
   public sessionId: string;
   public sessionName: string;
+  // Unlisted from the public browser. Backend-owned and master-only: every
+  // client learns of a change through the broadcast UPDATE, never locally.
+  public isPrivate: boolean;
   public players: Player[];
   public servers: Map<string, SotServer>;
   public socket?: WebSocket;
@@ -47,6 +51,7 @@ export class Fleet {
   constructor() {
     this.sessionId = "";
     this.sessionName = "";
+    this.isPrivate = true; // matches the backend default until the first UPDATE
     this.players = [];
     this.servers = new Map<string, SotServer>();
     this.stats = {
@@ -64,6 +69,7 @@ export class Fleet {
 
     UserStore.player.isReady = false;
     UserStore.player.isMaster = false;
+    this.isPrivate = true; // never flash "public" for the previous session's state
     this.autoSetSail = false;
     this.autoSetSailFired = false;
 
@@ -198,6 +204,7 @@ export class Fleet {
   private handleFleetUpdate(receivedFleet: FleetInterface) {
     this.sessionId = receivedFleet.sessionId;
     this.sessionName = t("session.name." + receivedFleet.sessionName);
+    this.isPrivate = receivedFleet.isPrivate;
     this.players = receivedFleet.players;
     this.servers = new Map(Object.entries(receivedFleet.servers));
     this.stats = receivedFleet.stats;
@@ -259,6 +266,24 @@ export class Fleet {
       messageType: WebSocketMessageType.START_COUNTDOWN,
     };
     info("[Fleet.ts][WebSocket] User run countdown to session");
+    this.socket.send(JSON.stringify(message));
+  }
+
+  /**
+   * Master-only: lists or unlists the session in the public browser. Nothing is
+   * changed locally — the backend re-checks the master role, then broadcasts the
+   * new state to the whole session, so a non-master's forged message is ignored
+   * and every client (this one included) settles on the server's answer.
+   */
+  setVisibility(isPrivate: boolean): void {
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: isPrivate,
+      messageType: WebSocketMessageType.SET_VISIBILITY,
+    };
+    info(
+      "[Fleet.ts][WebSocket] User set session visibility, private=" + isPrivate,
+    );
     this.socket.send(JSON.stringify(message));
   }
 

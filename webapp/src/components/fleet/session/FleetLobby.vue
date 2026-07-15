@@ -96,6 +96,16 @@
                 {{ session.stats.tryAmount }}
               </p>
             </div>
+            <div v-if="UserStore.player.isMaster" class="visibility">
+              <SingleSelect
+                :data="visibilityData"
+                :label="t('session.visibility.label')"
+                @update:data="onVisibilityChange"
+              />
+              <p class="description">
+                {{ t("session.visibility.description") }}
+              </p>
+            </div>
             <label v-if="UserStore.player.isMaster" class="auto-set-sail">
               <input
                 type="checkbox"
@@ -151,7 +161,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, PropType, ref } from "vue";
+import { computed, onUnmounted, PropType, reactive, ref, watch } from "vue";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import { useI18n } from "vue-i18n";
@@ -161,9 +171,13 @@ import SessionCountdown from "@/components/fleet/session/SessionCountdown.vue";
 import ServerContainer from "@/vue/templates/ServerContainer.vue";
 import ConfirmationModal from "@/vue/form/ConfirmationModal.vue";
 import MasterContextMenu from "@/vue/context/MasterContextMenu.vue";
+import SingleSelect from "@/vue/form/SingleSelect.vue";
+import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
 import { ContextMenu, MenuData } from "@/vue/context/ContextMenu.ts";
 import { Player } from "@/objects/fleet/Player.ts";
 import { WebSocketMessageType } from "@/objects/fleet/WebSocet.ts";
+import lockIcon from "@/assets/icons/lock.svg";
+import lockOpenIcon from "@/assets/icons/lock_open.svg";
 
 const { t } = useI18n();
 const displayIdCopy = ref<boolean>(false);
@@ -235,6 +249,40 @@ function startSession() {
 
 function onToggleAutoSetSail(event: Event) {
   props.session.setAutoSetSail((event.target as HTMLInputElement).checked);
+}
+
+// Open padlock = listed in the public browser, closed = unlisted — the same
+// language the browser's filter and session rows use.
+const visibilityData = reactive<SingleSelectInterface>({
+  data: [
+    {
+      id: "public",
+      display: t("session.visibility.public"),
+      image: lockOpenIcon,
+    },
+    {
+      id: "private",
+      display: t("session.visibility.private"),
+      image: lockIcon,
+    },
+  ],
+});
+
+// The session's visibility is owned by the backend and broadcast to everyone, so
+// the dropdown follows the fleet rather than holding its own state: a change made
+// by another master (or a rejected one) still lands on the right option here.
+watch(
+  () => props.session.isPrivate,
+  (isPrivate) => {
+    visibilityData.selectedValue = visibilityData.data.find(
+      (option) => option.id === (isPrivate ? "private" : "public"),
+    );
+  },
+  { immediate: true },
+);
+
+function onVisibilityChange(data: SingleSelectInterface) {
+  props.session.setVisibility(data.selectedValue?.id === "private");
 }
 
 function getFilteredPlayerList() {
@@ -506,6 +554,31 @@ function onContextAction(action: string) {
               span {
                 color: var(--primary);
               }
+            }
+          }
+
+          .visibility {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            // The dropdown is absolutely positioned and the details panel clips
+            // its overflow, so keep it above the rows that follow.
+            position: relative;
+            z-index: 1;
+
+            // The select carries a 250px floor sized for the settings form; this
+            // rail is 170px, so it would overflow and the panel would clip it.
+            :deep(.input-wrapper),
+            :deep(.dropdown) {
+              min-width: 0;
+            }
+
+            p.description {
+              color: var(--secondary-text);
+              font-size: 12px;
+              text-align: left;
             }
           }
 

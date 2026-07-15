@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref } from "vue";
+import { PropType, ref } from "vue";
 import { InputData, SingleSelectInterface } from "@/vue/form/Inputs.ts";
 
 const isOpen = ref<boolean>(false);
@@ -42,15 +42,11 @@ const props = defineProps({
 });
 const emits = defineEmits(["update:data", "validate"]);
 
-const computedInput = computed({
-  get: (): SingleSelectInterface => props.data,
-  set: (value: SingleSelectInterface): void => {
-    emits("update:data", value);
-  },
-});
-
+// Emits the pick rather than writing it into the bound object: the caller owns its
+// own state. A v-model:data binding picks this up on its own; a plain :data caller
+// has to apply it in its @update:data handler.
 function updateData(option: InputData) {
-  computedInput.value.selectedValue = option;
+  emits("update:data", { ...props.data, selectedValue: option });
   isOpen.value = false;
 }
 </script>

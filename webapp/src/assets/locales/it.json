@@ -373,6 +373,12 @@
       "countdown": "Avvia in",
       "ready": "Pronto",
       "waiting": "In Attesa"
+    },
+    "visibility": {
+      "description": "Le sessioni pubbliche compaiono nell'elenco e chiunque può unirsi.",
+      "label": "Sessione pubblica",
+      "private": "Privata",
+      "public": "Pubblica"
     }
   },
   "tooltips": {
