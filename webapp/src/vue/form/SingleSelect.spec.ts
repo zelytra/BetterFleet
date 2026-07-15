@@ -58,6 +58,29 @@ describe("SingleSelect", () => {
     expect(data.selectedValue?.id).toBe("all");
   });
 
+  // An option may legitimately carry no icon (the browser's "All" filter has no
+  // padlock). Rendering <img src=""> for it puts a broken-image glyph on screen.
+  it("renders no image for an option that has none", () => {
+    const data = makeData();
+    const wrapper = mount(SingleSelect, { props: { data }, ...mountOptions });
+
+    expect(wrapper.find(".input-wrapper img").exists()).toBe(false);
+  });
+
+  it("still renders the image when there is one", () => {
+    const data = makeData();
+    data.selectedValue = {
+      id: "public",
+      display: "Public",
+      image: "/lock.svg",
+    };
+    const wrapper = mount(SingleSelect, { props: { data }, ...mountOptions });
+
+    expect(wrapper.find(".input-wrapper img").attributes("src")).toBe(
+      "/lock.svg",
+    );
+  });
+
   // The settings form binds with v-model:data and reads selectedValue back when the
   // user saves, so that binding has to keep working end to end.
   it("updates a v-model:data binding", async () => {
