@@ -43,7 +43,9 @@ defineProps({
     background: rgba(34, 38, 49, 0.2);
     padding: 43px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
     box-sizing: border-box;
