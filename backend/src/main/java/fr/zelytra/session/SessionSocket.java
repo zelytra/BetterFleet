@@ -196,6 +196,7 @@ public class SessionSocket {
         fleet.setPrivate(isPrivate);
         Log.info("[" + fleet.getSessionId() + "] visibility set to " + (isPrivate ? "private" : "public") + " by " + requester.getUsername());
         sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        sessionManager.publishDirectoryChange();
     }
 
     private void handleClearStatus(Session session) {

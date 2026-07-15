@@ -2,6 +2,7 @@ package fr.zelytra.session;
 
 import fr.zelytra.session.client.BetterFleetClient;
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.fleet.PublicSession;
 import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.BoatSize;
 import fr.zelytra.session.player.Player;
@@ -59,7 +60,8 @@ class SessionSocketTest {
     @BeforeEach
     void setup() throws URISyntaxException, DeploymentException, IOException {
         Mockito.doReturn(null).when(executorService).submit(any(Runnable.class));
-        // Keep the JOIN_SERVER path offline: no proxycheck.io call, deterministic location.
+        // Keep the JOIN_SERVER path offline: no proxycheck.io call, deterministic geo.
+        Mockito.when(proxyCheckAPI.resolveGeo(any())).thenReturn(new ProxyCheckAPI.Geo("Test Land", "xx"));
         Mockito.when(proxyCheckAPI.resolveLocation(any())).thenReturn("Test Land");
         SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
         this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/");
@@ -493,6 +495,29 @@ class SessionSocketTest {
 
         assertEquals(2, broadcast.getBanner(), "The session banner must be seeded from the host's preference");
         assertEquals(2, sessionManager.getSessions().get(broadcast.getSessionId()).getBanner());
+    }
+
+    @Test
+    void publicDirectory_listsOnlyPublicSessionsAndMapsFieldsWithRegion() throws Exception {
+        createSessionAsMaster("Host");
+
+        // Private by default -> the directory is empty.
+        assertTrue(sessionManager.getPublicSessions().isEmpty(),
+                "A private session must not appear in the public directory");
+
+        // A detected server supplies the region (country code); the master then goes public.
+        joinServer("1.1.1.1", 30101);
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        List<PublicSession> directory = sessionManager.getPublicSessions();
+        assertEquals(1, directory.size(), "The now-public session must be listed");
+        PublicSession listed = directory.get(0);
+        assertFalse(listed.isPrivate());
+        assertEquals(1, listed.playerAmount());
+        assertTrue(listed.admin().contains("Host"), "The master must be listed as an admin");
+        assertEquals("xx", listed.region(), "Region must come from the detected server's country code");
     }
 
     private String createSessionAsMaster(String username) throws Exception {

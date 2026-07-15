@@ -16,6 +16,7 @@ public class SotServer {
     private String ip;
     private int port;
     private String location;
+    private String countryCode;
     private String hash;
     private String color;
     private List<Player> connectedPlayers;
@@ -26,15 +27,21 @@ public class SotServer {
     // Convenience constructor for a server whose location isn't resolved yet (e.g. the raw
     // server a client reports). Performs no network call.
     public SotServer(String ip, int port) {
-        this(ip, port, "");
+        this(ip, port, "", "");
     }
 
-    // Authoritative constructor: the location is resolved by the caller (SessionManager via the
-    // injectable ProxyCheckAPI) and passed in, keeping network I/O out of the constructor.
     public SotServer(String ip, int port, String location) {
+        this(ip, port, location, "");
+    }
+
+    // Authoritative constructor: the location + country code are resolved by the caller
+    // (SessionManager via the injectable ProxyCheckAPI) and passed in, keeping network I/O out of
+    // the constructor.
+    public SotServer(String ip, int port, String location, String countryCode) {
         this.ip = ip;
         this.port = port;
         this.location = location;
+        this.countryCode = countryCode;
         this.hash = generateHash();
         this.connectedPlayers = new ArrayList<>();
         this.color = getRandomColor();
@@ -76,6 +83,10 @@ public class SotServer {
 
     public String getLocation() {
         return location;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
     }
 
     public List<Player> getConnectedPlayers() {
@@ -131,6 +142,7 @@ public class SotServer {
         clone.ip = this.ip;
         clone.port = this.port;
         clone.location = this.location;
+        clone.countryCode = this.countryCode;
         clone.hash = this.hash;
         clone.color = this.color;
         clone.connectedPlayers = new ArrayList<>();
