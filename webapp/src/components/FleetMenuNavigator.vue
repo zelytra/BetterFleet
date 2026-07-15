@@ -60,6 +60,15 @@ const gameStatusRefresh: number = setInterval(() => {
       (isPlayerNewlyInGame && rustSotServer.ip) ||
       isServerDetectedOrChanged
     ) {
+      // Switching servers (the detected IP changed mid-game): leave the previous
+      // one first, otherwise the player ends up in two servers at once — shown
+      // twice, and left lingering in the old server once they reach the menu.
+      if (
+        UserStore.player.server != undefined &&
+        UserStore.player.server.ip != rustSotServer.ip
+      ) {
+        fleet.leaveServer();
+      }
       UserStore.player.server = {
         connectedPlayers: [],
         hash: undefined,
