@@ -29,6 +29,30 @@
         />
       </div>
     </ParameterPart>
+    <ParameterPart>
+      <div class="report-wrapper">
+        <h2>Server detection diagnostic</h2>
+        <p>
+          Captures the game's UDP flows for ~20s to debug server detection
+          (issue #364). Run it once in the main menu and once in game, then copy
+          and share each result.
+        </p>
+        <div class="diag-buttons">
+          <PirateButton
+            :label="diagRunning ? 'Capturing…' : 'Capture (main menu)'"
+            @on-button-click="runDiagnostic('main menu')"
+          />
+          <PirateButton
+            :label="diagRunning ? 'Capturing…' : 'Capture (in game)'"
+            @on-button-click="runDiagnostic('in game')"
+          />
+        </div>
+        <div v-if="diagOutput" class="text-area-wrapper">
+          <textarea readonly :value="diagOutput" />
+          <PirateButton label="Copy" @on-button-click="copyDiag()" />
+        </div>
+      </div>
+    </ParameterPart>
   </section>
 </template>
 
@@ -44,6 +68,34 @@ import { invoke } from "@tauri-apps/api/tauri";
 const { t } = useI18n();
 const reportMessage = ref("");
 const alerts = inject<AlertProvider>("alertProvider");
+const diagRunning = ref(false);
+const diagOutput = ref("");
+
+async function runDiagnostic(note: string) {
+  if (diagRunning.value) return;
+  diagRunning.value = true;
+  diagOutput.value = "";
+  try {
+    const report = await invoke("run_server_diagnostic", {
+      durationSecs: 20,
+      note,
+    });
+    diagOutput.value = JSON.stringify(report, null, 2);
+  } catch (error) {
+    diagOutput.value = "Error: " + String(error);
+  } finally {
+    diagRunning.value = false;
+  }
+}
+
+function copyDiag() {
+  navigator.clipboard.writeText(diagOutput.value);
+  alerts?.sendAlert({
+    title: "Copied to clipboard",
+    content: "",
+    type: AlertType.VALID,
+  });
+}
 
 async function sendReport() {
   if (reportMessage.value.length == 0) {
@@ -92,6 +144,13 @@ async function sendReport() {
     justify-content: center;
     align-items: center;
     gap: 40px;
+
+    .diag-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
     h2 {
       position: relative;

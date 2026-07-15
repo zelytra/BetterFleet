@@ -43,10 +43,14 @@ const gameStatusRefresh: number = setInterval(() => {
     const isPlayerDisconnecting: boolean =
       UserStore.player.status == PlayerStates.IN_GAME &&
       rustSotServer.status != PlayerStates.IN_GAME;
-    const isPlayerInGameAndServerIsDetected: boolean =
+    // Fire on the first detection AND whenever the detected server IP changes, so
+    // a wrong first detection self-corrects instead of sticking until reconnect
+    // (see issue #364). The backend detector is now self-correcting too.
+    const isServerDetectedOrChanged: boolean =
       UserStore.player.status == PlayerStates.IN_GAME &&
       rustSotServer.ip != undefined &&
-      UserStore.player.server == undefined;
+      rustSotServer.ip != "" &&
+      UserStore.player.server?.ip != rustSotServer.ip;
 
     // Reset player server
     if (isPlayerDisconnecting) {
@@ -54,8 +58,17 @@ const gameStatusRefresh: number = setInterval(() => {
       fleet.updateToSession();
     } else if (
       (isPlayerNewlyInGame && rustSotServer.ip) ||
-      isPlayerInGameAndServerIsDetected
+      isServerDetectedOrChanged
     ) {
+      // Switching servers (the detected IP changed mid-game): leave the previous
+      // one first, otherwise the player ends up in two servers at once — shown
+      // twice, and left lingering in the old server once they reach the menu.
+      if (
+        UserStore.player.server != undefined &&
+        UserStore.player.server.ip != rustSotServer.ip
+      ) {
+        fleet.leaveServer();
+      }
       UserStore.player.server = {
         connectedPlayers: [],
         hash: undefined,

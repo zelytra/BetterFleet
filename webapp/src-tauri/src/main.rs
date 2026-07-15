@@ -25,6 +25,7 @@ use std::net::{IpAddr, ToSocketAddrs};
 mod fetch_informations;
 mod api;
 mod window_interaction;
+mod diagnostics;
 
 #[cfg(debug_assertions)]
 const LOG_LEVEL: LevelFilter = LevelFilter::Debug;
@@ -83,7 +84,8 @@ async fn main() {
             get_last_updated_server_ip,
             rise_anchor,
             get_logs,
-            get_system_info
+            get_system_info,
+            run_server_diagnostic
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -256,4 +258,67 @@ fn get_system_info() -> String {
     }
 
     system_info
+}
+
+/// Diagnostic capture for issue #364. Sniffs the running game's UDP flows for a
+/// few seconds and returns a per-flow volume report (also written to the logs), so
+/// the real server flow can be told apart from the Steam Datagram Relay noise.
+/// Purely observational — it does not affect live detection.
+#[tauri::command]
+async fn run_server_diagnostic(
+    api: State<'_, Arc<RwLock<Api>>>,
+    duration_secs: u64,
+    note: String,
+) -> Result<diagnostics::DiagnosticReport, String> {
+    let pids = fetch_informations::find_pid_of("SoTGame.exe");
+    let pid: usize = match pids.first() {
+        Some(pid) => pid.parse().map_err(|e| format!("invalid pid: {}", e))?,
+        None => return Err("Sea of Thieves (SoTGame.exe) is not running.".into()),
+    };
+
+    let ports_netstat2 = fetch_informations::get_udp_connections(pid);
+    let ports_powershell = fetch_informations::get_udp_connections_powershell(pid);
+
+    let (game_status, main_menu_port) = {
+        let api_lock = api.inner().read().await;
+        (
+            format!("{:?}", api_lock.game_status),
+            api_lock.main_menu_port,
+        )
+    };
+
+    // Sniff the union of both port sources.
+    let mut ports = ports_netstat2.clone();
+    for port in &ports_powershell {
+        if !ports.contains(port) {
+            ports.push(*port);
+        }
+    }
+
+    let duration = Duration::from_secs(duration_secs.clamp(3, 60));
+    info!(
+        "[diagnostic] starting capture (note='{}', {} ports, {:?})",
+        note,
+        ports.len(),
+        duration
+    );
+
+    let report = diagnostics::run_diagnostic(
+        ports,
+        duration,
+        note,
+        game_status,
+        main_menu_port,
+        Some(pid as u32),
+        ports_netstat2,
+        ports_powershell,
+    )
+    .await;
+
+    match serde_json::to_string(&report) {
+        Ok(json) => info!("[diagnostic] report: {}", json),
+        Err(e) => error!("[diagnostic] failed to serialize report: {}", e),
+    }
+
+    Ok(report)
 }
