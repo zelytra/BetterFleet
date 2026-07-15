@@ -9,6 +9,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -87,28 +89,40 @@ public class ProxyCheckAPI {
     static String parseLocation(String jsonResponse, String ip) {
         JSONObject json = new JSONObject(jsonResponse);
 
-        if (!Objects.equals(json.getString("status"), "ok")) {
-            Log.warn("The proxy checker has reach is free limit, please provide a token or change the bill plan of your token api");
+        String status = json.optString("status", "");
+        if (!Objects.equals(status, "ok")) {
+            Log.warn("[PROXY CHECK] proxycheck.io status '" + status + "' for " + ip
+                    + " (free-tier limit reached? set a token via PROXY_API_KEY). No location resolved.");
             return "";
         }
 
-        JSONObject ipJsonObject = json.getJSONObject(ip);
-        StringBuilder location = new StringBuilder();
-        if (ipJsonObject.getString("continent") != null) {
-            location.append(ipJsonObject.getString("continent")).append(" - ");
-        }
-        if (ipJsonObject.getString("country") != null) {
-            location.append(ipJsonObject.getString("country")).append(" - ");
-        }
-        if (ipJsonObject.getString("region") != null) {
-            location.append(ipJsonObject.getString("region")).append(" - ");
-        }
-        if (ipJsonObject.getString("city") != null) {
-            location.append(ipJsonObject.getString("city"));
+        // proxycheck.io only returns the fields it actually has for an IP, and datacenter
+        // ranges (Azure/Microsoft SoT servers) often omit some of them. Use optString and
+        // keep whatever is present, instead of getString which THROWS on a missing field and
+        // used to blank the whole location (the `!= null` guards never fired — getString
+        // never returns null).
+        JSONObject ipJsonObject = json.optJSONObject(ip);
+        if (ipJsonObject == null) {
+            Log.warn("[PROXY CHECK] proxycheck.io response had no entry for " + ip);
+            return "";
         }
 
-        Log.info("[PROXY CHECK] New SOT server detected !");
-        return location.toString();
+        List<String> parts = new ArrayList<>();
+        for (String field : List.of("continent", "country", "region", "city")) {
+            String value = ipJsonObject.optString(field, "");
+            if (!value.isBlank()) {
+                parts.add(value);
+            }
+        }
+
+        if (parts.isEmpty()) {
+            Log.warn("[PROXY CHECK] proxycheck.io returned no geo fields for " + ip);
+            return "";
+        }
+
+        String location = String.join(" - ", parts);
+        Log.info("[PROXY CHECK] Located SoT server " + ip + ": " + location);
+        return location;
     }
 
     public String getIp() {

@@ -34,4 +34,27 @@ public class ProxyCheckAPITest {
 
         assertEquals("", ProxyCheckAPI.parseLocation(json, "1.1.1.1"));
     }
+
+    @Test
+    public void parseLocation_missingFields_keepsThePresentOnesInsteadOfBlanking() {
+        // Datacenter/Azure IPs (SoT game servers) often omit some geo fields. The
+        // present ones must still be returned instead of the whole location coming back
+        // empty — the old getString() threw on the missing "continent"/"city" and
+        // blanked everything (regression seen after issue #364's detection fix).
+        String json = "{"
+                + "\"status\":\"ok\","
+                + "\"20.216.150.173\":{"
+                + "\"country\":\"United States\","
+                + "\"region\":\"Virginia\"}}";
+
+        assertEquals("United States - Virginia",
+                ProxyCheckAPI.parseLocation(json, "20.216.150.173"));
+    }
+
+    @Test
+    public void parseLocation_okButNoEntryForIp_returnsEmptyString() {
+        String json = "{\"status\":\"ok\"}";
+
+        assertEquals("", ProxyCheckAPI.parseLocation(json, "20.216.150.173"));
+    }
 }
