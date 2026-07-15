@@ -143,7 +143,7 @@
     "support": "Supporto"
   },
   "presentation": {
-    "content": "Immergetevi nel mondo di Sea of Thieves con lo strumento definitivo, progettato per creare alleanze come mai prima d’ora. La nostra applicazione rivoluziona il modo in cui i giocatori effettuano l’accesso, offrendo un’esperienza estremamente fluida e aumentando in modo significativo le possibilità di trovare un’alleanza, superando di gran lunga le capacità delle altre applicazioni. Unisciti alla nostra community e trasforma la tua esperienza di gioco in un’epica avventura, dove stringere legami e salpare insieme diventa una realtà accessibile con ogni clic.",
+    "content": "Immergetevi nel mondo del Mare dei Ladri con lo strumento ultimo progettato per forgiare alleanze come mai prima d'ora. La nostra applicazione rivoluziona il modo in cui i giocatori accedono, fornendo una fluidità eccezionale e aumentando significativamente le vostre possibilità di trovare un'alleanza, superando di gran lunga le capacità di altre applicazioni. Unisciti alla nostra comunità e trasforma la tua esperienza di gioco in un'avventura epica, dove il legame e la vela insieme diventano una realtà accessibile con ogni clic.",
     "title": "BetterFleet"
   },
   "stats": {
@@ -176,7 +176,7 @@
       },
       "4": {
         "content": "Invita tutti i giocatori ad aprire il menu ‘Salpa’ del gioco, dove potranno prepararsi per partire insieme.",
-        "title": "Riunitevi nel menu 'Salpa'"
+        "title": "Riunitevi nel menu \"Salpa\""
       },
       "5": {
         "content": "Ogni giocatore deve quindi cambiare il proprio stato per l’avvio, selezionando ‘Pronto’ nell’interfaccia dell’applicazione.",
@@ -194,7 +194,7 @@
     "stepWord": "Passo",
     "title": "Come iniziare su BetterFleet",
     "whatIsIt": {
-      "content": "Un 'server alleanza' è un server di gioco in cui diverse ciurme hanno concordato di formare un’alleanza strategica e cooperare per il reciproco vantaggio. Su questi server, i giocatori condividono gli stessi obiettivi, come raccogliere tesori o completare missioni, e si impegnano a non attaccarsi a vicenda. L’idea è che tutti i membri traggano beneficio dalle ricompense, ottimizzando così il profitto e l’esperienza di gioco per ciascuno. Questo crea un ambiente in cui i giocatori possono concentrarsi sul lavoro di squadra e sull’esplorazione, piuttosto che sulla competizione, offrendo un’avventura più rilassata e basata sulla comunità.",
+      "content": "Un server di alleanza è un server di gioco in cui diverse ciurme hanno concordato di formare un’alleanza strategica e cooperare per il reciproco vantaggio. Su questi server, i giocatori condividono gli stessi obiettivi, come raccogliere tesori o completare missioni, e si impegnano a non attaccarsi a vicenda. L’idea è che tutti i membri traggano beneficio dalle ricompense, ottimizzando così il profitto e l’esperienza di gioco per ciascuno. Questo crea un ambiente in cui i giocatori possono concentrarsi sul lavoro di squadra e sull’esplorazione, piuttosto che sulla competizione, offrendo un’avventura più rilassata e basata sulla comunità.",
       "title": "Cos'è un server dell'alleanza in Sea of Thieves?"
     }
   }
