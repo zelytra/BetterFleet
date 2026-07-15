@@ -214,9 +214,9 @@
       "title": "Sapristi !"
     },
     "filter": {
-      "all": "Tous",
-      "private": "Privé",
-      "public": "Public"
+      "all": "Toutes",
+      "private": "Privées",
+      "public": "Publiques"
     },
     "issue": "Si tu rencontres un problème, rejoins notre",
     "or": "OU",
