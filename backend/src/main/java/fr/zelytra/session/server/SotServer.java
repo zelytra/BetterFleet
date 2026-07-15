@@ -1,6 +1,5 @@
 package fr.zelytra.session.server;
 
-import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.Player;
 import jakarta.enterprise.context.ApplicationScoped;
 
@@ -24,13 +23,18 @@ public class SotServer {
     public SotServer() {
     }
 
-    // Constructor
+    // Convenience constructor for a server whose location isn't resolved yet (e.g. the raw
+    // server a client reports). Performs no network call.
     public SotServer(String ip, int port) {
+        this(ip, port, "");
+    }
+
+    // Authoritative constructor: the location is resolved by the caller (SessionManager via the
+    // injectable ProxyCheckAPI) and passed in, keeping network I/O out of the constructor.
+    public SotServer(String ip, int port, String location) {
         this.ip = ip;
         this.port = port;
-
-        ProxyCheckAPI proxyCheckAPI = new ProxyCheckAPI(ip);
-        this.location = proxyCheckAPI.retrieveCountry();
+        this.location = location;
         this.hash = generateHash();
         this.connectedPlayers = new ArrayList<>();
         this.color = getRandomColor();

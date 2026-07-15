@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
@@ -50,7 +51,10 @@ public class SessionManager {
 
     @Inject
     ExecutorService executor;
-    
+
+    @Inject
+    ProxyCheckAPI proxyCheckAPI;
+
     @GET
     @Path("ip")
     public Response getIp() {
@@ -314,7 +318,8 @@ public class SessionManager {
             return sotServers.get(hash).copy();
         }
         // The object inject may not be completed, so we're creating fresh one to make sure all data has been initialized
-        SotServer newServer = new SotServer(server.getIp(), server.getPort());
+        SotServer newServer = new SotServer(server.getIp(), server.getPort(),
+                proxyCheckAPI.resolveLocation(server.getIp()));
         sotServers.put(newServer.getHash(), newServer);
         return newServer.copy();
     }

@@ -27,29 +27,14 @@ public class ProxyCheckAPI {
     private static final String requestPathParam = "asn=1";
     private static final String tokenParam = "key=";
 
-    private final StringBuilder finalUrl = new StringBuilder();
-    private String ip;
-
-    public ProxyCheckAPI() {
-    }
-
-    public ProxyCheckAPI(String ip) {
-        this.ip = ip;
-        finalUrl.append(apiURL)
-                .append(this.getIp())
-                .append("?")
-                .append(requestPathParam);
-
-        if (!SessionSocket.PROXY_API_KEY.isEmpty()) {
-            finalUrl.append("&")
-                    .append(tokenParam)
-                    .append(SessionSocket.PROXY_API_KEY);
-        }
-    }
-
-    public String retrieveCountry() {
+    /**
+     * Resolves a human-readable "continent - country - region - city" location for an IP via
+     * proxycheck.io. Returns "" on any failure (network error, non-"ok" status, no geo fields).
+     * Stateless and injectable, so the session flow can mock it out and stay offline in tests.
+     */
+    public String resolveLocation(String ip) {
         try {
-            URL url = new URL(finalUrl.toString());
+            URL url = new URL(buildUrl(ip));
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -70,15 +55,24 @@ public class ProxyCheckAPI {
                 }
                 in.close();
 
-                return parseLocation(response.toString(), this.getIp());
+                return parseLocation(response.toString(), ip);
             } else {
                 Log.error("GET request not worked, Response Code: " + responseCode);
             }
         } catch (Exception e) {
-            Log.error("Failed to retrieve information via ProxyChecker of ip " + this.getIp());
+            Log.error("Failed to retrieve information via ProxyChecker of ip " + ip);
             e.printStackTrace();
         }
         return "";
+    }
+
+    private static String buildUrl(String ip) {
+        StringBuilder finalUrl = new StringBuilder();
+        finalUrl.append(apiURL).append(ip).append("?").append(requestPathParam);
+        if (!SessionSocket.PROXY_API_KEY.isEmpty()) {
+            finalUrl.append("&").append(tokenParam).append(SessionSocket.PROXY_API_KEY);
+        }
+        return finalUrl.toString();
     }
 
     /**
@@ -128,13 +122,5 @@ public class ProxyCheckAPI {
         String location = String.join(" - ", parts);
         Log.info("[PROXY CHECK] Located SoT server " + ip + ": " + location);
         return location;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
     }
 }
