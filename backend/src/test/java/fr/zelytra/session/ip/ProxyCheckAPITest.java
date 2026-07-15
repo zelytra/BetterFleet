@@ -20,10 +20,11 @@ public class ProxyCheckAPITest {
                 + "\"1.1.1.1\":{"
                 + "\"continent\":\"Europe\","
                 + "\"country\":\"France\","
-                + "\"region\":\"Ile-de-France\","
+                + "\"region\":\"Île-de-France\","
                 + "\"city\":\"Paris\"}}";
 
-        assertEquals("Europe - France - Ile-de-France - Paris",
+        // Accented characters must survive parsing intact (the reader now decodes UTF-8).
+        assertEquals("Europe - France - Île-de-France - Paris",
                 ProxyCheckAPI.parseLocation(json, "1.1.1.1"));
     }
 
