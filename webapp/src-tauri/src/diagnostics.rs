@@ -60,7 +60,6 @@ pub struct DiagnosticReport {
 #[derive(Default)]
 pub struct FlowAggregator {
     map: HashMap<(u16, String, u16), FlowStat>,
-    total: u32,
 }
 
 impl FlowAggregator {
@@ -75,7 +74,6 @@ impl FlowAggregator {
         inbound: bool,
         t_ms: u64,
     ) {
-        self.total += 1;
         let entry = self
             .map
             .entry((local_port, remote_ip.to_string(), remote_port))
@@ -99,10 +97,6 @@ impl FlowAggregator {
             entry.outbound += 1;
         }
         entry.last_seen_ms = t_ms;
-    }
-
-    pub fn total(&self) -> u32 {
-        self.total
     }
 
     /// Drains the aggregated flows, sorted by packet volume (desc), then bytes
@@ -192,8 +186,55 @@ async fn sniff_interface(
     }
 }
 
-/// Runs a diagnostic capture: sniffs every local interface for `duration`,
-/// aggregates per-flow UDP stats for the game's ports, and returns a ranked report.
+/// Sniffs every local interface for `window`, aggregating per-flow UDP stats for
+/// the given game ports, and returns the flows ranked by volume (desc). Shared by
+/// the diagnostic report and by live detection, so both observe traffic identically.
+pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
+    let port_set: HashSet<u16> = game_ports.into_iter().collect();
+    let aggregator = Arc::new(Mutex::new(FlowAggregator::default()));
+
+    // We don't know which interface carries the game traffic, so watch them all
+    // and merge the results into one ranking.
+    let host = format!("{}:0", get_hostname().unwrap_or_else(|_| "localhost".into()));
+    let ips: Vec<IpAddr> = match host.to_socket_addrs() {
+        Ok(addrs) => addrs.map(|socket_addr| socket_addr.ip()).collect(),
+        Err(e) => {
+            error!("[capture] cannot resolve local IPs: {}", e);
+            Vec::new()
+        }
+    };
+
+    let mut handles = Vec::new();
+    for ip in ips {
+        let addr = SocketAddr::new(ip, 0);
+        let aggregator = Arc::clone(&aggregator);
+        let ports = port_set.clone();
+        handles.push(tokio::spawn(async move {
+            sniff_interface(addr, ports, aggregator, window).await;
+        }));
+    }
+    for handle in handles {
+        let _ = handle.await;
+    }
+
+    let flows = aggregator.lock().unwrap().take_sorted_flows();
+    flows
+}
+
+/// Picks the dominant Sea of Thieves server flow: the highest-volume flow whose
+/// remote port is in the SoT server range and that carries at least `min_packets`.
+/// Returns None when nothing qualifies (e.g. the main menu, which sends no server
+/// traffic). Volume is the discriminator — the real server pushes sustained traffic
+/// while the many Steam Datagram Relay flows are sparse, even though both can fall
+/// inside the plausible port range.
+pub fn pick_server_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowStat> {
+    flows
+        .iter()
+        .filter(|flow| flow.plausible_sot_port && flow.packets >= min_packets)
+        .max_by(|a, b| a.packets.cmp(&b.packets).then(a.bytes.cmp(&b.bytes)))
+}
+
+/// Runs a diagnostic capture and wraps the ranked flows in a shareable report.
 #[allow(clippy::too_many_arguments)]
 pub async fn run_diagnostic(
     game_ports: Vec<u16>,
@@ -205,38 +246,9 @@ pub async fn run_diagnostic(
     udp_ports_netstat2: Vec<u16>,
     udp_ports_powershell: Vec<u16>,
 ) -> DiagnosticReport {
-    let port_set: HashSet<u16> = game_ports.into_iter().collect();
-    let aggregator = Arc::new(Mutex::new(FlowAggregator::default()));
     let started = Instant::now();
-
-    // Sniff on every local IP, exactly like live detection — we don't know which
-    // interface carries the game traffic, so we watch them all and merge results.
-    let host = format!("{}:0", get_hostname().unwrap_or_else(|_| "localhost".into()));
-    let ips: Vec<IpAddr> = match host.to_socket_addrs() {
-        Ok(addrs) => addrs.map(|socket_addr| socket_addr.ip()).collect(),
-        Err(e) => {
-            error!("[diagnostic] cannot resolve local IPs: {}", e);
-            Vec::new()
-        }
-    };
-
-    let mut handles = Vec::new();
-    for ip in ips {
-        let addr = SocketAddr::new(ip, 0);
-        let aggregator = Arc::clone(&aggregator);
-        let ports = port_set.clone();
-        handles.push(tokio::spawn(async move {
-            sniff_interface(addr, ports, aggregator, duration).await;
-        }));
-    }
-    for handle in handles {
-        let _ = handle.await;
-    }
-
-    let (total_packets, flows) = {
-        let mut guard = aggregator.lock().unwrap();
-        (guard.total(), guard.take_sorted_flows())
-    };
+    let flows = capture_flows(game_ports, duration).await;
+    let total_packets: u32 = flows.iter().map(|flow| flow.packets).sum();
     let top_candidates: Vec<FlowStat> = flows
         .iter()
         .filter(|flow| flow.plausible_sot_port)
@@ -273,7 +285,6 @@ mod tests {
             agg.observe(59639, "20.1.2.3", 35000, 120, i % 2 == 0, 100 + i);
         }
 
-        assert_eq!(agg.total(), 22);
         let flows = agg.take_sorted_flows();
         assert_eq!(flows.len(), 3);
 
@@ -313,5 +324,78 @@ mod tests {
         agg.observe(60000, "1.1.1.1", 35000, 50, true, 0);
         agg.observe(60000, "2.2.2.2", 35001, 50, true, 1);
         assert_eq!(agg.take_sorted_flows().len(), 2);
+    }
+
+    // Real capture from issue #364 (in game): two flows, BOTH in the SoT port
+    // range, but the real server carries 1247 packets vs 8. Volume must decide.
+    fn in_game_flows_from_issue_364() -> Vec<FlowStat> {
+        vec![
+            FlowStat {
+                local_port: 59230,
+                remote_ip: "20.216.148.125".to_string(),
+                remote_port: 30101,
+                packets: 1247,
+                bytes: 151176,
+                inbound: 600,
+                outbound: 647,
+                plausible_sot_port: true,
+                first_seen_ms: 8,
+                last_seen_ms: 20008,
+            },
+            FlowStat {
+                local_port: 57709,
+                remote_ip: "20.157.115.138".to_string(),
+                remote_port: 30368,
+                packets: 8,
+                bytes: 608,
+                inbound: 4,
+                outbound: 4,
+                plausible_sot_port: true,
+                first_seen_ms: 7862,
+                last_seen_ms: 17887,
+            },
+        ]
+    }
+
+    #[test]
+    fn picks_the_sustained_server_over_a_sparse_same_range_flow() {
+        let flows = in_game_flows_from_issue_364();
+        let server = pick_server_flow(&flows, 5).expect("a server should be picked");
+        assert_eq!(server.remote_ip, "20.216.148.125");
+        assert_eq!(server.remote_port, 30101);
+        assert_eq!(server.local_port, 59230);
+    }
+
+    #[test]
+    fn main_menu_capture_yields_no_server() {
+        // Real main-menu capture from issue #364: zero traffic on the game ports.
+        let flows: Vec<FlowStat> = Vec::new();
+        assert!(pick_server_flow(&flows, 5).is_none());
+    }
+
+    #[test]
+    fn a_high_volume_floor_rejects_the_sparse_secondary_flow() {
+        // Only the sparse 8-packet flow is present; a floor above it finds nothing.
+        let flows = vec![in_game_flows_from_issue_364()[1].clone()];
+        assert!(pick_server_flow(&flows, 50).is_none());
+        assert!(pick_server_flow(&flows, 5).is_some());
+    }
+
+    #[test]
+    fn a_busy_non_sot_port_is_never_the_server() {
+        // A very busy Steam-relay-like flow on a non-SoT port must be ignored.
+        let flows = vec![FlowStat {
+            local_port: 50000,
+            remote_ip: "162.254.1.1".to_string(),
+            remote_port: 27017,
+            packets: 5000,
+            bytes: 600000,
+            inbound: 2500,
+            outbound: 2500,
+            plausible_sot_port: false,
+            first_seen_ms: 0,
+            last_seen_ms: 20000,
+        }];
+        assert!(pick_server_flow(&flows, 5).is_none());
     }
 }
