@@ -5,6 +5,7 @@ import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.player.BoatSize;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.player.PlayerAction;
+import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.security.SocketSecurityEntity;
 import io.quarkus.test.InjectMock;
@@ -25,6 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -373,6 +375,57 @@ class SessionSocketTest {
         assertTrue(sessionManager.getSessions().isEmpty(), "No session must be created with an invalid token");
     }
 
+    @Test
+    void joinServer_broadcastGroupsThePlayerUnderTheDetectedServer() throws Exception {
+        String sessionId = createSessionAsMaster("Sailor");
+
+        // "Mock the game": the client reports the server the Rust detection layer found.
+        Fleet broadcast = joinServer("1.1.1.1", 30101);
+
+        assertEquals(1, broadcast.getServers().size(), "The detected server must appear in the fleet");
+        assertTrue(onlyServerHolds(broadcast, "Sailor"),
+                "The player must be grouped under the server they joined");
+        // The server-side truth mirrors the broadcast the lobby renders from.
+        assertEquals(1, sessionManager.getSessions().get(sessionId).getServers().size());
+    }
+
+    @Test
+    void switchServer_leaveThenJoin_leavesNoDuplicateInTheOldServer() throws Exception {
+        // Reproduces the switch that showed a player twice: leave the old server, then join the
+        // new one (the exact sequence the client now performs). The player must end up in
+        // exactly one server, and the emptied old server must be gone.
+        String sessionId = createSessionAsMaster("Sailor");
+
+        joinServer("1.1.1.1", 30101); // detected on server A
+        leaveServer("1.1.1.1", 30101); // back to menu / handing off
+        Fleet broadcast = joinServer("2.2.2.2", 31000); // detected on server B
+
+        assertEquals(1, broadcast.getServers().size(), "The player must be in exactly one server, not two");
+        assertTrue(onlyServerHolds(broadcast, "Sailor"), "The player must be grouped only under the new server");
+        assertEquals(1, sessionManager.getSessions().get(sessionId).getServers().size(),
+                "The emptied server must be removed");
+    }
+
+    @Test
+    void playerDisconnect_removedFromTheFleet_noGhostLeftBehind() throws Exception {
+        // Ghost-session guard: when a member's socket drops, they must not linger in the fleet.
+        String sessionId = createSessionAsMaster("Master");
+        BetterFleetClient memberClient = connectMember("Member", sessionId);
+        assertEquals(2, sessionManager.getSessions().get(sessionId).getPlayers().size());
+
+        memberClient.getSession().close();
+
+        awaitCondition(() -> {
+            Fleet f = sessionManager.getSessions().get(sessionId);
+            return f != null && f.getPlayerFromUsername("Member") == null;
+        }, 2000);
+
+        Fleet fleet = sessionManager.getSessions().get(sessionId);
+        assertNotNull(fleet, "The session must survive one member leaving");
+        assertNull(fleet.getPlayerFromUsername("Member"), "The disconnected member must not linger as a ghost");
+        assertEquals(1, fleet.getPlayers().size(), "Only the still-connected master should remain");
+    }
+
     private String createSessionAsMaster(String username) throws Exception {
         Player master = new Player();
         master.setUsername(username);
@@ -395,6 +448,35 @@ class SessionSocketTest {
         client.sendMessage(MessageType.CONNECT, member);
         assertTrue(client.getLatch().await(1, TimeUnit.SECONDS));
         return client;
+    }
+
+    // A JOIN_SERVER / LEAVE_SERVER payload as the client sends it (the detected server ip:port).
+    private Map<String, Object> serverPayload(String ip, int port) {
+        return Map.of("ip", ip, "port", port);
+    }
+
+    // Reports a detected server and returns the broadcast fleet. Allows extra time because the
+    // server-side SotServer creation performs an IP geolocation lookup on first sight.
+    private Fleet joinServer(String ip, int port) throws Exception {
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.JOIN_SERVER, serverPayload(ip, port));
+        assertTrue(betterFleetClient.getLatch().await(5, TimeUnit.SECONDS));
+        return betterFleetClient.getMessageReceived(Fleet.class);
+    }
+
+    private void leaveServer(String ip, int port) throws Exception {
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.LEAVE_SERVER, serverPayload(ip, port));
+        assertTrue(betterFleetClient.getLatch().await(2, TimeUnit.SECONDS));
+    }
+
+    // True when the fleet has exactly one server and it holds the given player.
+    private boolean onlyServerHolds(Fleet fleet, String username) {
+        if (fleet.getServers().size() != 1) {
+            return false;
+        }
+        SotServer server = fleet.getServers().values().iterator().next();
+        return server.getConnectedPlayers().stream().anyMatch(p -> p.getUsername().equals(username));
     }
 
     private static void awaitCondition(java.util.function.BooleanSupplier condition, long timeoutMillis) throws InterruptedException {
