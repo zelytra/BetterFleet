@@ -6,7 +6,9 @@ describe("Utils.parseRustPlayerStatus", () => {
   it("maps the statuses reported by the Rust layer, case-insensitively", () => {
     expect(Utils.parseRustPlayerStatus("closed")).toBe(PlayerStates.CLOSED);
     expect(Utils.parseRustPlayerStatus("STARTED")).toBe(PlayerStates.STARTED);
-    expect(Utils.parseRustPlayerStatus("MainMenu")).toBe(PlayerStates.MAIN_MENU);
+    expect(Utils.parseRustPlayerStatus("MainMenu")).toBe(
+      PlayerStates.MAIN_MENU,
+    );
     expect(Utils.parseRustPlayerStatus("ingame")).toBe(PlayerStates.IN_GAME);
   });
 

@@ -27,6 +27,8 @@ describe("ContributorProvider.getPlayerContrib", () => {
   });
 
   it("returns null for an unknown username", () => {
-    expect(ContributorProvider.getPlayerContrib("some-random-pirate")).toBeNull();
+    expect(
+      ContributorProvider.getPlayerContrib("some-random-pirate"),
+    ).toBeNull();
   });
 });
