@@ -435,6 +435,66 @@ class SessionSocketTest {
         assertEquals(1, fleet.getPlayers().size(), "Only the still-connected master should remain");
     }
 
+    @Test
+    void newSession_defaultsToPrivate() throws Exception {
+        // A freshly created session must be unlisted by default; going public is an explicit opt-in.
+        String sessionId = createSessionAsMaster("Host");
+        assertTrue(sessionManager.getSessions().get(sessionId).isPrivate(),
+                "A new session must default to private (unlisted)");
+    }
+
+    @Test
+    void masterCanToggleSessionToPublic() throws Exception {
+        String sessionId = createSessionAsMaster("Host");
+
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false); // false = public
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        Fleet broadcast = betterFleetClient.getMessageReceived(Fleet.class);
+        assertFalse(broadcast.isPrivate(), "The broadcast fleet must reflect the new public visibility");
+        assertFalse(sessionManager.getSessions().get(sessionId).isPrivate(),
+                "The authoritative session must be public after the master toggles it");
+    }
+
+    @Test
+    void nonMasterCannotChangeVisibility() throws Exception {
+        String sessionId = createSessionAsMaster("Master");
+        BetterFleetClient memberClient = connectMember("Member", sessionId);
+
+        Player member = new Player();
+        member.setUsername("Member");
+        member.setClientVersion(appVersion.get(0));
+        member.setSessionId(sessionId);
+
+        // The member tries to make the session public, then sends a benign UPDATE. Messages on one
+        // socket are processed in order, so once the UPDATE round-trips the (ignored) toggle is done.
+        memberClient.setLatch(new CountDownLatch(1));
+        memberClient.sendMessage(MessageType.SET_VISIBILITY, false);
+        memberClient.sendMessage(MessageType.UPDATE, member);
+        assertTrue(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        assertTrue(sessionManager.getSessions().get(sessionId).isPrivate(),
+                "A non-master must not be able to change the session visibility");
+    }
+
+    @Test
+    void createSession_seedsBannerFromHostPreference() throws Exception {
+        // The host's chosen banner (a preference sent on CONNECT) is copied onto the session and
+        // broadcast so every member — and the public browser — renders the same banner.
+        Player host = new Player();
+        host.setUsername("Host");
+        host.setClientVersion(appVersion.get(0));
+        host.setBanner(2);
+
+        betterFleetClient.sendMessage(MessageType.CONNECT, host);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        Fleet broadcast = betterFleetClient.getMessageReceived(Fleet.class);
+
+        assertEquals(2, broadcast.getBanner(), "The session banner must be seeded from the host's preference");
+        assertEquals(2, sessionManager.getSessions().get(broadcast.getSessionId()).getBanner());
+    }
+
     private String createSessionAsMaster(String username) throws Exception {
         Player master = new Player();
         master.setUsername(username);
