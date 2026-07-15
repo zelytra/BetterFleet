@@ -7,7 +7,15 @@ function session(
   isPrivate: boolean,
   playerAmount: number,
 ): PublicSession {
-  return { region: "fr", admin: ["Zelytra"], name, playerAmount, isPrivate, banner: 0 };
+  return {
+    sessionId: "ABC123",
+    region: "fr",
+    admin: ["Zelytra"],
+    name,
+    playerAmount,
+    isPrivate,
+    banner: 0,
+  };
 }
 
 describe("applyFilter", () => {

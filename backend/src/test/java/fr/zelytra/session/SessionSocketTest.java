@@ -499,7 +499,7 @@ class SessionSocketTest {
 
     @Test
     void publicDirectory_listsOnlyPublicSessionsAndMapsFieldsWithRegion() throws Exception {
-        createSessionAsMaster("Host");
+        String sessionId = createSessionAsMaster("Host");
 
         // Private by default -> the directory is empty.
         assertTrue(sessionManager.getPublicSessions().isEmpty(),
@@ -518,6 +518,7 @@ class SessionSocketTest {
         assertEquals(1, listed.playerAmount());
         assertTrue(listed.admin().contains("Host"), "The master must be listed as an admin");
         assertEquals("xx", listed.region(), "Region must come from the detected server's country code");
+        assertEquals(sessionId, listed.sessionId(), "The joinable session code must be exposed");
     }
 
     @Test

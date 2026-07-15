@@ -209,6 +209,23 @@
     }
   },
   "session": {
+    "empty": {
+      "comment": "Aucun navire à l'horizon pour prendre la mer…",
+      "title": "Sapristi !"
+    },
+    "filter": {
+      "all": "Tous",
+      "private": "Privé",
+      "public": "Public"
+    },
+    "or": "OU",
+    "player": {
+      "online": "Joueurs connectés"
+    },
+    "playerLabel": "Joueur",
+    "playersLabel": "Joueurs",
+    "refresh": "Actualiser",
+    "searchPlaceholder": "Rechercher une session…",
     "autoSetSail": {
       "description": "Lève l'ancre automatiquement lorsque tous les joueurs sont prêts",
       "label": "Lancement automatique"
