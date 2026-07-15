@@ -38,6 +38,10 @@ public class ProxyCheckAPI {
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            // Bound the call: an unresponsive proxycheck.io would otherwise stall the caller (and
+            // the event loop it runs on) indefinitely.
+            connection.setConnectTimeout(3000);
+            connection.setReadTimeout(3000);
 
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {

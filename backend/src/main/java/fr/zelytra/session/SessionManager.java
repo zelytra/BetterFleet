@@ -309,25 +309,36 @@ public class SessionManager {
         return false; // The specified player is not found in the session
     }
 
-    @Lock(value = Lock.Type.READ, time = 200)
-    public SotServer getServerFromHashing(SotServer server) {
-        String hash = server.generateHash();
-
-        // Return cached SOT server
-        if (sotServers.containsKey(hash)) {
-            return sotServers.get(hash).copy();
+    /**
+     * Resolves a client-reported server into the cached, geolocated {@link SotServer}.
+     * <p>
+     * Runs with <b>no lock on purpose</b>: on a cache miss it performs a blocking geolocation HTTP
+     * call. This used to run while {@link #playerJoinSotServer} held the WRITE lock, so at the end
+     * of a countdown — when every player joins their server at once — every other socket operation
+     * blew the 200ms lock timeout. That threw a LockException into onError, which closed the socket
+     * (players kicked) and dropped the JOIN_SERVER, so the server only appeared after a reconnect
+     * (by then a cache hit). The cache is a ConcurrentMap, so no lock is needed here.
+     */
+    @Lock(Lock.Type.NONE)
+    public SotServer resolveSotServer(SotServer server) {
+        SotServer cached = sotServers.get(server.generateHash());
+        if (cached != null) {
+            return cached.copy();
         }
-        // The object inject may not be completed, so we're creating fresh one to make sure all data has been initialized
-        SotServer newServer = new SotServer(server.getIp(), server.getPort(),
+        // Blocking geolocation — must never run while holding a lock.
+        SotServer resolved = new SotServer(server.getIp(), server.getPort(),
                 proxyCheckAPI.resolveLocation(server.getIp()));
-        sotServers.put(newServer.getHash(), newServer);
-        return newServer.copy();
+        SotServer previous = sotServers.putIfAbsent(resolved.getHash(), resolved);
+        return (previous != null ? previous : resolved).copy();
     }
 
+    /**
+     * Attaches a player to an <b>already-resolved</b> server — callers must go through
+     * {@link #resolveSotServer} first. No I/O may happen here: this holds the WRITE lock and must
+     * stay microseconds long.
+     */
     @Lock(value = Lock.Type.WRITE, time = 200)
-    public void playerJoinSotServer(Player player, SotServer server) {
-        SotServer findedSotServer = getServerFromHashing(server);
-
+    public void playerJoinSotServer(Player player, SotServer findedSotServer) {
         Fleet fleet = getFleetByPlayerName(player.getUsername());
         if (fleet == null) {
             Log.warn("Cannot join SoT server: no fleet found for player " + player.getUsername());
@@ -368,17 +379,19 @@ public class SessionManager {
         return null;
     }
 
+    /**
+     * Detaches a player from a server. Only the hash is needed to find it in the fleet, so this
+     * never resolves the geolocation (no I/O) while holding the WRITE lock.
+     */
     @Lock(value = Lock.Type.WRITE, time = 200)
     public void playerLeaveSotServer(Player player, SotServer server) {
-        SotServer findedSotServer = getServerFromHashing(server);
-
         Fleet fleet = getFleetByPlayerName(player.getUsername());
         if (fleet == null) {
             Log.warn("Cannot leave SoT server: no fleet found for player " + player.getUsername());
             return;
         }
 
-        SotServer fleetFindedServer = fleet.getServers().get(findedSotServer.getHash());
+        SotServer fleetFindedServer = fleet.getServers().get(server.generateHash());
         if (fleetFindedServer == null) {
             // The fleet is not (or no longer) tracking this server; nothing to remove.
             return;

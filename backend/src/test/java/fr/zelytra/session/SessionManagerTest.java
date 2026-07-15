@@ -226,7 +226,7 @@ public class SessionManagerTest {
         sessionManager.joinSession(sessionId1, player);
         SotServer server = new SotServer("1.1.1.1", 8080);
 
-        sessionManager.playerJoinSotServer(player, server);
+        sessionManager.playerJoinSotServer(player, sessionManager.resolveSotServer(server));
 
         assertNotNull(sessionManager.getSotServerFromPlayer(player), "The SoT server should be returned+");
     }
@@ -246,7 +246,7 @@ public class SessionManagerTest {
         SotServer server = new SotServer("1.1.1.1", 8080);
         String serverHash = server.getHash();
 
-        sessionManager.playerJoinSotServer(player, server);
+        sessionManager.playerJoinSotServer(player, sessionManager.resolveSotServer(server));
 
         assertTrue(sessionManager.getSessions().get(sessionId1).getServers().get(serverHash).getConnectedPlayers().contains(player), "The player should be connected to SoT server");
     }
@@ -266,7 +266,7 @@ public class SessionManagerTest {
         SotServer server = new SotServer("1.1.1.1", 8080);
         String serverHash = server.getHash();
 
-        sessionManager.playerJoinSotServer(player, server);
+        sessionManager.playerJoinSotServer(player, sessionManager.resolveSotServer(server));
         assertEquals(0, sessionManager.getSotServers().get(serverHash).getConnectedPlayers().size(), "Any player should be inside the cache system of the servers");
     }
 
@@ -285,7 +285,7 @@ public class SessionManagerTest {
         SotServer server = new SotServer("1.1.1.1", 8080);
         String serverHash = server.getHash();
 
-        sessionManager.playerJoinSotServer(player, server);
+        sessionManager.playerJoinSotServer(player, sessionManager.resolveSotServer(server));
         assertTrue(sessionManager.getSessions().get(sessionId1).getServers().get(serverHash).getConnectedPlayers().contains(player), "The player should be connected to SoT server");
 
         sessionManager.playerLeaveSotServer(player, server);

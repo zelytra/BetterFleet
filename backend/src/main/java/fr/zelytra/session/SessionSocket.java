@@ -210,13 +210,22 @@ public class SessionSocket {
     private void handleJoinServerMessage(Session session, SotServer sotServer) {
         SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
-        manager.playerJoinSotServer(player, sotServer);
+        if (player == null) {
+            return;
+        }
+        // Resolve (blocking geolocation on a cache miss) BEFORE the locked mutation — holding the
+        // session lock across that call kicked players at the end of a countdown.
+        SotServer resolved = manager.resolveSotServer(sotServer);
+        manager.playerJoinSotServer(player, resolved);
     }
 
     // Extracted method to handle LEAVE_SERVER messages
     private void handleLeaveServerMessage(Session session, SotServer sotServer) {
         SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
+        if (player == null) {
+            return;
+        }
         manager.playerLeaveSotServer(player, sotServer);
     }
 
@@ -319,13 +328,19 @@ public class SessionSocket {
         // Clean up resources related to the session
         sessionTimeoutTasks.remove(session.getId());
 
-        SessionManager manager = sessionManager;
-        Player player = manager.getPlayerFromSessionId(session.getId());
-        if (player != null) {
-            manager.leaveSession(player);
-            Log.info("[" + player.getUsername() + "] Disconnected");
-        } else {
-            Log.warn("[UNDEFINED PLAYER] Disconnected");
+        try {
+            SessionManager manager = sessionManager;
+            Player player = manager.getPlayerFromSessionId(session.getId());
+            if (player != null) {
+                manager.leaveSession(player);
+                Log.info("[" + player.getUsername() + "] Disconnected");
+            } else {
+                Log.warn("[UNDEFINED PLAYER] Disconnected");
+            }
+        } catch (Exception e) {
+            // Cleanup must never throw: this runs from onClose/onError, and a throw here re-enters
+            // onError and spirals (the LockException storms seen in production logs).
+            Log.error("Failed to clean up socket " + session.getId() + ": " + e);
         }
     }
 
