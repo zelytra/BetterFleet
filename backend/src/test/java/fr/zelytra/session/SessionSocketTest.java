@@ -578,6 +578,39 @@ class SessionSocketTest {
                 "A name tripping the content filter must be rejected");
     }
 
+    @Test
+    void slowGeolocation_doesNotHoldTheSessionLock() throws Exception {
+        // Regression for the production kick storm: the geolocation HTTP call used to run inside
+        // playerJoinSotServer's WRITE lock. At the end of a countdown every player joins their
+        // server at once, so every other socket operation blew the 200ms lock timeout ->
+        // LockException -> onError -> session.close() (players kicked), and the dropped
+        // JOIN_SERVER left the server hidden until a reconnect (by then a cache hit).
+        // Resolution must stay outside every lock.
+        Mockito.when(proxyCheckAPI.resolveGeo(any())).thenAnswer(invocation -> {
+            Thread.sleep(400); // far longer than the 200ms lock timeout
+            return new ProxyCheckAPI.Geo("Slow Land", "xx");
+        });
+
+        String sessionId = createSessionAsMaster("Master");
+
+        Thread joining = new Thread(() -> {
+            SotServer resolved = sessionManager.resolveSotServer(new SotServer("9.9.9.9", 30101));
+            sessionManager.playerJoinSotServer(sessionManager.getPlayerFromUsername("Master"), resolved);
+        });
+        joining.start();
+        awaitCondition(() -> false, 80); // let the joiner get into the slow geolocation
+
+        // A locked read must go straight through instead of timing out on the lock.
+        long start = System.currentTimeMillis();
+        assertDoesNotThrow(() -> sessionManager.isSessionExist(sessionId),
+                "A slow geolocation must not hold the session lock");
+        long waited = System.currentTimeMillis() - start;
+        assertTrue(waited < 200,
+                "Locked reads must not wait on the geolocation (waited " + waited + "ms)");
+
+        joining.join();
+    }
+
     private String createSessionAsMaster(String username) throws Exception {
         Player master = new Player();
         master.setUsername(username);
