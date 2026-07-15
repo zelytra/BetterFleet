@@ -16,7 +16,11 @@ import AlertComponent from "@/vue/alert/AlertComponent.vue";
 import { useI18n } from "vue-i18n";
 import { onMounted } from "vue";
 import { UserStore } from "@/objects/stores/UserStore.ts";
-import { BoatSize, PlayerDevice, PlayerStates } from "@/objects/fleet/Player.ts";
+import {
+  BoatSize,
+  PlayerDevice,
+  PlayerStates,
+} from "@/objects/fleet/Player.ts";
 
 const { t } = useI18n();
 

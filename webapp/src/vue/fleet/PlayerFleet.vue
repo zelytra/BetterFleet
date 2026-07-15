@@ -65,9 +65,7 @@
       <img v-if="player.isMaster" src="@/assets/icons/key.svg" />
     </div>
     <div class="content boat">
-      <template
-        v-if="player.boatSize && player.boatSize !== BoatSize.NONE"
-      >
+      <template v-if="player.boatSize && player.boatSize !== BoatSize.NONE">
         <img src="@/assets/icons/boat.svg" alt="boat" />
         <p>{{ t("boatSize." + player.boatSize.toLowerCase()) }}</p>
       </template>
