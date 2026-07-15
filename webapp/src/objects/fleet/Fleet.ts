@@ -36,6 +36,13 @@ export class Fleet {
   public servers: Map<string, SotServer>;
   public socket?: WebSocket;
   public stats: FleetStatistics;
+  // Master-only, client-side setting: automatically "set sails" once every
+  // player is ready instead of clicking the start button manually. Not synced
+  // from the backend (absent from FleetInterface) and reset on every join.
+  public autoSetSail: boolean;
+  // Latch preventing the auto "set sails" from re-firing while everyone stays
+  // ready. Released as soon as the fleet is no longer fully ready.
+  private autoSetSailFired: boolean;
 
   constructor() {
     this.sessionId = "";
@@ -46,6 +53,8 @@ export class Fleet {
       tryAmount: 0,
       successPrediction: 0,
     };
+    this.autoSetSail = false;
+    this.autoSetSailFired = false;
   }
 
   async joinSession(sessionId: string) {
@@ -55,6 +64,8 @@ export class Fleet {
 
     UserStore.player.isReady = false;
     UserStore.player.isMaster = false;
+    this.autoSetSail = false;
+    this.autoSetSailFired = false;
 
     await new HTTPAxios("socket/register")
       .get(ResponseType.Text)
@@ -187,6 +198,9 @@ export class Fleet {
     UserStore.player.isMaster = player.isMaster;
     UserStore.player.isReady = player.isReady;
     UserStore.player.device = player.device;
+    // Every readiness / master change flows through here, so this is the single
+    // place that reacts to "all players ready" regardless of the mounted view.
+    this.evaluateAutoSetSail();
   }
 
   private handleSessionRunner(countdown: number) {
@@ -235,6 +249,53 @@ export class Fleet {
     };
     info("[Fleet.ts][WebSocket] User run countdown to session");
     this.socket.send(JSON.stringify(message));
+  }
+
+  /**
+   * Master-only helper used by the lobby toggle. Enables/disables the auto
+   * "set sails" behaviour and re-evaluates immediately so that turning it on
+   * while everyone is already ready starts the countdown too.
+   */
+  setAutoSetSail(enabled: boolean): void {
+    this.autoSetSail = enabled;
+    this.evaluateAutoSetSail();
+  }
+
+  /**
+   * Auto "set sails": when the master enabled it and every player of the
+   * session is ready, trigger the exact same countdown as the manual start
+   * button ({@link runCountDown}).
+   *
+   * Fires once per "all ready" transition: the {@link autoSetSailFired} latch
+   * blocks re-fires while everyone stays ready and is released as soon as
+   * readiness drops, so it can fire again on the next all-ready transition.
+   * Guarded on {@link Player.isMaster} so only the master's client emits the
+   * countdown, and skipped while a countdown is already running.
+   */
+  private evaluateAutoSetSail(): void {
+    const totalPlayers = this.players.length;
+    const allReady =
+      totalPlayers > 0 && this.getReadyPlayers().length === totalPlayers;
+
+    // Release the latch as soon as the fleet is no longer fully ready so the
+    // next all-ready transition can fire again.
+    if (!allReady) {
+      this.autoSetSailFired = false;
+      return;
+    }
+
+    if (
+      this.autoSetSail &&
+      UserStore.player.isMaster &&
+      !this.autoSetSailFired &&
+      !UserStore.player.countDown
+    ) {
+      this.autoSetSailFired = true;
+      info(
+        "[Fleet.ts] Auto set sail: every player is ready, running countdown",
+      );
+      this.runCountDown();
+    }
   }
 
   clearPlayersStatus() {
