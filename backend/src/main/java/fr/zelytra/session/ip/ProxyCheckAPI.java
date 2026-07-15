@@ -28,11 +28,19 @@ public class ProxyCheckAPI {
     private static final String tokenParam = "key=";
 
     /**
+     * Geolocation of an IP: the human-readable location string and the ISO 3166-1 alpha-2 country
+     * code (lowercase). {@link #EMPTY} is returned when nothing could be resolved.
+     */
+    public record Geo(String location, String countryCode) {
+        public static final Geo EMPTY = new Geo("", "");
+    }
+
+    /**
      * Resolves a human-readable "continent - country - region - city" location for an IP via
      * proxycheck.io. Returns "" on any failure (network error, non-"ok" status, no geo fields).
      * Stateless and injectable, so the session flow can mock it out and stay offline in tests.
      */
-    public String resolveLocation(String ip) {
+    public Geo resolveGeo(String ip) {
         try {
             URL url = new URL(buildUrl(ip));
 
@@ -55,7 +63,7 @@ public class ProxyCheckAPI {
                 }
                 in.close();
 
-                return parseLocation(response.toString(), ip);
+                return parseGeo(response.toString(), ip);
             } else {
                 Log.error("GET request not worked, Response Code: " + responseCode);
             }
@@ -63,7 +71,15 @@ public class ProxyCheckAPI {
             Log.error("Failed to retrieve information via ProxyChecker of ip " + ip);
             e.printStackTrace();
         }
-        return "";
+        return Geo.EMPTY;
+    }
+
+    /**
+     * Convenience wrapper returning only the human-readable location string, for callers (and
+     * tests) that don't need the country code.
+     */
+    public String resolveLocation(String ip) {
+        return resolveGeo(ip).location();
     }
 
     private static String buildUrl(String ip) {
@@ -86,13 +102,26 @@ public class ProxyCheckAPI {
      * @return the formatted location, or "" when the response status is not "ok"
      */
     static String parseLocation(String jsonResponse, String ip) {
+        return parseGeo(jsonResponse, ip).location();
+    }
+
+    /**
+     * Builds the geolocation (location string + ISO country code) from a raw proxycheck.io JSON
+     * response. Pure and static so the parsing can be unit-tested without hitting the network.
+     * Returns {@link Geo#EMPTY} when the response status is not "ok" or holds no entry for the IP.
+     *
+     * @param jsonResponse the raw JSON body returned by proxycheck.io
+     * @param ip           the queried IP, which is also the key holding the location object
+     * @return the resolved {@link Geo}
+     */
+    static Geo parseGeo(String jsonResponse, String ip) {
         JSONObject json = new JSONObject(jsonResponse);
 
         String status = json.optString("status", "");
         if (!Objects.equals(status, "ok")) {
             Log.warn("[PROXY CHECK] proxycheck.io status '" + status + "' for " + ip
                     + " (free-tier limit reached? set a token via PROXY_API_KEY). No location resolved.");
-            return "";
+            return Geo.EMPTY;
         }
 
         // proxycheck.io only returns the fields it actually has for an IP, and datacenter
@@ -103,7 +132,7 @@ public class ProxyCheckAPI {
         JSONObject ipJsonObject = json.optJSONObject(ip);
         if (ipJsonObject == null) {
             Log.warn("[PROXY CHECK] proxycheck.io response had no entry for " + ip);
-            return "";
+            return Geo.EMPTY;
         }
 
         List<String> parts = new ArrayList<>();
@@ -113,14 +142,16 @@ public class ProxyCheckAPI {
                 parts.add(value);
             }
         }
+        // ISO 3166-1 alpha-2, lowercased to match the frontend flag map (LangIcons).
+        String countryCode = ipJsonObject.optString("isocode", "").toLowerCase();
 
         if (parts.isEmpty()) {
             Log.warn("[PROXY CHECK] proxycheck.io returned no geo fields for " + ip);
-            return "";
+            return new Geo("", countryCode);
         }
 
         String location = String.join(" - ", parts);
-        Log.info("[PROXY CHECK] Located SoT server " + ip + ": " + location);
-        return location;
+        Log.info("[PROXY CHECK] Located SoT server " + ip + ": " + location + " [" + countryCode + "]");
+        return new Geo(location, countryCode);
     }
 }

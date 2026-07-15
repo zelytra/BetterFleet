@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.fleet.PublicSession;
 import fr.zelytra.session.ip.ProxyCheckAPI;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
@@ -26,8 +29,10 @@ import jakarta.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -45,6 +50,11 @@ public class SessionManager {
 
     // SotServer cached to avoid API spam and faster server response
     private final ConcurrentMap<String, SotServer> sotServers = new ConcurrentHashMap<>();
+
+    // Emits a signal whenever the set of public sessions changes (create / join / leave /
+    // visibility / server), so SSE subscribers (the public sessions browser) refresh. Only
+    // structural changes publish here — ready-state spikes do not — which keeps the stream quiet.
+    private final BroadcastProcessor<Boolean> directoryChanges = BroadcastProcessor.create();
 
     @Inject
     StatisticsRepository statisticsRepository;
@@ -74,6 +84,7 @@ public class SessionManager {
             executor.submit(this::incrementSession);
         }
         Log.info("[" + fleet.getSessionId() + "] Session created !");
+        publishDirectoryChange();
         return fleet.getSessionId();
     }
 
@@ -135,6 +146,7 @@ public class SessionManager {
         }
         fleet.getPlayers().add(player);
         Log.info("[" + sessionId + "] " + player.getUsername() + " Join the session !");
+        publishDirectoryChange();
         return fleet;
     }
 
@@ -189,6 +201,7 @@ public class SessionManager {
         }
 
         //Close the socket if not yet closed
+        publishDirectoryChange();
         closeSocketQuietly(player.getSocket());
     }
 
@@ -318,8 +331,9 @@ public class SessionManager {
             return sotServers.get(hash).copy();
         }
         // The object inject may not be completed, so we're creating fresh one to make sure all data has been initialized
+        ProxyCheckAPI.Geo geo = proxyCheckAPI.resolveGeo(server.getIp());
         SotServer newServer = new SotServer(server.getIp(), server.getPort(),
-                proxyCheckAPI.resolveLocation(server.getIp()));
+                geo.location(), geo.countryCode());
         sotServers.put(newServer.getHash(), newServer);
         return newServer.copy();
     }
@@ -348,6 +362,7 @@ public class SessionManager {
         fleet.getServers().get(findedSotServer.getHash()).getConnectedPlayers().add(player);
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " join the SotServer: " + fleet.getServers().get(findedSotServer.getHash()).getHash());
         broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        publishDirectoryChange();
     }
 
     @Lock(value = Lock.Type.READ, time = 200)
@@ -391,6 +406,7 @@ public class SessionManager {
         }
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " leave the SotServer: " + fleetFindedServer.getHash());
         broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        publishDirectoryChange();
     }
 
     @Lock(value = Lock.Type.READ, time = 200)
@@ -401,6 +417,67 @@ public class SessionManager {
     @Lock(value = Lock.Type.READ, time = 200)
     public ConcurrentMap<String, SotServer> getSotServers() {
         return sotServers;
+    }
+
+    /**
+     * Publishes a directory-changed signal to the public sessions SSE stream. Called after any
+     * mutation that can affect the public list.
+     */
+    public void publishDirectoryChange() {
+        directoryChanges.onNext(Boolean.TRUE);
+    }
+
+    /**
+     * The current snapshot of public (listed) sessions, mapped to the browser's PublicSession DTO.
+     */
+    @Lock(value = Lock.Type.READ, time = 200)
+    public List<PublicSession> getPublicSessions() {
+        List<PublicSession> result = new ArrayList<>();
+        for (Fleet fleet : sessions.values()) {
+            if (fleet.isPrivate()) {
+                continue;
+            }
+            result.add(toPublicSession(fleet));
+        }
+        return result;
+    }
+
+    /**
+     * SSE-friendly stream: emits the current public-sessions snapshot on subscription, then a
+     * fresh snapshot on every structural change.
+     */
+    public Multi<List<PublicSession>> streamPublicSessions() {
+        return Multi.createBy().concatenating().streams(
+                Multi.createFrom().item(this::getPublicSessions),
+                directoryChanges.onItem().transform(ignored -> getPublicSessions())
+        );
+    }
+
+    private PublicSession toPublicSession(Fleet fleet) {
+        List<String> admins = fleet.getMasters().stream()
+                .map(Player::getUsername)
+                .collect(Collectors.toList());
+        // #604 will carry a free-text custom name; until then the browser localizes this seed.
+        String name = String.valueOf(fleet.getSessionName());
+        return new PublicSession(
+                primaryRegion(fleet),
+                admins,
+                name,
+                fleet.getPlayers().size(),
+                fleet.isPrivate(),
+                fleet.getBanner());
+    }
+
+    /**
+     * The country-code flag shown for a session: taken from the server carrying the most players,
+     * or "" when no server has been detected yet.
+     */
+    private String primaryRegion(Fleet fleet) {
+        return fleet.getServers().values().stream()
+                .max(Comparator.comparingInt(server -> server.getConnectedPlayers().size()))
+                .map(SotServer::getCountryCode)
+                .filter(code -> code != null && !code.isBlank())
+                .orElse("");
     }
 
     /**

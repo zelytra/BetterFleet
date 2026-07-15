@@ -58,4 +58,20 @@ public class ProxyCheckAPITest {
 
         assertEquals("", ProxyCheckAPI.parseLocation(json, "20.216.150.173"));
     }
+
+    @Test
+    public void parseGeo_okResponse_exposesIsoCountryCodeLowercased() {
+        // The public sessions directory (#599) needs the ISO country code for the flag, lowercased
+        // to match the frontend flag map (LangIcons).
+        String json = "{"
+                + "\"status\":\"ok\","
+                + "\"20.216.148.125\":{"
+                + "\"country\":\"United States\","
+                + "\"isocode\":\"US\","
+                + "\"region\":\"Virginia\"}}";
+
+        ProxyCheckAPI.Geo geo = ProxyCheckAPI.parseGeo(json, "20.216.148.125");
+        assertEquals("us", geo.countryCode(), "isocode must be exposed lowercased");
+        assertEquals("United States - Virginia", geo.location());
+    }
 }
