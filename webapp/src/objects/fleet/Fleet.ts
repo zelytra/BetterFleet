@@ -67,6 +67,16 @@ export class Fleet {
     this.autoSetSail = false;
     this.autoSetSailFired = false;
 
+    // Populate the auth header before the authenticated socket register. Without
+    // this, creating or joining a session before the periodic token refresh has run
+    // sends an empty Authorization header and the register 401s — the "connection
+    // error" seen on a fast first click that then works on the retry.
+    try {
+      await HTTPAxios.updateToken();
+    } catch (error) {
+      info("[Fleet.ts] Token refresh before socket register failed: " + error);
+    }
+
     await new HTTPAxios("socket/register")
       .get(ResponseType.Text)
       .then((response) => {
