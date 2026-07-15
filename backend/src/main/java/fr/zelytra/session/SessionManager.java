@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.fleet.PublicSession;
+import fr.zelytra.session.fleet.PublicSessionsSnapshot;
 import fr.zelytra.session.ip.ProxyCheckAPI;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
@@ -456,13 +457,32 @@ public class SessionManager {
     }
 
     /**
-     * SSE-friendly stream: emits the current public-sessions snapshot on subscription, then a
-     * fresh snapshot on every structural change.
+     * What the browser renders: the public sessions plus the global connected-player count, built
+     * in one pass so both ride the same REST response and the same SSE frame — the counter has to
+     * move live as players come and go, not only when Refresh is pressed.
      */
-    public Multi<List<PublicSession>> streamPublicSessions() {
+    @Lock(value = Lock.Type.READ, time = 200)
+    public PublicSessionsSnapshot getPublicSessionsSnapshot() {
+        List<PublicSession> publicSessions = new ArrayList<>();
+        int connectedPlayers = 0;
+        for (Fleet fleet : sessions.values()) {
+            connectedPlayers += fleet.getPlayers().size();
+            if (!fleet.isPrivate()) {
+                publicSessions.add(toPublicSession(fleet));
+            }
+        }
+        return new PublicSessionsSnapshot(publicSessions, connectedPlayers);
+    }
+
+    /**
+     * SSE-friendly stream: emits the current snapshot on subscription, then a fresh one on every
+     * structural change (create / join / leave / visibility / server) — exactly when either the
+     * session list or the connected-player count can move.
+     */
+    public Multi<PublicSessionsSnapshot> streamPublicSessions() {
         return Multi.createBy().concatenating().streams(
-                Multi.createFrom().item(this::getPublicSessions),
-                directoryChanges.onItem().transform(ignored -> getPublicSessions())
+                Multi.createFrom().item(this::getPublicSessionsSnapshot),
+                directoryChanges.onItem().transform(ignored -> getPublicSessionsSnapshot())
         );
     }
 

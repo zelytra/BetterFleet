@@ -220,9 +220,7 @@
     },
     "issue": "Si tu rencontres un problème, rejoins notre",
     "or": "OU",
-    "player": {
-      "online": "Joueurs connectés"
-    },
+    "connectedPlayers": "Joueurs connectés",
     "playerLabel": "Joueur",
     "playersLabel": "Joueurs",
     "refresh": "Actualiser",
