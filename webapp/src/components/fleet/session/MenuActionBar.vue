@@ -47,6 +47,8 @@ const emits = defineEmits(["createSession"]);
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  height: 100%;
+  box-sizing: border-box;
 
   .or {
     color: var(--secondary-text);
@@ -64,7 +66,7 @@ const emits = defineEmits(["createSession"]);
     aspect-ratio: 256 / 90;
 
     &:hover {
-      scale: 1.01;
+      filter: brightness(1.1);
     }
   }
 
@@ -86,7 +88,8 @@ const emits = defineEmits(["createSession"]);
 
   .session {
     width: 256px;
-    height: 152px;
+    flex: 1;
+    min-height: 110px;
     display: flex;
     box-sizing: border-box;
     padding: 12px;
@@ -100,18 +103,16 @@ const emits = defineEmits(["createSession"]);
     background-size: cover;
 
     &:hover {
-      scale: 1.01;
+      filter: brightness(1.1);
     }
 
     &.create {
       background-image: url("@assets/banners/create_session.svg");
-      aspect-ratio: 256 / 152;
     }
 
     &.join {
       background-image: url("@assets/banners/join_session.svg");
       background-blend-mode: darken;
-      aspect-ratio: 256 / 152;
     }
 
     p {

@@ -95,7 +95,7 @@ watch(sessionId, () => {
   .side-container {
     width: 256px;
     flex-shrink: 0;
-    overflow-y: auto;
+    overflow: hidden;
   }
 }
 
