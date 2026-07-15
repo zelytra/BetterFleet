@@ -462,6 +462,7 @@ public class SessionManager {
                 ? fleet.getCustomName()
                 : String.valueOf(fleet.getSessionName());
         return new PublicSession(
+                fleet.getSessionId(),
                 primaryRegion(fleet),
                 admins,
                 name,

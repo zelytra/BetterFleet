@@ -209,6 +209,23 @@
     }
   },
   "session": {
+    "empty": {
+      "comment": "I reckon there be no ship to sail the seas with…",
+      "title": "Blimey!"
+    },
+    "filter": {
+      "all": "All",
+      "private": "Private",
+      "public": "Public"
+    },
+    "or": "OR",
+    "player": {
+      "online": "Connected players"
+    },
+    "playerLabel": "Player",
+    "playersLabel": "Players",
+    "refresh": "Refresh",
+    "searchPlaceholder": "Search a session…",
     "autoSetSail": {
       "description": "Automatically sets sail once every player is ready",
       "label": "Auto set sails"

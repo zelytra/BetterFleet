@@ -1,4 +1,5 @@
 export interface PublicSession {
+  sessionId: string;
   region: string;
   admin: string[];
   name: string;
