@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref } from "vue";
+import { PropType, ref } from "vue";
 import { InputData, SingleSelectInterface } from "@/vue/form/Inputs.ts";
 
 const isOpen = ref<boolean>(false);
@@ -42,15 +42,13 @@ const props = defineProps({
 });
 const emits = defineEmits(["update:data", "validate"]);
 
-const computedInput = computed({
-  get: (): SingleSelectInterface => props.data,
-  set: (value: SingleSelectInterface): void => {
-    emits("update:data", value);
-  },
-});
-
+// The pick is written straight onto the bound object — callers that only read
+// selectedValue later (the settings form) rely on that — and emitted, for the
+// callers that need to act the moment it changes. Emitting the same object keeps
+// a v-model:data binding a no-op reassignment.
 function updateData(option: InputData) {
-  computedInput.value.selectedValue = option;
+  props.data.selectedValue = option;
+  emits("update:data", props.data);
   isOpen.value = false;
 }
 </script>

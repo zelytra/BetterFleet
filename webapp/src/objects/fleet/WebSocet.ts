@@ -18,4 +18,5 @@ export enum WebSocketMessageType {
   PROMOTE_PLAYER = "PROMOTE_PLAYER",
   KICK_PLAYER = "KICK_PLAYER",
   DEMOTE_PLAYER = "DEMOTE_PLAYER",
+  SET_VISIBILITY = "SET_VISIBILITY", // Master lists/unlists the session in the public browser
 }
