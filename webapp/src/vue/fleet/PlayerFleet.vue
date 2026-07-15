@@ -64,6 +64,12 @@
 
       <img v-if="player.isMaster" src="@/assets/icons/key.svg" />
     </div>
+    <div class="content boat">
+      <template v-if="player.boatSize && player.boatSize !== BoatSize.NONE">
+        <img src="@/assets/icons/boat.svg" alt="boat" />
+        <p>{{ t("boatSize." + player.boatSize.toLowerCase()) }}</p>
+      </template>
+    </div>
     <div class="content">
       <p
         :class="{ status: true, offline: player.status == PlayerStates.CLOSED }"
@@ -87,7 +93,12 @@ import { onUpdated, PropType, ref } from "vue";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { useI18n } from "vue-i18n";
 import { Utils } from "@/objects/utils/Utils.ts";
-import { Player, PlayerDevice, PlayerStates } from "@/objects/fleet/Player.ts";
+import {
+  BoatSize,
+  Player,
+  PlayerDevice,
+  PlayerStates,
+} from "@/objects/fleet/Player.ts";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import {
   ContributorProvider,
@@ -177,6 +188,22 @@ onUpdated(() => {
           color: white;
           font-size: 14px;
         }
+      }
+    }
+
+    &.boat {
+      width: 130px;
+      gap: 8px;
+      color: var(--secondary-text);
+
+      img {
+        width: 22px;
+        height: 22px;
+      }
+
+      p {
+        white-space: nowrap;
+        font-size: 14px;
       }
     }
 

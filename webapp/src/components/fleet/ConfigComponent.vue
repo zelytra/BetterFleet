@@ -32,6 +32,10 @@
         v-model:data="deviceOptions"
         :label="t('config.device.label')"
       />
+      <SingleSelect
+        v-model:data="boatSizeOptions"
+        :label="t('boatSize.label')"
+      />
       <div class="checkbox-wrapper descriptor">
         <input v-model="activeMacro" type="checkbox" />
         <div class="label-wrapper">
@@ -137,12 +141,13 @@ import it from "@assets/icons/locales/it.svg";
 import xbox from "@assets/icons/xbox.svg";
 import microsoft from "@assets/icons/microsoft.svg";
 import playstation from "@assets/icons/playstation.svg";
+import boat from "@assets/icons/boat.svg";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import SaveBar from "@/vue/utils/SaveBar.vue";
 import InputSlider from "@/vue/form/InputSlider.vue";
 import countdownSound from "@assets/sounds/countdown.mp3";
-import { PlayerDevice } from "@/objects/fleet/Player.ts";
+import { BoatSize, PlayerDevice } from "@/objects/fleet/Player.ts";
 import ParameterPart from "@/vue/templates/ParameterPart.vue";
 import { Utils } from "@/objects/utils/Utils.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
@@ -153,6 +158,7 @@ const alerts = inject<AlertProvider>("alertProvider");
 
 const langOptions = ref<SingleSelectInterface>({ data: [] });
 const deviceOptions = ref<SingleSelectInterface>({ data: [] });
+const boatSizeOptions = ref<SingleSelectInterface>({ data: [] });
 const devMode = ref<boolean>(false);
 const volume = ref<number>(50);
 const activeSound = ref<boolean>(true);
@@ -196,6 +202,19 @@ function loadOptionList() {
     id: PlayerDevice.PLAYSTATION,
     image: getDeviceImgUrl("playstation"),
   });
+  boatSizeOptions.value.data = [];
+  for (const size of [
+    BoatSize.NONE,
+    BoatSize.SLOOP,
+    BoatSize.BRIGANTINE,
+    BoatSize.GALLEON,
+  ]) {
+    boatSizeOptions.value.data.push({
+      display: t("boatSize." + size.toLowerCase()),
+      id: size,
+      image: boat,
+    });
+  }
   resetConfig();
 }
 
@@ -206,6 +225,14 @@ function resetConfig() {
     )[0];
   } else {
     deviceOptions.value.selectedValue = deviceOptions.value.data[0];
+  }
+
+  if (UserStore.player.boatSize) {
+    boatSizeOptions.value.selectedValue = boatSizeOptions.value.data.filter(
+      (x) => x.id == UserStore.player.boatSize,
+    )[0];
+  } else {
+    boatSizeOptions.value.selectedValue = boatSizeOptions.value.data[0];
   }
 
   if (UserStore.player.lang) {
@@ -234,6 +261,8 @@ function onSave() {
   UserStore.setLang(langOptions.value.selectedValue!.id);
   UserStore.player.device = deviceOptions.value.selectedValue!
     .id as PlayerDevice;
+  UserStore.player.boatSize = boatSizeOptions.value.selectedValue!
+    .id as BoatSize;
   UserStore.player.soundLevel = volume.value;
   UserStore.player.soundEnable = activeSound.value;
   UserStore.player.macroEnable = activeMacro.value;
@@ -266,6 +295,11 @@ function isConfigDifferent(): boolean {
   if (volume.value != UserStore.player.soundLevel) return true;
   if (activeSound.value != UserStore.player.soundEnable) return true;
   if (activeMacro.value != UserStore.player.macroEnable) return true;
+  if (
+    boatSizeOptions.value.selectedValue != undefined &&
+    UserStore.player.boatSize != boatSizeOptions.value.selectedValue!.id
+  )
+    return true;
   return (
     deviceOptions.value.selectedValue != undefined &&
     UserStore.player.device != deviceOptions.value.selectedValue!.id

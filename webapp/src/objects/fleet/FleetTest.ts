@@ -1,5 +1,10 @@
 import { Fleet } from "@/objects/fleet/Fleet.ts";
-import { Player, PlayerDevice, PlayerStates } from "@/objects/fleet/Player.ts";
+import {
+  BoatSize,
+  Player,
+  PlayerDevice,
+  PlayerStates,
+} from "@/objects/fleet/Player.ts";
 
 export function getStressTestFleet(): Fleet {
   const fleet: Fleet = new Fleet();
@@ -10,6 +15,7 @@ export function getStressTestFleet(): Fleet {
       isReady: false,
       isMaster: true,
       device: PlayerDevice.MICROSOFT,
+      boatSize: BoatSize.SLOOP,
       soundEnable: true,
       soundLevel: 1,
       macroEnable: true,
@@ -20,6 +26,7 @@ export function getStressTestFleet(): Fleet {
       isReady: false,
       isMaster: true,
       device: PlayerDevice.XBOX,
+      boatSize: BoatSize.GALLEON,
       soundEnable: true,
       soundLevel: 1,
       macroEnable: true,
@@ -30,6 +37,7 @@ export function getStressTestFleet(): Fleet {
       isReady: false,
       isMaster: true,
       device: PlayerDevice.PLAYSTATION,
+      boatSize: BoatSize.BRIGANTINE,
       soundEnable: true,
       soundLevel: 1,
       macroEnable: true,
@@ -40,6 +48,7 @@ export function getStressTestFleet(): Fleet {
       isReady: false,
       isMaster: true,
       device: PlayerDevice.PLAYSTATION,
+      boatSize: BoatSize.NONE,
       soundEnable: true,
       soundLevel: 1,
       macroEnable: true,
@@ -50,6 +59,7 @@ export function getStressTestFleet(): Fleet {
       isReady: false,
       isMaster: true,
       device: PlayerDevice.PLAYSTATION,
+      boatSize: BoatSize.SLOOP,
       soundEnable: true,
       soundLevel: 1,
       macroEnable: true,
