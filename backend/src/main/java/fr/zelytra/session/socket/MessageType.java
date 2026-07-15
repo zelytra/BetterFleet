@@ -15,4 +15,5 @@ public enum MessageType {
     PROMOTE_PLAYER,
     KICK_PLAYER,
     DEMOTE_PLAYER,
+    SET_VISIBILITY, // Master toggles the session public/private visibility
 }

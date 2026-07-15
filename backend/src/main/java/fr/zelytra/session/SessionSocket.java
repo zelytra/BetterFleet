@@ -97,6 +97,12 @@ public class SessionSocket {
                 PlayerAction action = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
                 handlePromote(session, action, false);
             }
+            case SET_VISIBILITY -> {
+                Boolean isPrivate = objectMapper.convertValue(socketMessage.data(), Boolean.class);
+                if (isPrivate != null) {
+                    handleSetVisibility(session, isPrivate);
+                }
+            }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
             case KEEP_ALIVE -> {
@@ -165,6 +171,30 @@ public class SessionSocket {
         }
         target.setMaster(master);
         Log.info("[" + fleet.getSessionId() + "] " + action.username() + " has been " + (master ? "promoted" : "demoted") + " by " + requester.getUsername());
+        sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+    }
+
+    /**
+     * Toggles the session's public/private visibility. Only the fleet master may change it — the
+     * client is never trusted to assert this itself (same authorization rules as {@link #handleKick}).
+     * A private session stays unlisted and joinable only by its code; a public one becomes eligible
+     * for the public sessions directory.
+     */
+    private void handleSetVisibility(Session session, boolean isPrivate) {
+        Player requester = sessionManager.getPlayerFromSessionId(session.getId());
+        if (requester == null) {
+            return;
+        }
+        Fleet fleet = sessionManager.getFleetByPlayerName(requester.getUsername());
+        if (fleet == null) {
+            return;
+        }
+        if (!requester.isMaster()) {
+            Log.warn("[" + fleet.getSessionId() + "] " + requester.getUsername() + " attempted to change visibility without master rights, ignored");
+            return;
+        }
+        fleet.setPrivate(isPrivate);
+        Log.info("[" + fleet.getSessionId() + "] visibility set to " + (isPrivate ? "private" : "public") + " by " + requester.getUsername());
         sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
@@ -269,6 +299,8 @@ public class SessionSocket {
             player.setMaster(true);
             player.setSocket(session);
             if (fleet != null) {
+                // The creator is the host: seed the session banner from their preference.
+                fleet.setBanner(player.getBanner());
                 sessionManager.broadcastDataToSession(newSessionId, MessageType.UPDATE, fleet);
             }
         } else {

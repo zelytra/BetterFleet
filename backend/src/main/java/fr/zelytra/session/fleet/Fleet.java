@@ -1,5 +1,6 @@
 package fr.zelytra.session.fleet;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,6 +13,12 @@ public class Fleet {
 
     private String sessionId;
     private int sessionName;
+
+    @JsonProperty(value = "isPrivate")
+    private boolean isPrivate;
+
+    private int banner;
+
     private List<Player> players;
     private final Map<String, SotServer> servers;
     private FleetStats stats;
@@ -19,6 +26,8 @@ public class Fleet {
     public Fleet() {
         this.sessionId = UUID.randomUUID().toString().substring(0, 7).toUpperCase();
         this.sessionName = (int) (Math.random() * 100);
+        this.isPrivate = true; // sessions are unlisted by default; the master opts into public
+        this.banner = 0;
         this.players = new ArrayList<>();
         this.servers = new HashMap<>();
         this.stats = new FleetStats(0, 0);
@@ -47,6 +56,22 @@ public class Fleet {
 
     public void setSessionName(int sessionName) {
         this.sessionName = sessionName;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
+    }
+
+    public int getBanner() {
+        return banner;
+    }
+
+    public void setBanner(int banner) {
+        this.banner = banner;
     }
 
     public List<Player> getPlayers() {
