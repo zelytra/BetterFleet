@@ -42,13 +42,11 @@ const props = defineProps({
 });
 const emits = defineEmits(["update:data", "validate"]);
 
-// The pick is written straight onto the bound object — callers that only read
-// selectedValue later (the settings form) rely on that — and emitted, for the
-// callers that need to act the moment it changes. Emitting the same object keeps
-// a v-model:data binding a no-op reassignment.
+// Emits the pick rather than writing it into the bound object: the caller owns its
+// own state. A v-model:data binding picks this up on its own; a plain :data caller
+// has to apply it in its @update:data handler.
 function updateData(option: InputData) {
-  props.data.selectedValue = option;
-  emits("update:data", props.data);
+  emits("update:data", { ...props.data, selectedValue: option });
   isOpen.value = false;
 }
 </script>

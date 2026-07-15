@@ -65,6 +65,16 @@ describe("PublicSessionBrowser filter", () => {
     expect(PublicSessionsStore.state.filter).toBe("public");
   });
 
+  it("shows the pick in the closed input", async () => {
+    const wrapper = mountBrowser();
+
+    await wrapper.find(".filter .input-wrapper").trigger("click");
+    const options = wrapper.findAll(".filter .dropdown span");
+    await options.find((o) => o.text() === "Public")!.trigger("click");
+
+    expect(wrapper.find(".filter .input-wrapper").text()).toBe("Public");
+  });
+
   it("pushes 'private' too", async () => {
     const wrapper = mountBrowser();
 

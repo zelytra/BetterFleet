@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
-import { reactive } from "vue";
+import { defineComponent, h, reactive, ref } from "vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
 
@@ -27,15 +27,6 @@ async function pickPublic(wrapper: any): Promise<void> {
 }
 
 describe("SingleSelect", () => {
-  it("moves the selection to the picked option", async () => {
-    const data = makeData();
-    const wrapper = mount(SingleSelect, { props: { data }, ...mountOptions });
-
-    await pickPublic(wrapper);
-
-    expect(data.selectedValue?.id).toBe("public");
-  });
-
   it("emits update:data so callers can react to the pick", async () => {
     const data = makeData();
     const wrapper = mount(SingleSelect, { props: { data }, ...mountOptions });
@@ -45,5 +36,51 @@ describe("SingleSelect", () => {
     const emitted = wrapper.emitted("update:data");
     expect(emitted).toBeTruthy();
     expect(emitted![0][0]).toMatchObject({ selectedValue: { id: "public" } });
+  });
+
+  it("carries the option list through unchanged", async () => {
+    const data = makeData();
+    const wrapper = mount(SingleSelect, { props: { data }, ...mountOptions });
+
+    await pickPublic(wrapper);
+
+    expect(wrapper.emitted("update:data")![0][0]).toMatchObject({
+      data: data.data,
+    });
+  });
+
+  it("leaves the bound object alone — the caller owns its state", async () => {
+    const data = makeData();
+    const wrapper = mount(SingleSelect, { props: { data }, ...mountOptions });
+
+    await pickPublic(wrapper);
+
+    expect(data.selectedValue?.id).toBe("all");
+  });
+
+  // The settings form binds with v-model:data and reads selectedValue back when the
+  // user saves, so that binding has to keep working end to end.
+  it("updates a v-model:data binding", async () => {
+    const Host = defineComponent({
+      setup() {
+        const model = ref<SingleSelectInterface>(makeData());
+        return { model };
+      },
+      render() {
+        // Exactly what v-model:data compiles to.
+        return h(SingleSelect, {
+          data: this.model,
+          "onUpdate:data": (value: SingleSelectInterface) => {
+            this.model = value;
+          },
+        });
+      },
+    });
+
+    const wrapper = mount(Host, mountOptions);
+    await pickPublic(wrapper);
+
+    expect(wrapper.vm.model.selectedValue?.id).toBe("public");
+    expect(wrapper.find(".input-wrapper").text()).toBe("Public");
   });
 });
