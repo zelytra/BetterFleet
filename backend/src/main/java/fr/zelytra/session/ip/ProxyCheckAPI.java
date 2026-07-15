@@ -63,30 +63,7 @@ public class ProxyCheckAPI {
                 }
                 in.close();
 
-                StringBuilder location = new StringBuilder();
-                JSONObject jsonResponse = new JSONObject(response.toString());
-
-                if (!Objects.equals(jsonResponse.getString("status"), "ok")) {
-                    Log.warn("The proxy checker has reach is free limit, please provide a token or change the bill plan of your token api");
-                    return "";
-                }
-
-                JSONObject ipJsonObject = jsonResponse.getJSONObject(this.getIp());
-                if (ipJsonObject.getString("continent") != null) {
-                    location.append(ipJsonObject.getString("continent")).append(" - ");
-                }
-                if (ipJsonObject.getString("country") != null) {
-                    location.append(ipJsonObject.getString("country")).append(" - ");
-                }
-                if (ipJsonObject.getString("region") != null) {
-                    location.append(ipJsonObject.getString("region")).append(" - ");
-                }
-                if (ipJsonObject.getString("city") != null) {
-                    location.append(ipJsonObject.getString("city"));
-                }
-
-                Log.info("[PROXY CHECK] New SOT server detected !");
-                return location.toString();
+                return parseLocation(response.toString(), this.getIp());
             } else {
                 Log.error("GET request not worked, Response Code: " + responseCode);
             }
@@ -95,6 +72,43 @@ public class ProxyCheckAPI {
             e.printStackTrace();
         }
         return "";
+    }
+
+    /**
+     * Builds the "continent - country - region - city" location string from a raw proxycheck.io
+     * JSON response. Extracted as a pure, static helper so the parsing can be unit-tested without
+     * hitting the network. Returns an empty string when the API reports a non-"ok" status (e.g. the
+     * free-tier request limit was reached).
+     *
+     * @param jsonResponse the raw JSON body returned by proxycheck.io
+     * @param ip           the queried IP, which is also the key holding the location object
+     * @return the formatted location, or "" when the response status is not "ok"
+     */
+    static String parseLocation(String jsonResponse, String ip) {
+        JSONObject json = new JSONObject(jsonResponse);
+
+        if (!Objects.equals(json.getString("status"), "ok")) {
+            Log.warn("The proxy checker has reach is free limit, please provide a token or change the bill plan of your token api");
+            return "";
+        }
+
+        JSONObject ipJsonObject = json.getJSONObject(ip);
+        StringBuilder location = new StringBuilder();
+        if (ipJsonObject.getString("continent") != null) {
+            location.append(ipJsonObject.getString("continent")).append(" - ");
+        }
+        if (ipJsonObject.getString("country") != null) {
+            location.append(ipJsonObject.getString("country")).append(" - ");
+        }
+        if (ipJsonObject.getString("region") != null) {
+            location.append(ipJsonObject.getString("region")).append(" - ");
+        }
+        if (ipJsonObject.getString("city") != null) {
+            location.append(ipJsonObject.getString("city"));
+        }
+
+        Log.info("[PROXY CHECK] New SOT server detected !");
+        return location.toString();
     }
 
     public String getIp() {
