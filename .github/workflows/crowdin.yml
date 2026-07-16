@@ -52,7 +52,14 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      # Checked out with RELEASE_PAT on purpose: actions/checkout writes an AUTHORIZATION header
+      # into the local git config, and that header wins over any credentials in a push URL. With
+      # the default GITHUB_TOKEN, pushing the translation branch is rejected by the repository
+      # ruleset ("Cannot create ref due to creations being restricted") no matter what the push
+      # command says.
       - uses: actions/checkout@v7
+        with:
+          token: ${{ secrets.RELEASE_PAT }}
 
       - name: Push the English source to Crowdin
         uses: crowdin/github-action@v2
@@ -137,8 +144,6 @@ jobs:
       # and the PR would then trigger CI, which a GITHUB_TOKEN one never does.
       - name: Push the translations
         id: push
-        env:
-          GIT_TOKEN: ${{ secrets.RELEASE_PAT }}
         run: |
           if git diff --quiet; then
             echo "Nothing came back from Crowdin."
@@ -149,8 +154,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B chore/crowdin-translations
           git commit -am "chore(i18n): sync translations from Crowdin"
-          git push --force "https://x-access-token:${GIT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
-            chore/crowdin-translations
+          # Uses the checkout's credentials, i.e. RELEASE_PAT — see the checkout step.
+          git push --force origin chore/crowdin-translations
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Open the PR
