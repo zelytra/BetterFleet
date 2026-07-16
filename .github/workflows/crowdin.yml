@@ -61,6 +61,12 @@ jobs:
           command_args: "--no-progress"
           project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
           token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+        env:
+          # The inputs above only reach the action own built-in commands. Everything here goes
+          # through `command:`, i.e. the raw CLI, which reads its credentials from these two
+          # variables — without them it fails with "Required option api_token is missing".
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
       # French is deliberately absent from the language list: it is the one language the team
       # writes by hand, and a machine draft sitting in Crowdin marked "translated" is worse than an
@@ -79,6 +85,12 @@ jobs:
             --no-progress
           project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
           token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+        env:
+          # The inputs above only reach the action own built-in commands. Everything here goes
+          # through `command:`, i.e. the raw CLI, which reads its credentials from these two
+          # variables — without them it fails with "Required option api_token is missing".
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
       - name: Pull the translations back
         uses: crowdin/github-action@v2
@@ -87,6 +99,12 @@ jobs:
           command_args: "--no-progress"
           project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
           token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+        env:
+          # The inputs above only reach the action own built-in commands. Everything here goes
+          # through `command:`, i.e. the raw CLI, which reads its credentials from these two
+          # variables — without them it fails with "Required option api_token is missing".
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
       # English is the source language, so Crowdin never hands back an en.json — it would be
       # translating English into English. The app still imports one, so it is copied here. This is
