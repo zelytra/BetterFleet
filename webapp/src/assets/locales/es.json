@@ -90,6 +90,14 @@
     "sloop": "Balandra"
   },
   "config": {
+    "banner": {
+      "description": "El estandarte de las sesiones que creas, en la sala y en la lista de sesiones.",
+      "pick": "Estandarte {number}",
+      "shuffle": {
+        "check": "Estandarte aleatorio",
+        "description": "Elige un estandarte distinto cada vez que creas una sesión"
+      }
+    },
     "device": {
       "label": "Plataformas"
     },
@@ -108,6 +116,7 @@
     },
     "part": {
       "audio": "Audio",
+      "banner": "Estandarte de sesión",
       "developer": "Desarrollador",
       "general": "General"
     },

@@ -1,6 +1,6 @@
 <template>
   <section class="lobby-wrapper">
-    <BannerTemplate>
+    <BannerTemplate :background="bannerUrl(session.banner)">
       <template #content>
         <div class="header-content">
           <img src="../../../assets/icons/sot.svg" />
@@ -209,6 +209,7 @@ import ConfirmationModal from "@/vue/form/ConfirmationModal.vue";
 import MasterContextMenu from "@/vue/context/MasterContextMenu.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
+import { bannerUrl } from "@/objects/fleet/Banners.ts";
 import { ContextMenu, MenuData } from "@/vue/context/ContextMenu.ts";
 import { Player } from "@/objects/fleet/Player.ts";
 import { WebSocketMessageType } from "@/objects/fleet/WebSocet.ts";

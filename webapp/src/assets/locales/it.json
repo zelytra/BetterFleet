@@ -90,6 +90,14 @@
     "sloop": "Sloop"
   },
   "config": {
+    "banner": {
+      "description": "Lo stendardo delle sessioni che ospiti, nella lobby e nell'elenco delle sessioni.",
+      "pick": "Stendardo {number}",
+      "shuffle": {
+        "check": "Stendardo casuale",
+        "description": "Sceglie uno stendardo diverso a ogni sessione che ospiti"
+      }
+    },
     "device": {
       "label": "Piattaforma"
     },
@@ -108,6 +116,7 @@
     },
     "part": {
       "audio": "Audio",
+      "banner": "Stendardo della sessione",
       "developer": "Sviluppatore",
       "general": "Generale"
     },

@@ -48,6 +48,42 @@
         </div>
       </div>
     </ParameterPart>
+    <ParameterPart :title="t('config.part.banner')">
+      <div class="input-section banner-section">
+        <p class="description">{{ t("config.banner.description") }}</p>
+        <div class="banner-picker">
+          <button
+            v-for="index in bannerIndexes"
+            :key="index"
+            :class="{
+              'banner-choice': true,
+              selected: banner === index && !shuffleBanner,
+              dimmed: shuffleBanner,
+            }"
+            type="button"
+            :aria-pressed="banner === index && !shuffleBanner"
+            :title="t('config.banner.pick', { number: index + 1 })"
+            @click="pickBanner(index)"
+          >
+            <img :src="bannerUrl(index)" :alt="''" />
+            <span v-if="banner === index && !shuffleBanner" class="check"
+              >✓</span
+            >
+          </button>
+        </div>
+        <div class="checkbox-wrapper descriptor">
+          <input v-model="shuffleBanner" type="checkbox" />
+          <div class="label-wrapper">
+            <p @click="shuffleBanner = !shuffleBanner">
+              {{ t("config.banner.shuffle.check") }}
+            </p>
+            <p class="description" @click="shuffleBanner = !shuffleBanner">
+              {{ t("config.banner.shuffle.description") }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </ParameterPart>
     <ParameterPart :title="t('config.part.audio')">
       <div class="input-section">
         <div class="sound-wrapper">
@@ -148,6 +184,11 @@ import SaveBar from "@/vue/utils/SaveBar.vue";
 import InputSlider from "@/vue/form/InputSlider.vue";
 import countdownSound from "@assets/sounds/countdown.mp3";
 import { BoatSize, PlayerDevice } from "@/objects/fleet/Player.ts";
+import {
+  BANNER_COUNT,
+  bannerUrl,
+  clampBanner,
+} from "@/objects/fleet/Banners.ts";
 import ParameterPart from "@/vue/templates/ParameterPart.vue";
 import { Utils } from "@/objects/utils/Utils.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
@@ -163,6 +204,9 @@ const devMode = ref<boolean>(false);
 const volume = ref<number>(50);
 const activeSound = ref<boolean>(true);
 const activeMacro = ref<boolean>(true);
+const banner = ref<number>(0);
+const shuffleBanner = ref<boolean>(false);
+const bannerIndexes = Array.from({ length: BANNER_COUNT }, (_, i) => i);
 const hostName = ref<string>(UserStore.player.serverHostName!);
 const username = ref<string>(UserStore.player.username);
 const inputLoading = ref<boolean>(false);
@@ -254,7 +298,18 @@ function resetConfig() {
   volume.value = UserStore.player.soundLevel;
   activeSound.value = UserStore.player.soundEnable;
   activeMacro.value = UserStore.player.macroEnable;
+  banner.value = clampBanner(UserStore.player.banner);
+  shuffleBanner.value = UserStore.player.bannerShuffle;
   inputLoading.value = true;
+}
+
+/**
+ * Picking a template turns shuffle off: choosing one and leaving "shuffle" on would show a checked
+ * template that never gets used.
+ */
+function pickBanner(index: number) {
+  banner.value = index;
+  shuffleBanner.value = false;
 }
 
 function onSave() {
@@ -266,6 +321,8 @@ function onSave() {
   UserStore.player.soundLevel = volume.value;
   UserStore.player.soundEnable = activeSound.value;
   UserStore.player.macroEnable = activeMacro.value;
+  UserStore.player.banner = banner.value;
+  UserStore.player.bannerShuffle = shuffleBanner.value;
   if (username.value.length == 0 || username.value.length >= 16) {
     alerts!.sendAlert({
       content: t("alert.username.length.content"),
@@ -295,6 +352,8 @@ function isConfigDifferent(): boolean {
   if (volume.value != UserStore.player.soundLevel) return true;
   if (activeSound.value != UserStore.player.soundEnable) return true;
   if (activeMacro.value != UserStore.player.macroEnable) return true;
+  if (banner.value != UserStore.player.banner) return true;
+  if (shuffleBanner.value != UserStore.player.bannerShuffle) return true;
   if (
     boatSizeOptions.value.selectedValue != undefined &&
     UserStore.player.boatSize != boatSizeOptions.value.selectedValue!.id
@@ -405,6 +464,71 @@ button {
     display: flex;
     flex-direction: column;
     gap: 8px;
+
+    &.banner-section {
+      gap: 16px;
+
+      > p.description {
+        color: var(--secondary-text);
+        font-size: 14px;
+      }
+    }
+
+    .banner-picker {
+      display: flex;
+      flex-wrap: wrap; // the settings panel narrows on a small window; four in a row is not a given
+      gap: 16px;
+
+      .banner-choice {
+        all: unset;
+        position: relative;
+        cursor: pointer;
+        border-radius: 5px;
+        overflow: hidden;
+        width: 132px;
+        height: 74px;
+        border: 2px solid transparent;
+        box-sizing: border-box;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        &:hover {
+          filter: brightness(1.1);
+        }
+
+        // The chosen one has to read at a glance from across the section, so it takes the border
+        // and the others lose a little light.
+        &:not(.selected) img {
+          opacity: 0.55;
+        }
+
+        &.selected {
+          border-color: var(--primary);
+        }
+
+        // Shuffle overrides the fixed pick, so nothing is "the" template while it is on — showing
+        // one still checked would promise a banner that never arrives.
+        &.dimmed img {
+          opacity: 0.4;
+        }
+
+        .check {
+          position: absolute;
+          right: 6px;
+          bottom: 4px;
+          color: var(--primary);
+          font-size: 18px;
+          line-height: 1;
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+          pointer-events: none;
+        }
+      }
+    }
 
     .sound-wrapper {
       display: flex;

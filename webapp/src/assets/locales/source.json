@@ -90,6 +90,14 @@
     "sloop": "Sloop"
   },
   "config": {
+    "banner": {
+      "description": "The banner your hosted sessions carry, in the lobby and in the sessions browser.",
+      "pick": "Banner {number}",
+      "shuffle": {
+        "check": "Shuffle the banners randomly",
+        "description": "Picks a different banner each time you host a session"
+      }
+    },
     "device": {
       "label": "Platform"
     },
@@ -108,6 +116,7 @@
     },
     "part": {
       "audio": "Audio",
+      "banner": "Server banner",
       "developer": "Developer",
       "general": "General"
     },

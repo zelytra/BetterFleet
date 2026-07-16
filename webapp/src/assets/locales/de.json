@@ -90,6 +90,14 @@
     "sloop": "Schaluppe"
   },
   "config": {
+    "banner": {
+      "description": "Das Banner deiner Sitzungen, in der Lobby und in der Sitzungsliste.",
+      "pick": "Banner {number}",
+      "shuffle": {
+        "check": "Banner zufällig wählen",
+        "description": "Wählt bei jeder Sitzung, die du hostest, ein anderes Banner"
+      }
+    },
     "device": {
       "label": "Plattformen"
     },
@@ -108,6 +116,7 @@
     },
     "part": {
       "audio": "Audio",
+      "banner": "Sitzungsbanner",
       "developer": "Entwickler",
       "general": "Allgemein"
     },

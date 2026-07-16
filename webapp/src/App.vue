@@ -36,6 +36,8 @@ onMounted(() => {
     device: PlayerDevice.MICROSOFT,
     boatSize: BoatSize.NONE,
     macroEnable: true,
+    banner: 0,
+    bannerShuffle: false,
   });
 });
 </script>

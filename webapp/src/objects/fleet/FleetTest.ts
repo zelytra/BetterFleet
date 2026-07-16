@@ -19,6 +19,8 @@ export function getStressTestFleet(): Fleet {
       soundEnable: true,
       soundLevel: 1,
       macroEnable: true,
+      banner: 0,
+      bannerShuffle: false,
     },
     {
       username: "Player 2",
@@ -30,6 +32,8 @@ export function getStressTestFleet(): Fleet {
       soundEnable: true,
       soundLevel: 1,
       macroEnable: true,
+      banner: 0,
+      bannerShuffle: false,
     },
     {
       username: "Player 3",
@@ -41,6 +45,8 @@ export function getStressTestFleet(): Fleet {
       soundEnable: true,
       soundLevel: 1,
       macroEnable: true,
+      banner: 0,
+      bannerShuffle: false,
     },
     {
       username: "Player 4",
@@ -52,6 +58,8 @@ export function getStressTestFleet(): Fleet {
       soundEnable: true,
       soundLevel: 1,
       macroEnable: true,
+      banner: 0,
+      bannerShuffle: false,
     },
     {
       username: "Player 5",
@@ -63,6 +71,8 @@ export function getStressTestFleet(): Fleet {
       soundEnable: true,
       soundLevel: 1,
       macroEnable: true,
+      banner: 0,
+      bannerShuffle: false,
     },
   ];
 
