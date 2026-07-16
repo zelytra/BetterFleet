@@ -61,14 +61,28 @@ jobs:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
+      # crowdin/github-action is a Docker action: it runs as root and leaves everything it downloaded
+      # owned by root, while every `run:` step here is the runner user. Without this, the patch step
+      # dies on EACCES writing the very file it just read.
+      - name: Take back the files the container wrote as root
+        run: sudo chown -R "$(id -u):$(id -g)" .
+
       - name: Patch in only what is missing
         id: patch
         run: |
-          if node .github/scripts/seed-missing-translations.mjs "${{ inputs.language }}"; then
-            echo "seed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "seed=false" >> "$GITHUB_OUTPUT"
-          fi
+          set +e
+          node .github/scripts/seed-missing-translations.mjs "${{ inputs.language }}"
+          code=$?
+          set -e
+          case "$code" in
+            0) echo "seed=true"  >> "$GITHUB_OUTPUT" ;;
+            3) echo "seed=false" >> "$GITHUB_OUTPUT" ;;
+            # Anything else is the script falling over, and it has to fail the job rather than skip the
+            # upload quietly. The first run of this workflow did exactly that — EACCES, no upload,
+            # green tick — because a crash and a clean no-op were the same signal.
+            *) echo "::error::the seed script exited $code — see above. Nothing was uploaded."
+               exit "$code" ;;
+          esac
 
       - name: Send them to Crowdin
         if: steps.patch.outputs.seed == 'true'
