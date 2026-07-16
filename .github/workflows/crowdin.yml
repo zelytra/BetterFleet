@@ -114,14 +114,26 @@ jobs:
           cp webapp/src/assets/locales/source.json webapp/src/assets/locales/en.json
           cp website/src/assets/locales/source.json website/src/assets/locales/en.json
 
+      # A PR opened with GITHUB_TOKEN cannot trigger CI — GitHub will not let one workflow start
+      # another — so the webapp build never runs on it. What that build would have caught is a
+      # locale Crowdin hands back broken, which takes the app down on boot. Cheaper to check it
+      # here than to leave it unchecked.
+      - name: Check the locales are still valid JSON
+        run: |
+          for file in webapp/src/assets/locales/*.json website/src/assets/locales/*.json; do
+            node -e "JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'))" "$file" \
+              || { echo "::error file=$file::Crowdin returned invalid JSON"; exit 1; }
+          done
+
       - name: Open a PR with what changed
         uses: peter-evans/create-pull-request@v7
         with:
-          # A PR opened with GITHUB_TOKEN does not trigger CI — GitHub refuses to let a workflow
-          # start another one — so the translation PR would sit there with no checks. RELEASE_PAT
-          # already exists for the release flow and does trigger it; the fallback keeps the
-          # workflow working (PR, but unchecked) if that secret is ever missing.
-          token: ${{ secrets.RELEASE_PAT || secrets.GITHUB_TOKEN }}
+          # RELEASE_PAT can push but not open pull requests — it came back with "Resource not
+          # accessible by personal access token", so it lacks the pull-requests scope. GITHUB_TOKEN
+          # has it (see permissions above). The cost is that CI will not run on the PR, which is
+          # what the JSON check above stands in for. Grant RELEASE_PAT the pull-requests scope and
+          # swap it back in here to get the full suite instead.
+          token: ${{ secrets.GITHUB_TOKEN }}
           branch: chore/crowdin-translations
           delete-branch: true
           commit-message: "chore(i18n): sync translations from Crowdin"
