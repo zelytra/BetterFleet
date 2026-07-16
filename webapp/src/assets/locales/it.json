@@ -121,8 +121,8 @@
       "label": "Audio del conto alla rovescia",
       "test": "Prova"
     },
-    "subtitle": "Opzioni di preferenza",
-    "title": "Impostazioni"
+    "subtitle": "Preference options",
+    "title": "Settings"
   },
   "contextMenu": {
     "master": {
@@ -135,13 +135,13 @@
   "credits": {
     "and": "e",
     "description": "BetterFleet è stato sviluppato per facilitare la formazione di alleanze su Sea of ​​Thieves",
-    "designed": "Progettato da",
+    "designed": "Designed by",
     "details": "BetterFleet è un'applicazione di terze parti non ufficiale e non correlata al team di sviluppo di Sea of ​​Thieves. Il suo utilizzo è puramente esterno e non ha alcun impatto sull'esperienza di gioco. L'utente accetta di essere ritenuto l'unico responsabile del suo utilizzo!",
     "developed": "Sviluppato da",
     "socials": "Trovaci qui:",
     "sot": {
       "thanks": "Rendiamo a",
-      "use": "ciò che appartiene ai pirati, per come si può notare, usiamo il carattere e banner del gioco!"
+      "use": "ciò che appartiene ai pirati — aye, il carattere e gli stendardi che vedete qui son roba loro!"
     },
     "title": "Riconoscimenti"
   },
@@ -155,7 +155,7 @@
     "title": "Come ti chiami, ragazzo?"
   },
   "loading": {
-    "loading": "Caricamento...",
+    "loading": "Loading...",
     "targetGame": "Rilevamento del gioco in corso",
     "targetLoading": "Gioco rilevato. Navi in preparazione.",
     "tips": "Questo processo potrebbe richiedere un po' di tempo, assicurati che il tuo gioco sia avviato"
@@ -195,7 +195,7 @@
   "report": {
     "bug": {
       "button": "Invia report",
-      "content1": "Le tue segnalazioni ci aiutano a correggere eventuali bug e anomalie che potresti riscontrare durante l'utilizzo dell'applicazione. Se questo è il tuo caso, ti invitiamo a essere il più preciso possibile e a descrivere il tuo problema nel riquadro sottostante.",
+      "content1": "Le tue segnalazioni ci aiutano a correggere eventuali bug e anomalie che potresti riscontrare durante la l'utilizzo dell'applicazione. Se questo è il tuo caso, ti invitiamo a essere il più preciso possibile e a descrivere il tuo problema nel riquadro sottostante.",
       "content2": "Vale la pena notare che oltre al messaggio, la tua segnalazione ci invierà in forma anonima dati utili per identificare il problema.",
       "title": "Segnala un bug"
     },
@@ -255,12 +255,12 @@
       "19": "Il Porto Improvvisato",
       "2": "Il Dado Truccato",
       "20": "La Leggenda Dimenticata",
-      "21": "Il Relitto Velato",
-      "22": "Il Gancio Scintillante",
+      "21": "The Veiled Wreck",
+      "22": "The Sparkling Hook",
       "23": "La Tempesta Torrenziale",
       "24": "L'Asse Scivolosa",
       "25": "Il Ruscello Segreto",
-      "26": "Il Mercato Nero",
+      "26": "The Black Market",
       "27": "La Caccia al Tesoro",
       "28": "L'Albero Traballante",
       "29": "La Pistola a Pietra Focaia",
@@ -290,80 +290,80 @@
       "50": "Il Moschetto Fumante",
       "51": "Il Canto Marinaro",
       "52": "Il Dubbioso Sartiame",
-      "53": "Il Medaglione Azteco",
-      "54": "La Mappa Enigmatica",
+      "53": "The Aztec Medallion",
+      "54": "The Enigmatic Map",
       "55": "Il Messaggio in Bottiglia",
       "56": "La Lanterna della Tempesta",
       "57": "L'Antica Pergamena",
-      "58": "L'Alba Crepuscolare",
+      "58": "The Crepuscular Dawn",
       "59": "Il Filibustiere Volpino",
       "6": "La Sciabola Affilata",
       "60": "La Pericolosa Traversata",
       "61": "Il Bucaniero Astuto",
-      "62": "Lo Scellino Splendente",
+      "62": "The Blazing Shilling",
       "63": "Il Consiglio dei Pirati",
-      "64": "L'Anima Errante",
-      "65": "La Prigione Fortificata",
-      "66": "L'Amuleto Maledetto",
-      "67": "La Battaglia Navale",
+      "64": "The Errant Soul",
+      "65": "The Fortified Prison",
+      "66": "The Cursed Amulet",
+      "67": "The Naval Battle",
       "68": "Il Lampo Verde",
       "69": "Il Forziere del Morto",
       "7": "Il Cannone Rimbombante",
       "70": "La Fontana della Giovinezza",
-      "71": "La Costa Inesplorata",
+      "71": "The Uncharted Shore",
       "72": "La Moneta Contraffatta",
       "73": "Il Patto di Sangue",
-      "74": "L'Alleanza Distrutta",
-      "75": "Il Vecchio Manoscritto",
+      "74": "The Shattered Alliance",
+      "75": "The Old Manuscript",
       "76": "La Parola d'Onore",
-      "77": "L'Olandese Volante",
-      "78": "Pirateria Reale",
+      "77": "The Flying Dutchman",
+      "78": "Royal Piracy",
       "79": "Il Miraggio del Mare",
-      "8": "La Bandiera Nera",
+      "8": "The Black Flag",
       "80": "L'Eco Stridente",
-      "81": "La Sabbia Dorata",
-      "82": "L'Orizzonte Perforante",
+      "81": "The Gilded Sand",
+      "82": "The Piercing Horizon",
       "83": "Il Ticchettio Inquietante",
       "84": "Il Sole al Tamonto",
-      "85": "La Notte Senza Luna",
+      "85": "The Moonless Night",
       "86": "L'Alta Marea",
-      "87": "Il Respiro Abissale",
+      "87": "The Abyssal Breath",
       "88": "La Tempesta Minacciosa",
-      "89": "La Nave Distrutta",
+      "89": "The Wrecked Vessel",
       "9": "Il Baule di Davy Jones",
       "90": "Il Rifugio dei Ladri",
       "91": "L'Attacco Opportuno",
       "92": "La Fuga Temeraria",
       "93": "La Fortuna Smarrita",
       "94": "Il Pezzo da Otto",
-      "95": "Il Racconto Eroico",
+      "95": "The Heroic Tale",
       "96": "Il Mantello Sgargiante",
       "97": "Il Corsaro Giurato",
-      "98": "La Laguna Blu",
-      "99": "La Missione Maliziosa"
+      "98": "The Blue Lagoon",
+      "99": "The Mischievous Mission"
     },
     "player": {
-      "notReady": "Non pronto",
-      "ready": "Pronto",
+      "notReady": "Not ready",
+      "ready": "Ready",
       "status": {
         "closed": "Offline",
-        "in-game": "In gioco",
-        "main-menu": "Nel menu di gioco",
-        "started": "Partita avviata"
+        "in-game": "In game",
+        "main-menu": "In the game menu",
+        "started": "Game launched"
       }
     },
     "run": "Salpa",
     "status": {
-      "countdown": "Avvia in",
-      "ready": "Pronto",
-      "waiting": "In Attesa"
+      "countdown": "Launch in",
+      "ready": "Ready",
+      "waiting": "Waiting"
     }
   },
   "tooltips": {
     "navbar": {
-      "config": "Impostazioni",
-      "fleet": "Sessione",
-      "home": "Pagina iniziale"
+      "config": "Settings",
+      "fleet": "Session",
+      "home": "Home page"
     }
   }
 }
