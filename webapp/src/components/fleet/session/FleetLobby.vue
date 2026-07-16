@@ -2,12 +2,7 @@
   <section class="lobby-wrapper">
     <BannerTemplate>
       <template #content>
-        <div
-          :class="{
-            'header-content': true,
-            'has-visibility': UserStore.player.isMaster,
-          }"
-        >
+        <div class="header-content">
           <img src="../../../assets/icons/sot.svg" />
           <div class="title-content">
             <div class="name-wrapper">
@@ -53,13 +48,6 @@
               </transition>
             </div>
           </div>
-          <SingleSelect
-            v-if="UserStore.player.isMaster"
-            class="visibility"
-            :data="visibilityData"
-            :title="t('session.visibility.label')"
-            @update:data="onVisibilityChange"
-          />
         </div>
       </template>
       <template #left-content>
@@ -131,6 +119,20 @@
               <p>
                 {{ session.stats.tryAmount }}
               </p>
+            </div>
+            <div
+              v-if="UserStore.player.isMaster"
+              class="visibility"
+              :title="
+                t('session.visibility.label') +
+                ' — ' +
+                t('session.visibility.description')
+              "
+            >
+              <SingleSelect
+                :data="visibilityData"
+                @update:data="onVisibilityChange"
+              />
             </div>
             <label v-if="UserStore.player.isMaster" class="auto-set-sail">
               <input
@@ -457,47 +459,10 @@ function onContextAction(action: string) {
     align-items: center;
     margin-left: 36px;
     gap: 32px;
-    // Anchors the visibility select below.
-    position: relative;
-
-    // The select is absolute, so the flow knows nothing about it: without this lane reserved, a
-    // long session name runs underneath it on a narrow window. Only the master has the control.
-    &.has-visibility {
-      padding-right: 212px; // 180 select + 16 inset + 16 breathing room
-    }
 
     img {
       width: 64px;
       height: 64px;
-    }
-
-    // Pinned to the banner's right edge — which is the Set sail button's left edge, since the
-    // button lives outside the banner. Absolute, so it floats over the artwork instead of taking
-    // width away from it.
-    //
-    // Top-anchored rather than centred: the banner is a 120px strip that clips its overflow, and
-    // the open list needs 80px below the input — centred it gets 42 and is cut off. It carries no
-    // label for the same reason (label + input + list = 112 of 119); the name is on the tooltip.
-    .visibility {
-      position: absolute;
-      right: 16px;
-      // Aligns the field with the session name to its left rather than the top of the strip.
-      top: 30px;
-      z-index: 2;
-
-      :deep(.input-wrapper),
-      :deep(.dropdown) {
-        min-width: 180px;
-      }
-
-      // Elsewhere the app's fields are 5% white over a dark panel, which reads as a field. Here
-      // there is no panel underneath — just banner artwork — so that 5% reads as nothing at all.
-      // Same recipe, own backdrop.
-      :deep(.input-wrapper) {
-        background:
-          linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)),
-          var(--secondary-background);
-      }
     }
 
     .title-content {
@@ -636,7 +601,10 @@ function onContextAction(action: string) {
 
     .lobby-details {
       width: 10%;
-      min-width: 170px;
+      // 170 fitted this column in French only by luck — 8px to spare — and German overflowed it by
+      // 16 the moment the visibility select joined, because every label here wraps in a column this
+      // narrow. 20px more costs the player table nothing it notices and buys German 21px of slack.
+      min-width: 190px;
       border-radius: 5px;
       align-items: center;
       box-sizing: border-box;
@@ -676,8 +644,19 @@ function onContextAction(action: string) {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        min-height: 0; // lets top-content shrink instead of pushing Leave out of the clipped panel
 
         .top-content {
+          // The window is resizable with no minimum height and this panel clips its overflow, so on
+          // a short enough window the Leave button — the one control a player must always be able to
+          // reach — silently drops below the fold. That predates the visibility select. Now the
+          // information area gives way and scrolls instead, and Leave stays put. It does not scroll
+          // at the app's default size: measured, 492px of content in 451px was this select's doing
+          // and is what the compacting above buys back.
+          overflow-y: auto;
+          overflow-x: hidden;
+          min-height: 0;
+
           .header-information {
             background: rgba(23, 26, 33, 0.5);
             padding: 20px 0;
@@ -712,6 +691,31 @@ function onContextAction(action: string) {
               span {
                 color: var(--primary);
               }
+            }
+          }
+
+          // Just the field: no label, no description paragraph. This panel had 59px of slack and
+          // the two of them cost 73, which is what pushed the Leave button out of a panel that
+          // clips. A padlock reading Publique/Privée carries itself here, next to Auto set sails;
+          // the name and the sentence are on the tooltip. 51px, and the height does not move
+          // between locales — the field is fixed-height, whereas a "Öffentliche Sitzung" label
+          // would have wrapped and put us back over.
+          .visibility {
+            display: flex;
+            flex-direction: column;
+            padding: 8px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            // The open list is absolutely positioned; without a stacking context of its own it
+            // renders behind the rows underneath it.
+            position: relative;
+            z-index: 1;
+
+            // SingleSelect carries a 250px floor sized for the settings form. This rail is 170px,
+            // so the field would run straight out of a panel that clips its overflow — the select
+            // has to be allowed to shrink to the space it actually has.
+            :deep(.input-wrapper),
+            :deep(.dropdown) {
+              min-width: 0;
             }
           }
 
