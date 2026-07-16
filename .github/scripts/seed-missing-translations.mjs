@@ -100,6 +100,9 @@ for (const dir of LOCALE_DIRS) {
 
 if (!filled) {
   console.log(`\nCrowdin already has every ${locale} translation this repo has. Nothing to upload.`);
-  process.exit(1); // the workflow reads this as "skip the upload"
+  // 3, not 1: the workflow has to tell "nothing to do" apart from "this script threw". When both were
+  // 1, the first run of this workflow died on EACCES and reported success — upload silently skipped,
+  // job green. A seed that claims to have seeded without seeding is worse than one that fails.
+  process.exit(3);
 }
 console.log(`\n${filled} string(s) staged for upload. Every other string is Crowdin's own, unchanged.`);
