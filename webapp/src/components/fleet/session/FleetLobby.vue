@@ -481,12 +481,22 @@ function onContextAction(action: string) {
     .visibility {
       position: absolute;
       right: 16px;
-      top: 14px;
+      // Aligns the field with the session name to its left rather than the top of the strip.
+      top: 30px;
       z-index: 2;
 
       :deep(.input-wrapper),
       :deep(.dropdown) {
         min-width: 180px;
+      }
+
+      // Elsewhere the app's fields are 5% white over a dark panel, which reads as a field. Here
+      // there is no panel underneath — just banner artwork — so that 5% reads as nothing at all.
+      // Same recipe, own backdrop.
+      :deep(.input-wrapper) {
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05)),
+          var(--secondary-background);
       }
     }
 

@@ -207,6 +207,28 @@ describe("public sessions browser, against a fake backend", () => {
     expect(last?.content).toContain("session");
   });
 
+  it("still picks up new sessions when the SSE never delivers", async () => {
+    // The reported symptom: "the list only updates when I press Refresh". The stream leaves the
+    // app through the webview while everything else goes through Tauri's Rust HTTP plugin, so it
+    // can fail on its own. Kill it here and the list must still come alive.
+    vi.useFakeTimers();
+    try {
+      const { wrapper } = mountBrowser();
+      await vi.advanceTimersByTimeAsync(0);
+      fakeBackend.streams.forEach((s) => s.close()); // the stream is dead; nothing will be pushed
+
+      fakeBackend.addSession({
+        sessionId: "NEW",
+        customName: "Appeared Later",
+      });
+      await vi.advanceTimersByTimeAsync(6000); // one poll tick
+
+      expect(wrapper.text()).toContain("Appeared Later");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("keeps the list live when a session flips to private over SSE", async () => {
     const session = fakeBackend.addSession({
       sessionId: "AAA111",
