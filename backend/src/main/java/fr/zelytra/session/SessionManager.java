@@ -559,11 +559,28 @@ public class SessionManager {
      * SSE-friendly stream: emits the current snapshot on subscription, then a fresh one on every
      * structural change (create / join / leave / visibility / server) — exactly when either the
      * session list or the connected-player count can move.
+     * <p>
+     * The overflow strategy is what keeps this stream alive. A subscriber is regularly between
+     * requests — an SSE serializer asks for one event at a time — and {@link BroadcastProcessor}
+     * answers an emission it cannot deliver by <b>terminating that subscriber</b> with a
+     * BackPressureFailure. So any player watching the browser had their stream killed the moment
+     * anyone else created a session, and their list silently froze until they hit Refresh.
+     * <p>
+     * {@code onOverflow} takes unbounded demand from the processor, so it never has "no requests"
+     * to complain about, and holds the tick until the subscriber asks again. Keeping only the
+     * latest is right here: each item is a full snapshot of the directory, so the newest one
+     * subsumes every tick it replaces — a subscriber that falls behind skips intermediate states
+     * rather than accumulating a backlog of stale ones.
      */
     public Multi<PublicSessionsSnapshot> streamPublicSessions() {
         return Multi.createBy().concatenating().streams(
                 Multi.createFrom().item(this::getPublicSessionsSnapshot),
-                directoryChanges.onItem().transform(ignored -> getPublicSessionsSnapshot())
+                directoryChanges
+                        .onOverflow().dropPreviousItems()
+                        // Transform after the overflow, so the snapshot is built when a subscriber
+                        // actually takes it — dropped ticks cost nothing, and what is delivered is
+                        // the directory as it is at that moment, not as it was when the tick fired.
+                        .onItem().transform(ignored -> getPublicSessionsSnapshot())
         );
     }
 
