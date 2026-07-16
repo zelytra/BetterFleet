@@ -1,5 +1,9 @@
 {
   "alert": {
+    "alreadyConnected": {
+      "content": "Tu es déjà dans cette session sur une autre fenêtre ou un autre appareil. Ferme-la, puis réessaie.",
+      "title": "Déjà connecté"
+    },
     "badRequest": {
       "content": "La requête est corrompue ou incorrecte",
       "title": "Mauvaise requête"
@@ -224,6 +228,7 @@
     "playerLabel": "Joueur",
     "playersLabel": "Joueurs",
     "refresh": "Actualiser",
+    "privateHint": "Session privée — demande le code à l'hôte pour la rejoindre.",
     "searchPlaceholder": "Rechercher une session…",
     "autoSetSail": {
       "description": "Lève l'ancre automatiquement lorsque tous les joueurs sont prêts",

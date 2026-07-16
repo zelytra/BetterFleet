@@ -51,16 +51,26 @@
         </div>
       </template>
       <template #left-content>
-        <button
-          v-if="UserStore.player.isMaster"
-          :class="{
-            'session-starter': true,
-            pending: session.getReadyPlayers().length != session.players.length,
-          }"
-          @click="confirmationStartSession()"
-        >
-          {{ t("session.run") }}
-        </button>
+        <div class="master-controls">
+          <SingleSelect
+            v-if="UserStore.player.isMaster"
+            class="visibility"
+            :data="visibilityData"
+            :title="t('session.visibility.label')"
+            @update:data="onVisibilityChange"
+          />
+          <button
+            v-if="UserStore.player.isMaster"
+            :class="{
+              'session-starter': true,
+              pending:
+                session.getReadyPlayers().length != session.players.length,
+            }"
+            @click="confirmationStartSession()"
+          >
+            {{ t("session.run") }}
+          </button>
+        </div>
       </template>
     </BannerTemplate>
     <div class="lobby-content">
@@ -118,16 +128,6 @@
               <h3>{{ t("session.informations.tryNumber") }}</h3>
               <p>
                 {{ session.stats.tryAmount }}
-              </p>
-            </div>
-            <div v-if="UserStore.player.isMaster" class="visibility">
-              <SingleSelect
-                :data="visibilityData"
-                :label="t('session.visibility.label')"
-                @update:data="onVisibilityChange"
-              />
-              <p class="description">
-                {{ t("session.visibility.description") }}
               </p>
             </div>
             <label v-if="UserStore.player.isMaster" class="auto-set-sail">
@@ -536,6 +536,28 @@ function onContextAction(action: string) {
     }
   }
 
+  // The master's two session-level controls, sitting together at the right of the banner.
+  .master-controls {
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    // The banner is a 120px strip that clips its overflow, and the open list needs 80px below the
+    // input. Centred, it gets 42 and is cut off; hence top-aligned. It also carries no label —
+    // a padlock reading "Publique"/"Privée" beside Set sail needs none, and the label ate a third
+    // of the strip, leaving no room for the list either way. The name is on the tooltip.
+    .visibility {
+      padding: 0 16px;
+      align-self: flex-start;
+      margin-top: 14px;
+
+      :deep(.input-wrapper),
+      :deep(.dropdown) {
+        min-width: 180px;
+      }
+    }
+  }
+
   button.session-starter {
     all: unset;
     cursor: pointer;
@@ -659,31 +681,6 @@ function onContextAction(action: string) {
               span {
                 color: var(--primary);
               }
-            }
-          }
-
-          .visibility {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            padding: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            // The dropdown is absolutely positioned and the details panel clips
-            // its overflow, so keep it above the rows that follow.
-            position: relative;
-            z-index: 1;
-
-            // The select carries a 250px floor sized for the settings form; this
-            // rail is 170px, so it would overflow and the panel would clip it.
-            :deep(.input-wrapper),
-            :deep(.dropdown) {
-              min-width: 0;
-            }
-
-            p.description {
-              color: var(--secondary-text);
-              font-size: 12px;
-              text-align: left;
             }
           }
 

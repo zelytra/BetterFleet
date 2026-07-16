@@ -1,5 +1,9 @@
 {
   "alert": {
+    "alreadyConnected": {
+      "content": "Du bist bereits in dieser Sitzung, in einem anderen Fenster oder auf einem anderen Gerät. Schließe es und versuche es erneut.",
+      "title": "Bereits verbunden"
+    },
     "badRequest": {
       "content": "Die Abfrage ist beschädigt oder falsch",
       "title": "Schlechte Abfrage"
@@ -224,6 +228,7 @@
     "playerLabel": "Spieler",
     "playersLabel": "Spieler",
     "refresh": "Aktualisieren",
+    "privateHint": "Private Sitzung — frag den Host nach dem Code, um beizutreten.",
     "searchPlaceholder": "Sitzung suchen…",
     "autoSetSail": {
       "description": "Setzt automatisch die Segel, sobald alle Spieler bereit sind",

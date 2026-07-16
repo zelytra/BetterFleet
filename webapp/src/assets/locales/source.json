@@ -1,5 +1,9 @@
 {
   "alert": {
+    "alreadyConnected": {
+      "content": "You are already in this session on another window or device. Close it, then try again.",
+      "title": "Already connected"
+    },
     "badRequest": {
       "content": "The query is corrupted or incorrect",
       "title": "Bad query"
@@ -224,6 +228,7 @@
     "playerLabel": "Player",
     "playersLabel": "Players",
     "refresh": "Refresh",
+    "privateHint": "Private session — ask the host for the code to join.",
     "searchPlaceholder": "Search a session…",
     "autoSetSail": {
       "description": "Automatically sets sail once every player is ready",

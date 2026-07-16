@@ -1,5 +1,9 @@
 <template>
-  <div class="session-row" @click="$emit('join')">
+  <div
+    :class="{ 'session-row': true, locked: !joinable }"
+    :title="joinable ? undefined : t('session.privateHint')"
+    @click="onClick"
+  >
     <div class="banner">
       <div
         class="bg"
@@ -49,21 +53,28 @@
 import { computed, PropType } from "vue";
 import { useI18n } from "vue-i18n";
 import { PublicSession } from "@/objects/fleet/PublicSessions.ts";
+import { sessionDisplayName } from "@/objects/fleet/PublicSessionName.ts";
 import { countryFlags } from "@/objects/utils/LangIcons.ts";
 
 const { t } = useI18n();
 const props = defineProps({
   session: { type: Object as PropType<PublicSession>, required: true },
 });
-defineEmits(["join"]);
+const emits = defineEmits(["join"]);
 
-// Default sessions carry a numeric name seed the browser localizes into a pirate name; a
-// master-set custom name (issue #604) is shown as-is.
-const displayName = computed(() =>
-  /^\d+$/.test(props.session.name)
-    ? t("session.name." + props.session.name)
-    : props.session.name,
-);
+// Shared with the search, which must match on what is rendered here rather than the raw field.
+const displayName = computed(() => sessionDisplayName(props.session, t));
+
+// The backend withholds a private session's code, so there is nothing to join with: the row shows
+// the crew and the padlock, and joining takes the code the host gave you. Clicking anyway would
+// emit an empty id — and an empty id is how a session gets *created*.
+const joinable = computed(() => !props.session.isPrivate);
+
+function onClick() {
+  if (joinable.value) {
+    emits("join");
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -81,6 +92,15 @@ const displayName = computed(() =>
 
   &:hover {
     filter: brightness(1.06);
+  }
+
+  // A private session has no code to join with, so the row must not pretend to be clickable.
+  &.locked {
+    cursor: default;
+
+    &:hover {
+      filter: none;
+    }
   }
 
   .banner {

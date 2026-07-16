@@ -171,9 +171,12 @@ export class Fleet {
         }
         case WebSocketMessageType.CONNECTION_REFUSED: {
           info("[Fleet.ts][WebSocket] Receive CONNECTION_REFUSED message");
+          // The backend only refuses one thing: this account is already in this session on a live
+          // socket. Saying so beats the literal "REFUSED" this used to put on screen, which named
+          // neither the cause nor the way out.
           alertProvider.sendAlert({
-            content: "REFUSED",
-            title: t("alert.sessionNotFound.title"),
+            content: t("alert.alreadyConnected.content"),
+            title: t("alert.alreadyConnected.title"),
             type: AlertType.ERROR,
           });
           break;

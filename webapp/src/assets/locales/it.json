@@ -1,5 +1,9 @@
 {
   "alert": {
+    "alreadyConnected": {
+      "content": "Sei già in questa sessione su un'altra finestra o un altro dispositivo. Chiudila e riprova.",
+      "title": "Già connesso"
+    },
     "badRequest": {
       "content": "La query è corrotta o errata",
       "title": "Query errata"
@@ -224,6 +228,7 @@
     "playerLabel": "Giocatore",
     "playersLabel": "Giocatori",
     "refresh": "Aggiorna",
+    "privateHint": "Sessione privata — chiedi il codice all'host per unirti.",
     "searchPlaceholder": "Cerca una sessione…",
     "autoSetSail": {
       "description": "Salpa automaticamente quando tutti i giocatori sono pronti",

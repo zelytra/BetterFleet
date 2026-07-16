@@ -1,5 +1,9 @@
 {
   "alert": {
+    "alreadyConnected": {
+      "content": "Ya estás en esta sesión en otra ventana u otro dispositivo. Ciérrala y vuelve a intentarlo.",
+      "title": "Ya conectado"
+    },
     "badRequest": {
       "content": "La consulta está corrupta o es incorrecta.",
       "title": "Mala consulta"
@@ -224,6 +228,7 @@
     "playerLabel": "Jugador",
     "playersLabel": "Jugadores",
     "refresh": "Actualizar",
+    "privateHint": "Sesión privada — pide el código al anfitrión para unirte.",
     "searchPlaceholder": "Buscar una sesión…",
     "autoSetSail": {
       "description": "Zarpa automáticamente cuando todos los jugadores están listos",
