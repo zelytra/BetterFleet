@@ -5,8 +5,8 @@
     "downloadHere": "Télécharger ici"
   },
   "comparison": {
-    "description": "BetterFleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de Fleet Creator. Lorsqu'on observe notre graphique, les barres vertes, correspondant à BetterFleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, BetterFleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. BetterFleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
-    "subtitle": "Une connexion turbo-chargée pour une expérience de jeu triple vitesse !",
+    "description": "BetterFleet est conçu pour trouver votre serveur de jeu rapidement, et de manière fiable. Dans notre benchmark, la détection prend environ 5 secondes, soit 3 à 4 fois plus vite que Fleet Creator. Il continue aussi de fonctionner là où Fleet Creator décroche : les dernières mises à jour de Sea of Thieves et leurs nouveaux serveurs relais (SDR) ont rendu sa méthode de détection caduque, qui affiche désormais souvent un serveur erroné ou \"corrompu\". Notre nouvelle analyse basée sur le trafic a été pensée pour ces serveurs : elle continue de pointer le bon. Le graphique compare les temps de détection : plus la barre est basse, mieux c'est.",
+    "subtitle": "Une détection de serveur plus rapide : moins de temps dans les menus, plus de temps en mer.",
     "title": "Comparaison avec Fleet Creator"
   },
   "credits": {
@@ -16,29 +16,29 @@
     "license": "Licence"
   },
   "descriptions": {
-    "globe": "BetterFleet mêle design et efficacité. Reprenant une direction artistique proche de Sea of Thieves, vous aurez l'impression de naviguer dans une extension du jeu au summum de la réactivité.",
-    "hourglass": "Notre fonctionnalité d'auto-clic synchronisée met en œuvre un décompte parfaitement coordonné entre tous les joueurs de la session, garantissant une recherche de serveur d'une efficacité redoutable qui réduit le temps d'attente au minimum.",
-    "key": "Notre application assure la sécurité des utilisateurs grâce à son code open source, permettant une transparence totale, et à une équipe de développeurs actifs qui se consacre à des mises à jour régulières et à la maintenance de la sécurité."
+    "globe": "Une interface soignée, inspirée du style de Sea of Thieves : on dirait une extension naturelle du jeu.",
+    "hourglass": "Un compte à rebours partagé synchronise le \"Lever l'ancre\" de chaque joueur, pour que vos équipages partent au même instant et se retrouvent plus souvent.",
+    "key": "Open source et auditable : tout le code est public, et une équipe active le maintient à jour et sécurisé."
   },
   "discover": {
     "discord": {
       "button": "Rejoindre le Discord",
-      "content": "Notre application s'étend bien au-delà d'une simple interface, car elle s'ancre au sein d'une communauté vibrante et engagée sur notre serveur Discord dédié. Cet espace dynamique est le carrefour où les joueurs peuvent non seulement partager leurs expériences, mais aussi contribuer activement au développement en soumettant des idées d'amélioration. Le dialogue ouvert et constructif est encouragé, forgeant une synergie entre les utilisateurs et les créateurs. De plus, notre serveur Discord offre un support robuste pour ceux qui souhaitent intégrer notre application de leur côté. Que ce soit pour des conseils techniques, des orientations stratégiques ou des astuces de personnalisation, nos membres et notre équipe de support sont toujours prêts à aider, assurant une intégration transparente et réussie.",
-      "nav": "Notre Communauté",
-      "title": "Notre plateforme d'échange préférée !"
+      "content": "L'essentiel de la vie de BetterFleet se passe sur notre Discord. Les joueurs y échangent des astuces, signalent des bugs et proposent des idées qui finissent régulièrement dans l'application. Que vous ayez besoin d'un coup de main ou envie de naviguer avec d'autres équipages, c'est ici que ça se passe.",
+      "nav": "Communauté",
+      "title": "La communauté se retrouve sur Discord"
     },
     "github": {
       "button": "GitHub",
-      "content": "Au cœur de notre projet se trouve un engagement profond pour l'open source, reflété par notre code accessible à tous et notre équipe de développeurs actifs et réceptifs. Cette philosophie garantit une évolution constante de notre application, propulsée par une collaboration transparente et des échanges fructueux avec notre communauté. Les retours des joueurs sont une pierre angulaire de notre processus de développement, car ils nous permettent de peaufiner et d'améliorer notre offre, en veillant à ce qu'elle réponde précisément aux besoins et aux désirs de nos utilisateurs. L'ouverture aux suggestions et la capacité d'adaptation rapide de nos développeurs assurent que notre application reste à la pointe, tout en cultivant une relation de confiance et de respect mutuel avec notre communauté engagée.",
-      "nav": "Innovation Collaborative",
-      "title": "Notre engagement open source pour une application en constante évolution"
+      "content": "BetterFleet est entièrement open source. Chacun peut lire le code, signaler un bug ou proposer une modification — et les retours des joueurs orientent réellement le projet. Si vous voulez aider à le construire, le dépôt vous est ouvert.",
+      "nav": "Open Source",
+      "title": "Open source, ouvert aux contributions"
     },
     "title": "Nos valeurs et objectifs",
     "translation": {
       "button": "Crowdin",
-      "content": "Notre application embrasse la diversité et l'inclusivité à travers son développement axé sur la norme i18n, ouvrant la porte à des traductions dans n'importe quelle langue par la communauté elle-même. Cette approche garantit que notre application peut être facilement adaptée et utilisée par des utilisateurs du monde entier, reflétant notre engagement à briser les barrières linguistiques. En outre, nous avons mis en place un projet Crowdin public, fournissant une plateforme intuitive pour tous ceux désireux de contribuer aux efforts de traduction. Cette initiative favorise une collaboration internationale, permettant à notre application de s'enrichir des nuances culturelles et linguistiques de chaque contributeur. Ensemble, nous construisons une expérience de jeu véritablement mondiale, accessible et engageante pour une communauté internationale en constante expansion.",
-      "nav": "Traduction Participative",
-      "title": "Unir les joueurs du monde entier grâce à i18n et Crowdin"
+      "content": "BetterFleet est traduit par sa communauté via Crowdin, pour que les joueurs du monde entier puissent l'utiliser dans leur langue. Si la vôtre manque ou qu'une traduction peut être améliorée, votre aide est la bienvenue.",
+      "nav": "Traductions",
+      "title": "Disponible dans votre langue"
     }
   },
   "download": {
@@ -125,16 +125,16 @@
     "title": "Questions Les Plus Fréquentes"
   },
   "footer": {
-    "content": "Rejoignez notre aventure mondiale - votre passion, notre technologie. Ensemble, transformons le jeu. Propulsé par la communauté et l'innovation ouverte.",
-    "discord": "Vous rencontrez un souci ? Contactez immédiatement notre équipe sur notre",
-    "github": "Vous êtes développeur et vous adorez naviguer sur Sea of Thieves ? Alors venez contribuer au projet !",
+    "content": "Un outil gratuit et open source créé par la communauté Sea of Thieves pour aider les équipages à naviguer ensemble. Construit et amélioré par des joueurs.",
+    "discord": "Besoin d'aide ? Contactez l'équipe sur notre",
+    "github": "Vous êtes développeur et vous naviguez sur Sea of Thieves ? Venez donner un coup de main au projet !",
     "warning": {
       "content": "BetterFleet est une application tierce non officielle sans lien avec l'équipe de développement de Sea of Thieves. Son usage est externe et n'impacte aucunement l'expérience en jeu. L'utilisateur engage seul sa responsabilité quant à son utilisation !",
       "title": "Avertissement"
     }
   },
   "header": {
-    "details": "BetterFleet est officiellement disponible ! Testez l'application dès maintenant !"
+    "details": "BetterFleet est disponible — essayez l'application !"
   },
   "name": "BetterFleet",
   "nav": {
@@ -143,7 +143,7 @@
     "support": "Support"
   },
   "presentation": {
-    "content": "Plongez dans l'univers de Sea of Thieves avec l'outil ultime conçu pour forger des alliances comme jamais auparavant. Notre application révolutionne la façon dont les joueurs se connectent, offrant une fluidité exceptionnelle et augmentant significativement vos chances de trouver une alliance, dépassant de loin les capacités des autres applications. Rejoignez notre communauté et transformez votre expérience de jeu en une aventure épique, où créer des liens et naviguer ensemble devient une réalité accessible à chaque clic.",
+    "content": "Réunir tout votre équipage sur le même serveur Sea of Thieves, c'est souvent laborieux. BetterFleet s'en charge : l'application synchronise le \"Lever l'ancre\" de chacun et vous montre qui s'est retrouvé ensemble — une alliance en quelques minutes plutôt qu'en quelques heures. Gratuit, open source, pensé par des joueurs.",
     "title": "BetterFleet"
   },
   "stats": {

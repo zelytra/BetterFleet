@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.fleet.SessionNameFilter;
+import fr.zelytra.session.ip.GeoLocationResolver;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.player.PlayerAction;
 import fr.zelytra.session.server.SotServer;
@@ -44,6 +45,9 @@ public class SessionSocket {
 
     @Inject
     ExecutorService sqlExecutor;
+
+    @Inject
+    GeoLocationResolver geoLocationResolver;
 
     @OnOpen
     public void onOpen(Session session) {
@@ -282,10 +286,17 @@ public class SessionSocket {
         if (player == null) {
             return;
         }
-        // Resolve (blocking geolocation on a cache miss) BEFORE the locked mutation — holding the
-        // session lock across that call kicked players at the end of a countdown.
+        // Join first: this is cache-only and does no I/O, so the player shows up under their server
+        // straight away.
         SotServer resolved = manager.resolveSotServer(sotServer);
         manager.playerJoinSotServer(player, resolved);
+
+        // Then chase the geolocation off this thread: we are on a vert.x event loop, and
+        // proxycheck.io routinely takes seconds or times out. Location and country code are
+        // broadcast when they land — the country code being what the browser's region flag needs.
+        if (resolved.getLocation().isEmpty()) {
+            geoLocationResolver.resolveAndBroadcast(sotServer);
+        }
     }
 
     // Extracted method to handle LEAVE_SERVER messages

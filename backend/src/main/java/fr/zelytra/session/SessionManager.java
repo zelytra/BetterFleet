@@ -27,12 +27,14 @@ import jakarta.websocket.Session;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,6 +59,10 @@ public class SessionManager {
     // structural changes publish here — ready-state spikes do not — which keeps the stream quiet.
     private final BroadcastProcessor<Boolean> directoryChanges = BroadcastProcessor.create();
 
+    // Servers whose geolocation is being resolved right now, so a crew all reporting the same
+    // server at once triggers a single lookup instead of one per player.
+    private final Set<String> geoLookupsInFlight = ConcurrentHashMap.newKeySet();
+
     @Inject
     StatisticsRepository statisticsRepository;
 
@@ -65,6 +71,14 @@ public class SessionManager {
 
     @Inject
     ProxyCheckAPI proxyCheckAPI;
+
+    // How hard to chase a geolocation before giving up and letting a later join retry.
+    // Configurable so a flaky proxycheck.io can be tuned without a rebuild.
+    @ConfigProperty(name = "geo.lookup.attempts", defaultValue = "3")
+    int geoAttempts;
+
+    @ConfigProperty(name = "geo.lookup.retry-delay-ms", defaultValue = "2000")
+    long geoRetryDelayMs;
 
     @GET
     @Path("ip")
@@ -324,27 +338,98 @@ public class SessionManager {
     }
 
     /**
-     * Resolves a client-reported server into the cached, geolocated {@link SotServer}.
+     * Returns the shared {@link SotServer} for a client-reported server, registering it on first
+     * sight so every fleet shows the same identity (and colour) for it.
      * <p>
-     * Runs with <b>no lock on purpose</b>: on a cache miss it performs a blocking geolocation HTTP
-     * call. This used to run while {@link #playerJoinSotServer} held the WRITE lock, so at the end
-     * of a countdown — when every player joins their server at once — every other socket operation
-     * blew the 200ms lock timeout. That threw a LockException into onError, which closed the socket
-     * (players kicked) and dropped the JOIN_SERVER, so the server only appeared after a reconnect
-     * (by then a cache hit). The cache is a ConcurrentMap, so no lock is needed here.
+     * Performs <b>no I/O and takes no lock</b>. The geolocation happens off this path — see
+     * {@link #lookupGeo} — so a player joins a server immediately and the location catches up.
+     * Location and country code are therefore empty on a first sight; {@link #applyServerGeo}
+     * fills them in, which is also when the browser's region flag appears.
      */
     @Lock(Lock.Type.NONE)
     public SotServer resolveSotServer(SotServer server) {
-        SotServer cached = sotServers.get(server.generateHash());
-        if (cached != null) {
-            return cached.copy();
+        return sotServers.computeIfAbsent(server.generateHash(),
+                hash -> new SotServer(server.getIp(), server.getPort())).copy();
+    }
+
+    /**
+     * Geolocates a server whose location is still unknown. <b>Blocking — worker threads only</b>,
+     * never an event loop: proxycheck.io regularly takes seconds or times out, and this used to
+     * stall the vert.x thread that carried the JOIN_SERVER message.
+     * <p>
+     * Returns {@link ProxyCheckAPI.Geo#EMPTY} when it cannot be resolved, and <b>caches nothing
+     * in that case</b>. A cached failure was permanent: the empty geo was stored under the
+     * server's hash, every later join hit that entry, and the server kept neither a location nor
+     * a country code — which is also why its flag never showed up in the browser. Leaving it
+     * unresolved costs one retry per join instead.
+     *
+     * @return the resolved geo, or {@link ProxyCheckAPI.Geo#EMPTY} if it could not be resolved
+     * (or another worker is already resolving this server)
+     */
+    @Lock(Lock.Type.NONE)
+    public ProxyCheckAPI.Geo lookupGeo(SotServer server) {
+        String hash = server.generateHash();
+        SotServer known = sotServers.get(hash);
+        if (known != null && !known.getLocation().isEmpty()) {
+            // Resolved while this task sat in the queue.
+            return new ProxyCheckAPI.Geo(known.getLocation(), known.getCountryCode());
         }
-        // Blocking geolocation — must never run while holding a lock.
-        ProxyCheckAPI.Geo geo = proxyCheckAPI.resolveGeo(server.getIp());
-        SotServer resolved = new SotServer(server.getIp(), server.getPort(),
-                geo.location(), geo.countryCode());
-        SotServer previous = sotServers.putIfAbsent(resolved.getHash(), resolved);
-        return (previous != null ? previous : resolved).copy();
+        // One lookup per server at a time: at the end of a countdown a whole crew reports the same
+        // server at once, and proxycheck.io is rate-limited.
+        if (!geoLookupsInFlight.add(hash)) {
+            return ProxyCheckAPI.Geo.EMPTY;
+        }
+        try {
+            for (int attempt = 1; attempt <= geoAttempts; attempt++) {
+                ProxyCheckAPI.Geo geo = proxyCheckAPI.resolveGeo(server.getIp());
+                if (!geo.location().isEmpty()) {
+                    SotServer cached = sotServers.get(hash);
+                    if (cached != null) {
+                        cached.setLocation(geo.location());
+                        cached.setCountryCode(geo.countryCode());
+                    }
+                    return geo;
+                }
+                if (attempt < geoAttempts) {
+                    Thread.sleep(geoRetryDelayMs);
+                }
+            }
+            Log.warn("Could not geolocate " + server.getIp() + " after " + geoAttempts
+                    + " attempts, leaving it unresolved so a later join retries");
+            return ProxyCheckAPI.Geo.EMPTY;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ProxyCheckAPI.Geo.EMPTY;
+        } finally {
+            geoLookupsInFlight.remove(hash);
+        }
+    }
+
+    /**
+     * Attaches a freshly resolved geo to every fleet already showing that server, and
+     * re-broadcasts so the lobby fills the location in without anyone rejoining. Also publishes a
+     * directory change: the country code is what the browser draws the region flag from, so the
+     * list has to hear about it too.
+     * <p>
+     * Holds the WRITE lock: no I/O may happen here (the sends are async), and the geolocation must
+     * already be done — see {@link #lookupGeo}.
+     */
+    @Lock(value = Lock.Type.WRITE, time = 200)
+    public void applyServerGeo(String hash, ProxyCheckAPI.Geo geo) {
+        boolean changed = false;
+        for (Fleet fleet : sessions.values()) {
+            SotServer server = fleet.getServers().get(hash);
+            if (server == null || !server.getLocation().isEmpty()) {
+                continue;
+            }
+            server.setLocation(geo.location());
+            server.setCountryCode(geo.countryCode());
+            broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+            changed = true;
+        }
+        if (changed) {
+            publishDirectoryChange();
+        }
     }
 
     /**

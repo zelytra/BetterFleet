@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -393,11 +394,62 @@ class SessionSocketTest {
         assertEquals(1, broadcast.getServers().size(), "The detected server must appear in the fleet");
         assertTrue(onlyServerHolds(broadcast, "Sailor"),
                 "The player must be grouped under the server they joined");
-        SotServer server = broadcast.getServers().values().iterator().next();
-        assertEquals("Test Land", server.getLocation(),
-                "The resolved geolocation must be attached to the server");
         // The server-side truth mirrors the broadcast the lobby renders from.
         assertEquals(1, sessionManager.getSessions().get(sessionId).getServers().size());
+    }
+
+    @Test
+    void joinServer_fillsInTheLocationAfterwards() throws Exception {
+        // The geolocation runs on a worker and is broadcast once it lands, so the join itself never
+        // waits on proxycheck.io. The location therefore shows up a moment after the server does.
+        String sessionId = createSessionAsMaster("Sailor");
+
+        joinServer("1.1.1.1", 30101);
+
+        awaitCondition(() -> !locationOf(sessionId).isEmpty(), 2000);
+        assertEquals("Test Land", locationOf(sessionId),
+                "The resolved geolocation must land on the server without anyone rejoining");
+    }
+
+    @Test
+    void failedGeolocation_isNotCachedSoTheNextJoinRetries() throws Exception {
+        // The production bug: a timed-out lookup was cached as an empty geo under the server's hash,
+        // so every later join hit that entry and the server stayed location-less for the lifetime of
+        // the process — "some players have no location for their server", forever. The country code
+        // went the same way, which is why those sessions never grew a flag in the browser either.
+        Mockito.when(proxyCheckAPI.resolveGeo(any())).thenReturn(ProxyCheckAPI.Geo.EMPTY); // timing out
+        String sessionId = createSessionAsMaster("Sailor");
+
+        joinServer("3.3.3.3", 30101);
+        awaitCondition(() -> !locationOf(sessionId).isEmpty(), 300); // give the failing lookup time
+        assertEquals("", locationOf(sessionId), "A failed lookup cannot invent a location");
+
+        // proxycheck.io comes back, and a later join resolves it — which a cached failure blocked.
+        Mockito.when(proxyCheckAPI.resolveGeo(any()))
+                .thenReturn(new ProxyCheckAPI.Geo("Recovered Land", "fr"));
+        joinServer("3.3.3.3", 30101);
+
+        awaitCondition(() -> !locationOf(sessionId).isEmpty(), 2000);
+        assertEquals("Recovered Land", locationOf(sessionId),
+                "A failure must not be cached: the next join has to retry the lookup");
+        assertEquals("fr", countryCodeOf(sessionId),
+                "The retry must recover the country code too — that is what the browser's flag needs");
+    }
+
+    /**
+     * The country code the session's one and only server currently carries, server-side.
+     */
+    private String countryCodeOf(String sessionId) {
+        return sessionManager.getSessions().get(sessionId).getServers()
+                .values().iterator().next().getCountryCode();
+    }
+
+    /**
+     * The location the session's one and only server currently carries, server-side.
+     */
+    private String locationOf(String sessionId) {
+        return sessionManager.getSessions().get(sessionId).getServers()
+                .values().iterator().next().getLocation();
     }
 
     @Test
@@ -620,7 +672,10 @@ class SessionSocketTest {
         // server at once, so every other socket operation blew the 200ms lock timeout ->
         // LockException -> onError -> session.close() (players kicked), and the dropped
         // JOIN_SERVER left the server hidden until a reconnect (by then a cache hit).
-        // Resolution must stay outside every lock.
+        //
+        // The blocking call now lives in lookupGeo, which is what this drives: the class-level
+        // @Lock makes every method WRITE by default, so dropping its @Lock(Lock.Type.NONE) would
+        // bring the whole thing straight back.
         Mockito.when(proxyCheckAPI.resolveGeo(any())).thenAnswer(invocation -> {
             Thread.sleep(400); // far longer than the 200ms lock timeout
             return new ProxyCheckAPI.Geo("Slow Land", "xx");
@@ -628,12 +683,9 @@ class SessionSocketTest {
 
         String sessionId = createSessionAsMaster("Master");
 
-        Thread joining = new Thread(() -> {
-            SotServer resolved = sessionManager.resolveSotServer(new SotServer("9.9.9.9", 30101));
-            sessionManager.playerJoinSotServer(sessionManager.getPlayerFromUsername("Master"), resolved);
-        });
-        joining.start();
-        awaitCondition(() -> false, 80); // let the joiner get into the slow geolocation
+        Thread resolving = new Thread(() -> sessionManager.lookupGeo(new SotServer("9.9.9.9", 30101)));
+        resolving.start();
+        awaitCondition(() -> false, 80); // let it get into the slow geolocation
 
         // A locked read must go straight through instead of timing out on the lock.
         long start = System.currentTimeMillis();
@@ -643,7 +695,7 @@ class SessionSocketTest {
         assertTrue(waited < 200,
                 "Locked reads must not wait on the geolocation (waited " + waited + "ms)");
 
-        joining.join();
+        resolving.join();
     }
 
     private String createSessionAsMaster(String username) throws Exception {
@@ -678,16 +730,43 @@ class SessionSocketTest {
     // Reports a detected server and returns the broadcast fleet. Allows extra time because the
     // server-side SotServer creation performs an IP geolocation lookup on first sight.
     private Fleet joinServer(String ip, int port) throws Exception {
-        betterFleetClient.setLatch(new CountDownLatch(1));
+        String hash = new SotServer(ip, port).generateHash();
         betterFleetClient.sendMessage(MessageType.JOIN_SERVER, serverPayload(ip, port));
-        assertTrue(betterFleetClient.getLatch().await(5, TimeUnit.SECONDS));
-        return betterFleetClient.getMessageReceived(Fleet.class);
+        return awaitBroadcast(fleet -> fleet.getServers().containsKey(hash),
+                "a broadcast showing " + ip + ":" + port + " joined");
+    }
+
+    /**
+     * Waits for a broadcast whose fleet matches. The client keeps only the last message, and the
+     * geolocation now lands on its own schedule and broadcasts again, so "the next message" is not
+     * necessarily the one this action caused — wait for the state, don't count messages.
+     */
+    private Fleet awaitBroadcast(Predicate<Fleet> matches, String expectation) throws Exception {
+        long deadline = System.currentTimeMillis() + 5000;
+        while (System.currentTimeMillis() < deadline) {
+            Fleet fleet = lastBroadcastFleet();
+            if (fleet != null && matches.test(fleet)) {
+                return fleet;
+            }
+            Thread.sleep(20);
+        }
+        fail("Timed out waiting for " + expectation);
+        return null;
+    }
+
+    private Fleet lastBroadcastFleet() {
+        try {
+            return betterFleetClient.getMessageReceived(Fleet.class);
+        } catch (Exception e) {
+            return null; // the last message wasn't a fleet (e.g. RUN_COUNTDOWN)
+        }
     }
 
     private void leaveServer(String ip, int port) throws Exception {
-        betterFleetClient.setLatch(new CountDownLatch(1));
+        String hash = new SotServer(ip, port).generateHash();
         betterFleetClient.sendMessage(MessageType.LEAVE_SERVER, serverPayload(ip, port));
-        assertTrue(betterFleetClient.getLatch().await(2, TimeUnit.SECONDS));
+        awaitBroadcast(fleet -> !fleet.getServers().containsKey(hash),
+                "a broadcast showing " + ip + ":" + port + " left");
     }
 
     // True when the fleet has exactly one server and it holds the given player.

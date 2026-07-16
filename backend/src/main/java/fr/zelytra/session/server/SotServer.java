@@ -89,6 +89,23 @@ public class SotServer {
         return countryCode;
     }
 
+    /**
+     * Set once the geolocation lands, which happens after the server is already visible to the
+     * fleet. Not part of {@link #generateHash()} (that is ip:port), so filling it in later keeps
+     * the server's identity stable.
+     */
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    /**
+     * Set alongside {@link #setLocation}: the country code is what the browser draws a session's
+     * region flag from, so a server that never resolved shows no flag at all.
+     */
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
     public List<Player> getConnectedPlayers() {
         return connectedPlayers;
     }
