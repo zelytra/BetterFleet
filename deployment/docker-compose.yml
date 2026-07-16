@@ -1,4 +1,4 @@
-version: '3.4'
+# No `version:` key: obsolete since Compose v2, and it earns a warning on every command.
 name: betterfleet
 services:
 
@@ -22,8 +22,13 @@ services:
     image: zelytra/better-fleet-backend:latest
     container_name: betterfleet-backend
     depends_on:
-      - keycloak
-      - postgres-app
+      # Not the short form: that only waits for Keycloak's *container* to start, and Keycloak needs
+      # a further ~15s before it answers. The backend was doing OIDC discovery in that window, got a
+      # 502, and booted with the Default tenant uninitialised — see issue #629.
+      keycloak:
+        condition: service_healthy
+      postgres-app:
+        condition: service_started
     ports:
       - "2601:8080"
     environment:
@@ -69,6 +74,28 @@ services:
     container_name: betterfleet-keycloak
     depends_on:
       - postgres-auth
+    # Probes the one thing the backend actually needs: the Betterfleet realm's discovery document
+    # being served. That is stricter than a port check or /health/ready — an unimported realm answers
+    # 404 on this URL while the port is wide open, and it is a 200 here that lets the backend boot
+    # with its tenant initialised.
+    #
+    # Written against /dev/tcp because this image ships no curl, no wget and no nc — verified, along
+    # with /bin/sh being a symlink to bash, which is what makes /dev/tcp available to CMD-SHELL at
+    # all. Enabling KC_HEALTH_ENABLED would be the other route; it would need extra config and would
+    # only tell us Keycloak is up, not that the realm is there.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/8080 &&
+          printf 'GET /auth/realms/Betterfleet/.well-known/openid-configuration HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 &&
+          grep -q '200 OK' <&3
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      # Measured at ~12s to import the realm and serve on this host; 60s leaves room for a cold,
+      # loaded production box without ever marking a healthy Keycloak as failed.
+      start_period: 60s
     ports:
       - "2604:8080"
     volumes:
