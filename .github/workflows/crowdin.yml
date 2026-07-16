@@ -19,7 +19,11 @@
 #     own commits on its own schedule; with this workflow running too, the two overwrite each other
 #     and the result looks random.
 #
-# Secrets: CROWDIN_PROJECT_ID and CROWDIN_PERSONAL_TOKEN (Crowdin > Account Settings > API).
+# Secrets: CROWDIN_PROJECT_ID and CROWDIN_PERSONAL_TOKEN (Crowdin > Account Settings > API), plus
+# RELEASE_PAT, which does both git halves here — it needs Contents: write (to create the branch,
+# which a ruleset forbids GITHUB_TOKEN from doing) and Pull requests: write (to open the PR, which
+# this repo forbids GITHUB_TOKEN from doing, and which also gets CI to run on it).
+#
 # Variable: CROWDIN_MT_ENGINE_ID — the machine-translation engine to use, from
 # Crowdin > Resources > Machine Translation. Leave it unset and step 2 is skipped, which is safe:
 # translations then simply wait for a human.
@@ -121,10 +125,10 @@ jobs:
           cp webapp/src/assets/locales/source.json webapp/src/assets/locales/en.json
           cp website/src/assets/locales/source.json website/src/assets/locales/en.json
 
-      # A PR opened with GITHUB_TOKEN cannot trigger CI — GitHub will not let one workflow start
-      # another — so the webapp build never runs on it. What that build would have caught is a
-      # locale Crowdin hands back broken, which takes the app down on boot. Cheaper to check it
-      # here than to leave it unchecked.
+      # Fails fast, before the branch is even pushed, on a locale Crowdin hands back broken — that
+      # takes the app down on boot. CI on the PR would catch it too, now that RELEASE_PAT opens it,
+      # but a sync that stops here says what went wrong far more plainly than a build failure on a
+      # PR full of translation diffs.
       - name: Check the locales are still valid JSON
         run: |
           for file in webapp/src/assets/locales/*.json website/src/assets/locales/*.json; do
@@ -132,16 +136,10 @@ jobs:
               || { echo "::error file=$file::Crowdin returned invalid JSON"; exit 1; }
           done
 
-      # The two tokens can each do exactly half of this, so they get half each:
-      #
-      #   RELEASE_PAT   creates the branch, but cannot open a pull request
-      #                 ("Resource not accessible by personal access token" — no pull-requests scope)
-      #   GITHUB_TOKEN  opens pull requests, but a repository ruleset forbids it creating a ref
-      #                 ("Cannot create ref due to creations being restricted")
-      #
-      # Hence the split, rather than create-pull-request, which needs one token to do both.
-      # Give RELEASE_PAT the pull-requests scope and this collapses back into a single action —
-      # and the PR would then trigger CI, which a GITHUB_TOKEN one never does.
+      # Pushed as its own step rather than through create-pull-request, because a repository ruleset
+      # forbids GITHUB_TOKEN from creating a ref ("Cannot create ref due to creations being
+      # restricted") and that action wants a single token for both halves. RELEASE_PAT can do both,
+      # so this step and the one below use it.
       - name: Push the translations
         id: push
         run: |
@@ -158,21 +156,19 @@ jobs:
           git push --force origin chore/crowdin-translations
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
-      # Opening the PR is the one thing this repo currently allows neither token to do:
+      # RELEASE_PAT rather than GITHUB_TOKEN, and it matters twice over: this repo has "Allow GitHub
+      # Actions to create and approve pull requests" turned off, so GITHUB_TOKEN cannot open a PR at
+      # all — and even where it can, GitHub refuses to let a PR it opened trigger CI, which would
+      # leave every translation PR unchecked.
       #
-      #   GITHUB_TOKEN  "GitHub Actions is not permitted to create or approve pull requests"
-      #                 — Settings > Actions > General, currently off
-      #   RELEASE_PAT   "Resource not accessible by personal access token" — no pull-requests scope
-      #
-      # So the branch is pushed either way and this step only reports. Grant RELEASE_PAT the
-      # pull-requests scope and swap GH_TOKEN below for it: the PR then opens by itself *and*
-      # triggers CI, which a GITHUB_TOKEN-opened PR never does. Until then the translations are
-      # waiting on the branch and opening the PR is one click.
+      # Still continue-on-error: a PR that fails to open is an inconvenience — the branch is pushed
+      # and the compare link is printed — whereas failing the job would read as the sync itself
+      # having broken.
       - name: Open the PR
         if: steps.push.outputs.changed == 'true'
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_PAT }}
         run: |
           # Re-runs update the branch the push step already force-pushed; only open a PR if the
           # last one was merged or closed.
