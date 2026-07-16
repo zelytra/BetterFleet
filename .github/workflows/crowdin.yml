@@ -1,0 +1,118 @@
+# Crowdin synchronisation.
+#
+# This workflow *is* the configuration. It used to live in the Crowdin web UI, where nobody on the
+# team could see it, review it, or remember what had been clicked — so it is spelled out here
+# instead, in the order it happens:
+#
+#   1. push the English source (source.json) to Crowdin
+#   2. machine-translate German, Spanish and Italian — and NOT French, which stays human-only
+#   3. pull every translation back
+#   4. rewrite en.json as a byte-for-byte copy of the English source
+#   5. open a PR with whatever changed
+#
+# Two things it cannot do for you, both one-time:
+#
+#   * The Crowdin project's source language must be English (Crowdin > Settings > General). A
+#     project's source language can only be set in the UI. If it is anything else today, English is
+#     being treated as a translation and step 4 is the only thing keeping en.json honest.
+#   * The Crowdin GitHub integration (Crowdin > Integrations > GitHub) must be OFF. It pushes its
+#     own commits on its own schedule; with this workflow running too, the two overwrite each other
+#     and the result looks random.
+#
+# Secrets: CROWDIN_PROJECT_ID and CROWDIN_PERSONAL_TOKEN (Crowdin > Account Settings > API).
+# Variable: CROWDIN_MT_ENGINE_ID — the machine-translation engine to use, from
+# Crowdin > Resources > Machine Translation. Leave it unset and step 2 is skipped, which is safe:
+# translations then simply wait for a human.
+
+name: "Crowdin"
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "webapp/src/assets/locales/source.json"
+      - "website/src/assets/locales/source.json"
+      - "crowdin.yml"
+      - ".github/workflows/crowdin.yml"
+  schedule:
+    # Monday morning: picks up what translators did during the week.
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: crowdin
+  cancel-in-progress: false
+
+jobs:
+  synchronise:
+    name: Synchronise translations
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Push the English source to Crowdin
+        uses: crowdin/github-action@v2
+        with:
+          command: "upload sources"
+          command_args: "--no-progress"
+          project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
+          token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      # French is deliberately absent from the language list: it is the one language the team
+      # writes by hand, and a machine draft sitting in Crowdin marked "translated" is worse than an
+      # empty string — it hides the work still to do.
+      - name: Machine-translate everything except French
+        if: vars.CROWDIN_MT_ENGINE_ID != ''
+        uses: crowdin/github-action@v2
+        with:
+          command: "pre-translate"
+          command_args: >-
+            --method=mt
+            --engine-id=${{ vars.CROWDIN_MT_ENGINE_ID }}
+            --language=de
+            --language=es
+            --language=it
+            --no-progress
+          project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
+          token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - name: Pull the translations back
+        uses: crowdin/github-action@v2
+        with:
+          command: "download"
+          command_args: "--no-progress"
+          project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
+          token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      # English is the source language, so Crowdin never hands back an en.json — it would be
+      # translating English into English. The app still imports one, so it is copied here. This is
+      # also the backstop if the project's source language is ever wrong: en.json cannot drift.
+      - name: Keep en.json a copy of the English source
+        run: |
+          cp webapp/src/assets/locales/source.json webapp/src/assets/locales/en.json
+          cp website/src/assets/locales/source.json website/src/assets/locales/en.json
+
+      - name: Open a PR with what changed
+        uses: peter-evans/create-pull-request@v7
+        with:
+          # A PR opened with GITHUB_TOKEN does not trigger CI — GitHub refuses to let a workflow
+          # start another one — so the translation PR would sit there with no checks. RELEASE_PAT
+          # already exists for the release flow and does trigger it; the fallback keeps the
+          # workflow working (PR, but unchecked) if that secret is ever missing.
+          token: ${{ secrets.RELEASE_PAT || secrets.GITHUB_TOKEN }}
+          branch: chore/crowdin-translations
+          delete-branch: true
+          commit-message: "chore(i18n): sync translations from Crowdin"
+          title: "chore(i18n): sync translations from Crowdin"
+          body: |
+            Opened by the Crowdin workflow.
+
+            - German, Spanish and Italian are machine-translated first, then corrected by
+              translators in Crowdin.
+            - **French is never machine-translated** — anything here is human work.
+            - `en.json` is a copy of `source.json`; edit `source.json`, never `en.json`.
+          labels: i18n
