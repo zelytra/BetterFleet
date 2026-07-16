@@ -379,6 +379,10 @@
       "label": "Öffentliche Sitzung",
       "private": "Privat",
       "public": "Öffentlich"
+    },
+    "rename": {
+      "label": "Sitzung umbenennen",
+      "placeholder": "Name der Sitzung"
     }
   },
   "tooltips": {

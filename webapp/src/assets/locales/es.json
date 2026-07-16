@@ -379,6 +379,10 @@
       "label": "Sesión pública",
       "private": "Privada",
       "public": "Pública"
+    },
+    "rename": {
+      "label": "Renombrar la sesión",
+      "placeholder": "Nombre de la sesión"
     }
   },
   "tooltips": {

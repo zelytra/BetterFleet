@@ -379,6 +379,10 @@
       "label": "Public session",
       "private": "Private",
       "public": "Public"
+    },
+    "rename": {
+      "label": "Rename the session",
+      "placeholder": "Session name"
     }
   },
   "tooltips": {

@@ -22,7 +22,11 @@ export interface FleetStatistics {
 
 export interface FleetInterface {
   sessionId: string;
+  // Seed (0-99) for the default pirate name. The backend cannot localize it —
+  // it doesn't know the client's language — so the client renders it.
   sessionName: string;
+  // Master-set free-text name overriding the default. Null/blank when unset.
+  customName: string | null;
   isPrivate: boolean;
   players: Player[];
   servers: Map<string, SotServer>;
@@ -32,7 +36,11 @@ export interface FleetInterface {
 
 export class Fleet {
   public sessionId: string;
+  // What the lobby shows: the master's custom name, or the localized default.
   public sessionName: string;
+  // The override on its own, so the rename control can tell "no custom name"
+  // (edit an empty field, placeholder showing) from "named exactly that".
+  public customName: string;
   // Unlisted from the public browser. Backend-owned and master-only: every
   // client learns of a change through the broadcast UPDATE, never locally.
   public isPrivate: boolean;
@@ -51,6 +59,7 @@ export class Fleet {
   constructor() {
     this.sessionId = "";
     this.sessionName = "";
+    this.customName = "";
     this.isPrivate = true; // matches the backend default until the first UPDATE
     this.players = [];
     this.servers = new Map<string, SotServer>();
@@ -203,7 +212,12 @@ export class Fleet {
 
   private handleFleetUpdate(receivedFleet: FleetInterface) {
     this.sessionId = receivedFleet.sessionId;
-    this.sessionName = t("session.name." + receivedFleet.sessionName);
+    this.customName = receivedFleet.customName ?? "";
+    // A master-set name wins; otherwise localize the seed the backend sent.
+    this.sessionName =
+      this.customName.length > 0
+        ? this.customName
+        : t("session.name." + receivedFleet.sessionName);
     this.isPrivate = receivedFleet.isPrivate;
     this.players = receivedFleet.players;
     this.servers = new Map(Object.entries(receivedFleet.servers));
@@ -266,6 +280,24 @@ export class Fleet {
       messageType: WebSocketMessageType.START_COUNTDOWN,
     };
     info("[Fleet.ts][WebSocket] User run countdown to session");
+    this.socket.send(JSON.stringify(message));
+  }
+
+  /**
+   * Master-only: gives the session a custom, everyone-visible name. An empty
+   * string clears it and the default pirate name comes back.
+   *
+   * Like {@link setVisibility}, nothing changes locally: the backend re-checks
+   * the master role, trims, caps and content-filters the name, then broadcasts.
+   * A name the filter rejects therefore simply never appears.
+   */
+  renameSession(name: string): void {
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: name,
+      messageType: WebSocketMessageType.RENAME_SESSION,
+    };
+    info("[Fleet.ts][WebSocket] User renamed the session");
     this.socket.send(JSON.stringify(message));
   }
 
