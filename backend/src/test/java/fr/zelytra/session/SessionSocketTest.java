@@ -3,6 +3,7 @@ package fr.zelytra.session;
 import fr.zelytra.session.client.BetterFleetClient;
 import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.fleet.PublicSession;
+import fr.zelytra.session.fleet.PublicSessionsSnapshot;
 import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.BoatSize;
 import fr.zelytra.session.player.Player;
@@ -13,6 +14,8 @@ import fr.zelytra.session.socket.security.SocketSecurityEntity;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.mutiny.helpers.test.AssertSubscriber;
+import io.smallrye.mutiny.subscription.Cancellable;
 import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.DeploymentException;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -547,6 +551,107 @@ class SessionSocketTest {
 
         assertEquals(2, broadcast.getBanner(), "The session banner must be seeded from the host's preference");
         assertEquals(2, sessionManager.getSessions().get(broadcast.getSessionId()).getBanner());
+    }
+
+    /**
+     * The browser's list is supposed to be live: creating, closing or flipping a session to private
+     * has to push a fresh snapshot down the SSE.
+     */
+    @Test
+    void directoryStream_pushesASnapshotOnEveryChange() throws Exception {
+        List<PublicSessionsSnapshot> received = new CopyOnWriteArrayList<>();
+        Cancellable subscription = sessionManager.streamPublicSessions()
+                .subscribe().with(received::add, failure -> received.clear());
+        try {
+            // A subscriber gets the current state immediately, without asking for it.
+            awaitCondition(() -> !received.isEmpty(), 1000);
+            assertFalse(received.isEmpty(), "Subscribing must deliver the current snapshot");
+            int afterSubscribe = received.size();
+
+            createSessionAsMaster("Host");
+            awaitCondition(() -> received.size() > afterSubscribe, 1000);
+            assertTrue(received.size() > afterSubscribe, "Creating a session must push a snapshot");
+            int afterCreate = received.size();
+            assertEquals(1, received.get(received.size() - 1).sessions().size(),
+                    "The pushed snapshot must contain the new session");
+
+            betterFleetClient.setLatch(new CountDownLatch(1));
+            betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false);
+            assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+            awaitCondition(() -> received.size() > afterCreate, 1000);
+            assertTrue(received.size() > afterCreate, "Going public must push a snapshot");
+            assertFalse(received.get(received.size() - 1).sessions().get(0).isPrivate(),
+                    "The pushed snapshot must carry the new visibility");
+        } finally {
+            subscription.cancel();
+        }
+    }
+
+    @Test
+    void directoryStream_survivesAViewerThatIsNotAskingForEvents() throws Exception {
+        // Reported from production: one player watches the public sessions browser, another creates
+        // a public session, and a BackPressureFailure lands in the logs.
+        //
+        // A subscriber is regularly between requests — an SSE serializer asks for one event at a
+        // time — and BroadcastProcessor answers an emission it cannot deliver by *terminating that
+        // subscriber*. So the viewer's stream died the moment anyone else touched a session, and
+        // their list silently froze until they pressed Refresh. (The emitting player is unaffected:
+        // the failure travels to the subscriber, it does not come back up publishDirectoryChange.)
+        //
+        // The demand is the whole point: subscribing with unbounded demand — which the plain
+        // .subscribe().with() in the test above does — never reproduces this. It takes a subscriber
+        // that stops asking, like the real one.
+        AssertSubscriber<PublicSessionsSnapshot> viewer = watchingViewer();
+
+        sessionManager.publishDirectoryChange(); // another player changes something, viewer idle
+
+        // The failure travels to the subscriber asynchronously, so give it a window to arrive before
+        // concluding that it did not — checking immediately passes even against the broken code.
+        awaitCondition(() -> viewer.getFailure() != null, 500);
+
+        assertNull(viewer.getFailure(),
+                "A viewer that is not currently asking for events must not have its stream killed");
+        viewer.assertNotTerminated();
+        viewer.cancel();
+    }
+
+    @Test
+    void directoryStream_aViewerThatFallsBehindCatchesUpOnTheCurrentState() throws Exception {
+        // Surviving is not enough: the viewer must converge. The ticks it missed collapse into one,
+        // and the next it takes carries the directory as it is now — each snapshot is the whole
+        // state, so the newest subsumes the ones it replaced. (This is why the strategy is
+        // dropPreviousItems and not drop: drop keeps the stream alive but throws away the *new*
+        // tick, leaving the viewer on a stale list — measured, not assumed.)
+        AssertSubscriber<PublicSessionsSnapshot> viewer = watchingViewer();
+        int seen = viewer.getItems().size();
+
+        createSessionAsMaster("Host"); // changes fire while the viewer asks for nothing
+
+        viewer.request(1);
+        viewer.awaitItems(seen + 1);
+        List<PublicSessionsSnapshot> items = viewer.getItems();
+        assertEquals(1, items.get(items.size() - 1).sessions().size(),
+                "Catching up must deliver the directory as it is now, not a stale or missed tick");
+        viewer.cancel();
+    }
+
+    /**
+     * A subscriber in the state the production failure needs: subscribed to the change feed and
+     * currently between requests.
+     * <p>
+     * Both halves matter. The stream only subscribes to the change feed once demand arrives, so a
+     * viewer that never takes an event never reaches the failing path at all — it just misses ticks.
+     * And the failure needs demand to have run out. So: take the initial snapshot, take one change,
+     * and stop asking. That is exactly what an SSE client does between events.
+     */
+    private AssertSubscriber<PublicSessionsSnapshot> watchingViewer() throws Exception {
+        AssertSubscriber<PublicSessionsSnapshot> viewer = sessionManager.streamPublicSessions()
+                .subscribe().withSubscriber(AssertSubscriber.create(1));
+        viewer.awaitItems(1);
+        viewer.request(1);
+        sessionManager.publishDirectoryChange();
+        viewer.awaitItems(2);
+        return viewer; // subscribed, and now asking for nothing
     }
 
     @Test
