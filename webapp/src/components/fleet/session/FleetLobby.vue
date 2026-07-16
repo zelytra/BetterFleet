@@ -2,7 +2,12 @@
   <section class="lobby-wrapper">
     <BannerTemplate>
       <template #content>
-        <div class="header-content">
+        <div
+          :class="{
+            'header-content': true,
+            'has-visibility': UserStore.player.isMaster,
+          }"
+        >
           <img src="../../../assets/icons/sot.svg" />
           <div class="title-content">
             <div class="name-wrapper">
@@ -48,10 +53,6 @@
               </transition>
             </div>
           </div>
-        </div>
-      </template>
-      <template #left-content>
-        <div class="master-controls">
           <SingleSelect
             v-if="UserStore.player.isMaster"
             class="visibility"
@@ -59,18 +60,19 @@
             :title="t('session.visibility.label')"
             @update:data="onVisibilityChange"
           />
-          <button
-            v-if="UserStore.player.isMaster"
-            :class="{
-              'session-starter': true,
-              pending:
-                session.getReadyPlayers().length != session.players.length,
-            }"
-            @click="confirmationStartSession()"
-          >
-            {{ t("session.run") }}
-          </button>
         </div>
+      </template>
+      <template #left-content>
+        <button
+          v-if="UserStore.player.isMaster"
+          :class="{
+            'session-starter': true,
+            pending: session.getReadyPlayers().length != session.players.length,
+          }"
+          @click="confirmationStartSession()"
+        >
+          {{ t("session.run") }}
+        </button>
       </template>
     </BannerTemplate>
     <div class="lobby-content">
@@ -455,10 +457,42 @@ function onContextAction(action: string) {
     align-items: center;
     margin-left: 36px;
     gap: 32px;
+    // Anchors the visibility select below.
+    position: relative;
+
+    // The select is absolute, so the flow knows nothing about it: without this lane reserved, a
+    // long session name runs underneath it on a narrow window. Only the master has the control.
+    &.has-visibility {
+      padding-right: 212px; // 180 select + 16 inset + 16 breathing room
+    }
 
     img {
       width: 64px;
       height: 64px;
+    }
+
+    // Pinned to the banner's right edge — which is the Set sail button's left edge, since the
+    // button lives outside the banner. Absolute, so it floats over the artwork instead of taking
+    // width away from it.
+    //
+    // Top-anchored rather than centred: the banner is a 120px strip that clips its overflow, and
+    // the open list needs 80px below the input — centred it gets 42 and is cut off. It carries no
+    // label for the same reason (label + input + list = 112 of 119); the name is on the tooltip.
+    .visibility {
+      position: absolute;
+      right: 16px;
+      top: 14px;
+      z-index: 2;
+
+      :deep(.input-wrapper),
+      :deep(.dropdown) {
+        min-width: 180px;
+      }
+    }
+
+    .title-content {
+      // Lets the name shrink instead of pushing the header wider than the banner.
+      min-width: 0;
     }
 
     .name-wrapper {
@@ -466,6 +500,14 @@ function onContextAction(action: string) {
       align-items: center;
       gap: 10px;
       min-height: 40px; // the name and the input are the same height, so nothing jumps
+
+      // A 40-char name is wider than a narrow window leaves, and the reserved lane only stops it
+      // from starting under the select — this is what stops it from spilling into it.
+      > p {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
 
       // Without this the pencil inherits the 64px of the SoT crest above.
       img.rename-button {
@@ -537,27 +579,6 @@ function onContextAction(action: string) {
   }
 
   // The master's two session-level controls, sitting together at the right of the banner.
-  .master-controls {
-    display: flex;
-    align-items: center;
-    height: 100%;
-
-    // The banner is a 120px strip that clips its overflow, and the open list needs 80px below the
-    // input. Centred, it gets 42 and is cut off; hence top-aligned. It also carries no label —
-    // a padlock reading "Publique"/"Privée" beside Set sail needs none, and the label ate a third
-    // of the strip, leaving no room for the list either way. The name is on the tooltip.
-    .visibility {
-      padding: 0 16px;
-      align-self: flex-start;
-      margin-top: 14px;
-
-      :deep(.input-wrapper),
-      :deep(.dropdown) {
-        min-width: 180px;
-      }
-    }
-  }
-
   button.session-starter {
     all: unset;
     cursor: pointer;
