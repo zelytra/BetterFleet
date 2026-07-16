@@ -474,10 +474,16 @@ button {
       }
     }
 
+    // Stacked full-width strips rather than a row of cards, because that is the shape these
+    // actually are: 1294x57, 22.7:1. Squeezed into a 132x74 card, `cover` showed 7.9% of the
+    // banner — a sliver of its middle. Three of them still read, since their sliver carries their
+    // colour; the fourth is the panel's own colour and looked like an empty box. This previews the
+    // whole banner, at the shape it is used in the sessions list.
     .banner-picker {
       display: flex;
-      flex-wrap: wrap; // the settings panel narrows on a small window; four in a row is not a given
-      gap: 16px;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
 
       .banner-choice {
         all: unset;
@@ -485,15 +491,15 @@ button {
         cursor: pointer;
         border-radius: 5px;
         overflow: hidden;
-        width: 132px;
-        height: 74px;
+        width: 100%;
+        aspect-ratio: 1294 / 57; // the artwork's own, so nothing is cropped
         border: 2px solid transparent;
         box-sizing: border-box;
 
         img {
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: cover; // a no-op at this aspect ratio; a guard if the artwork ever changes
           display: block;
         }
 
