@@ -158,8 +158,19 @@ jobs:
           git push --force origin chore/crowdin-translations
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
+      # Opening the PR is the one thing this repo currently allows neither token to do:
+      #
+      #   GITHUB_TOKEN  "GitHub Actions is not permitted to create or approve pull requests"
+      #                 — Settings > Actions > General, currently off
+      #   RELEASE_PAT   "Resource not accessible by personal access token" — no pull-requests scope
+      #
+      # So the branch is pushed either way and this step only reports. Grant RELEASE_PAT the
+      # pull-requests scope and swap GH_TOKEN below for it: the PR then opens by itself *and*
+      # triggers CI, which a GITHUB_TOKEN-opened PR never does. Until then the translations are
+      # waiting on the branch and opening the PR is one click.
       - name: Open the PR
         if: steps.push.outputs.changed == 'true'
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -169,7 +180,7 @@ jobs:
             echo "A translation PR is already open; it now carries these commits."
             exit 0
           fi
-          gh pr create \
+          if ! gh pr create \
             --base master \
             --head chore/crowdin-translations \
             --title "chore(i18n): sync translations from Crowdin" \
@@ -182,8 +193,10 @@ jobs:
           - **French is never machine-translated** — anything here is human work.
           - `en.json` is a copy of `source.json`; edit `source.json`, never `en.json`.
 
-          CI does not run here: GitHub will not let one workflow trigger another, and the PR is
-          opened with GITHUB_TOKEN. The workflow checks every locale still parses before opening
-          it, which is what would actually break the app.
+          The workflow checks every locale still parses before opening this.
           BODY
-          )"
+          )"; then
+            echo "::warning::Could not open the PR — see the note above this step in the workflow."
+            echo "The translations are pushed and waiting on chore/crowdin-translations:"
+            echo "  https://github.com/${GITHUB_REPOSITORY}/compare/master...chore/crowdin-translations?expand=1"
+          fi
