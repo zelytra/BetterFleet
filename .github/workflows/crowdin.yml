@@ -136,6 +136,13 @@ jobs:
               || { echo "::error file=$file::Crowdin returned invalid JSON"; exit 1; }
           done
 
+      # Crowdin fills untranslated strings with the source text, so a locale it does not hold comes
+      # back in English while the diff still reads "sync translations". The first run of this
+      # workflow proposed exactly that: 40 Italian strings replaced by English. Before the push, so a
+      # bad sync leaves behind no branch and no PR to merge by mistake.
+      - name: Refuse to hand back English where a translation used to be
+        run: node .github/scripts/check-untranslation.mjs
+
       # Pushed as its own step rather than through create-pull-request, because a repository ruleset
       # forbids GITHUB_TOKEN from creating a ref ("Cannot create ref due to creations being
       # restricted") and that action wants a single token for both halves. RELEASE_PAT can do both,
