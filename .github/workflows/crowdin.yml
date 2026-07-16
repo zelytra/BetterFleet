@@ -125,24 +125,60 @@ jobs:
               || { echo "::error file=$file::Crowdin returned invalid JSON"; exit 1; }
           done
 
-      - name: Open a PR with what changed
-        uses: peter-evans/create-pull-request@v7
-        with:
-          # RELEASE_PAT can push but not open pull requests — it came back with "Resource not
-          # accessible by personal access token", so it lacks the pull-requests scope. GITHUB_TOKEN
-          # has it (see permissions above). The cost is that CI will not run on the PR, which is
-          # what the JSON check above stands in for. Grant RELEASE_PAT the pull-requests scope and
-          # swap it back in here to get the full suite instead.
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: chore/crowdin-translations
-          delete-branch: true
-          commit-message: "chore(i18n): sync translations from Crowdin"
-          title: "chore(i18n): sync translations from Crowdin"
-          body: |
-            Opened by the Crowdin workflow.
+      # The two tokens can each do exactly half of this, so they get half each:
+      #
+      #   RELEASE_PAT   creates the branch, but cannot open a pull request
+      #                 ("Resource not accessible by personal access token" — no pull-requests scope)
+      #   GITHUB_TOKEN  opens pull requests, but a repository ruleset forbids it creating a ref
+      #                 ("Cannot create ref due to creations being restricted")
+      #
+      # Hence the split, rather than create-pull-request, which needs one token to do both.
+      # Give RELEASE_PAT the pull-requests scope and this collapses back into a single action —
+      # and the PR would then trigger CI, which a GITHUB_TOKEN one never does.
+      - name: Push the translations
+        id: push
+        env:
+          GIT_TOKEN: ${{ secrets.RELEASE_PAT }}
+        run: |
+          if git diff --quiet; then
+            echo "Nothing came back from Crowdin."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B chore/crowdin-translations
+          git commit -am "chore(i18n): sync translations from Crowdin"
+          git push --force "https://x-access-token:${GIT_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            chore/crowdin-translations
+          echo "changed=true" >> "$GITHUB_OUTPUT"
 
-            - German, Spanish and Italian are machine-translated first, then corrected by
-              translators in Crowdin.
-            - **French is never machine-translated** — anything here is human work.
-            - `en.json` is a copy of `source.json`; edit `source.json`, never `en.json`.
-          labels: i18n
+      - name: Open the PR
+        if: steps.push.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Re-runs update the branch the push step already force-pushed; only open a PR if the
+          # last one was merged or closed.
+          if gh pr view chore/crowdin-translations --json state --jq .state 2>/dev/null | grep -q OPEN; then
+            echo "A translation PR is already open; it now carries these commits."
+            exit 0
+          fi
+          gh pr create \
+            --base master \
+            --head chore/crowdin-translations \
+            --title "chore(i18n): sync translations from Crowdin" \
+            --label i18n \
+            --body "$(cat <<'BODY'
+          Opened by the Crowdin workflow.
+
+          - German, Spanish and Italian are machine-translated first, then corrected by
+            translators in Crowdin.
+          - **French is never machine-translated** — anything here is human work.
+          - `en.json` is a copy of `source.json`; edit `source.json`, never `en.json`.
+
+          CI does not run here: GitHub will not let one workflow trigger another, and the PR is
+          opened with GITHUB_TOKEN. The workflow checks every locale still parses before opening
+          it, which is what would actually break the app.
+          BODY
+          )"
