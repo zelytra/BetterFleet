@@ -80,6 +80,24 @@ project, feel free to fork the repository and submit your pull requests or you c
 
 ---
 
+## Translations 🌍
+
+`source.json` is the English original and the only locale file anyone edits by hand. The rest is
+produced for you:
+
+| File | Where it comes from |
+|---|---|
+| `source.json` | written by us, in English — **this is the one to edit** |
+| `en.json` | a copy of `source.json`, rewritten by CI — never edit it |
+| `fr.json` | translated by humans, **never machine-translated** |
+| `de.json`, `es.json`, `it.json` | machine-translated first, then corrected in Crowdin |
+
+The sync lives in [`.github/workflows/crowdin.yml`](/.github/workflows/crowdin.yml). That workflow
+*is* the configuration — its header explains the whole flow, and the two settings that can only be
+clicked in the Crowdin UI.
+
+---
+
 ## License 📄
 
 BetterFleet is distributed under the MIT license. See the [LICENSE](/LICENSE) file for more information.
