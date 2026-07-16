@@ -12,18 +12,27 @@
         :placeholder="t('session.searchPlaceholder')"
       />
     </div>
-    <div v-if="visible.length" class="list">
+    <TransitionGroup
+      v-if="visible.length"
+      appear
+      name="row"
+      tag="div"
+      class="list"
+    >
       <SessionRow
-        v-for="session in visible"
-        :key="session.sessionId"
+        v-for="(session, index) in visible"
+        :key="session.directoryId"
         :session="session"
+        :style="{ '--row-index': index }"
         @join="$emit('join', session.sessionId)"
       />
-    </div>
-    <div v-else class="empty">
-      <h2>{{ t("session.empty.title") }}</h2>
-      <p>{{ t("session.empty.comment") }}</p>
-    </div>
+    </TransitionGroup>
+    <Transition v-else appear name="fade">
+      <div class="empty">
+        <h2>{{ t("session.empty.title") }}</h2>
+        <p>{{ t("session.empty.comment") }}</p>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -124,6 +133,53 @@ onUnmounted(() => store.disconnect());
       color: var(--primary);
       font-family: BrushTip, sans-serif;
       font-size: 40px;
+    }
+  }
+
+  // Rows arrive one after another rather than the whole list landing at once — the list is
+  // refreshed by the SSE, so this fires on the first load and for genuinely new sessions only
+  // (keyed rows that are already there are left alone).
+  .row-enter-active {
+    transition:
+      opacity 220ms ease,
+      transform 220ms ease;
+    // Capped, or a busy directory would still be dealing itself out seconds later.
+    transition-delay: min(calc(var(--row-index, 0) * 45ms), 400ms);
+  }
+
+  .row-enter-from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  .row-leave-active {
+    transition: opacity 160ms ease;
+  }
+
+  .row-leave-to {
+    opacity: 0;
+  }
+
+  // A session going private, or the busiest one filling up, reorders the list: slide instead of
+  // teleporting.
+  .row-move {
+    transition: transform 260ms ease;
+  }
+
+  .fade-enter-active {
+    transition: opacity 260ms ease;
+  }
+
+  .fade-enter-from {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .row-enter-active,
+    .row-leave-active,
+    .row-move,
+    .fade-enter-active {
+      transition: none;
     }
   }
 }

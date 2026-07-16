@@ -12,6 +12,12 @@ import java.util.stream.Collectors;
 public class Fleet {
 
     private String sessionId;
+
+    // Stable identity for the directory, deliberately unrelated to sessionId: a private session's
+    // code is withheld from the browser, but its row still needs something to be keyed and animated
+    // by. Unguessable, so publishing it gives away nothing.
+    private final String directoryId;
+
     private int sessionName;
 
     @JsonProperty(value = "isPrivate")
@@ -29,6 +35,7 @@ public class Fleet {
 
     public Fleet() {
         this.sessionId = UUID.randomUUID().toString().substring(0, 7).toUpperCase();
+        this.directoryId = UUID.randomUUID().toString();
         this.sessionName = (int) (Math.random() * 100);
         this.isPrivate = true; // sessions are unlisted by default; the master opts into public
         this.banner = 0;
@@ -43,6 +50,10 @@ public class Fleet {
 
     public List<Player> getMasters() {
         return this.players.stream().filter(Player::isMaster).collect(Collectors.toList());
+    }
+
+    public String getDirectoryId() {
+        return directoryId;
     }
 
     // Getters and Setters

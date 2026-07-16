@@ -442,24 +442,22 @@ public class SessionManager {
     }
 
     /**
-     * The current snapshot of public (listed) sessions, mapped to the browser's PublicSession DTO.
+     * The current directory, mapped to the browser's PublicSession DTO. Private sessions are
+     * listed too — see {@link #toPublicSession} for what "private" withholds.
      */
     @Lock(value = Lock.Type.READ, time = 200)
     public List<PublicSession> getPublicSessions() {
         List<PublicSession> result = new ArrayList<>();
         for (Fleet fleet : sessions.values()) {
-            if (fleet.isPrivate()) {
-                continue;
-            }
             result.add(toPublicSession(fleet));
         }
         return result;
     }
 
     /**
-     * What the browser renders: the public sessions plus the global connected-player count, built
-     * in one pass so both ride the same REST response and the same SSE frame — the counter has to
-     * move live as players come and go, not only when Refresh is pressed.
+     * What the browser renders: every session plus the global connected-player count, built in one
+     * pass so both ride the same REST response and the same SSE frame — the counter has to move
+     * live as players come and go, not only when Refresh is pressed.
      */
     @Lock(value = Lock.Type.READ, time = 200)
     public PublicSessionsSnapshot getPublicSessionsSnapshot() {
@@ -467,9 +465,7 @@ public class SessionManager {
         int connectedPlayers = 0;
         for (Fleet fleet : sessions.values()) {
             connectedPlayers += fleet.getPlayers().size();
-            if (!fleet.isPrivate()) {
-                publicSessions.add(toPublicSession(fleet));
-            }
+            publicSessions.add(toPublicSession(fleet));
         }
         return new PublicSessionsSnapshot(publicSessions, connectedPlayers);
     }
@@ -486,6 +482,13 @@ public class SessionManager {
         );
     }
 
+    /**
+     * Projects a fleet for the browser. Private sessions are listed like any other — the browser
+     * shows them with a closed padlock, and their crew count is what makes the directory feel
+     * alive — but their <b>session code is withheld</b>: it is the only thing standing between
+     * "private" and "public", since anyone holding the code can join. A private session is
+     * therefore joinable only by someone the host gave the code to.
+     */
     private PublicSession toPublicSession(Fleet fleet) {
         List<String> admins = fleet.getMasters().stream()
                 .map(Player::getUsername)
@@ -495,7 +498,8 @@ public class SessionManager {
                 ? fleet.getCustomName()
                 : String.valueOf(fleet.getSessionName());
         return new PublicSession(
-                fleet.getSessionId(),
+                fleet.getDirectoryId(),
+                fleet.isPrivate() ? "" : fleet.getSessionId(),
                 primaryRegion(fleet),
                 admins,
                 name,

@@ -8,7 +8,8 @@ function session(
   playerAmount: number,
 ): PublicSession {
   return {
-    sessionId: "ABC123",
+    directoryId: "dir-" + name,
+    sessionId: isPrivate ? "" : "ABC123", // a private session's code is withheld
     region: "fr",
     admin: ["Zelytra"],
     name,

@@ -498,12 +498,23 @@ class SessionSocketTest {
     }
 
     @Test
-    void publicDirectory_listsOnlyPublicSessionsAndMapsFieldsWithRegion() throws Exception {
-        String sessionId = createSessionAsMaster("Host");
+    void directory_listsPrivateSessionsButWithholdsTheirCode() throws Exception {
+        // Sessions are private by default. They are still listed — the browser shows them with a
+        // closed padlock and their crew count — but the code is what separates private from public,
+        // so publishing it would make "private" mean nothing.
+        createSessionAsMaster("Host");
 
-        // Private by default -> the directory is empty.
-        assertTrue(sessionManager.getPublicSessions().isEmpty(),
-                "A private session must not appear in the public directory");
+        List<PublicSession> directory = sessionManager.getPublicSessions();
+        assertEquals(1, directory.size(), "A private session must still be listed");
+        assertTrue(directory.get(0).isPrivate());
+        assertEquals("", directory.get(0).sessionId(),
+                "A private session's code must never be published: it is the only thing making it private");
+        assertEquals(1, directory.get(0).playerAmount(), "The crew count is public either way");
+    }
+
+    @Test
+    void directory_publishesTheCodeOnceTheSessionGoesPublic() throws Exception {
+        String sessionId = createSessionAsMaster("Host");
 
         // A detected server supplies the region (country code); the master then goes public.
         joinServer("1.1.1.1", 30101);
@@ -512,20 +523,37 @@ class SessionSocketTest {
         assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
 
         List<PublicSession> directory = sessionManager.getPublicSessions();
-        assertEquals(1, directory.size(), "The now-public session must be listed");
+        assertEquals(1, directory.size());
         PublicSession listed = directory.get(0);
         assertFalse(listed.isPrivate());
         assertEquals(1, listed.playerAmount());
         assertTrue(listed.admin().contains("Host"), "The master must be listed as an admin");
         assertEquals("xx", listed.region(), "Region must come from the detected server's country code");
-        assertEquals(sessionId, listed.sessionId(), "The joinable session code must be exposed");
+        assertEquals(sessionId, listed.sessionId(), "A public session's code is joinable from the browser");
 
         // The connected-player count rides the same snapshot, so the SSE moves it live instead of
         // it only updating when the user hits Refresh.
         assertEquals(1, sessionManager.getPublicSessionsSnapshot().connectedPlayers(),
                 "The snapshot must carry the global connected-player count");
         assertEquals(1, sessionManager.getPublicSessionsSnapshot().sessions().size(),
-                "The snapshot must carry the public sessions");
+                "The snapshot must carry the sessions");
+    }
+
+    @Test
+    void directory_takesTheCodeBackWhenTheSessionGoesPrivateAgain() throws Exception {
+        String sessionId = createSessionAsMaster("Host");
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        assertEquals(sessionId, sessionManager.getPublicSessions().get(0).sessionId());
+
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, true);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        PublicSession listed = sessionManager.getPublicSessions().get(0);
+        assertTrue(listed.isPrivate(), "The row stays listed, now marked private");
+        assertEquals("", listed.sessionId(), "Going private must take the code back out of the directory");
     }
 
     @Test
