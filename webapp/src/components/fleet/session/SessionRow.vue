@@ -7,9 +7,7 @@
     <div class="banner">
       <div
         class="bg"
-        :style="{
-          backgroundImage: `url(/banners/session${session.banner}.svg)`,
-        }"
+        :style="{ backgroundImage: `url(${bannerUrl(session.banner)})` }"
       />
     </div>
     <div class="col left">
@@ -54,6 +52,7 @@ import { computed, PropType } from "vue";
 import { useI18n } from "vue-i18n";
 import { PublicSession } from "@/objects/fleet/PublicSessions.ts";
 import { sessionDisplayName } from "@/objects/fleet/PublicSessionName.ts";
+import { bannerUrl } from "@/objects/fleet/Banners.ts";
 import { countryFlags } from "@/objects/utils/LangIcons.ts";
 
 const { t } = useI18n();

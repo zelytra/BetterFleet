@@ -169,10 +169,13 @@ export class FakeBackend {
       case "CONNECT": {
         const username = message.data?.username;
         if (socket.sessionId === "") {
-          // Empty id = create, which is what the Create session button sends.
+          // Empty id = create, which is what the Create session button sends. SessionSocket:
+          // "The creator is the host: seed the session banner from their preference." Everyone
+          // else's banner is ignored, which is why this only reads it here.
           const created = this.addSession({
             players: [{ username, isMaster: true, isReady: false }],
             isPrivate: true, // private by default
+            banner: Number(message.data?.banner) || 0,
           });
           socket.sessionId = created.sessionId;
           socket.username = username;

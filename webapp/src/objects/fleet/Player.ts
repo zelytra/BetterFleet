@@ -42,6 +42,14 @@ export interface Preferences {
   soundEnable: boolean;
   soundLevel: number;
   macroEnable: boolean;
+  /**
+   * The app-provided banner template this player's hosted sessions carry (issue #602). Travels on
+   * CONNECT: the backend copies it onto the session they create, and ignores it from everyone who
+   * merely joins.
+   */
+  banner: number;
+  /** When set, each hosted session gets a random template instead of the fixed pick above. */
+  bannerShuffle: boolean;
 }
 
 export interface ActionPlayer {

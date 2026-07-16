@@ -7,6 +7,7 @@ import { AlertType } from "@/vue/alert/Alert.ts";
 import { alertProvider } from "@/main.ts";
 import { tsi18n } from "@/objects/i18n";
 import { ActionPlayer, Player } from "@/objects/fleet/Player.ts";
+import { clampBanner, resolveHostBanner } from "@/objects/fleet/Banners.ts";
 import { SotServer } from "@/objects/fleet/SotServer.ts";
 import { LocalTime } from "@js-joda/core";
 import { HTTPAxios } from "@/objects/utils/HTTPAxios.ts";
@@ -28,6 +29,9 @@ export interface FleetInterface {
   // Master-set free-text name overriding the default. Null/blank when unset.
   customName: string | null;
   isPrivate: boolean;
+  // The app-provided banner template the host chose, copied onto the session at
+  // creation. What the lobby and the browser row render (issue #602).
+  banner: number;
   players: Player[];
   servers: Map<string, SotServer>;
   socket?: WebSocket;
@@ -44,6 +48,8 @@ export class Fleet {
   // Unlisted from the public browser. Backend-owned and master-only: every
   // client learns of a change through the broadcast UPDATE, never locally.
   public isPrivate: boolean;
+  // The session's banner template, set by whoever hosted it.
+  public banner: number;
   public players: Player[];
   public servers: Map<string, SotServer>;
   public socket?: WebSocket;
@@ -61,6 +67,7 @@ export class Fleet {
     this.sessionName = "";
     this.customName = "";
     this.isPrivate = true; // matches the backend default until the first UPDATE
+    this.banner = 0;
     this.players = [];
     this.servers = new Map<string, SotServer>();
     this.stats = {
@@ -121,7 +128,16 @@ export class Fleet {
 
       if (!this.socket) return;
       const message: WebSocketMessage = {
-        data: UserStore.player,
+        data: {
+          ...UserStore.player,
+          // An empty id means "create", and only then does the backend read this. Resolved into
+          // the payload rather than onto the player: shuffle picks a banner for *this* session,
+          // and writing it back would quietly overwrite the pick they made in Settings.
+          banner:
+            sessionId.length === 0
+              ? resolveHostBanner(UserStore.player)
+              : UserStore.player.banner,
+        },
         messageType: WebSocketMessageType.CONNECT,
       };
       this.socket.send(JSON.stringify(message));
@@ -222,6 +238,7 @@ export class Fleet {
         ? this.customName
         : t("session.name." + receivedFleet.sessionName);
     this.isPrivate = receivedFleet.isPrivate;
+    this.banner = clampBanner(receivedFleet.banner);
     this.players = receivedFleet.players;
     this.servers = new Map(Object.entries(receivedFleet.servers));
     this.stats = receivedFleet.stats;

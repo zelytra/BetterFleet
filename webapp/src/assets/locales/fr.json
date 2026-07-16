@@ -90,6 +90,14 @@
     "sloop": "Sloop"
   },
   "config": {
+    "banner": {
+      "description": "La bannière que portent les sessions que tu héberges, dans le salon comme dans la liste.",
+      "pick": "Bannière {number}",
+      "shuffle": {
+        "check": "Bannière aléatoire",
+        "description": "Choisit une bannière différente à chaque session que tu héberges"
+      }
+    },
     "device": {
       "label": "Plateforme"
     },
@@ -108,6 +116,7 @@
     },
     "part": {
       "audio": "Audio",
+      "banner": "Bannière de session",
       "developer": "Développeur",
       "general": "Général"
     },

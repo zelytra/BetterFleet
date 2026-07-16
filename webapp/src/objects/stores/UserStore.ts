@@ -3,6 +3,7 @@ import LocalStore, { LocalKey } from "@/objects/stores/LocalStore.ts";
 import { i18n } from "@/main.ts";
 import { tsi18n } from "@/objects/i18n/index.ts";
 import { BoatSize, Player, PlayerDevice } from "@/objects/fleet/Player.ts";
+import { clampBanner } from "@/objects/fleet/Banners.ts";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 import { info } from "tauri-plugin-log-api";
@@ -27,6 +28,13 @@ export const UserStore = reactive({
       macroEnable:
         readPlayer.macroEnable !== undefined ? readPlayer.macroEnable : true,
       soundLevel: readPlayer.soundLevel || 30,
+      // Clamped rather than `|| 0`: 0 is a real choice here (the first template), and the value has
+      // to survive whatever an older version happened to leave in localStorage.
+      banner: clampBanner(readPlayer.banner),
+      bannerShuffle:
+        readPlayer.bannerShuffle !== undefined
+          ? readPlayer.bannerShuffle
+          : false,
       serverHostName:
         readPlayer.serverHostName || import.meta.env.VITE_SOCKET_HOST,
       clientVersion: import.meta.env.VITE_VERSION,
