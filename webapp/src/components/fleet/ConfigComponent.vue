@@ -177,13 +177,13 @@ import it from "@assets/icons/locales/it.svg";
 import xbox from "@assets/icons/xbox.svg";
 import microsoft from "@assets/icons/microsoft.svg";
 import playstation from "@assets/icons/playstation.svg";
-import boat from "@assets/icons/boat.svg";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import SaveBar from "@/vue/utils/SaveBar.vue";
 import InputSlider from "@/vue/form/InputSlider.vue";
 import countdownSound from "@assets/sounds/countdown.mp3";
 import { BoatSize, PlayerDevice } from "@/objects/fleet/Player.ts";
+import { boatIcon } from "@/objects/fleet/BoatIcons.ts";
 import {
   BANNER_COUNT,
   bannerUrl,
@@ -256,7 +256,7 @@ function loadOptionList() {
     boatSizeOptions.value.data.push({
       display: t("boatSize." + size.toLowerCase()),
       id: size,
-      image: boat,
+      image: boatIcon(size),
     });
   }
   resetConfig();
