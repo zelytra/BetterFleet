@@ -5,7 +5,31 @@
         <div class="header-content">
           <img src="../../../assets/icons/sot.svg" />
           <div class="title-content">
-            <p>{{ session.sessionName }}</p>
+            <div class="name-wrapper">
+              <template v-if="isRenaming">
+                <input
+                  ref="renameInput"
+                  v-model="draftName"
+                  class="rename-input"
+                  :maxlength="SESSION_NAME_MAX_LENGTH"
+                  :placeholder="t('session.rename.placeholder')"
+                  @keyup.enter="confirmRename"
+                  @keyup.esc="cancelRename"
+                  @blur="confirmRename"
+                />
+              </template>
+              <template v-else>
+                <p>{{ session.sessionName }}</p>
+                <img
+                  v-if="UserStore.player.isMaster"
+                  class="rename-button"
+                  src="../../../assets/icons/edit.svg"
+                  :alt="t('session.rename.label')"
+                  :title="t('session.rename.label')"
+                  @click="startRename"
+                />
+              </template>
+            </div>
             <div class="id-wrapper">
               <p class="id">
                 {{ t("session.id") + ": " }}
@@ -161,7 +185,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, PropType, reactive, ref, watch } from "vue";
+import {
+  computed,
+  nextTick,
+  onUnmounted,
+  PropType,
+  reactive,
+  ref,
+  watch,
+} from "vue";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
 import { useI18n } from "vue-i18n";
@@ -249,6 +281,40 @@ function startSession() {
 
 function onToggleAutoSetSail(event: Event) {
   props.session.setAutoSetSail((event.target as HTMLInputElement).checked);
+}
+
+// Mirrors SessionNameFilter.MAX_LENGTH: the backend caps the name anyway, this
+// just stops the field from accepting what would be silently truncated.
+const SESSION_NAME_MAX_LENGTH = 40;
+const isRenaming = ref<boolean>(false);
+const draftName = ref<string>("");
+const renameInput = ref<HTMLInputElement>();
+
+function startRename() {
+  // Empty when the session still carries its default name, so the placeholder
+  // shows and the master types over nothing rather than deleting a name they
+  // never chose.
+  draftName.value = props.session.customName;
+  isRenaming.value = true;
+  nextTick(() => renameInput.value?.select());
+}
+
+function confirmRename() {
+  // Enter confirms and the blur that follows lands here again; Escape closes the
+  // field first, so this no-ops rather than renaming what the master cancelled.
+  if (!isRenaming.value) {
+    return;
+  }
+  isRenaming.value = false;
+  const name = draftName.value.trim();
+  if (name === props.session.customName) {
+    return; // nothing to say
+  }
+  props.session.renameSession(name);
+}
+
+function cancelRename() {
+  isRenaming.value = false;
 }
 
 // Open padlock = listed in the public browser, closed = unlisted — the same
@@ -393,6 +459,45 @@ function onContextAction(action: string) {
     img {
       width: 64px;
       height: 64px;
+    }
+
+    .name-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px; // the name and the input are the same height, so nothing jumps
+
+      // Without this the pencil inherits the 64px of the SoT crest above.
+      img.rename-button {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        opacity: 0.55;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      // Renaming happens in place, so the field wears the title's own type.
+      .rename-input {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--primary);
+        outline: none;
+        padding: 0;
+        font-family: BrushTip, sans-serif;
+        font-size: 31px;
+        color: var(--primary-text);
+        // Wide enough to show a full-length (40 char) name rather than scrolling
+        // it out of sight while it is being typed; the banner has room to spare.
+        width: 400px;
+        max-width: 100%;
+
+        &::placeholder {
+          color: var(--secondary-text);
+        }
+      }
     }
 
     .id-wrapper {

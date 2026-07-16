@@ -19,4 +19,5 @@ export enum WebSocketMessageType {
   KICK_PLAYER = "KICK_PLAYER",
   DEMOTE_PLAYER = "DEMOTE_PLAYER",
   SET_VISIBILITY = "SET_VISIBILITY", // Master lists/unlists the session in the public browser
+  RENAME_SESSION = "RENAME_SESSION", // Master sets a custom, everyone-visible session name
 }
