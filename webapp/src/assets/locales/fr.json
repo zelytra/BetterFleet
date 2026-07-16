@@ -69,7 +69,7 @@
       },
       "length": {
         "content": "Votre pseudo ne peut être vide ou dépasser 16 caractères",
-        "title": "Format de pseudo invalide"
+        "title": "Mauvais format de pseudo"
       }
     },
     "websocketAuthFailed": {
