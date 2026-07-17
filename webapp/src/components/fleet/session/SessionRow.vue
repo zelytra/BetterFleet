@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="{ 'session-row': true, locked: !joinable }"
+    :class="{ 'session-row': true, private: !joinable }"
     :title="joinable ? undefined : t('session.privateHint')"
     @click="onClick"
   >
@@ -59,20 +59,18 @@ const { t } = useI18n();
 const props = defineProps({
   session: { type: Object as PropType<PublicSession>, required: true },
 });
-const emits = defineEmits(["join"]);
+const emits = defineEmits(["join", "code"]);
 
 // Shared with the search, which must match on what is rendered here rather than the raw field.
 const displayName = computed(() => sessionDisplayName(props.session, t));
 
-// The backend withholds a private session's code, so there is nothing to join with: the row shows
-// the crew and the padlock, and joining takes the code the host gave you. Clicking anyway would
-// emit an empty id — and an empty id is how a session gets *created*.
+// The backend withholds a private session's code (SessionManager#toPublicSession), so this row has
+// nothing to join with — hence a separate event rather than "join" with the id it holds. That id is
+// the empty string, and an empty id is how a session gets *created*.
 const joinable = computed(() => !props.session.isPrivate);
 
 function onClick() {
-  if (joinable.value) {
-    emits("join");
-  }
+  emits(joinable.value ? "join" : "code");
 }
 </script>
 
@@ -91,15 +89,6 @@ function onClick() {
 
   &:hover {
     filter: brightness(1.06);
-  }
-
-  // A private session has no code to join with, so the row must not pretend to be clickable.
-  &.locked {
-    cursor: default;
-
-    &:hover {
-      filter: none;
-    }
   }
 
   .banner {

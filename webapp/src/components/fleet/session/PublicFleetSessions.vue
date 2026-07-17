@@ -1,6 +1,10 @@
 <template>
   <section class="browser-layout">
-    <PublicSessionBrowser class="left" @join="joinPublic" />
+    <PublicSessionBrowser
+      class="left"
+      @join="joinPublic"
+      @code="isModalOpen = true"
+    />
     <div class="side-container">
       <MenuActionBar
         v-model:is-modal-open="isModalOpen"

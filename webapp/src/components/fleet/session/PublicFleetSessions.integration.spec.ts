@@ -44,10 +44,24 @@ function mountBrowser() {
     global: {
       plugins: [i18n],
       directives: { "click-outside": {} },
-      stubs: { ModalTemplate: { template: "<div><slot /></div>" } },
+      stubs: {
+        // Stubbed for the teleport and the backdrop, not for the gate: the real one is
+        // `v-if="isModalOpen"`, so a stub that renders its slot unconditionally puts the modal's
+        // text on screen at all times and quietly makes "is the modal open?" unassertable.
+        ModalTemplate: {
+          props: { isModalOpen: Boolean },
+          template: `<div v-if="isModalOpen" class="modal"><slot /></div>`,
+        },
+      },
     },
   });
   return { wrapper, session };
+}
+
+/** The way in for a code: the Join panel on the right. Nothing in the modal exists before this. */
+async function openCodeModal(wrapper: any) {
+  await wrapper.find(".session.join").trigger("click");
+  await wrapper.vm.$nextTick();
 }
 
 async function search(wrapper: any, text: string) {
@@ -113,11 +127,71 @@ describe("public sessions browser, against a fake backend", () => {
     ).toContain("Sailor");
   });
 
+  it("asks for the code when a private row is clicked", async () => {
+    fakeBackend.addSession({
+      sessionId: "PRIV",
+      customName: "Closed Crew",
+      isPrivate: true,
+    });
+    const { wrapper } = mountBrowser();
+    await settle();
+
+    expect(wrapper.text()).not.toContain(fr.session.choice.modal.title);
+    await wrapper.find(".session-row").trigger("click");
+    await settle();
+
+    // The row is the natural gesture — you can see the session you want. It stayed inert instead, and
+    // the way in was a separate button elsewhere on the screen.
+    expect(wrapper.text()).toContain(fr.session.choice.modal.title);
+  });
+
+  it("never creates a session from a private row", async () => {
+    fakeBackend.addSession({
+      sessionId: "PRIV",
+      customName: "Closed Crew",
+      isPrivate: true,
+    });
+    const before = fakeBackend.sessions.size;
+    const { wrapper, session } = mountBrowser();
+    await settle();
+
+    await wrapper.find(".session-row").trigger("click");
+    await settle();
+
+    // The backend withholds a private session's code, so the row holds "". Joining "" is how a
+    // session gets *created* — clicking one private row would have opened a brand new session and
+    // dropped the player into it.
+    expect(fakeBackend.sessions.size).toBe(before);
+    expect(session.sessionId).toBeFalsy();
+  });
+
+  it("joins the private session once the host's code is typed in", async () => {
+    fakeBackend.addSession({
+      sessionId: "PRIV",
+      customName: "Closed Crew",
+      isPrivate: true,
+    });
+    const { wrapper, session } = mountBrowser();
+    await settle();
+
+    await wrapper.find(".session-row").trigger("click");
+    await settle();
+    await wrapper.find(".username-wrapper input").setValue("PRIV");
+    await wrapper.find(".big-button").trigger("click");
+    await settle();
+
+    expect(session.sessionId).toBe("PRIV");
+    expect(
+      fakeBackend.sessions.get("PRIV")!.players.map((p) => p.username),
+    ).toContain("Sailor");
+  });
+
   it("joins by code", async () => {
     fakeBackend.addSession({ sessionId: "42B69X", customName: "By Code" });
     const { wrapper, session } = mountBrowser();
     await settle();
 
+    await openCodeModal(wrapper);
     await wrapper.find(".username-wrapper input").setValue("42B69X");
     await wrapper.find(".big-button").trigger("click");
     await settle();
@@ -198,6 +272,7 @@ describe("public sessions browser, against a fake backend", () => {
     await firstSession.joinSession("42B69X");
     await settle();
 
+    await openCodeModal(wrapper);
     await wrapper.find(".username-wrapper input").setValue("42B69X");
     await wrapper.find(".big-button").trigger("click");
     await settle();

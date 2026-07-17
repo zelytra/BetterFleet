@@ -25,6 +25,7 @@
         :session="session"
         :style="{ '--row-index': index }"
         @join="$emit('join', session.sessionId)"
+        @code="$emit('code')"
       />
     </TransitionGroup>
     <Transition v-else appear name="fade">
@@ -49,7 +50,7 @@ import lockIcon from "@/assets/icons/lock.svg";
 import lockOpenIcon from "@/assets/icons/lock_open.svg";
 
 const { t } = useI18n();
-defineEmits(["join"]);
+defineEmits(["join", "code"]);
 
 const store = PublicSessionsStore;
 const visible = computed(() => store.visible);
