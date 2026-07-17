@@ -66,5 +66,45 @@ section {
       }
     }
   }
+
+  // Image beside text with 120px between them. Below $lap the pair is narrower than that gap, and
+  // the text ends up at two or three words to the line.
+  @media (max-width: $lap) {
+    gap: 48px;
+
+    h1 {
+      font-size: 44px;
+
+      &:after {
+        // 451px of decorative underline, centred with translate(-50%), hangs 38px off each side of a
+        // 375px screen. It is background art: scale it rather than let it overhang.
+        width: min(451px, 88vw);
+        background-size: contain;
+      }
+    }
+
+    .content {
+      flex-direction: column;
+      gap: 32px;
+      padding: 0 16px;
+
+      img {
+        max-width: 100%;
+      }
+
+      .description {
+        // End-aligned reads as a mistake once the image is above the text rather than beside it.
+        text-align: center;
+      }
+    }
+  }
+
+  @media (max-width: $palm) {
+    gap: 32px;
+
+    h1 {
+      font-size: 34px;
+    }
+  }
 }
 </style>
