@@ -115,6 +115,15 @@ onBeforeRouteLeave((_to, _from, next) => {
   width: 100%;
   height: 100%;
   background: var(--primary-background);
+  // A full-screen takeover that never said where it stacks. Positioned and last in the DOM, it
+  // covers everything unpositioned — which is why this always looked right. But a sibling subtree
+  // carrying a z-index of its own paints above it whatever the DOM order says, and .visibility has
+  // z-index: 1 (FleetLobby.vue) so its open list can escape the rows underneath. The select won, and
+  // the countdown drew behind it.
+  //
+  // 10 clears everything in the lobby (1, 2, 9) and stays under the modals at 99: the leave and
+  // launch confirmations are siblings of this and still have to open on top of it.
+  z-index: 10;
   display: flex;
   flex-direction: column;
   justify-content: center;
