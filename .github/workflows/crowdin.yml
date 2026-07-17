@@ -1,0 +1,205 @@
+# Crowdin synchronisation.
+#
+# This workflow *is* the configuration. It used to live in the Crowdin web UI, where nobody on the
+# team could see it, review it, or remember what had been clicked — so it is spelled out here
+# instead, in the order it happens:
+#
+#   1. push the English source (source.json) to Crowdin
+#   2. machine-translate German, Spanish and Italian — and NOT French, which stays human-only
+#   3. pull every translation back
+#   4. rewrite en.json as a byte-for-byte copy of the English source
+#   5. open a PR with whatever changed
+#
+# Two things it cannot do for you, both one-time:
+#
+#   * The Crowdin project's source language must be English (Crowdin > Settings > General). A
+#     project's source language can only be set in the UI. If it is anything else today, English is
+#     being treated as a translation and step 4 is the only thing keeping en.json honest.
+#   * The Crowdin GitHub integration (Crowdin > Integrations > GitHub) must be OFF. It pushes its
+#     own commits on its own schedule; with this workflow running too, the two overwrite each other
+#     and the result looks random.
+#
+# Secrets: CROWDIN_PROJECT_ID and CROWDIN_PERSONAL_TOKEN (Crowdin > Account Settings > API), plus
+# RELEASE_PAT, which does both git halves here — it needs Contents: write (to create the branch,
+# which a ruleset forbids GITHUB_TOKEN from doing) and Pull requests: write (to open the PR, which
+# this repo forbids GITHUB_TOKEN from doing, and which also gets CI to run on it).
+#
+# Variable: CROWDIN_MT_ENGINE_ID — the machine-translation engine to use, from
+# Crowdin > Resources > Machine Translation. Leave it unset and step 2 is skipped, which is safe:
+# translations then simply wait for a human.
+
+name: "Crowdin"
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "webapp/src/assets/locales/source.json"
+      - "website/src/assets/locales/source.json"
+      - "crowdin.yml"
+      - ".github/workflows/crowdin.yml"
+  schedule:
+    # Monday morning: picks up what translators did during the week.
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: crowdin
+  cancel-in-progress: false
+
+jobs:
+  synchronise:
+    name: Synchronise translations
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # Checked out with RELEASE_PAT on purpose: actions/checkout writes an AUTHORIZATION header
+      # into the local git config, and that header wins over any credentials in a push URL. With
+      # the default GITHUB_TOKEN, pushing the translation branch is rejected by the repository
+      # ruleset ("Cannot create ref due to creations being restricted") no matter what the push
+      # command says.
+      - uses: actions/checkout@v7
+        with:
+          token: ${{ secrets.RELEASE_PAT }}
+
+      - name: Push the English source to Crowdin
+        uses: crowdin/github-action@v2
+        with:
+          command: "upload sources"
+          command_args: "--no-progress"
+          project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
+          token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+        env:
+          # The inputs above only reach the action own built-in commands. Everything here goes
+          # through `command:`, i.e. the raw CLI, which reads its credentials from these two
+          # variables — without them it fails with "Required option api_token is missing".
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      # French is deliberately absent from the language list: it is the one language the team
+      # writes by hand, and a machine draft sitting in Crowdin marked "translated" is worse than an
+      # empty string — it hides the work still to do.
+      - name: Machine-translate everything except French
+        if: vars.CROWDIN_MT_ENGINE_ID != ''
+        uses: crowdin/github-action@v2
+        with:
+          command: "pre-translate"
+          command_args: >-
+            --method=mt
+            --engine-id=${{ vars.CROWDIN_MT_ENGINE_ID }}
+            --language=de
+            --language=es
+            --language=it
+            --no-progress
+          project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
+          token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+        env:
+          # The inputs above only reach the action own built-in commands. Everything here goes
+          # through `command:`, i.e. the raw CLI, which reads its credentials from these two
+          # variables — without them it fails with "Required option api_token is missing".
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - name: Pull the translations back
+        uses: crowdin/github-action@v2
+        with:
+          command: "download"
+          command_args: "--no-progress"
+          project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
+          token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+        env:
+          # The inputs above only reach the action own built-in commands. Everything here goes
+          # through `command:`, i.e. the raw CLI, which reads its credentials from these two
+          # variables — without them it fails with "Required option api_token is missing".
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      # English is the source language, so Crowdin never hands back an en.json — it would be
+      # translating English into English. The app still imports one, so it is copied here. This is
+      # also the backstop if the project's source language is ever wrong: en.json cannot drift.
+      - name: Keep en.json a copy of the English source
+        run: |
+          cp webapp/src/assets/locales/source.json webapp/src/assets/locales/en.json
+          cp website/src/assets/locales/source.json website/src/assets/locales/en.json
+
+      # Fails fast, before the branch is even pushed, on a locale Crowdin hands back broken — that
+      # takes the app down on boot. CI on the PR would catch it too, now that RELEASE_PAT opens it,
+      # but a sync that stops here says what went wrong far more plainly than a build failure on a
+      # PR full of translation diffs.
+      - name: Check the locales are still valid JSON
+        run: |
+          for file in webapp/src/assets/locales/*.json website/src/assets/locales/*.json; do
+            node -e "JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'))" "$file" \
+              || { echo "::error file=$file::Crowdin returned invalid JSON"; exit 1; }
+          done
+
+      # Crowdin fills untranslated strings with the source text, so a locale it does not hold comes
+      # back in English while the diff still reads "sync translations". The first run of this
+      # workflow proposed exactly that: 40 Italian strings replaced by English. Before the push, so a
+      # bad sync leaves behind no branch and no PR to merge by mistake.
+      - name: Refuse to hand back English where a translation used to be
+        run: node .github/scripts/check-untranslation.mjs
+
+      # Pushed as its own step rather than through create-pull-request, because a repository ruleset
+      # forbids GITHUB_TOKEN from creating a ref ("Cannot create ref due to creations being
+      # restricted") and that action wants a single token for both halves. RELEASE_PAT can do both,
+      # so this step and the one below use it.
+      - name: Push the translations
+        id: push
+        run: |
+          if git diff --quiet; then
+            echo "Nothing came back from Crowdin."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B chore/crowdin-translations
+          git commit -am "chore(i18n): sync translations from Crowdin"
+          # Uses the checkout's credentials, i.e. RELEASE_PAT — see the checkout step.
+          git push --force origin chore/crowdin-translations
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # RELEASE_PAT rather than GITHUB_TOKEN, and it matters twice over: this repo has "Allow GitHub
+      # Actions to create and approve pull requests" turned off, so GITHUB_TOKEN cannot open a PR at
+      # all — and even where it can, GitHub refuses to let a PR it opened trigger CI, which would
+      # leave every translation PR unchecked.
+      #
+      # Still continue-on-error: a PR that fails to open is an inconvenience — the branch is pushed
+      # and the compare link is printed — whereas failing the job would read as the sync itself
+      # having broken.
+      - name: Open the PR
+        if: steps.push.outputs.changed == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_PAT }}
+        run: |
+          # Re-runs update the branch the push step already force-pushed; only open a PR if the
+          # last one was merged or closed.
+          if gh pr view chore/crowdin-translations --json state --jq .state 2>/dev/null | grep -q OPEN; then
+            echo "A translation PR is already open; it now carries these commits."
+            exit 0
+          fi
+          if ! gh pr create \
+            --base master \
+            --head chore/crowdin-translations \
+            --title "chore(i18n): sync translations from Crowdin" \
+            --label i18n \
+            --body "$(cat <<'BODY'
+          Opened by the Crowdin workflow.
+
+          - German, Spanish and Italian are machine-translated first, then corrected by
+            translators in Crowdin.
+          - **French is never machine-translated** — anything here is human work.
+          - `en.json` is a copy of `source.json`; edit `source.json`, never `en.json`.
+
+          The workflow checks every locale still parses before opening this.
+          BODY
+          )"; then
+            echo "::warning::Could not open the PR — see the note above this step in the workflow."
+            echo "The translations are pushed and waiting on chore/crowdin-translations:"
+            echo "  https://github.com/${GITHUB_REPOSITORY}/compare/master...chore/crowdin-translations?expand=1"
+          fi
