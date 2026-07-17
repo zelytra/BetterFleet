@@ -1,0 +1,11 @@
+# https://betterfleet.fr/robots.txt
+
+User-agent: *
+Allow: /
+
+# /reports lists what players sent through the in-app bug reporter — their words and their log
+# output. Nothing links to it, but the site-wide robots meta says index,follow, so one link from
+# anywhere is all it takes. Someone else's crash log does not belong in a search result.
+Disallow: /reports
+
+Sitemap: https://betterfleet.fr/sitemap.xml
