@@ -165,5 +165,61 @@ onMounted(() => {
       }
     }
   }
+
+  // An answer that runs to 300px in a desktop-width column needs far more than that on a phone, and
+  // the open state is capped at 500px with overflow hidden — so the bottom of the longer answers
+  // would simply be cut off, silently, with no scrollbar to hint at it. The cap exists to animate
+  // the open/close; it only has to beat the tallest answer.
+  @media (max-width: $lap) {
+    &.deploy {
+      max-height: 1400px;
+    }
+
+    .content {
+      // The 54px of bottom padding here reserves room for the absolutely-placed "see more" line,
+      // which now sits in the flow instead.
+      padding: 12px 12px 16px;
+
+      .custom-content {
+        // Same trap one level down: this one at least scrolls, but a 390px window onto a phone-height
+        // answer is a keyhole.
+        max-height: none;
+        overflow: visible;
+      }
+
+      // Centred with left: 50% / translate(-50%) and held on one line by white-space: nowrap, so in a
+      // narrow column it grows wider than its container and hangs off *both* edges — at 375px the
+      // Discord link sat 224px past the right of the screen.
+      p.see-more {
+        position: static;
+        transform: none;
+        white-space: normal;
+        text-align: center;
+        margin-top: 4px;
+      }
+    }
+
+    .header h1 {
+      font-size: 16px;
+      // The questions are full sentences; on one line they were being cut mid-word.
+      line-height: 1.25;
+    }
+  }
+
+  @media (max-width: $palm) {
+    // The collapsed bar is a fixed 44px, which fits a one-line question. These are sentences, and at
+    // 375px they take two.
+    max-height: 64px;
+
+    .header {
+      height: auto;
+      min-height: 64px;
+      padding: 8px 10px;
+
+      h1 {
+        font-size: 15px;
+      }
+    }
+  }
 }
 </style>

@@ -99,5 +99,51 @@ section {
       }
     }
   }
+
+  // 64px of padding a side plus two 50% columns leaves each one 124px on a 375px screen: the
+  // headline broke to a word a line, down the middle of the artwork.
+  @media (max-width: $lap) {
+    height: auto;
+    min-height: 560px;
+    padding: 48px 24px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 32px;
+
+    .side-content {
+      width: 100%;
+      align-items: center;
+      text-align: center;
+
+      &.text {
+        h1 {
+          font-size: 38px;
+        }
+
+        p {
+          font-size: 17px;
+        }
+      }
+
+      &.parallax .parallax-image {
+        width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: $palm) {
+    padding: 40px 16px;
+    min-height: 480px;
+
+    .side-content.text {
+      h1 {
+        font-size: 30px;
+      }
+
+      p {
+        font-size: 15px;
+      }
+    }
+  }
 }
 </style>
