@@ -3,12 +3,33 @@
     :class="{ 'server-wrapper': true }"
     :style="{ borderColor: color, backgroundColor: getBackgroundColor() }"
   >
-    <h2
-      :class="{ 'server-title': true, 'has-address': !!address }"
-      :style="{ backgroundColor: barColor }"
-      :title="address || undefined"
-    >
-      {{ server }}
+    <h2 class="server-title" :style="{ backgroundColor: barColor }">
+      {{ server
+      }}<span
+        v-if="address"
+        class="info-bubble"
+        :title="address"
+        :aria-label="address"
+      >
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle
+            cx="8"
+            cy="8"
+            r="7"
+            stroke="currentColor"
+            stroke-width="1.3"
+          />
+          <rect
+            x="7.2"
+            y="7"
+            width="1.6"
+            height="5"
+            rx="0.8"
+            fill="currentColor"
+          />
+          <circle cx="8" cy="4.5" r="1" fill="currentColor" />
+        </svg>
+      </span>
     </h2>
     <div class="player-wrapper">
       <slot />
@@ -54,17 +75,37 @@ function getBackgroundColor(): string {
 
   .server-title {
     font-size: 16px;
-    text-align: center;
     color: var(--primary-text);
     margin: 0;
     padding: 7px 8px;
+    // Lay the hash and the bubble out as a centred row: vertical-align on an inline bubble aligns to
+    // the text's x-height, which sits low under the uppercase hash and made the "i" look bottom-
+    // aligned. align-items: center lines them up by their box centres instead. Wraps for long names.
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
 
-    // Signals the title carries the ip:port on hover (#662). A dotted underline is the conventional
-    // "there is more here" cue; kept faint so it does not fight the title bar.
-    &.has-address {
-      cursor: help;
-      text-decoration: underline dotted rgba(255, 255, 255, 0.45);
-      text-underline-offset: 3px;
+  // A small info bubble beside the hash (#662): hovering it shows the server's ip:port. Faint so it
+  // sits quietly in the title bar, brightens on hover for feedback. cursor: help is the "this is
+  // informational, not clickable" cue.
+  .info-bubble {
+    display: inline-flex;
+    align-items: center;
+    cursor: help;
+    color: rgba(255, 255, 255, 0.65);
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--primary-text);
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      display: block;
     }
   }
 
