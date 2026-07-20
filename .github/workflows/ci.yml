@@ -29,10 +29,13 @@ jobs:
           filters: |
             backend:
               - 'backend/**'
+              - '.github/workflows/ci.yml'
             webapp:
               - 'webapp/**'
+              - '.github/workflows/ci.yml'
             website:
               - 'website/**'
+              - '.github/workflows/ci.yml'
 
   backend-build:
     name: Backend Build
@@ -237,3 +240,50 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+  # The Rust detection logic (pick_server_flow, the FlowAggregator, the #364/#657 capture fixtures,
+  # the port range) has unit tests that never ran in CI — test-tauri only *builds* the app. This runs
+  # them. windows-latest because the crate is Windows-only: it captures packets through winsock raw
+  # sockets (std::os::windows, winapi), so it does not compile anywhere else.
+  tauri-test:
+    name: Tauri Unit Tests
+    runs-on: ${{ matrix.platform }}
+    needs: [paths, webapp-build]
+    if: ${{ needs.paths.outputs.webapp == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest]
+    defaults:
+      run:
+        working-directory: 'webapp'
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: 'webapp/src-tauri'
+
+      - name: Install Webapp Dependencies
+        run: npm ci
+
+      # main.rs runs tauri::generate_context!, which embeds the frontend (distDir ../dist) at compile
+      # time — so `cargo test` cannot build the crate until the frontend exists.
+      - name: Build the frontend
+        run: npm run build
+
+      - name: Run the Rust tests
+        working-directory: 'webapp/src-tauri'
+        # build.rs stamps a requireAdministrator manifest into the binary; the test harness then fails
+        # to spawn on Windows with "os error 740" (elevation required). This env drops it to asInvoker
+        # for test builds only. See webapp/src-tauri/build.rs.
+        env:
+          BETTERFLEET_TEST_BUILD: '1'
+        run: cargo test
