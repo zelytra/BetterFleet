@@ -3,7 +3,11 @@
     :class="{ 'server-wrapper': true }"
     :style="{ borderColor: color, backgroundColor: getBackgroundColor() }"
   >
-    <h2 class="server-title" :style="{ backgroundColor: barColor }">
+    <h2
+      :class="{ 'server-title': true, 'has-address': !!address }"
+      :style="{ backgroundColor: barColor }"
+      :title="address || undefined"
+    >
       {{ server }}
     </h2>
     <div class="player-wrapper">
@@ -20,6 +24,9 @@ const props = defineProps({
   server: String,
   color: { type: String, required: true },
   playerCount: { type: Number, required: true },
+  // The server's ip:port, shown on hover of the title (#662). Empty while detection is still
+  // pending, in which case no tooltip is offered.
+  address: { type: String, default: "" },
 });
 
 // The bar is the server's colour pulled toward the background: the palette is saturated enough that
@@ -51,6 +58,14 @@ function getBackgroundColor(): string {
     color: var(--primary-text);
     margin: 0;
     padding: 7px 8px;
+
+    // Signals the title carries the ip:port on hover (#662). A dotted underline is the conventional
+    // "there is more here" cue; kept faint so it does not fight the title bar.
+    &.has-address {
+      cursor: help;
+      text-decoration: underline dotted rgba(255, 255, 255, 0.45);
+      text-underline-offset: 3px;
+    }
   }
 
   .player-wrapper {

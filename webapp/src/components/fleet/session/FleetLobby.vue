@@ -75,6 +75,7 @@
             "
             :color="server.color"
             :player-count="server.connectedPlayers.length"
+            :address="server.ip ? server.ip + ':' + server.port : ''"
           >
             <PlayerFleet
               v-for="player in server.connectedPlayers.sort((a, b) => {
