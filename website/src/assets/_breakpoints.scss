@@ -1,0 +1,13 @@
+// The widths the site's own layout breaks at, not round numbers.
+//
+// $lap: the two-column sections are built from 451px cards (ComparisonComponent, DiscoverComponent);
+//   two of those plus their gap stop fitting just under 960px, and that is where they must stack.
+//
+// $palm: below this a stacked column is narrow enough that desktop padding and display type eat the
+//   line — the text gets down to two or three words per line, which is what the site does today at
+//   375px. Type and spacing tighten here; nothing re-flows.
+//
+// Injected into every SCSS block by vite.config.ts, so no component imports it.
+
+$lap: 960px;
+$palm: 600px;

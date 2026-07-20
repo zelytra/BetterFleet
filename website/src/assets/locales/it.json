@@ -197,5 +197,23 @@
       "content": "Un server di alleanza è un server di gioco in cui diverse ciurme hanno concordato di formare un’alleanza strategica e cooperare per il reciproco vantaggio. Su questi server, i giocatori condividono gli stessi obiettivi, come raccogliere tesori o completare missioni, e si impegnano a non attaccarsi a vicenda. L’idea è che tutti i membri traggano beneficio dalle ricompense, ottimizzando così il profitto e l’esperienza di gioco per ciascuno. Questo crea un ambiente in cui i giocatori possono concentrarsi sul lavoro di squadra e sull’esplorazione, piuttosto che sulla competizione, offrendo un’avventura più rilassata e basata sulla comunità.",
       "title": "Cos'è un server dell'alleanza in Sea of Thieves?"
     }
+  },
+  "seo": {
+    "home": {
+      "title": "BetterFleet — get your Sea of Thieves crew on the same server",
+      "description": "Free, open-source app that syncs your crew’s Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."
+    },
+    "tutorial": {
+      "title": "How to get your crew on the same server — BetterFleet",
+      "description": "Step by step: install BetterFleet, create an alliance, share the code and use the shared countdown so your whole Sea of Thieves crew lands on one server."
+    },
+    "support": {
+      "title": "Help and FAQ — BetterFleet",
+      "description": "Answers about installing and updating BetterFleet, whether it is safe to use with Sea of Thieves, what happens to your data, and how to report a problem."
+    },
+    "reports": {
+      "title": "Reports — BetterFleet",
+      "description": "Bug reports sent from the BetterFleet app."
+    }
   }
 }

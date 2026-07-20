@@ -177,5 +177,51 @@ footer {
       color: var(--primary);
     }
   }
+
+  // The footer is three columns in a row that never wrapped, and `body { overflow-x: hidden }` meant
+  // it never looked broken either: at 375px the last card sat at x=677 and was simply clipped away.
+  // Nothing scrolled, nothing overlapped, the GitHub link and the warning just were not there.
+  @media (max-width: $lap) {
+    .main-footer {
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 16px;
+
+      .card,
+      .card-wrapper {
+        // flex-basis and the 300px floor are what forced the row wider than the screen; stacked, the
+        // cards want the column's width and nothing else.
+        flex-basis: auto;
+        max-width: 520px;
+      }
+
+      .card.github {
+        min-width: 0;
+      }
+    }
+  }
+
+  @media (max-width: $palm) {
+    .main-footer {
+      padding: 32px 12px;
+
+      .card {
+        padding: 20px;
+        gap: 20px; // 35px of gap on a 3-line card is most of the card
+
+        p {
+          font-size: 16px;
+        }
+      }
+    }
+
+    .credit-wrapper {
+      // This site has no global border-box, so padding on a width:100% block adds to it and runs off
+      // screen. Anything given padding here has to opt in.
+      box-sizing: border-box;
+      padding: 16px 12px;
+      text-align: center;
+    }
+  }
 }
 </style>

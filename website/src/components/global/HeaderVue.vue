@@ -89,4 +89,69 @@ header {
     color: var(--warning);
   }
 }
+
+// The nav is absolutely centred on the bar, so it does not take part in the row's layout and nothing
+// pushes it aside. Below roughly 900px it simply sits on top of the logo — at 375px "Accueil" is
+// printed across the ship. Logo, nav and the download button want 453px between them, so one row
+// cannot hold them here; the nav drops to its own line instead.
+@media (max-width: $lap) {
+  header {
+    height: auto;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 12px 16px;
+    // The torn-edge background is a 1200px-wide tile anchored at 95%; on a short bar it crops to a
+    // sliver, so it is anchored to the bottom and allowed to scale down with the bar.
+    background-position: 50% 100%;
+    background-size: 900px 108px;
+
+    nav {
+      position: static;
+      transform: none;
+      order: 3;
+      width: 100%;
+      justify-content: center;
+      gap: 32px;
+      padding-top: 4px;
+    }
+  }
+
+  // Absolutely placed 50px down the page to tuck under a 90px bar. The bar is taller than that once
+  // the nav wraps, so it flows after the header instead of being pinned into it.
+  .header-details {
+    position: static;
+    height: 90px;
+    background-size: 900px 108px;
+  }
+}
+
+@media (max-width: $palm) {
+  header {
+    img {
+      height: 44px;
+    }
+
+    nav {
+      gap: 20px;
+      font-size: 15px;
+    }
+  }
+
+  .header-details {
+    gap: 12px;
+    // width: 100% with no border-box: the padding is added to it and the bar runs 24px off screen.
+    box-sizing: border-box;
+    padding: 0 12px;
+    height: 78px;
+
+    img {
+      height: 32px;
+    }
+
+    p {
+      font-size: 14px;
+      text-align: center;
+    }
+  }
+}
 </style>

@@ -31,6 +31,11 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: "modern-compiler", // or "modern"
+        // $lap / $palm reach every <style lang="scss"> block without each one importing them. They
+        // have to be Sass variables rather than the CSS custom properties in style.scss, because a
+        // custom property cannot be read inside a @media query — it is resolved on elements, and a
+        // media query has no element to resolve against.
+        additionalData: '@use "@/assets/breakpoints" as *;',
       },
     },
   },

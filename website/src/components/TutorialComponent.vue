@@ -160,5 +160,68 @@ const stepAmount = 7;
       border-radius: 8px;
     }
   }
+
+  @media (max-width: $lap) {
+    .banner {
+      height: auto;
+      min-height: 320px;
+      padding: 48px 20px;
+
+      h1 {
+        font-size: 34px;
+        text-align: center;
+      }
+
+      p {
+        // Same as the support banner: 64px a side leaves 247px, and half of that is 124px.
+        max-width: 100%;
+        text-align: center;
+      }
+    }
+
+    .tutorial-content {
+      gap: 56px;
+      padding: 0 16px;
+      box-sizing: border-box;
+
+      .step {
+        // 341px plus the section's padding runs off a 375px screen. The plaque behind it is
+        // background art, so it follows the width down.
+        width: 100%;
+        max-width: 341px;
+        height: auto;
+        min-height: 72px;
+        padding: 12px 16px;
+        box-sizing: border-box;
+
+        p {
+          font-size: 22px;
+        }
+      }
+
+      img {
+        max-width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: $palm) {
+    .banner {
+      padding: 40px 14px;
+      min-height: 260px;
+
+      h1 {
+        font-size: 27px;
+      }
+    }
+
+    .tutorial-content {
+      gap: 40px;
+
+      .step p {
+        font-size: 18px;
+      }
+    }
+  }
 }
 </style>

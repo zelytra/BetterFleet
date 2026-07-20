@@ -165,6 +165,82 @@ section {
       }
     }
   }
+
+  @media (max-width: $lap) {
+    gap: 48px;
+
+    h1 {
+      font-size: 44px;
+
+      &:after {
+        width: min(451px, 88vw);
+        background-size: contain;
+      }
+    }
+
+    .slider-wrapper {
+      // The board art is `contain`, so on a narrow screen it scales to the width and its height
+      // collapses (135px at 375px wide) while the stacked content needs far more — the text would
+      // run straight off the bottom of the board. Stretched, it frames whatever height the content
+      // turns out to be.
+      background-size: 100% 100%;
+      max-height: none;
+      height: auto;
+
+      .slider-nav {
+        // Three 250px tabs plus their gaps want 774px.
+        position: static;
+        transform: none;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 0 8px;
+
+        span {
+          width: auto;
+          flex: 1 1 auto;
+          min-width: 0;
+          max-width: 250px;
+          padding: 8px 12px;
+          font-size: 15px;
+        }
+      }
+
+      .content-wrapper .content {
+        flex-direction: column;
+        // 92px a side is half a phone screen.
+        padding: 32px 20px;
+        gap: 28px;
+
+        .side-content {
+          max-width: 100%;
+          align-items: center;
+          text-align: center;
+
+          &.image img {
+            max-width: 60%;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: $palm) {
+    gap: 32px;
+
+    h1 {
+      font-size: 34px;
+    }
+
+    .slider-wrapper .slider-nav span {
+      font-size: 13px;
+      padding: 8px 6px;
+    }
+
+    .slider-wrapper .content-wrapper .content {
+      padding: 24px 14px;
+    }
+  }
 }
 
 .v-enter-active,

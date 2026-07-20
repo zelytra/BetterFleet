@@ -4,27 +4,79 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BetterFleet</title>
-    <meta content="BetterFleet" property="og:title" />
-    <meta
-      content="Unleash your pirating potential in Sea of Thieves by effortlessly creating and managing your alliance. Join forces, dominate the seas, and discover treasures together with our intuitive app. Perfect for players looking to enhance their multiplayer experience and streamline coordination across the vast oceans. Set sail towards victory with BetterFleet today!"
-      property="og:description"
-    />
-    <meta content="https://betterfleet.fr" property="og:url" />
-    <meta content="https:/betterfleet/banner.webp" property="og:image" />
-    <meta content="#32D499" data-react-helmet="true" name="theme-color" />
+
+    <!--
+      What a crawler that runs no JavaScript sees, which is all of them except Google: this app ships
+      an empty <div id="app">, so Discord, Slack, Bing and every social preview stop here. The app
+      rewrites title/description/canonical per route on navigation (src/objects/seo/Meta.ts) for the
+      one crawler that does render.
+    -->
+    <title>BetterFleet — get your Sea of Thieves crew on the same server</title>
     <meta
       name="description"
-      content="Unleash your pirating potential in Sea of Thieves by effortlessly creating and managing your alliance. Join forces, dominate the seas, and discover treasures together with our intuitive app. Perfect for players looking to enhance their multiplayer experience and streamline coordination across the vast oceans. Set sail towards victory with BetterFleet today!"
+      content="Free, open-source app that syncs your crew's Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."
     />
+    <link rel="canonical" href="https://betterfleet.fr/" />
     <meta name="robots" content="index,follow" />
-    <meta name="twitter:title" content="BetterFleet" />
+    <meta name="theme-color" content="#32D499" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BetterFleet" />
+    <meta
+      property="og:title"
+      content="BetterFleet — get your Sea of Thieves crew on the same server"
+    />
+    <meta
+      property="og:description"
+      content="Free, open-source app that syncs your crew's Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."
+    />
+    <meta property="og:url" content="https://betterfleet.fr/" />
+    <!-- Was "https:/betterfleet/banner.webp" — one slash, and no .fr. It resolved to nothing, so
+         every share on Discord, Twitter and Facebook had no preview image at all. -->
+    <meta property="og:image" content="https://betterfleet.fr/banner.webp" />
+    <meta
+      property="og:image:alt"
+      content="The BetterFleet app listing a Sea of Thieves crew and the servers they are on"
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="BetterFleet — get your Sea of Thieves crew on the same server"
+    />
     <meta
       name="twitter:description"
-      content="Unleash your pirating potential in Sea of Thieves by effortlessly creating and managing your alliance. Join forces, dominate the seas, and discover treasures together with our intuitive app. Perfect for players looking to enhance their multiplayer experience and streamline coordination across the vast oceans. Set sail towards victory with BetterFleet today!"
+      content="Free, open-source app that syncs your crew's Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."
     />
-    <meta name="twitter:image" content="https://betterfleet/banner.webp" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <!-- The .fr was missing here too. -->
+    <meta name="twitter:image" content="https://betterfleet.fr/banner.webp" />
+
+    <!--
+      States what this is — an application, free, for Windows — instead of leaving a search engine to
+      infer it from prose. This is the shape that can earn a rich result.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "BetterFleet",
+        "url": "https://betterfleet.fr/",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Windows",
+        "description": "Free, open-source app that syncs a Sea of Thieves crew's Set sail so everyone lands on the same server.",
+        "image": "https://betterfleet.fr/banner.webp",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR"
+        },
+        "isAccessibleForFree": true,
+        "sameAs": [
+          "https://github.com/zelytra/BetterFleet",
+          "https://discord.gg/sHPp5CPxf2"
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>

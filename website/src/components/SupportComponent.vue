@@ -196,5 +196,61 @@ section {
       }
     }
   }
+
+  @media (max-width: $lap) {
+    .banner {
+      height: auto;
+      min-height: 320px;
+      padding: 48px 20px;
+
+      h1 {
+        font-size: 34px;
+        text-align: center;
+      }
+
+      p {
+        // 64px of padding a side leaves 247px on a 375px screen; half of that is a 124px column.
+        max-width: 100%;
+        text-align: center;
+      }
+    }
+
+    .faq {
+      margin: 48px auto;
+      // 80vw keeps a 10% margin either side that a phone cannot spare.
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 14px;
+      min-height: 0;
+
+      h1 {
+        font-size: 26px;
+        margin-bottom: 24px;
+        text-align: center;
+      }
+
+      // A URL has no spaces to break at, so it sets the width of everything around it.
+      a {
+        word-break: break-word;
+      }
+
+      ul {
+        margin-left: 18px;
+        padding-left: 0;
+      }
+    }
+  }
+
+  @media (max-width: $palm) {
+    .banner {
+      padding: 40px 14px;
+      min-height: 260px;
+
+      h1 {
+        font-size: 27px;
+      }
+    }
+  }
 }
 </style>
