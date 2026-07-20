@@ -41,8 +41,17 @@ public class SotServer {
     }
 
     public String generateHash() {
-        // Combine IP and port into a single string
-        String input = this.ip + ":" + this.port;
+        // A server is identified by its IP alone, not ip:port.
+        //
+        // Sea of Thieves hands each client on a server its own UDP port on the same host, so ip:port
+        // made every crewmate on one server look like a separate server: issue #364 captured four
+        // players demonstrably sailing together on 51.103.45.67, on ports 30970 / 31106 / 31242 /
+        // 31310, split into four cards. The port is per-connection noise; the host is the server.
+        //
+        // This is also what the client has always assumed - GameSync.ts decides "did I change
+        // servers?" on `player.server.ip != rustSotServer.ip`, never the port. The backend hash was
+        // the one place that disagreed.
+        String input = this.ip;
 
         // Use SHA-256 hash function
         MessageDigest digest = null;
@@ -80,7 +89,7 @@ public class SotServer {
 
     /**
      * Set once the geolocation lands, which happens after the server is already visible to the
-     * fleet. Not part of {@link #generateHash()} (that is ip:port), so filling it in later keeps
+     * fleet. Not part of {@link #generateHash()} (that is the IP), so filling it in later keeps
      * the server's identity stable.
      */
     public void setLocation(String location) {
