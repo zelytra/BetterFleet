@@ -75,10 +75,17 @@ function getBackgroundColor(): string {
 
   .server-title {
     font-size: 16px;
-    text-align: center;
     color: var(--primary-text);
     margin: 0;
     padding: 7px 8px;
+    // Lay the hash and the bubble out as a centred row: vertical-align on an inline bubble aligns to
+    // the text's x-height, which sits low under the uppercase hash and made the "i" look bottom-
+    // aligned. align-items: center lines them up by their box centres instead. Wraps for long names.
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
   }
 
   // A small info bubble beside the hash (#662): hovering it shows the server's ip:port. Faint so it
@@ -87,8 +94,6 @@ function getBackgroundColor(): string {
   .info-bubble {
     display: inline-flex;
     align-items: center;
-    vertical-align: middle;
-    margin-left: 6px;
     cursor: help;
     color: rgba(255, 255, 255, 0.65);
     transition: color 0.15s ease;

@@ -65,7 +65,7 @@
     </BannerTemplate>
     <div class="lobby-content">
       <div class="player-table">
-        <div v-if="computedSession.servers.size > 0">
+        <div v-if="computedSession.servers.size > 0" class="server-list">
           <ServerContainer
             v-for="[hash, server] of getFilteredSotServer()"
             :key="hash"
@@ -595,6 +595,14 @@ function onContextAction(action: string) {
       flex-direction: column;
       gap: 10px;
       width: 100%;
+
+      // The servers live in this wrapper, so the player-table's own gap sits *around* the group,
+      // not between the cards inside it — without this they stacked flush and touched.
+      .server-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
 
       .player-fleet-card {
         margin: 0 8px;
