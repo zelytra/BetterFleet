@@ -12,13 +12,13 @@ use std::time::{Duration, Instant};
 
 use etherparse::PacketHeaders;
 use log::error;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tokio::net::UdpSocket;
 
 use crate::fetch_informations::{create_raw_socket, get_hostname, is_plausible_sot_port};
 
 /// One observed UDP conversation between a game-owned local port and a remote peer.
-#[derive(Serialize, Clone, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct FlowStat {
     pub local_port: u16,
     pub remote_ip: String,
@@ -364,6 +364,45 @@ mod tests {
         assert_eq!(server.remote_ip, "20.216.148.125");
         assert_eq!(server.remote_port, 30101);
         assert_eq!(server.local_port, 59230);
+    }
+
+    // The issue #657 corpus: four players provably on one server, captured in game, loaded from the
+    // shared fixture (tests/fixtures/detection-corpus.json) — the same data archived in that issue.
+    // It guards two things at once: pick_server_flow picks the busy game-server flow for each, and
+    // all four resolve to one server (the crew is one server, which #656 fixed on the backend by
+    // hashing the IP rather than ip:port).
+    #[test]
+    fn issue_657_corpus_one_crew_resolves_to_one_server() {
+        #[derive(Deserialize)]
+        struct Capture {
+            player: String,
+            flows: Vec<FlowStat>,
+        }
+
+        let corpus: Vec<Capture> =
+            serde_json::from_str(include_str!("../tests/fixtures/detection-corpus.json"))
+                .expect("the detection corpus fixture must parse");
+        assert_eq!(corpus.len(), 4, "the corpus should carry all four captures");
+
+        let mut server_ips = HashSet::new();
+        for capture in &corpus {
+            let server = pick_server_flow(&capture.flows, 5)
+                .unwrap_or_else(|| panic!("{}: a server should be picked", capture.player));
+            // The busy game-server flow, never the sparse shared relay. That relay
+            // (20.33.49.115:31260, 6-12 packets) is above the 5-packet floor and in the SoT range,
+            // so the floor does not reject it — only the volume ranking does.
+            assert_eq!(
+                server.remote_ip, "51.103.45.67",
+                "{}: picked the wrong flow",
+                capture.player
+            );
+            server_ips.insert(server.remote_ip.clone());
+        }
+        assert_eq!(
+            server_ips.len(),
+            1,
+            "four players on one server must resolve to one server ip"
+        );
     }
 
     #[test]
