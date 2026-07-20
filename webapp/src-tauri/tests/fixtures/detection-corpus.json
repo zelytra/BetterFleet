@@ -1,0 +1,126 @@
+[
+  {
+    "player": "player 1",
+    "pid": 20968,
+    "note": "in game, on 51.103.45.67 with the rest of the crew",
+    "flows": [
+      {
+        "local_port": 61390,
+        "remote_ip": "51.103.45.67",
+        "remote_port": 30970,
+        "packets": 1799,
+        "bytes": 210012,
+        "inbound": 1200,
+        "outbound": 599,
+        "plausible_sot_port": true,
+        "first_seen_ms": 5,
+        "last_seen_ms": 19982
+      },
+      {
+        "local_port": 51485,
+        "remote_ip": "20.33.49.115",
+        "remote_port": 31260,
+        "packets": 12,
+        "bytes": 912,
+        "inbound": 8,
+        "outbound": 4,
+        "plausible_sot_port": true,
+        "first_seen_ms": 6456,
+        "last_seen_ms": 16492
+      }
+    ]
+  },
+  {
+    "player": "player 2",
+    "pid": 17020,
+    "note": "in game, same server, its own server-side port",
+    "flows": [
+      {
+        "local_port": 56792,
+        "remote_ip": "51.103.45.67",
+        "remote_port": 31310,
+        "packets": 1308,
+        "bytes": 145414,
+        "inbound": 595,
+        "outbound": 713,
+        "plausible_sot_port": true,
+        "first_seen_ms": 0,
+        "last_seen_ms": 19999
+      },
+      {
+        "local_port": 55474,
+        "remote_ip": "20.33.49.115",
+        "remote_port": 31260,
+        "packets": 8,
+        "bytes": 608,
+        "inbound": 4,
+        "outbound": 4,
+        "plausible_sot_port": true,
+        "first_seen_ms": 2683,
+        "last_seen_ms": 12753
+      }
+    ]
+  },
+  {
+    "player": "player 3",
+    "pid": 2940,
+    "note": "in game, same server; note only two UDP ports total, no SDR swarm",
+    "flows": [
+      {
+        "local_port": 54070,
+        "remote_ip": "51.103.45.67",
+        "remote_port": 31106,
+        "packets": 1254,
+        "bytes": 141415,
+        "inbound": 600,
+        "outbound": 654,
+        "plausible_sot_port": true,
+        "first_seen_ms": 7,
+        "last_seen_ms": 20013
+      },
+      {
+        "local_port": 3074,
+        "remote_ip": "20.33.49.115",
+        "remote_port": 31260,
+        "packets": 8,
+        "bytes": 608,
+        "inbound": 4,
+        "outbound": 4,
+        "plausible_sot_port": true,
+        "first_seen_ms": 2305,
+        "last_seen_ms": 12339
+      }
+    ]
+  },
+  {
+    "player": "player 4",
+    "pid": 18828,
+    "note": "in game, same server, its own server-side port",
+    "flows": [
+      {
+        "local_port": 52784,
+        "remote_ip": "51.103.45.67",
+        "remote_port": 31242,
+        "packets": 1103,
+        "bytes": 125864,
+        "inbound": 599,
+        "outbound": 504,
+        "plausible_sot_port": true,
+        "first_seen_ms": 3,
+        "last_seen_ms": 20006
+      },
+      {
+        "local_port": 56486,
+        "remote_ip": "20.33.49.115",
+        "remote_port": 31260,
+        "packets": 6,
+        "bytes": 456,
+        "inbound": 3,
+        "outbound": 3,
+        "plausible_sot_port": true,
+        "first_seen_ms": 5347,
+        "last_seen_ms": 15373
+      }
+    ]
+  }
+]
