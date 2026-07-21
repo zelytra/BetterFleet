@@ -1,7 +1,7 @@
 {
   "alert": {
     "alreadyConnected": {
-      "content": "Du bist bereits in dieser Sitzung, in einem anderen Fenster oder auf einem anderen Gerät. Schließe es und versuche es erneut.",
+      "content": "Sie befinden sich bereits in dieser Sitzung in einem anderen Fenster oder Gerät. Schließen Sie sie und versuchen Sie es erneut.",
       "title": "Bereits verbunden"
     },
     "badRequest": {
@@ -91,11 +91,11 @@
   },
   "config": {
     "banner": {
-      "description": "Das Banner deiner Sitzungen, in der Lobby und in der Sitzungsliste.",
+      "description": "Der Banner Ihrer gehosteten Sitzungen, in der Lobby und im Session-Browser.",
       "pick": "Banner {number}",
       "shuffle": {
-        "check": "Banner zufällig wählen",
-        "description": "Wählt bei jeder Sitzung, die du hostest, ein anderes Banner"
+        "check": "Die Banner zufällig mischen",
+        "description": "Wählt jedes Mal, wenn Sie eine Sitzung hosten, einen anderen Banner aus"
       }
     },
     "device": {
@@ -116,7 +116,7 @@
     },
     "part": {
       "audio": "Audio",
-      "banner": "Sitzungsbanner",
+      "banner": "Server-Banner",
       "developer": "Entwickler",
       "general": "Allgemein"
     },
@@ -223,7 +223,7 @@
   },
   "session": {
     "empty": {
-      "comment": "Kein Schiff in Sicht, um die Meere zu befahren…",
+      "comment": "Ich rechne damit, dass es kein Schiff gibt, um die Meere mit… zu segeln",
       "title": "Verflixt!"
     },
     "filter": {
@@ -231,14 +231,14 @@
       "private": "Privat",
       "public": "Öffentlich"
     },
-    "issue": "Wenn du auf Probleme stößt, tritt unserem",
+    "issue": "Wenn du irgendwelche Probleme findest, trete unserem bei",
     "or": "ODER",
     "connectedPlayers": "Verbundene Spieler",
     "playerLabel": "Spieler",
     "playersLabel": "Spieler",
     "refresh": "Aktualisieren",
-    "privateHint": "Private Sitzung — frag den Host nach dem Code, um beizutreten.",
-    "searchPlaceholder": "Sitzung suchen…",
+    "privateHint": "Private Sitzung — fragen Sie den Host, ob der Code beitreten soll.",
+    "searchPlaceholder": "Suche eine Sitzung…",
     "autoSetSail": {
       "description": "Setzt automatisch die Segel, sobald alle Spieler bereit sind",
       "label": "Automatisch Segel setzen"
@@ -389,14 +389,14 @@
       "waiting": "Warten"
     },
     "visibility": {
-      "description": "Öffentliche Sitzungen erscheinen in der Liste und stehen allen offen.",
+      "description": "Öffentliche Sitzungen werden im Browser aufgelistet, damit jeder beitreten kann.",
       "label": "Öffentliche Sitzung",
       "private": "Privat",
       "public": "Öffentlich"
     },
     "rename": {
       "label": "Sitzung umbenennen",
-      "placeholder": "Name der Sitzung"
+      "placeholder": "Sitzungsname"
     }
   },
   "tooltips": {
