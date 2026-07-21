@@ -44,6 +44,7 @@ public class SessionManagerTest {
         sessionManager = new SessionManager();
         // Keep server creation offline: no proxycheck.io call, deterministic location.
         sessionManager.proxyCheckAPI = Mockito.mock(ProxyCheckAPI.class);
+        when(sessionManager.proxyCheckAPI.resolveGeo(any())).thenReturn(new ProxyCheckAPI.Geo("", ""));
         when(sessionManager.proxyCheckAPI.resolveLocation(any())).thenReturn("");
     }
 

@@ -4,7 +4,7 @@
       <div class="report-wrapper">
         <h2>{{ t("report.faq.title") }}</h2>
         <p>{{ t("report.faq.content") }}</p>
-        <div>
+        <div class="button-row">
           <a href="https://discord.gg/sHPp5CPxf2" target="_blank">
             <PirateButton :label="t('report.faq.button.discord')" />
           </a>
@@ -37,7 +37,7 @@
           (issue #364). Run it once in the main menu and once in game, then copy
           and share each result.
         </p>
-        <div class="diag-buttons">
+        <div class="button-row">
           <PirateButton
             :label="diagRunning ? 'Capturing…' : 'Capture (main menu)'"
             @on-button-click="runDiagnostic('main menu')"
@@ -145,11 +145,21 @@ async function sendReport() {
     align-items: center;
     gap: 40px;
 
-    .diag-buttons {
+    // A row of PirateButtons (fixed 234x74). The FAQ panel's two buttons had no container layout at
+    // all — each wrapped in an <a>, they fell back to inline anchors: baseline-aligned, with the
+    // whitespace between the tags as an uneven gap. Shared with the diagnostic panel so both read the
+    // same.
+    .button-row {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
       justify-content: center;
+      align-items: center;
+
+      a {
+        // The <a> is the flex item; let it collapse to the button so nothing shifts the alignment.
+        display: flex;
+      }
     }
 
     h2 {

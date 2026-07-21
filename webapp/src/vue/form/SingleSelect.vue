@@ -5,7 +5,11 @@
       :class="{ 'input-wrapper': true, disabled: lock, deploy: isOpen }"
       @click="isOpen = true"
     >
-      <img :src="data.selectedValue.image" alt="flag" />
+      <img
+        v-if="data.selectedValue.image"
+        :src="data.selectedValue.image"
+        alt=""
+      />
       <p>{{ data.selectedValue.display }}</p>
     </div>
     <transition>
@@ -22,7 +26,7 @@
           :key="option.id"
           @click="updateData(option)"
         >
-          <img :src="option.image" alt="flag" />
+          <img v-if="option.image" :src="option.image" alt="" />
           {{ option.display }}
         </span>
       </div>
@@ -31,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, PropType, ref } from "vue";
+import { PropType, ref } from "vue";
 import { InputData, SingleSelectInterface } from "@/vue/form/Inputs.ts";
 
 const isOpen = ref<boolean>(false);
@@ -42,15 +46,11 @@ const props = defineProps({
 });
 const emits = defineEmits(["update:data", "validate"]);
 
-const computedInput = computed({
-  get: (): SingleSelectInterface => props.data,
-  set: (value: SingleSelectInterface): void => {
-    emits("update:data", value);
-  },
-});
-
+// Emits the pick rather than writing it into the bound object: the caller owns its
+// own state. A v-model:data binding picks this up on its own; a plain :data caller
+// has to apply it in its @update:data handler.
 function updateData(option: InputData) {
-  computedInput.value.selectedValue = option;
+  emits("update:data", { ...props.data, selectedValue: option });
   isOpen.value = false;
 }
 </script>
@@ -121,7 +121,7 @@ function updateData(option: InputData) {
     background: var(--secondary-background);
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: absolute;
-    top: 70px;
+    top: calc(100% + 4px);
     display: flex;
     flex-direction: column;
     width: 100%;

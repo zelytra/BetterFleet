@@ -1,44 +1,43 @@
 <template>
-  <section class="choice-wrapper">
-    <SessionCard
-      :title="t('session.choice.createSession')"
-      @click="createSession"
-    >
-      <p>{{ t("session.choice.createComment") }}</p>
-    </SessionCard>
-    <SessionCard
-      :title="t('session.choice.joinSession')"
-      :background="'linear-gradient(270deg, rgba(50, 144, 212, 0.20) 0%, rgba(50, 144, 212, 0.07) 108.45%)'"
-      @click="isModalOpen = true"
-    >
-      <p>{{ t("session.choice.joinComment") }}</p>
-    </SessionCard>
-    <modal-template v-model:is-modal-open="isModalOpen">
-      <div class="username-wrapper">
-        <div class="main-content">
-          <h1>{{ t("session.choice.modal.title") }}</h1>
-          <p>{{ t("session.choice.modal.comment") }}</p>
-          <InputText
-            v-model:input-value="sessionId"
-            placeholder="42B69X"
-            @validate="joinSession"
-          />
-        </div>
-        <button class="big-button" @click="joinSession">
-          <h2>{{ t("session.choice.modal.button") }}</h2>
-        </button>
-      </div>
-    </modal-template>
+  <section class="browser-layout">
+    <PublicSessionBrowser
+      class="left"
+      @join="joinPublic"
+      @code="isModalOpen = true"
+    />
+    <div class="side-container">
+      <MenuActionBar
+        v-model:is-modal-open="isModalOpen"
+        @create-session="createSession"
+      />
+    </div>
   </section>
+  <modal-template v-model:is-modal-open="isModalOpen">
+    <div class="username-wrapper">
+      <div class="main-content">
+        <h1>{{ t("session.choice.modal.title") }}</h1>
+        <p>{{ t("session.choice.modal.comment") }}</p>
+        <InputText
+          v-model:input-value="sessionId"
+          placeholder="42B69X"
+          @validate="joinByCode"
+        />
+      </div>
+      <button class="big-button" @click="joinByCode">
+        <h2>{{ t("session.choice.modal.button") }}</h2>
+      </button>
+    </div>
+  </modal-template>
 </template>
 
 <script setup lang="ts">
-import SessionCard from "@/vue/templates/SessionCard.vue";
+import { PropType, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
-import { PropType, ref, watch } from "vue";
 import ModalTemplate from "@/vue/templates/ModalTemplate.vue";
 import InputText from "@/vue/form/InputText.vue";
+import PublicSessionBrowser from "@/components/fleet/session/PublicSessionBrowser.vue";
+import MenuActionBar from "@/components/fleet/session/MenuActionBar.vue";
 import { AlertType } from "@/vue/alert/Alert.ts";
 import { alertProvider } from "@/main.ts";
 
@@ -50,7 +49,15 @@ const props = defineProps({
   session: { type: Object as PropType<Fleet>, required: true },
 });
 
-async function joinSession() {
+function joinPublic(id: string) {
+  props.session.joinSession(id);
+}
+
+function createSession() {
+  props.session.joinSession("");
+}
+
+async function joinByCode() {
   if (sessionId.value.length == 0) {
     alertProvider.sendAlert({
       content: t("alert.emptySession.content"),
@@ -61,10 +68,6 @@ async function joinSession() {
   }
   await props.session.joinSession(sessionId.value);
   isModalOpen.value = false;
-}
-
-function createSession() {
-  props.session.joinSession("");
 }
 
 watch(isModalOpen, (previous) => {
@@ -79,77 +82,84 @@ watch(sessionId, () => {
 </script>
 
 <style scoped lang="scss">
-.choice-wrapper {
+.browser-layout {
   display: flex;
-  justify-content: center;
-  gap: 10%;
+  gap: 18px;
   height: 100%;
-  align-items: center;
-  transition: all;
+  min-height: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 
-  .username-wrapper {
-    background: var(--secondary-background);
-    border-radius: 5px;
-    overflow: hidden;
-    width: 400px;
+  .left {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .side-container {
+    width: 256px;
+    flex-shrink: 0;
+    // On a tall window the cards flex to fill and nothing scrolls; on a short one the panel
+    // scrolls rather than silently clipping the Discord card. Safe now that hovering brightens
+    // instead of scaling — a scale grew the card past the column and forced a scrollbar.
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+.username-wrapper {
+  background: var(--secondary-background);
+  border-radius: 5px;
+  overflow: hidden;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+
+  .main-content {
+    padding: 50px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    box-sizing: border-box;
+
+    h1 {
+      color: var(--primary);
+      font-size: 40px;
+      font-family: BrushTip, sans-serif;
+      text-align: center;
+    }
+
+    p {
+      color: var(--secondary-text);
+      font-size: 14px;
+      line-height: 20px;
+      text-align: center;
+    }
+  }
+
+  button.big-button {
+    all: unset;
+    cursor: pointer;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 40px;
+    background: linear-gradient(
+      0deg,
+      rgba(50, 144, 212, 0.2) 0%,
+      rgba(50, 144, 212, 0.07) 108.45%
+    );
+    box-sizing: border-box;
     gap: 15px;
-    //margin: 40px;
 
-    .main-content {
-      padding: 50px 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-      box-sizing: border-box;
-
-      h1 {
-        color: var(--primary);
-        font-size: 40px;
-        font-family: BrushTip, sans-serif;
-        text-align: center;
-      }
-
-      p {
-        color: var(--secondary-text);
-        font-size: 14px;
-        line-height: 20px;
-        text-align: center;
-      }
-    }
-
-    button {
-      all: unset;
-      cursor: pointer;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 40px 40px;
-      background: linear-gradient(
-        0deg,
-        rgba(50, 144, 212, 0.2) 0%,
-        rgba(50, 144, 212, 0.07) 108.45%
-      );
-      box-sizing: border-box;
-      gap: 15px;
-
-      h2 {
-        text-align: center;
-        font-size: 20px;
-      }
-
-      p {
-        text-align: center;
-        color: var(--secondary-text);
-        font-size: 16px;
-      }
+    h2 {
+      text-align: center;
+      font-size: 20px;
     }
   }
 }

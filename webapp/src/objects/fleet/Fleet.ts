@@ -7,6 +7,7 @@ import { AlertType } from "@/vue/alert/Alert.ts";
 import { alertProvider } from "@/main.ts";
 import { tsi18n } from "@/objects/i18n";
 import { ActionPlayer, Player } from "@/objects/fleet/Player.ts";
+import { clampBanner, resolveHostBanner } from "@/objects/fleet/Banners.ts";
 import { SotServer } from "@/objects/fleet/SotServer.ts";
 import { LocalTime } from "@js-joda/core";
 import { HTTPAxios } from "@/objects/utils/HTTPAxios.ts";
@@ -22,7 +23,15 @@ export interface FleetStatistics {
 
 export interface FleetInterface {
   sessionId: string;
+  // Seed (0-99) for the default pirate name. The backend cannot localize it —
+  // it doesn't know the client's language — so the client renders it.
   sessionName: string;
+  // Master-set free-text name overriding the default. Null/blank when unset.
+  customName: string | null;
+  isPrivate: boolean;
+  // The app-provided banner template the host chose, copied onto the session at
+  // creation. What the lobby and the browser row render (issue #602).
+  banner: number;
   players: Player[];
   servers: Map<string, SotServer>;
   socket?: WebSocket;
@@ -31,7 +40,16 @@ export interface FleetInterface {
 
 export class Fleet {
   public sessionId: string;
+  // What the lobby shows: the master's custom name, or the localized default.
   public sessionName: string;
+  // The override on its own, so the rename control can tell "no custom name"
+  // (edit an empty field, placeholder showing) from "named exactly that".
+  public customName: string;
+  // Unlisted from the public browser. Backend-owned and master-only: every
+  // client learns of a change through the broadcast UPDATE, never locally.
+  public isPrivate: boolean;
+  // The session's banner template, set by whoever hosted it.
+  public banner: number;
   public players: Player[];
   public servers: Map<string, SotServer>;
   public socket?: WebSocket;
@@ -47,6 +65,9 @@ export class Fleet {
   constructor() {
     this.sessionId = "";
     this.sessionName = "";
+    this.customName = "";
+    this.isPrivate = true; // matches the backend default until the first UPDATE
+    this.banner = 0;
     this.players = [];
     this.servers = new Map<string, SotServer>();
     this.stats = {
@@ -64,6 +85,7 @@ export class Fleet {
 
     UserStore.player.isReady = false;
     UserStore.player.isMaster = false;
+    this.isPrivate = true; // never flash "public" for the previous session's state
     this.autoSetSail = false;
     this.autoSetSailFired = false;
 
@@ -106,7 +128,16 @@ export class Fleet {
 
       if (!this.socket) return;
       const message: WebSocketMessage = {
-        data: UserStore.player,
+        data: {
+          ...UserStore.player,
+          // An empty id means "create", and only then does the backend read this. Resolved into
+          // the payload rather than onto the player: shuffle picks a banner for *this* session,
+          // and writing it back would quietly overwrite the pick they made in Settings.
+          banner:
+            sessionId.length === 0
+              ? resolveHostBanner(UserStore.player)
+              : UserStore.player.banner,
+        },
         messageType: WebSocketMessageType.CONNECT,
       };
       this.socket.send(JSON.stringify(message));
@@ -156,9 +187,12 @@ export class Fleet {
         }
         case WebSocketMessageType.CONNECTION_REFUSED: {
           info("[Fleet.ts][WebSocket] Receive CONNECTION_REFUSED message");
+          // The backend only refuses one thing: this account is already in this session on a live
+          // socket. Saying so beats the literal "REFUSED" this used to put on screen, which named
+          // neither the cause nor the way out.
           alertProvider.sendAlert({
-            content: "REFUSED",
-            title: t("alert.sessionNotFound.title"),
+            content: t("alert.alreadyConnected.content"),
+            title: t("alert.alreadyConnected.title"),
             type: AlertType.ERROR,
           });
           break;
@@ -197,7 +231,14 @@ export class Fleet {
 
   private handleFleetUpdate(receivedFleet: FleetInterface) {
     this.sessionId = receivedFleet.sessionId;
-    this.sessionName = t("session.name." + receivedFleet.sessionName);
+    this.customName = receivedFleet.customName ?? "";
+    // A master-set name wins; otherwise localize the seed the backend sent.
+    this.sessionName =
+      this.customName.length > 0
+        ? this.customName
+        : t("session.name." + receivedFleet.sessionName);
+    this.isPrivate = receivedFleet.isPrivate;
+    this.banner = clampBanner(receivedFleet.banner);
     this.players = receivedFleet.players;
     this.servers = new Map(Object.entries(receivedFleet.servers));
     this.stats = receivedFleet.stats;
@@ -259,6 +300,42 @@ export class Fleet {
       messageType: WebSocketMessageType.START_COUNTDOWN,
     };
     info("[Fleet.ts][WebSocket] User run countdown to session");
+    this.socket.send(JSON.stringify(message));
+  }
+
+  /**
+   * Master-only: gives the session a custom, everyone-visible name. An empty
+   * string clears it and the default pirate name comes back.
+   *
+   * Like {@link setVisibility}, nothing changes locally: the backend re-checks
+   * the master role, trims, caps and content-filters the name, then broadcasts.
+   * A name the filter rejects therefore simply never appears.
+   */
+  renameSession(name: string): void {
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: name,
+      messageType: WebSocketMessageType.RENAME_SESSION,
+    };
+    info("[Fleet.ts][WebSocket] User renamed the session");
+    this.socket.send(JSON.stringify(message));
+  }
+
+  /**
+   * Master-only: lists or unlists the session in the public browser. Nothing is
+   * changed locally — the backend re-checks the master role, then broadcasts the
+   * new state to the whole session, so a non-master's forged message is ignored
+   * and every client (this one included) settles on the server's answer.
+   */
+  setVisibility(isPrivate: boolean): void {
+    if (!this.socket) return;
+    const message: WebSocketMessage = {
+      data: isPrivate,
+      messageType: WebSocketMessageType.SET_VISIBILITY,
+    };
+    info(
+      "[Fleet.ts][WebSocket] User set session visibility, private=" + isPrivate,
+    );
     this.socket.send(JSON.stringify(message));
   }
 

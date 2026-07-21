@@ -37,18 +37,19 @@ public class GeoLocationResolver {
     });
 
     /**
-     * Looks the server's location up and broadcasts it to every fleet showing that server. Returns
-     * immediately; does nothing if the location is already known or another lookup is in flight.
+     * Looks the server's geolocation up and broadcasts it to every fleet showing that server, and
+     * to the sessions directory — the country code is what the browser draws a region flag from.
+     * Returns immediately; does nothing if it is already known or another lookup is in flight.
      * <p>
      * Both calls go through the {@link SessionManager} bean rather than being inlined here: that is
-     * what makes the {@code @Lock} interceptor apply to {@code applyServerLocation}.
+     * what makes the {@code @Lock} interceptor apply to {@code applyServerGeo}.
      */
     public void resolveAndBroadcast(SotServer server) {
         geoExecutor.submit(() -> {
             try {
-                String location = sessionManager.lookupLocation(server);
-                if (!location.isEmpty()) {
-                    sessionManager.applyServerLocation(server.generateHash(), location);
+                ProxyCheckAPI.Geo geo = sessionManager.lookupGeo(server);
+                if (!geo.location().isEmpty()) {
+                    sessionManager.applyServerGeo(server.generateHash(), geo);
                 }
             } catch (Exception e) {
                 // submit() would swallow this into a Future nobody reads.

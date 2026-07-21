@@ -1,5 +1,9 @@
 {
   "alert": {
+    "alreadyConnected": {
+      "content": "Tu es déjà dans cette session sur une autre fenêtre ou un autre appareil. Ferme-la, puis réessaie.",
+      "title": "Déjà connecté"
+    },
     "badRequest": {
       "content": "La requête est corrompue ou incorrecte",
       "title": "Mauvaise requête"
@@ -86,6 +90,14 @@
     "sloop": "Sloop"
   },
   "config": {
+    "banner": {
+      "description": "La bannière que portent les sessions que tu héberges, dans le salon comme dans la liste.",
+      "pick": "Bannière {number}",
+      "shuffle": {
+        "check": "Bannière aléatoire",
+        "description": "Choisit une bannière différente à chaque session que tu héberges"
+      }
+    },
     "device": {
       "label": "Plateforme"
     },
@@ -104,6 +116,7 @@
     },
     "part": {
       "audio": "Audio",
+      "banner": "Bannière de session",
       "developer": "Développeur",
       "general": "Général"
     },
@@ -209,6 +222,23 @@
     }
   },
   "session": {
+    "empty": {
+      "comment": "Aucun navire à l'horizon pour prendre la mer…",
+      "title": "Sapristi !"
+    },
+    "filter": {
+      "all": "Toutes",
+      "private": "Privées",
+      "public": "Publiques"
+    },
+    "issue": "Si tu rencontres un problème, rejoins notre",
+    "or": "OU",
+    "connectedPlayers": "Joueurs connectés",
+    "playerLabel": "Joueur",
+    "playersLabel": "Joueurs",
+    "refresh": "Actualiser",
+    "privateHint": "Session privée — demande le code à l'hôte pour la rejoindre.",
+    "searchPlaceholder": "Rechercher une session…",
     "autoSetSail": {
       "description": "Lève l'ancre automatiquement lorsque tous les joueurs sont prêts",
       "label": "Lancement automatique"
@@ -357,6 +387,16 @@
       "countdown": "Lancement dans",
       "ready": "Prêt",
       "waiting": "En attente"
+    },
+    "visibility": {
+      "description": "Les sessions publiques sont visibles dans la liste et ouvertes à tous.",
+      "label": "Session publique",
+      "private": "Privée",
+      "public": "Publique"
+    },
+    "rename": {
+      "label": "Renommer la session",
+      "placeholder": "Nom de la session"
     }
   },
   "tooltips": {

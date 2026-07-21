@@ -67,7 +67,7 @@
       </div>
       <div class="content boat">
         <template v-if="player.boatSize && player.boatSize !== BoatSize.NONE">
-          <img src="@/assets/icons/boat.svg" alt="boat" />
+          <img :src="boatIcon(player.boatSize)" alt="boat" />
           <p>{{ t("boatSize." + player.boatSize.toLowerCase()) }}</p>
         </template>
       </div>
@@ -101,6 +101,7 @@ import {
   PlayerDevice,
   PlayerStates,
 } from "@/objects/fleet/Player.ts";
+import { boatIcon } from "@/objects/fleet/BoatIcons.ts";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import {
   ContributorProvider,

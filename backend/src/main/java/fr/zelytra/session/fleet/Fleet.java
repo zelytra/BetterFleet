@@ -1,5 +1,6 @@
 package fr.zelytra.session.fleet;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -11,14 +12,33 @@ import java.util.stream.Collectors;
 public class Fleet {
 
     private String sessionId;
+
+    // Stable identity for the directory, deliberately unrelated to sessionId: a private session's
+    // code is withheld from the browser, but its row still needs something to be keyed and animated
+    // by. Unguessable, so publishing it gives away nothing.
+    private final String directoryId;
+
     private int sessionName;
+
+    @JsonProperty(value = "isPrivate")
+    private boolean isPrivate;
+
+    private int banner;
+
+    // Optional free-text name set by the master (issue #604); null/blank falls back to the
+    // localized pirate name derived from sessionName.
+    private String customName;
+
     private List<Player> players;
     private final Map<String, SotServer> servers;
     private FleetStats stats;
 
     public Fleet() {
         this.sessionId = UUID.randomUUID().toString().substring(0, 7).toUpperCase();
+        this.directoryId = UUID.randomUUID().toString();
         this.sessionName = (int) (Math.random() * 100);
+        this.isPrivate = true; // sessions are unlisted by default; the master opts into public
+        this.banner = 0;
         this.players = new ArrayList<>();
         this.servers = new HashMap<>();
         this.stats = new FleetStats(0, 0);
@@ -30,6 +50,10 @@ public class Fleet {
 
     public List<Player> getMasters() {
         return this.players.stream().filter(Player::isMaster).collect(Collectors.toList());
+    }
+
+    public String getDirectoryId() {
+        return directoryId;
     }
 
     // Getters and Setters
@@ -47,6 +71,30 @@ public class Fleet {
 
     public void setSessionName(int sessionName) {
         this.sessionName = sessionName;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean isPrivate) {
+        this.isPrivate = isPrivate;
+    }
+
+    public int getBanner() {
+        return banner;
+    }
+
+    public void setBanner(int banner) {
+        this.banner = banner;
+    }
+
+    public String getCustomName() {
+        return customName;
+    }
+
+    public void setCustomName(String customName) {
+        this.customName = customName;
     }
 
     public List<Player> getPlayers() {

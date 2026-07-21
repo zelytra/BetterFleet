@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.fleet.SessionNameFilter;
 import fr.zelytra.session.ip.GeoLocationResolver;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.player.PlayerAction;
@@ -101,6 +102,16 @@ public class SessionSocket {
                 PlayerAction action = objectMapper.convertValue(socketMessage.data(), PlayerAction.class);
                 handlePromote(session, action, false);
             }
+            case SET_VISIBILITY -> {
+                Boolean isPrivate = objectMapper.convertValue(socketMessage.data(), Boolean.class);
+                if (isPrivate != null) {
+                    handleSetVisibility(session, isPrivate);
+                }
+            }
+            case RENAME_SESSION -> {
+                String name = objectMapper.convertValue(socketMessage.data(), String.class);
+                handleRenameSession(session, name);
+            }
             case START_COUNTDOWN -> handleStartCountdown(session);
             case CLEAR_STATUS -> handleClearStatus(session);
             case KEEP_ALIVE -> {
@@ -172,6 +183,64 @@ public class SessionSocket {
         sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
     }
 
+    /**
+     * Toggles the session's public/private visibility. Only the fleet master may change it — the
+     * client is never trusted to assert this itself (same authorization rules as {@link #handleKick}).
+     * A private session stays unlisted and joinable only by its code; a public one becomes eligible
+     * for the public sessions directory.
+     */
+    private void handleSetVisibility(Session session, boolean isPrivate) {
+        Player requester = sessionManager.getPlayerFromSessionId(session.getId());
+        if (requester == null) {
+            return;
+        }
+        Fleet fleet = sessionManager.getFleetByPlayerName(requester.getUsername());
+        if (fleet == null) {
+            return;
+        }
+        if (!requester.isMaster()) {
+            Log.warn("[" + fleet.getSessionId() + "] " + requester.getUsername() + " attempted to change visibility without master rights, ignored");
+            return;
+        }
+        fleet.setPrivate(isPrivate);
+        Log.info("[" + fleet.getSessionId() + "] visibility set to " + (isPrivate ? "private" : "public") + " by " + requester.getUsername());
+        sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        sessionManager.publishDirectoryChange();
+    }
+
+    /**
+     * Sets (or clears) the session's custom name. Master-only, like the other session-level
+     * controls. The name is trimmed and length-capped, and rejected when it trips the content
+     * filter — public names are visible to everyone (issue #604). An empty name clears the custom
+     * name and falls back to the default localized pirate name.
+     */
+    private void handleRenameSession(Session session, String name) {
+        Player requester = sessionManager.getPlayerFromSessionId(session.getId());
+        if (requester == null) {
+            return;
+        }
+        Fleet fleet = sessionManager.getFleetByPlayerName(requester.getUsername());
+        if (fleet == null) {
+            return;
+        }
+        if (!requester.isMaster()) {
+            Log.warn("[" + fleet.getSessionId() + "] " + requester.getUsername() + " attempted to rename the session without master rights, ignored");
+            return;
+        }
+        String cleaned = SessionNameFilter.clean(name);
+        if (cleaned.isEmpty()) {
+            fleet.setCustomName(null); // revert to the default localized pirate name
+        } else if (!SessionNameFilter.isAllowed(cleaned)) {
+            Log.warn("[" + fleet.getSessionId() + "] rename rejected by the content filter, ignored");
+            return;
+        } else {
+            fleet.setCustomName(cleaned);
+        }
+        Log.info("[" + fleet.getSessionId() + "] renamed to '" + fleet.getCustomName() + "' by " + requester.getUsername());
+        sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        sessionManager.publishDirectoryChange();
+    }
+
     private void handleClearStatus(Session session) {
 
         SessionManager manager = sessionManager;
@@ -222,8 +291,9 @@ public class SessionSocket {
         SotServer resolved = manager.resolveSotServer(sotServer);
         manager.playerJoinSotServer(player, resolved);
 
-        // Then chase the location off this thread: we are on a vert.x event loop, and proxycheck.io
-        // routinely takes seconds or times out. The location is broadcast when it lands.
+        // Then chase the geolocation off this thread: we are on a vert.x event loop, and
+        // proxycheck.io routinely takes seconds or times out. Location and country code are
+        // broadcast when they land — the country code being what the browser's region flag needs.
         if (resolved.getLocation().isEmpty()) {
             geoLocationResolver.resolveAndBroadcast(sotServer);
         }
@@ -288,6 +358,8 @@ public class SessionSocket {
             player.setMaster(true);
             player.setSocket(session);
             if (fleet != null) {
+                // The creator is the host: seed the session banner from their preference.
+                fleet.setBanner(player.getBanner());
                 sessionManager.broadcastDataToSession(newSessionId, MessageType.UPDATE, fleet);
             }
         } else {

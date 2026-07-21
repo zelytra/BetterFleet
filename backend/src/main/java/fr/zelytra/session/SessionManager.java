@@ -5,7 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.fleet.PublicSession;
+import fr.zelytra.session.fleet.PublicSessionsSnapshot;
 import fr.zelytra.session.ip.ProxyCheckAPI;
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.operators.multi.processors.BroadcastProcessor;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
@@ -27,9 +31,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -47,6 +53,11 @@ public class SessionManager {
 
     // SotServer cached to avoid API spam and faster server response
     private final ConcurrentMap<String, SotServer> sotServers = new ConcurrentHashMap<>();
+
+    // Emits a signal whenever the set of public sessions changes (create / join / leave /
+    // visibility / server), so SSE subscribers (the public sessions browser) refresh. Only
+    // structural changes publish here — ready-state spikes do not — which keeps the stream quiet.
+    private final BroadcastProcessor<Boolean> directoryChanges = BroadcastProcessor.create();
 
     // Servers whose geolocation is being resolved right now, so a crew all reporting the same
     // server at once triggers a single lookup instead of one per player.
@@ -88,6 +99,7 @@ public class SessionManager {
             executor.submit(this::incrementSession);
         }
         Log.info("[" + fleet.getSessionId() + "] Session created !");
+        publishDirectoryChange();
         return fleet.getSessionId();
     }
 
@@ -149,6 +161,7 @@ public class SessionManager {
         }
         fleet.getPlayers().add(player);
         Log.info("[" + sessionId + "] " + player.getUsername() + " Join the session !");
+        publishDirectoryChange();
         return fleet;
     }
 
@@ -203,6 +216,7 @@ public class SessionManager {
         }
 
         //Close the socket if not yet closed
+        publishDirectoryChange();
         closeSocketQuietly(player.getSocket());
     }
 
@@ -328,8 +342,9 @@ public class SessionManager {
      * sight so every fleet shows the same identity (and colour) for it.
      * <p>
      * Performs <b>no I/O and takes no lock</b>. The geolocation happens off this path — see
-     * {@link #lookupLocation} — so a player joins a server immediately and the location catches up.
-     * The location is therefore empty on a first sight; {@link #applyServerLocation} fills it in.
+     * {@link #lookupGeo} — so a player joins a server immediately and the location catches up.
+     * Location and country code are therefore empty on a first sight; {@link #applyServerGeo}
+     * fills them in, which is also when the browser's region flag appears.
      */
     @Lock(Lock.Type.NONE)
     public SotServer resolveSotServer(SotServer server) {
@@ -342,35 +357,38 @@ public class SessionManager {
      * never an event loop: proxycheck.io regularly takes seconds or times out, and this used to
      * stall the vert.x thread that carried the JOIN_SERVER message.
      * <p>
-     * Returns "" when it cannot be resolved, and <b>caches nothing in that case</b>. A cached
-     * failure was permanent: the empty location was stored under the server's hash, every later
-     * join hit that entry, and the server stayed location-less for the lifetime of the process.
-     * Leaving it unresolved costs one retry per join instead.
+     * Returns {@link ProxyCheckAPI.Geo#EMPTY} when it cannot be resolved, and <b>caches nothing
+     * in that case</b>. A cached failure was permanent: the empty geo was stored under the
+     * server's hash, every later join hit that entry, and the server kept neither a location nor
+     * a country code — which is also why its flag never showed up in the browser. Leaving it
+     * unresolved costs one retry per join instead.
      *
-     * @return the resolved location, or "" if it could not be resolved (or another worker is
-     * already resolving this server)
+     * @return the resolved geo, or {@link ProxyCheckAPI.Geo#EMPTY} if it could not be resolved
+     * (or another worker is already resolving this server)
      */
     @Lock(Lock.Type.NONE)
-    public String lookupLocation(SotServer server) {
+    public ProxyCheckAPI.Geo lookupGeo(SotServer server) {
         String hash = server.generateHash();
         SotServer known = sotServers.get(hash);
         if (known != null && !known.getLocation().isEmpty()) {
-            return known.getLocation(); // resolved while this task sat in the queue
+            // Resolved while this task sat in the queue.
+            return new ProxyCheckAPI.Geo(known.getLocation(), known.getCountryCode());
         }
         // One lookup per server at a time: at the end of a countdown a whole crew reports the same
         // server at once, and proxycheck.io is rate-limited.
         if (!geoLookupsInFlight.add(hash)) {
-            return "";
+            return ProxyCheckAPI.Geo.EMPTY;
         }
         try {
             for (int attempt = 1; attempt <= geoAttempts; attempt++) {
-                String location = proxyCheckAPI.resolveLocation(server.getIp());
-                if (!location.isEmpty()) {
+                ProxyCheckAPI.Geo geo = proxyCheckAPI.resolveGeo(server.getIp());
+                if (!geo.location().isEmpty()) {
                     SotServer cached = sotServers.get(hash);
                     if (cached != null) {
-                        cached.setLocation(location);
+                        cached.setLocation(geo.location());
+                        cached.setCountryCode(geo.countryCode());
                     }
-                    return location;
+                    return geo;
                 }
                 if (attempt < geoAttempts) {
                     Thread.sleep(geoRetryDelayMs);
@@ -378,31 +396,39 @@ public class SessionManager {
             }
             Log.warn("Could not geolocate " + server.getIp() + " after " + geoAttempts
                     + " attempts, leaving it unresolved so a later join retries");
-            return "";
+            return ProxyCheckAPI.Geo.EMPTY;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return "";
+            return ProxyCheckAPI.Geo.EMPTY;
         } finally {
             geoLookupsInFlight.remove(hash);
         }
     }
 
     /**
-     * Attaches a freshly resolved location to every fleet already showing that server, and
-     * re-broadcasts so the lobby fills the location in without anyone rejoining.
+     * Attaches a freshly resolved geo to every fleet already showing that server, and
+     * re-broadcasts so the lobby fills the location in without anyone rejoining. Also publishes a
+     * directory change: the country code is what the browser draws the region flag from, so the
+     * list has to hear about it too.
      * <p>
      * Holds the WRITE lock: no I/O may happen here (the sends are async), and the geolocation must
-     * already be done — see {@link #lookupLocation}.
+     * already be done — see {@link #lookupGeo}.
      */
     @Lock(value = Lock.Type.WRITE, time = 200)
-    public void applyServerLocation(String hash, String location) {
+    public void applyServerGeo(String hash, ProxyCheckAPI.Geo geo) {
+        boolean changed = false;
         for (Fleet fleet : sessions.values()) {
             SotServer server = fleet.getServers().get(hash);
             if (server == null || !server.getLocation().isEmpty()) {
                 continue;
             }
-            server.setLocation(location);
+            server.setLocation(geo.location());
+            server.setCountryCode(geo.countryCode());
             broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+            changed = true;
+        }
+        if (changed) {
+            publishDirectoryChange();
         }
     }
 
@@ -433,6 +459,7 @@ public class SessionManager {
         fleet.getServers().get(findedSotServer.getHash()).getConnectedPlayers().add(player);
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " join the SotServer: " + fleet.getServers().get(findedSotServer.getHash()).getHash());
         broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        publishDirectoryChange();
     }
 
     @Lock(value = Lock.Type.READ, time = 200)
@@ -478,6 +505,7 @@ public class SessionManager {
         }
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " leave the SotServer: " + fleetFindedServer.getHash());
         broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        publishDirectoryChange();
     }
 
     @Lock(value = Lock.Type.READ, time = 200)
@@ -488,6 +516,110 @@ public class SessionManager {
     @Lock(value = Lock.Type.READ, time = 200)
     public ConcurrentMap<String, SotServer> getSotServers() {
         return sotServers;
+    }
+
+    /**
+     * Publishes a directory-changed signal to the public sessions SSE stream. Called after any
+     * mutation that can affect the public list.
+     */
+    public void publishDirectoryChange() {
+        directoryChanges.onNext(Boolean.TRUE);
+    }
+
+    /**
+     * The current directory, mapped to the browser's PublicSession DTO. Private sessions are
+     * listed too — see {@link #toPublicSession} for what "private" withholds.
+     */
+    @Lock(value = Lock.Type.READ, time = 200)
+    public List<PublicSession> getPublicSessions() {
+        List<PublicSession> result = new ArrayList<>();
+        for (Fleet fleet : sessions.values()) {
+            result.add(toPublicSession(fleet));
+        }
+        return result;
+    }
+
+    /**
+     * What the browser renders: every session plus the global connected-player count, built in one
+     * pass so both ride the same REST response and the same SSE frame — the counter has to move
+     * live as players come and go, not only when Refresh is pressed.
+     */
+    @Lock(value = Lock.Type.READ, time = 200)
+    public PublicSessionsSnapshot getPublicSessionsSnapshot() {
+        List<PublicSession> publicSessions = new ArrayList<>();
+        int connectedPlayers = 0;
+        for (Fleet fleet : sessions.values()) {
+            connectedPlayers += fleet.getPlayers().size();
+            publicSessions.add(toPublicSession(fleet));
+        }
+        return new PublicSessionsSnapshot(publicSessions, connectedPlayers);
+    }
+
+    /**
+     * SSE-friendly stream: emits the current snapshot on subscription, then a fresh one on every
+     * structural change (create / join / leave / visibility / server) — exactly when either the
+     * session list or the connected-player count can move.
+     * <p>
+     * The overflow strategy is what keeps this stream alive. A subscriber is regularly between
+     * requests — an SSE serializer asks for one event at a time — and {@link BroadcastProcessor}
+     * answers an emission it cannot deliver by <b>terminating that subscriber</b> with a
+     * BackPressureFailure. So any player watching the browser had their stream killed the moment
+     * anyone else created a session, and their list silently froze until they hit Refresh.
+     * <p>
+     * {@code onOverflow} takes unbounded demand from the processor, so it never has "no requests"
+     * to complain about, and holds the tick until the subscriber asks again. Keeping only the
+     * latest is right here: each item is a full snapshot of the directory, so the newest one
+     * subsumes every tick it replaces — a subscriber that falls behind skips intermediate states
+     * rather than accumulating a backlog of stale ones.
+     */
+    public Multi<PublicSessionsSnapshot> streamPublicSessions() {
+        return Multi.createBy().concatenating().streams(
+                Multi.createFrom().item(this::getPublicSessionsSnapshot),
+                directoryChanges
+                        .onOverflow().dropPreviousItems()
+                        // Transform after the overflow, so the snapshot is built when a subscriber
+                        // actually takes it — dropped ticks cost nothing, and what is delivered is
+                        // the directory as it is at that moment, not as it was when the tick fired.
+                        .onItem().transform(ignored -> getPublicSessionsSnapshot())
+        );
+    }
+
+    /**
+     * Projects a fleet for the browser. Private sessions are listed like any other — the browser
+     * shows them with a closed padlock, and their crew count is what makes the directory feel
+     * alive — but their <b>session code is withheld</b>: it is the only thing standing between
+     * "private" and "public", since anyone holding the code can join. A private session is
+     * therefore joinable only by someone the host gave the code to.
+     */
+    private PublicSession toPublicSession(Fleet fleet) {
+        List<String> admins = fleet.getMasters().stream()
+                .map(Player::getUsername)
+                .collect(Collectors.toList());
+        // A master-set custom name wins; otherwise the browser localizes the pirate-name seed.
+        String name = (fleet.getCustomName() != null && !fleet.getCustomName().isBlank())
+                ? fleet.getCustomName()
+                : String.valueOf(fleet.getSessionName());
+        return new PublicSession(
+                fleet.getDirectoryId(),
+                fleet.isPrivate() ? "" : fleet.getSessionId(),
+                primaryRegion(fleet),
+                admins,
+                name,
+                fleet.getPlayers().size(),
+                fleet.isPrivate(),
+                fleet.getBanner());
+    }
+
+    /**
+     * The country-code flag shown for a session: taken from the server carrying the most players,
+     * or "" when no server has been detected yet.
+     */
+    private String primaryRegion(Fleet fleet) {
+        return fleet.getServers().values().stream()
+                .max(Comparator.comparingInt(server -> server.getConnectedPlayers().size()))
+                .map(SotServer::getCountryCode)
+                .filter(code -> code != null && !code.isBlank())
+                .orElse("");
     }
 
     /**

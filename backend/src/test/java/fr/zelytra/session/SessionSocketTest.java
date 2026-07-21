@@ -2,6 +2,8 @@ package fr.zelytra.session;
 
 import fr.zelytra.session.client.BetterFleetClient;
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.fleet.PublicSession;
+import fr.zelytra.session.fleet.PublicSessionsSnapshot;
 import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.BoatSize;
 import fr.zelytra.session.player.Player;
@@ -12,6 +14,8 @@ import fr.zelytra.session.socket.security.SocketSecurityEntity;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.smallrye.mutiny.helpers.test.AssertSubscriber;
+import io.smallrye.mutiny.subscription.Cancellable;
 import jakarta.inject.Inject;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.DeploymentException;
@@ -29,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -60,7 +65,8 @@ class SessionSocketTest {
     @BeforeEach
     void setup() throws URISyntaxException, DeploymentException, IOException {
         Mockito.doReturn(null).when(executorService).submit(any(Runnable.class));
-        // Keep the JOIN_SERVER path offline: no proxycheck.io call, deterministic location.
+        // Keep the JOIN_SERVER path offline: no proxycheck.io call, deterministic geo.
+        Mockito.when(proxyCheckAPI.resolveGeo(any())).thenReturn(new ProxyCheckAPI.Geo("Test Land", "xx"));
         Mockito.when(proxyCheckAPI.resolveLocation(any())).thenReturn("Test Land");
         SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
         this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/");
@@ -411,10 +417,11 @@ class SessionSocketTest {
 
     @Test
     void failedGeolocation_isNotCachedSoTheNextJoinRetries() throws Exception {
-        // The production bug: a timed-out lookup was cached as an empty location under the server's
-        // hash, so every later join hit that entry and the server stayed location-less for the
-        // lifetime of the process — "some players have no location for their server", forever.
-        Mockito.when(proxyCheckAPI.resolveLocation(any())).thenReturn(""); // proxycheck.io timing out
+        // The production bug: a timed-out lookup was cached as an empty geo under the server's hash,
+        // so every later join hit that entry and the server stayed location-less for the lifetime of
+        // the process — "some players have no location for their server", forever. The country code
+        // went the same way, which is why those sessions never grew a flag in the browser either.
+        Mockito.when(proxyCheckAPI.resolveGeo(any())).thenReturn(ProxyCheckAPI.Geo.EMPTY); // timing out
         String sessionId = createSessionAsMaster("Sailor");
 
         joinServer("3.3.3.3", 30101);
@@ -422,12 +429,23 @@ class SessionSocketTest {
         assertEquals("", locationOf(sessionId), "A failed lookup cannot invent a location");
 
         // proxycheck.io comes back, and a later join resolves it — which a cached failure blocked.
-        Mockito.when(proxyCheckAPI.resolveLocation(any())).thenReturn("Recovered Land");
+        Mockito.when(proxyCheckAPI.resolveGeo(any()))
+                .thenReturn(new ProxyCheckAPI.Geo("Recovered Land", "fr"));
         joinServer("3.3.3.3", 30101);
 
         awaitCondition(() -> !locationOf(sessionId).isEmpty(), 2000);
         assertEquals("Recovered Land", locationOf(sessionId),
                 "A failure must not be cached: the next join has to retry the lookup");
+        assertEquals("fr", countryCodeOf(sessionId),
+                "The retry must recover the country code too — that is what the browser's flag needs");
+    }
+
+    /**
+     * The country code the session's one and only server currently carries, server-side.
+     */
+    private String countryCodeOf(String sessionId) {
+        return sessionManager.getSessions().get(sessionId).getServers()
+                .values().iterator().next().getCountryCode();
     }
 
     /**
@@ -476,6 +494,283 @@ class SessionSocketTest {
     }
 
     @Test
+    void newSession_defaultsToPrivate() throws Exception {
+        // A freshly created session must be unlisted by default; going public is an explicit opt-in.
+        String sessionId = createSessionAsMaster("Host");
+        assertTrue(sessionManager.getSessions().get(sessionId).isPrivate(),
+                "A new session must default to private (unlisted)");
+    }
+
+    @Test
+    void masterCanToggleSessionToPublic() throws Exception {
+        String sessionId = createSessionAsMaster("Host");
+
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false); // false = public
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        Fleet broadcast = betterFleetClient.getMessageReceived(Fleet.class);
+        assertFalse(broadcast.isPrivate(), "The broadcast fleet must reflect the new public visibility");
+        assertFalse(sessionManager.getSessions().get(sessionId).isPrivate(),
+                "The authoritative session must be public after the master toggles it");
+    }
+
+    @Test
+    void nonMasterCannotChangeVisibility() throws Exception {
+        String sessionId = createSessionAsMaster("Master");
+        BetterFleetClient memberClient = connectMember("Member", sessionId);
+
+        Player member = new Player();
+        member.setUsername("Member");
+        member.setClientVersion(appVersion.get(0));
+        member.setSessionId(sessionId);
+
+        // The member tries to make the session public, then sends a benign UPDATE. Messages on one
+        // socket are processed in order, so once the UPDATE round-trips the (ignored) toggle is done.
+        memberClient.setLatch(new CountDownLatch(1));
+        memberClient.sendMessage(MessageType.SET_VISIBILITY, false);
+        memberClient.sendMessage(MessageType.UPDATE, member);
+        assertTrue(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        assertTrue(sessionManager.getSessions().get(sessionId).isPrivate(),
+                "A non-master must not be able to change the session visibility");
+    }
+
+    @Test
+    void createSession_seedsBannerFromHostPreference() throws Exception {
+        // The host's chosen banner (a preference sent on CONNECT) is copied onto the session and
+        // broadcast so every member — and the public browser — renders the same banner.
+        Player host = new Player();
+        host.setUsername("Host");
+        host.setClientVersion(appVersion.get(0));
+        host.setBanner(2);
+
+        betterFleetClient.sendMessage(MessageType.CONNECT, host);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        Fleet broadcast = betterFleetClient.getMessageReceived(Fleet.class);
+
+        assertEquals(2, broadcast.getBanner(), "The session banner must be seeded from the host's preference");
+        assertEquals(2, sessionManager.getSessions().get(broadcast.getSessionId()).getBanner());
+    }
+
+    /**
+     * The browser's list is supposed to be live: creating, closing or flipping a session to private
+     * has to push a fresh snapshot down the SSE.
+     */
+    @Test
+    void directoryStream_pushesASnapshotOnEveryChange() throws Exception {
+        List<PublicSessionsSnapshot> received = new CopyOnWriteArrayList<>();
+        Cancellable subscription = sessionManager.streamPublicSessions()
+                .subscribe().with(received::add, failure -> received.clear());
+        try {
+            // A subscriber gets the current state immediately, without asking for it.
+            awaitCondition(() -> !received.isEmpty(), 1000);
+            assertFalse(received.isEmpty(), "Subscribing must deliver the current snapshot");
+            int afterSubscribe = received.size();
+
+            createSessionAsMaster("Host");
+            awaitCondition(() -> received.size() > afterSubscribe, 1000);
+            assertTrue(received.size() > afterSubscribe, "Creating a session must push a snapshot");
+            int afterCreate = received.size();
+            assertEquals(1, received.get(received.size() - 1).sessions().size(),
+                    "The pushed snapshot must contain the new session");
+
+            betterFleetClient.setLatch(new CountDownLatch(1));
+            betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false);
+            assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+            awaitCondition(() -> received.size() > afterCreate, 1000);
+            assertTrue(received.size() > afterCreate, "Going public must push a snapshot");
+            assertFalse(received.get(received.size() - 1).sessions().get(0).isPrivate(),
+                    "The pushed snapshot must carry the new visibility");
+        } finally {
+            subscription.cancel();
+        }
+    }
+
+    @Test
+    void directoryStream_survivesAViewerThatIsNotAskingForEvents() throws Exception {
+        // Reported from production: one player watches the public sessions browser, another creates
+        // a public session, and a BackPressureFailure lands in the logs.
+        //
+        // A subscriber is regularly between requests — an SSE serializer asks for one event at a
+        // time — and BroadcastProcessor answers an emission it cannot deliver by *terminating that
+        // subscriber*. So the viewer's stream died the moment anyone else touched a session, and
+        // their list silently froze until they pressed Refresh. (The emitting player is unaffected:
+        // the failure travels to the subscriber, it does not come back up publishDirectoryChange.)
+        //
+        // The demand is the whole point: subscribing with unbounded demand — which the plain
+        // .subscribe().with() in the test above does — never reproduces this. It takes a subscriber
+        // that stops asking, like the real one.
+        AssertSubscriber<PublicSessionsSnapshot> viewer = watchingViewer();
+
+        sessionManager.publishDirectoryChange(); // another player changes something, viewer idle
+
+        // The failure travels to the subscriber asynchronously, so give it a window to arrive before
+        // concluding that it did not — checking immediately passes even against the broken code.
+        awaitCondition(() -> viewer.getFailure() != null, 500);
+
+        assertNull(viewer.getFailure(),
+                "A viewer that is not currently asking for events must not have its stream killed");
+        viewer.assertNotTerminated();
+        viewer.cancel();
+    }
+
+    @Test
+    void directoryStream_aViewerThatFallsBehindCatchesUpOnTheCurrentState() throws Exception {
+        // Surviving is not enough: the viewer must converge. The ticks it missed collapse into one,
+        // and the next it takes carries the directory as it is now — each snapshot is the whole
+        // state, so the newest subsumes the ones it replaced. (This is why the strategy is
+        // dropPreviousItems and not drop: drop keeps the stream alive but throws away the *new*
+        // tick, leaving the viewer on a stale list — measured, not assumed.)
+        AssertSubscriber<PublicSessionsSnapshot> viewer = watchingViewer();
+        int seen = viewer.getItems().size();
+
+        createSessionAsMaster("Host"); // changes fire while the viewer asks for nothing
+
+        viewer.request(1);
+        viewer.awaitItems(seen + 1);
+        List<PublicSessionsSnapshot> items = viewer.getItems();
+        assertEquals(1, items.get(items.size() - 1).sessions().size(),
+                "Catching up must deliver the directory as it is now, not a stale or missed tick");
+        viewer.cancel();
+    }
+
+    /**
+     * A subscriber in the state the production failure needs: subscribed to the change feed and
+     * currently between requests.
+     * <p>
+     * Both halves matter. The stream only subscribes to the change feed once demand arrives, so a
+     * viewer that never takes an event never reaches the failing path at all — it just misses ticks.
+     * And the failure needs demand to have run out. So: take the initial snapshot, take one change,
+     * and stop asking. That is exactly what an SSE client does between events.
+     */
+    private AssertSubscriber<PublicSessionsSnapshot> watchingViewer() throws Exception {
+        AssertSubscriber<PublicSessionsSnapshot> viewer = sessionManager.streamPublicSessions()
+                .subscribe().withSubscriber(AssertSubscriber.create(1));
+        viewer.awaitItems(1);
+        viewer.request(1);
+        sessionManager.publishDirectoryChange();
+        viewer.awaitItems(2);
+        return viewer; // subscribed, and now asking for nothing
+    }
+
+    @Test
+    void directory_listsPrivateSessionsButWithholdsTheirCode() throws Exception {
+        // Sessions are private by default. They are still listed — the browser shows them with a
+        // closed padlock and their crew count — but the code is what separates private from public,
+        // so publishing it would make "private" mean nothing.
+        createSessionAsMaster("Host");
+
+        List<PublicSession> directory = sessionManager.getPublicSessions();
+        assertEquals(1, directory.size(), "A private session must still be listed");
+        assertTrue(directory.get(0).isPrivate());
+        assertEquals("", directory.get(0).sessionId(),
+                "A private session's code must never be published: it is the only thing making it private");
+        assertEquals(1, directory.get(0).playerAmount(), "The crew count is public either way");
+    }
+
+    @Test
+    void directory_publishesTheCodeOnceTheSessionGoesPublic() throws Exception {
+        String sessionId = createSessionAsMaster("Host");
+
+        // A detected server supplies the region (country code); the master then goes public.
+        joinServer("1.1.1.1", 30101);
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        List<PublicSession> directory = sessionManager.getPublicSessions();
+        assertEquals(1, directory.size());
+        PublicSession listed = directory.get(0);
+        assertFalse(listed.isPrivate());
+        assertEquals(1, listed.playerAmount());
+        assertTrue(listed.admin().contains("Host"), "The master must be listed as an admin");
+        assertEquals("xx", listed.region(), "Region must come from the detected server's country code");
+        assertEquals(sessionId, listed.sessionId(), "A public session's code is joinable from the browser");
+
+        // The connected-player count rides the same snapshot, so the SSE moves it live instead of
+        // it only updating when the user hits Refresh.
+        assertEquals(1, sessionManager.getPublicSessionsSnapshot().connectedPlayers(),
+                "The snapshot must carry the global connected-player count");
+        assertEquals(1, sessionManager.getPublicSessionsSnapshot().sessions().size(),
+                "The snapshot must carry the sessions");
+    }
+
+    @Test
+    void directory_takesTheCodeBackWhenTheSessionGoesPrivateAgain() throws Exception {
+        String sessionId = createSessionAsMaster("Host");
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+        assertEquals(sessionId, sessionManager.getPublicSessions().get(0).sessionId());
+
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, true);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        PublicSession listed = sessionManager.getPublicSessions().get(0);
+        assertTrue(listed.isPrivate(), "The row stays listed, now marked private");
+        assertEquals("", listed.sessionId(), "Going private must take the code back out of the directory");
+    }
+
+    @Test
+    void masterCanRenameSession_broadcastAndReflectedInDirectory() throws Exception {
+        createSessionAsMaster("Host");
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.RENAME_SESSION, "Rum Runners");
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        assertEquals("Rum Runners", betterFleetClient.getMessageReceived(Fleet.class).getCustomName(),
+                "The broadcast fleet must carry the new custom name");
+        assertEquals("Rum Runners", sessionManager.getPublicSessions().get(0).name(),
+                "The custom name must show in the public directory");
+    }
+
+    @Test
+    void nonMasterCannotRenameSession() throws Exception {
+        String sessionId = createSessionAsMaster("Master");
+        BetterFleetClient memberClient = connectMember("Member", sessionId);
+
+        Player member = new Player();
+        member.setUsername("Member");
+        member.setClientVersion(appVersion.get(0));
+        member.setSessionId(sessionId);
+
+        // Rename attempt, then a benign UPDATE. One socket, ordered: once UPDATE round-trips the
+        // (ignored) rename has already been handled.
+        memberClient.setLatch(new CountDownLatch(1));
+        memberClient.sendMessage(MessageType.RENAME_SESSION, "Hacked");
+        memberClient.sendMessage(MessageType.UPDATE, member);
+        assertTrue(memberClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        assertNull(sessionManager.getSessions().get(sessionId).getCustomName(),
+                "A non-master must not be able to rename the session");
+    }
+
+    @Test
+    void renameWithBlockedWord_isRejected() throws Exception {
+        String sessionId = createSessionAsMaster("Host");
+
+        Player host = new Player();
+        host.setUsername("Host");
+        host.setClientVersion(appVersion.get(0));
+        host.setSessionId(sessionId);
+
+        // The rejected rename sends no broadcast; an ordered UPDATE lets us wait deterministically.
+        betterFleetClient.setLatch(new CountDownLatch(1));
+        betterFleetClient.sendMessage(MessageType.RENAME_SESSION, "Shit Crew");
+        betterFleetClient.sendMessage(MessageType.UPDATE, host);
+        assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
+
+        assertNull(sessionManager.getSessions().get(sessionId).getCustomName(),
+                "A name tripping the content filter must be rejected");
+    }
+
+    @Test
     void slowGeolocation_doesNotHoldTheSessionLock() throws Exception {
         // Regression for the production kick storm: the geolocation HTTP call used to run inside
         // playerJoinSotServer's WRITE lock. At the end of a countdown every player joins their
@@ -483,17 +778,17 @@ class SessionSocketTest {
         // LockException -> onError -> session.close() (players kicked), and the dropped
         // JOIN_SERVER left the server hidden until a reconnect (by then a cache hit).
         //
-        // The blocking call now lives in lookupLocation, which is what this drives: the class-level
+        // The blocking call now lives in lookupGeo, which is what this drives: the class-level
         // @Lock makes every method WRITE by default, so dropping its @Lock(Lock.Type.NONE) would
         // bring the whole thing straight back.
-        Mockito.when(proxyCheckAPI.resolveLocation(any())).thenAnswer(invocation -> {
+        Mockito.when(proxyCheckAPI.resolveGeo(any())).thenAnswer(invocation -> {
             Thread.sleep(400); // far longer than the 200ms lock timeout
-            return "Slow Land";
+            return new ProxyCheckAPI.Geo("Slow Land", "xx");
         });
 
         String sessionId = createSessionAsMaster("Master");
 
-        Thread resolving = new Thread(() -> sessionManager.lookupLocation(new SotServer("9.9.9.9", 30101)));
+        Thread resolving = new Thread(() -> sessionManager.lookupGeo(new SotServer("9.9.9.9", 30101)));
         resolving.start();
         awaitCondition(() -> false, 80); // let it get into the slow geolocation
 

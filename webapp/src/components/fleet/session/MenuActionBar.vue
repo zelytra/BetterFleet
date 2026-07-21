@@ -1,0 +1,179 @@
+<template>
+  <div class="menu-wrapper">
+    <div class="refresh" @click="store.refresh()">
+      <h3>{{ t("session.refresh") }}</h3>
+    </div>
+    <div class="player-count">
+      <h3>{{ store.state.connectedPlayers }}</h3>
+      <p>{{ t("session.connectedPlayers") }}</p>
+    </div>
+    <div class="session create" @click="emits('createSession')">
+      <p>{{ t("session.choice.createSession") }}</p>
+      <p class="description">{{ t("session.choice.createComment") }}</p>
+    </div>
+    <h3 class="or">{{ t("session.or") }}</h3>
+    <div class="session join" @click="isModalOpen = true">
+      <p>{{ t("session.choice.joinSession") }}</p>
+      <p class="description">{{ t("session.choice.joinComment") }}</p>
+    </div>
+    <div class="discord">
+      <img src="@/assets/icons/contributors/translator.svg" alt="book" />
+      <p>
+        {{ t("session.issue") }}
+        <a href="https://discord.com/invite/sHPp5CPxf2" target="_blank"
+          >Discord!</a
+        >
+      </p>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useI18n } from "vue-i18n";
+import { PublicSessionsStore } from "@/objects/fleet/PublicSessionsStore.ts";
+
+const { t } = useI18n();
+const store = PublicSessionsStore;
+const isModalOpen = defineModel<boolean>("isModalOpen", {
+  required: false,
+  default: () => false,
+});
+const emits = defineEmits(["createSession"]);
+</script>
+
+<style scoped lang="scss">
+.menu-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+  box-sizing: border-box;
+
+  .or {
+    color: var(--secondary-text);
+  }
+
+  .refresh {
+    background-image: url("@assets/backgrounds/blue-button.svg");
+    background-size: cover;
+    width: 256px;
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    aspect-ratio: 256 / 90;
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+  }
+
+  .player-count {
+    background-image: url("@assets/backgrounds/green-display.svg");
+    background-size: cover;
+    width: 256px;
+    height: 78px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 256 / 78;
+
+    h3 {
+      color: var(--primary);
+    }
+  }
+
+  .session {
+    width: 256px;
+    flex: 1;
+    min-height: 110px;
+    display: flex;
+    box-sizing: border-box;
+    padding: 12px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    gap: 13px;
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+
+    // Dark scrim: the banner artwork is light, so the light label washed out on it. Masked to the
+    // banner's own torn shape so it never spills past the edges.
+    &:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      pointer-events: none;
+      z-index: 1;
+      mask-size: cover;
+      -webkit-mask-size: cover;
+    }
+
+    &.create {
+      background-image: url("@assets/banners/create_session.svg");
+
+      &:after {
+        mask-image: url("@assets/banners/create_session.svg");
+        -webkit-mask-image: url("@assets/banners/create_session.svg");
+      }
+    }
+
+    &.join {
+      background-image: url("@assets/banners/join_session.svg");
+      background-blend-mode: darken;
+
+      &:after {
+        mask-image: url("@assets/banners/join_session.svg");
+        -webkit-mask-image: url("@assets/banners/join_session.svg");
+      }
+    }
+
+    p {
+      z-index: 2;
+      text-align: center;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+
+      &.description {
+        color: var(--secondary-text);
+      }
+    }
+  }
+
+  .discord {
+    background-image: url("@assets/backgrounds/brown-display.svg");
+    background-size: cover;
+    width: 256px;
+    height: 98px;
+    display: flex;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    aspect-ratio: 256 / 98;
+
+    img {
+      width: 60px;
+    }
+
+    p {
+      font-size: 14px;
+      text-align: center;
+      padding: 12px;
+
+      a {
+        color: var(--warning);
+      }
+    }
+  }
+}
+</style>

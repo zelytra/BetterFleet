@@ -1,5 +1,9 @@
 {
   "alert": {
+    "alreadyConnected": {
+      "content": "Sei già in questa sessione su un'altra finestra o un altro dispositivo. Chiudila e riprova.",
+      "title": "Già connesso"
+    },
     "badRequest": {
       "content": "La query è corrotta o errata",
       "title": "Query errata"
@@ -86,6 +90,14 @@
     "sloop": "Sloop"
   },
   "config": {
+    "banner": {
+      "description": "Lo stendardo delle sessioni che ospiti, nella lobby e nell'elenco delle sessioni.",
+      "pick": "Stendardo {number}",
+      "shuffle": {
+        "check": "Stendardo casuale",
+        "description": "Sceglie uno stendardo diverso a ogni sessione che ospiti"
+      }
+    },
     "device": {
       "label": "Piattaforma"
     },
@@ -104,6 +116,7 @@
     },
     "part": {
       "audio": "Audio",
+      "banner": "Stendardo della sessione",
       "developer": "Sviluppatore",
       "general": "Generale"
     },
@@ -209,6 +222,23 @@
     }
   },
   "session": {
+    "empty": {
+      "comment": "Nessuna nave per solcare i mari…",
+      "title": "Perbacco!"
+    },
+    "filter": {
+      "all": "Tutte",
+      "private": "Privata",
+      "public": "Pubblica"
+    },
+    "issue": "Se riscontri problemi, unisciti al nostro",
+    "or": "O",
+    "connectedPlayers": "Giocatori connessi",
+    "playerLabel": "Giocatore",
+    "playersLabel": "Giocatori",
+    "refresh": "Aggiorna",
+    "privateHint": "Sessione privata — chiedi il codice all'host per unirti.",
+    "searchPlaceholder": "Cerca una sessione…",
     "autoSetSail": {
       "description": "Salpa automaticamente quando tutti i giocatori sono pronti",
       "label": "Salpa automaticamente"
@@ -357,6 +387,16 @@
       "countdown": "Avvia in",
       "ready": "Pronto",
       "waiting": "In Attesa"
+    },
+    "visibility": {
+      "description": "Le sessioni pubbliche compaiono nell'elenco e chiunque può unirsi.",
+      "label": "Sessione pubblica",
+      "private": "Privata",
+      "public": "Pubblica"
+    },
+    "rename": {
+      "label": "Rinomina la sessione",
+      "placeholder": "Nome della sessione"
     }
   },
   "tooltips": {

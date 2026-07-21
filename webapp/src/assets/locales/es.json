@@ -1,5 +1,9 @@
 {
   "alert": {
+    "alreadyConnected": {
+      "content": "Ya estás en esta sesión en otra ventana u otro dispositivo. Ciérrala y vuelve a intentarlo.",
+      "title": "Ya conectado"
+    },
     "badRequest": {
       "content": "La consulta está corrupta o es incorrecta.",
       "title": "Mala consulta"
@@ -86,6 +90,14 @@
     "sloop": "Balandra"
   },
   "config": {
+    "banner": {
+      "description": "El estandarte de las sesiones que creas, en la sala y en la lista de sesiones.",
+      "pick": "Estandarte {number}",
+      "shuffle": {
+        "check": "Estandarte aleatorio",
+        "description": "Elige un estandarte distinto cada vez que creas una sesión"
+      }
+    },
     "device": {
       "label": "Plataformas"
     },
@@ -104,6 +116,7 @@
     },
     "part": {
       "audio": "Audio",
+      "banner": "Estandarte de sesión",
       "developer": "Desarrollador",
       "general": "General"
     },
@@ -209,6 +222,23 @@
     }
   },
   "session": {
+    "empty": {
+      "comment": "No hay barco para surcar los mares…",
+      "title": "¡Caramba!"
+    },
+    "filter": {
+      "all": "Todas",
+      "private": "Privada",
+      "public": "Pública"
+    },
+    "issue": "Si tienes algún problema, únete a nuestro",
+    "or": "O",
+    "connectedPlayers": "Jugadores conectados",
+    "playerLabel": "Jugador",
+    "playersLabel": "Jugadores",
+    "refresh": "Actualizar",
+    "privateHint": "Sesión privada — pide el código al anfitrión para unirte.",
+    "searchPlaceholder": "Buscar una sesión…",
     "autoSetSail": {
       "description": "Zarpa automáticamente cuando todos los jugadores están listos",
       "label": "Zarpar automáticamente"
@@ -357,6 +387,16 @@
       "countdown": "Lanzará en",
       "ready": "Listo",
       "waiting": "Espera"
+    },
+    "visibility": {
+      "description": "Las sesiones públicas aparecen en la lista y cualquiera puede unirse.",
+      "label": "Sesión pública",
+      "private": "Privada",
+      "public": "Pública"
+    },
+    "rename": {
+      "label": "Renombrar la sesión",
+      "placeholder": "Nombre de la sesión"
     }
   },
   "tooltips": {

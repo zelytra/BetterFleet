@@ -26,6 +26,10 @@ public class Player {
 
     private BoatSize boatSize;
 
+    // The host's preferred server banner (app-provided template index). Carried on CONNECT and
+    // copied onto the session when they create it. See issue #602 (frontend banner picker).
+    private int banner;
+
     // Constructor
     public Player() {
     }
@@ -102,6 +106,14 @@ public class Player {
 
     public void setBoatSize(BoatSize boatSize) {
         this.boatSize = boatSize;
+    }
+
+    public int getBanner() {
+        return banner;
+    }
+
+    public void setBanner(int banner) {
+        this.banner = banner;
     }
 
     @Override
