@@ -30,6 +30,8 @@ import java.util.concurrent.*;
 public class SessionSocket {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    // Fires a while after each countdown to record the alliance-formation outcome (issue #673).
+    private final ScheduledExecutorService attemptRecorder = Executors.newSingleThreadScheduledExecutor();
     public static final ConcurrentMap<String, Future<?>> sessionTimeoutTasks = new ConcurrentHashMap<>();
     private static final int RISE_ANCHOR_TIMER = 3; // in seconds
     public static String PROXY_API_KEY = "";
@@ -39,6 +41,11 @@ public class SessionSocket {
 
     @ConfigProperty(name = "proxy.check.api.key")
     String proxyApiKey;
+
+    // How long after a countdown to snapshot the fleet and record the alliance-formation outcome
+    // (issue #673) — long enough for detection to settle. Configurable so tests can shorten it.
+    @ConfigProperty(name = "betterfleet.stats.attempt-delay-seconds", defaultValue = "30")
+    int attemptDelaySeconds;
 
     @Inject
     SessionManager sessionManager;
@@ -277,6 +284,12 @@ public class SessionSocket {
         Log.info("[" + fleet.getSessionId() + "] Starting countdown in " + SessionSocket.RISE_ANCHOR_TIMER + "s");
         sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.RUN_COUNTDOWN, SessionSocket.RISE_ANCHOR_TIMER);
         sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+
+        // Record the alliance-formation outcome anonymously once detection has settled (issue #673).
+        String recordSessionId = fleet.getSessionId();
+        attemptRecorder.schedule(
+                () -> sessionManager.recordAllianceAttempt(recordSessionId),
+                RISE_ANCHOR_TIMER + attemptDelaySeconds, TimeUnit.SECONDS);
     }
 
     // Extracted method to handle JOIN_SERVER messages
