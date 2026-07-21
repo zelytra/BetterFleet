@@ -124,6 +124,50 @@ describe("syncGameState (detection -> join/leave flow)", () => {
     expect(player.status).toBe(PlayerStates.MAIN_MENU);
   });
 
+  it("never sends a leave without a joined server (quitting before the identity resolved)", () => {
+    // The player entered a game whose session flow never resolved (ip stayed empty), then quit.
+    // A leaveServer here would go out payload-less and crash the backend handler — the whole
+    // reason the guard exists.
+    const fleet = spyFleet();
+    const player = playerAt(PlayerStates.IN_GAME); // in game, but no server ever joined
+
+    syncGameState(detected(PlayerStates.MAIN_MENU), player, fleet);
+
+    expect(fleet.leaveServer).not.toHaveBeenCalled();
+    expect(fleet.joinServer).not.toHaveBeenCalled();
+    expect(player.status).toBe(PlayerStates.MAIN_MENU);
+  });
+
+  it("leaves the old server as soon as the detector reports a new unresolved game", () => {
+    // Server switch: the Rust layer detects the new connection and reports InGame with an EMPTY
+    // ip while the new session accumulates (10-60s). Staying on the old card would falsely group
+    // the player with people they just left.
+    const fleet = spyFleet();
+    const player = playerAt(PlayerStates.IN_GAME);
+    player.server = { ...SERVER_A };
+
+    syncGameState(detected(PlayerStates.IN_GAME, "", 0), player, fleet);
+
+    expect(fleet.leaveServer).toHaveBeenCalledOnce();
+    expect(fleet.joinServer).not.toHaveBeenCalled();
+    expect(player.server).toBeUndefined();
+
+    // Repeated unresolved polls must not spam further leaves.
+    syncGameState(detected(PlayerStates.IN_GAME, "", 0), player, fleet);
+    expect(fleet.leaveServer).toHaveBeenCalledOnce();
+
+    // Once the new session resolves, the player joins it (no extra leave: nothing is joined).
+    syncGameState(
+      detected(PlayerStates.IN_GAME, "20.157.115.138", 31000),
+      player,
+      fleet,
+    );
+    expect(fleet.leaveServer).toHaveBeenCalledOnce();
+    expect(fleet.joinServer).toHaveBeenCalledOnce();
+    expect(player.server?.ip).toBe("20.157.115.138");
+    expect(player.server?.port).toBe(31000);
+  });
+
   it("does not join any server while still in the menu (no ip detected)", () => {
     const fleet = spyFleet();
     const player = playerAt(PlayerStates.MAIN_MENU);

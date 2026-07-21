@@ -403,6 +403,26 @@ class SessionSocketTest {
     }
 
     @Test
+    void payloadLessLeaveServer_isIgnoredInsteadOfKickingThePlayer() throws Exception {
+        // A client that quits the game before the server identity resolved sends LEAVE_SERVER with
+        // no data (nothing was ever joined). This used to NPE in playerLeaveSotServer, and the
+        // exception reached @OnError which closed the socket — ejecting the player from their whole
+        // fleet session for merely backing out of a game.
+        String sessionId = createSessionAsMaster("Sailor");
+
+        betterFleetClient.sendMessage(MessageType.LEAVE_SERVER, null);
+        betterFleetClient.sendMessage(MessageType.JOIN_SERVER, null);
+
+        // The socket must have survived both: a real action still round-trips...
+        Fleet broadcast = joinServer("1.1.1.1", 30101);
+        assertTrue(onlyServerHolds(broadcast, "Sailor"),
+                "The player must still be connected and able to join a server");
+        // ...and the player was never ejected from the session.
+        assertEquals(1, sessionManager.getSessions().get(sessionId).getPlayers().size(),
+                "The payload-less message must not cost the player their session");
+    }
+
+    @Test
     void joinServer_fillsInTheLocationAfterwards() throws Exception {
         // The geolocation runs on a worker and is broadcast once it lands, so the join itself never
         // waits on proxycheck.io. The location therefore shows up a moment after the server does.

@@ -328,6 +328,73 @@
           ]
         }
       ]
+    },
+    {
+      "case": "G",
+      "sameServer": false,
+      "note": "Live test of the #668 client (2026-07-21): two players on DIFFERENT servers were displayed as ONE card. Same busy host (51.103.72.36) AND same coordinator host (145.190.66.42) — only the coordinator PORT differs (30034 vs 30099). Strongest proof the port is part of the identity. The false merge came from the port being dropped (an ip-only backend hash) and/or the stale per-host accumulator fixed alongside this capture. G/p1 coordinator ip:port equals their case-D endpoint — same instance rejoined, or coordinator-pool reuse.",
+      "captures": [
+        {
+          "player": "G/p1",
+          "pid": 13836,
+          "flows": [
+            {
+              "local_port": 55306,
+              "remote_ip": "51.103.72.36",
+              "remote_port": 31037,
+              "packets": 1109,
+              "bytes": 123576,
+              "inbound": 596,
+              "outbound": 513,
+              "plausible_sot_port": true,
+              "first_seen_ms": 7,
+              "last_seen_ms": 20003
+            },
+            {
+              "local_port": 52354,
+              "remote_ip": "145.190.66.42",
+              "remote_port": 30034,
+              "packets": 4,
+              "bytes": 304,
+              "inbound": 2,
+              "outbound": 2,
+              "plausible_sot_port": true,
+              "first_seen_ms": 6513,
+              "last_seen_ms": 16533
+            }
+          ]
+        },
+        {
+          "player": "G/p2",
+          "pid": 25240,
+          "flows": [
+            {
+              "local_port": 60445,
+              "remote_ip": "51.103.72.36",
+              "remote_port": 30686,
+              "packets": 970,
+              "bytes": 96240,
+              "inbound": 596,
+              "outbound": 374,
+              "plausible_sot_port": true,
+              "first_seen_ms": 30,
+              "last_seen_ms": 19993
+            },
+            {
+              "local_port": 55329,
+              "remote_ip": "145.190.66.42",
+              "remote_port": 30099,
+              "packets": 8,
+              "bytes": 608,
+              "inbound": 4,
+              "outbound": 4,
+              "plausible_sot_port": true,
+              "first_seen_ms": 4321,
+              "last_seen_ms": 14352
+            }
+          ]
+        }
+      ]
     }
   ]
 }

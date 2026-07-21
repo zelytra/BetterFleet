@@ -281,6 +281,13 @@ public class SessionSocket {
 
     // Extracted method to handle JOIN_SERVER messages
     private void handleJoinServerMessage(Session session, SotServer sotServer) {
+        // A payload-less JOIN_SERVER deserializes to null. Dropping it beats throwing: an
+        // exception here reaches @OnError, which closes the socket and ejects the player from
+        // their whole fleet session over a message that meant nothing.
+        if (sotServer == null || sotServer.getIp() == null || sotServer.getIp().isEmpty()) {
+            Log.warn("Ignoring JOIN_SERVER without a server payload");
+            return;
+        }
         SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
         if (player == null) {
@@ -301,6 +308,14 @@ public class SessionSocket {
 
     // Extracted method to handle LEAVE_SERVER messages
     private void handleLeaveServerMessage(Session session, SotServer sotServer) {
+        // Same guard as JOIN_SERVER: a client that never joined a server can still send a
+        // payload-less LEAVE_SERVER (seen from clients quitting the game before the server
+        // identity resolved). playerLeaveSotServer would NPE on it, and @OnError would then
+        // close the socket — kicking the player out of their fleet for backing out of a game.
+        if (sotServer == null || sotServer.getIp() == null || sotServer.getIp().isEmpty()) {
+            Log.warn("Ignoring LEAVE_SERVER without a server payload");
+            return;
+        }
         SessionManager manager = sessionManager;
         Player player = manager.getPlayerFromSessionId(session.getId());
         if (player == null) {
