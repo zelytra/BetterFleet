@@ -602,7 +602,7 @@ public class SessionManager {
         return new PublicSession(
                 fleet.getDirectoryId(),
                 fleet.isPrivate() ? "" : fleet.getSessionId(),
-                primaryRegion(fleet),
+                ownerRegion(fleet),
                 admins,
                 name,
                 fleet.getPlayers().size(),
@@ -611,14 +611,16 @@ public class SessionManager {
     }
 
     /**
-     * The country-code flag shown for a session: taken from the server carrying the most players,
-     * or "" when no server has been detected yet.
+     * The country-code flag shown for a session: the session owner's country (issue #672), reported
+     * by the client from its browser locale. The detected server's datacenter region was misleading
+     * — a crew on a US host is not a US crew — so the flag now reflects who owns the session, not
+     * where the game server sits. "" when no master has reported a country (e.g. an older client).
      */
-    private String primaryRegion(Fleet fleet) {
-        return fleet.getServers().values().stream()
-                .max(Comparator.comparingInt(server -> server.getConnectedPlayers().size()))
-                .map(SotServer::getCountryCode)
+    private String ownerRegion(Fleet fleet) {
+        return fleet.getMasters().stream()
+                .map(Player::getCountry)
                 .filter(code -> code != null && !code.isBlank())
+                .findFirst()
                 .orElse("");
     }
 

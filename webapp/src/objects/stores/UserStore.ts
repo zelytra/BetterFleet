@@ -6,6 +6,7 @@ import { BoatSize, Player, PlayerDevice } from "@/objects/fleet/Player.ts";
 import { clampBanner } from "@/objects/fleet/Banners.ts";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
+import { browserCountry } from "@/objects/utils/BrowserCountry.ts";
 import { info } from "tauri-plugin-log-api";
 
 export const UserStore = reactive({
@@ -20,6 +21,8 @@ export const UserStore = reactive({
       ...defaultPlayerValue,
       ...readPlayer,
       lang: readPlayer.lang || browserLang,
+      // The owner-flag country for the public browser (#672), from the browser locale's region.
+      country: readPlayer.country || browserCountry(),
       device: readPlayer.device || PlayerDevice.MICROSOFT,
       boatSize: readPlayer.boatSize || BoatSize.NONE,
       username: keycloakStore.user.username,
