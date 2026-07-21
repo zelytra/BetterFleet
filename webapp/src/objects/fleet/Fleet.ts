@@ -423,7 +423,9 @@ export class Fleet {
       data: server,
       messageType: WebSocketMessageType.LEAVE_SERVER,
     };
-    info("[Fleet.ts][WebSocket] User leave a SOT server " + JSON.stringify(server));
+    info(
+      "[Fleet.ts][WebSocket] User leave a SOT server " + JSON.stringify(server),
+    );
     this.socket.send(JSON.stringify(message));
   }
 
