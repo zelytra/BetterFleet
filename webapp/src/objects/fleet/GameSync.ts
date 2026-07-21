@@ -15,7 +15,8 @@ export interface FleetActions {
  *
  * Extracted from FleetMenuNavigator so the detection -> join/leave flow is testable in
  * isolation (issue #364 follow-up). Key invariants it encodes:
- *  - the server is (re)joined on the first detection and whenever the detected IP changes;
+ *  - the server is (re)joined on the first detection and whenever the detected ip:port changes
+ *    (the identity is the per-server session endpoint the Rust layer reports, ip AND port);
  *  - switching servers leaves the previous one FIRST, so the player is never left in two
  *    servers at once (no duplicate, no ghost in the old server);
  *  - going back to the menu leaves the server.
@@ -35,7 +36,8 @@ export function syncGameState(
     player.status == PlayerStates.IN_GAME &&
     rustSotServer.ip != undefined &&
     rustSotServer.ip != "" &&
-    player.server?.ip != rustSotServer.ip;
+    (player.server?.ip != rustSotServer.ip ||
+      player.server?.port != rustSotServer.port);
 
   if (isPlayerDisconnecting) {
     fleet.leaveServer();
@@ -46,7 +48,11 @@ export function syncGameState(
   ) {
     // Switching servers: leave the previous one first, otherwise the player ends up
     // in two servers at once — shown twice and left lingering in the old one.
-    if (player.server != undefined && player.server.ip != rustSotServer.ip) {
+    if (
+      player.server != undefined &&
+      (player.server.ip != rustSotServer.ip ||
+        player.server.port != rustSotServer.port)
+    ) {
       fleet.leaveServer();
     }
     player.server = {
