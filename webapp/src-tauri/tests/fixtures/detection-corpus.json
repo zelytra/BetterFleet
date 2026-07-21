@@ -1,126 +1,333 @@
-[
-  {
-    "player": "player 1",
-    "pid": 20968,
-    "note": "in game, on 51.103.45.67 with the rest of the crew",
-    "flows": [
-      {
-        "local_port": 61390,
-        "remote_ip": "51.103.45.67",
-        "remote_port": 30970,
-        "packets": 1799,
-        "bytes": 210012,
-        "inbound": 1200,
-        "outbound": 599,
-        "plausible_sot_port": true,
-        "first_seen_ms": 5,
-        "last_seen_ms": 19982
-      },
-      {
-        "local_port": 51485,
-        "remote_ip": "20.33.49.115",
-        "remote_port": 31260,
-        "packets": 12,
-        "bytes": 912,
-        "inbound": 8,
-        "outbound": 4,
-        "plausible_sot_port": true,
-        "first_seen_ms": 6456,
-        "last_seen_ms": 16492
-      }
-    ]
-  },
-  {
-    "player": "player 2",
-    "pid": 17020,
-    "note": "in game, same server, its own server-side port",
-    "flows": [
-      {
-        "local_port": 56792,
-        "remote_ip": "51.103.45.67",
-        "remote_port": 31310,
-        "packets": 1308,
-        "bytes": 145414,
-        "inbound": 595,
-        "outbound": 713,
-        "plausible_sot_port": true,
-        "first_seen_ms": 0,
-        "last_seen_ms": 19999
-      },
-      {
-        "local_port": 55474,
-        "remote_ip": "20.33.49.115",
-        "remote_port": 31260,
-        "packets": 8,
-        "bytes": 608,
-        "inbound": 4,
-        "outbound": 4,
-        "plausible_sot_port": true,
-        "first_seen_ms": 2683,
-        "last_seen_ms": 12753
-      }
-    ]
-  },
-  {
-    "player": "player 3",
-    "pid": 2940,
-    "note": "in game, same server; note only two UDP ports total, no SDR swarm",
-    "flows": [
-      {
-        "local_port": 54070,
-        "remote_ip": "51.103.45.67",
-        "remote_port": 31106,
-        "packets": 1254,
-        "bytes": 141415,
-        "inbound": 600,
-        "outbound": 654,
-        "plausible_sot_port": true,
-        "first_seen_ms": 7,
-        "last_seen_ms": 20013
-      },
-      {
-        "local_port": 3074,
-        "remote_ip": "20.33.49.115",
-        "remote_port": 31260,
-        "packets": 8,
-        "bytes": 608,
-        "inbound": 4,
-        "outbound": 4,
-        "plausible_sot_port": true,
-        "first_seen_ms": 2305,
-        "last_seen_ms": 12339
-      }
-    ]
-  },
-  {
-    "player": "player 4",
-    "pid": 18828,
-    "note": "in game, same server, its own server-side port",
-    "flows": [
-      {
-        "local_port": 52784,
-        "remote_ip": "51.103.45.67",
-        "remote_port": 31242,
-        "packets": 1103,
-        "bytes": 125864,
-        "inbound": 599,
-        "outbound": 504,
-        "plausible_sot_port": true,
-        "first_seen_ms": 3,
-        "last_seen_ms": 20006
-      },
-      {
-        "local_port": 56486,
-        "remote_ip": "20.33.49.115",
-        "remote_port": 31260,
-        "packets": 6,
-        "bytes": 456,
-        "inbound": 3,
-        "outbound": 3,
-        "plausible_sot_port": true,
-        "first_seen_ms": 5347,
-        "last_seen_ms": 15373
-      }
-    ]
-  }
-]
+{
+  "_comment": "Ground-truth SoT server-detection captures (#364). sameServer is the in-game truth. Finding: the session is the SPARSE (low-volume) flow, not the busy gameplay flow — the busy flow is the shared Azure host. See diagnostics.rs tests.",
+  "scenarios": [
+    {
+      "case": "A",
+      "sameServer": true,
+      "note": "#657: four players sailing together, one server. Busy IP shared, busy ports differ, sparse endpoint identical for all four.",
+      "captures": [
+        {
+          "player": "A/p1",
+          "pid": 20968,
+          "flows": [
+            {
+              "local_port": 61390,
+              "remote_ip": "51.103.45.67",
+              "remote_port": 30970,
+              "packets": 1799,
+              "bytes": 210012,
+              "inbound": 1200,
+              "outbound": 599,
+              "plausible_sot_port": true,
+              "first_seen_ms": 5,
+              "last_seen_ms": 19982
+            },
+            {
+              "local_port": 51485,
+              "remote_ip": "20.33.49.115",
+              "remote_port": 31260,
+              "packets": 12,
+              "bytes": 912,
+              "inbound": 8,
+              "outbound": 4,
+              "plausible_sot_port": true,
+              "first_seen_ms": 6456,
+              "last_seen_ms": 16492
+            }
+          ]
+        },
+        {
+          "player": "A/p2",
+          "pid": 17020,
+          "flows": [
+            {
+              "local_port": 56792,
+              "remote_ip": "51.103.45.67",
+              "remote_port": 31310,
+              "packets": 1308,
+              "bytes": 145414,
+              "inbound": 595,
+              "outbound": 713,
+              "plausible_sot_port": true,
+              "first_seen_ms": 0,
+              "last_seen_ms": 19999
+            },
+            {
+              "local_port": 55474,
+              "remote_ip": "20.33.49.115",
+              "remote_port": 31260,
+              "packets": 8,
+              "bytes": 608,
+              "inbound": 4,
+              "outbound": 4,
+              "plausible_sot_port": true,
+              "first_seen_ms": 2683,
+              "last_seen_ms": 12753
+            }
+          ]
+        },
+        {
+          "player": "A/p3",
+          "pid": 2940,
+          "flows": [
+            {
+              "local_port": 54070,
+              "remote_ip": "51.103.45.67",
+              "remote_port": 31106,
+              "packets": 1254,
+              "bytes": 141415,
+              "inbound": 600,
+              "outbound": 654,
+              "plausible_sot_port": true,
+              "first_seen_ms": 7,
+              "last_seen_ms": 20013
+            },
+            {
+              "local_port": 3074,
+              "remote_ip": "20.33.49.115",
+              "remote_port": 31260,
+              "packets": 8,
+              "bytes": 608,
+              "inbound": 4,
+              "outbound": 4,
+              "plausible_sot_port": true,
+              "first_seen_ms": 2305,
+              "last_seen_ms": 12339
+            }
+          ]
+        },
+        {
+          "player": "A/p4",
+          "pid": 18828,
+          "flows": [
+            {
+              "local_port": 52784,
+              "remote_ip": "51.103.45.67",
+              "remote_port": 31242,
+              "packets": 1103,
+              "bytes": 125864,
+              "inbound": 599,
+              "outbound": 504,
+              "plausible_sot_port": true,
+              "first_seen_ms": 3,
+              "last_seen_ms": 20006
+            },
+            {
+              "local_port": 56486,
+              "remote_ip": "20.33.49.115",
+              "remote_port": 31260,
+              "packets": 6,
+              "bytes": 456,
+              "inbound": 3,
+              "outbound": 3,
+              "plausible_sot_port": true,
+              "first_seen_ms": 5347,
+              "last_seen_ms": 15373
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "B",
+      "sameServer": false,
+      "note": "Two players, DIFFERENT servers, but the SAME host (51.103.72.36). ip-only merges them (the #656 bug). Sparse endpoints differ.",
+      "captures": [
+        {
+          "player": "B/p1",
+          "pid": 25240,
+          "flows": [
+            {
+              "local_port": 63912,
+              "remote_ip": "51.103.72.36",
+              "remote_port": 30230,
+              "packets": 984,
+              "bytes": 103504,
+              "inbound": 595,
+              "outbound": 389,
+              "plausible_sot_port": true,
+              "first_seen_ms": 21,
+              "last_seen_ms": 20016
+            },
+            {
+              "local_port": 55329,
+              "remote_ip": "20.157.18.137",
+              "remote_port": 30735,
+              "packets": 6,
+              "bytes": 456,
+              "inbound": 3,
+              "outbound": 3,
+              "plausible_sot_port": true,
+              "first_seen_ms": 7822,
+              "last_seen_ms": 17844
+            }
+          ]
+        },
+        {
+          "player": "B/p2",
+          "pid": 13836,
+          "flows": [
+            {
+              "local_port": 52035,
+              "remote_ip": "51.103.72.36",
+              "remote_port": 31052,
+              "packets": 1109,
+              "bytes": 125196,
+              "inbound": 597,
+              "outbound": 512,
+              "plausible_sot_port": true,
+              "first_seen_ms": 5,
+              "last_seen_ms": 20006
+            },
+            {
+              "local_port": 52354,
+              "remote_ip": "20.157.115.138",
+              "remote_port": 30987,
+              "packets": 8,
+              "bytes": 608,
+              "inbound": 4,
+              "outbound": 4,
+              "plausible_sot_port": true,
+              "first_seen_ms": 2801,
+              "last_seen_ms": 12839
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "C",
+      "sameServer": false,
+      "note": "Two players, DIFFERENT servers, DIFFERENT hosts. Correctly split by any identity. Note p1 busy flow is a 20.x IP — busy vs sparse is volume, not IP prefix.",
+      "captures": [
+        {
+          "player": "C/p1",
+          "pid": 25240,
+          "flows": [
+            {
+              "local_port": 50228,
+              "remote_ip": "20.111.24.102",
+              "remote_port": 31225,
+              "packets": 966,
+              "bytes": 101952,
+              "inbound": 595,
+              "outbound": 371,
+              "plausible_sot_port": true,
+              "first_seen_ms": 35,
+              "last_seen_ms": 19977
+            },
+            {
+              "local_port": 55329,
+              "remote_ip": "20.47.118.98",
+              "remote_port": 31070,
+              "packets": 4,
+              "bytes": 304,
+              "inbound": 2,
+              "outbound": 2,
+              "plausible_sot_port": true,
+              "first_seen_ms": 9217,
+              "last_seen_ms": 19241
+            }
+          ]
+        },
+        {
+          "player": "C/p2",
+          "pid": 13836,
+          "flows": [
+            {
+              "local_port": 57461,
+              "remote_ip": "51.103.72.36",
+              "remote_port": 30147,
+              "packets": 941,
+              "bytes": 101800,
+              "inbound": 598,
+              "outbound": 343,
+              "plausible_sot_port": true,
+              "first_seen_ms": 8,
+              "last_seen_ms": 20009
+            },
+            {
+              "local_port": 52354,
+              "remote_ip": "20.33.6.122",
+              "remote_port": 30072,
+              "packets": 8,
+              "bytes": 608,
+              "inbound": 4,
+              "outbound": 4,
+              "plausible_sot_port": true,
+              "first_seen_ms": 2877,
+              "last_seen_ms": 12917
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "D",
+      "sameServer": false,
+      "note": "Two players, DIFFERENT servers, SAME host (51.103.72.36 = same region). ip-only merges them. Sparse differs even within one host — proves the sparse flow is per-session, not per-region.",
+      "captures": [
+        {
+          "player": "D/p1",
+          "pid": 25240,
+          "flows": [
+            {
+              "local_port": 62718,
+              "remote_ip": "51.103.72.36",
+              "remote_port": 30281,
+              "packets": 982,
+              "bytes": 106947,
+              "inbound": 600,
+              "outbound": 382,
+              "plausible_sot_port": true,
+              "first_seen_ms": 6,
+              "last_seen_ms": 20000
+            },
+            {
+              "local_port": 55329,
+              "remote_ip": "20.33.72.32",
+              "remote_port": 30752,
+              "packets": 8,
+              "bytes": 608,
+              "inbound": 4,
+              "outbound": 4,
+              "plausible_sot_port": true,
+              "first_seen_ms": 4194,
+              "last_seen_ms": 14224
+            }
+          ]
+        },
+        {
+          "player": "D/p2",
+          "pid": 13836,
+          "flows": [
+            {
+              "local_port": 59451,
+              "remote_ip": "51.103.72.36",
+              "remote_port": 30969,
+              "packets": 1030,
+              "bytes": 133739,
+              "inbound": 598,
+              "outbound": 432,
+              "plausible_sot_port": true,
+              "first_seen_ms": 26,
+              "last_seen_ms": 20004
+            },
+            {
+              "local_port": 52354,
+              "remote_ip": "145.190.66.42",
+              "remote_port": 30034,
+              "packets": 6,
+              "bytes": 456,
+              "inbound": 3,
+              "outbound": 3,
+              "plausible_sot_port": true,
+              "first_seen_ms": 4310,
+              "last_seen_ms": 14350
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

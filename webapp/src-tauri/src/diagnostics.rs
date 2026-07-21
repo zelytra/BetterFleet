@@ -366,42 +366,94 @@ mod tests {
         assert_eq!(server.local_port, 59230);
     }
 
-    // The issue #657 corpus: four players provably on one server, captured in game, loaded from the
-    // shared fixture (tests/fixtures/detection-corpus.json) — the same data archived in that issue.
-    // It guards two things at once: pick_server_flow picks the busy game-server flow for each, and
-    // all four resolve to one server (the crew is one server, which #656 fixed on the backend by
-    // hashing the IP rather than ip:port).
+    // The #364 corpus: real in-game captures, each scenario tagged with the in-game ground truth
+    // (sameServer). Every player has two plausible-SoT flows — a busy one (~1000 packets, the game
+    // host) and a sparse one (~4-8 packets, the session). Loaded from
+    // tests/fixtures/detection-corpus.json.
+    #[derive(Deserialize)]
+    struct Corpus {
+        scenarios: Vec<Scenario>,
+    }
+    #[derive(Deserialize)]
+    #[serde(rename_all = "camelCase")]
+    struct Scenario {
+        case: String,
+        same_server: bool,
+        captures: Vec<Capture>,
+    }
+    #[derive(Deserialize)]
+    struct Capture {
+        #[allow(dead_code)]
+        player: String,
+        flows: Vec<FlowStat>,
+    }
+
+    fn load_corpus() -> Corpus {
+        serde_json::from_str(include_str!("../tests/fixtures/detection-corpus.json"))
+            .expect("the detection corpus fixture must parse")
+    }
+
+    /// The low-volume plausible flow. pick_server_flow takes the busiest; this takes the sparsest.
+    fn sparse_flow(flows: &[FlowStat]) -> Option<&FlowStat> {
+        flows
+            .iter()
+            .filter(|f| f.plausible_sot_port)
+            .min_by_key(|f| f.packets)
+    }
+
+    // The finding out of #364: the server a player is on is identified by the SPARSE flow, not the
+    // busy gameplay flow. Across every scenario — same-server and different-server, including two
+    // servers sharing one Azure host — grouping the captures by the sparse flow's ip:port matches the
+    // ground truth exactly. The busy flow cannot: see the next test.
     #[test]
-    fn issue_657_corpus_one_crew_resolves_to_one_server() {
-        #[derive(Deserialize)]
-        struct Capture {
-            player: String,
-            flows: Vec<FlowStat>,
-        }
+    fn the_session_is_the_sparse_flow_across_the_whole_corpus() {
+        let corpus = load_corpus();
+        assert!(corpus.scenarios.len() >= 4, "corpus lost scenarios");
 
-        let corpus: Vec<Capture> =
-            serde_json::from_str(include_str!("../tests/fixtures/detection-corpus.json"))
-                .expect("the detection corpus fixture must parse");
-        assert_eq!(corpus.len(), 4, "the corpus should carry all four captures");
-
-        let mut server_ips = HashSet::new();
-        for capture in &corpus {
-            let server = pick_server_flow(&capture.flows, 5)
-                .unwrap_or_else(|| panic!("{}: a server should be picked", capture.player));
-            // The busy game-server flow, never the sparse shared relay. That relay
-            // (20.33.49.115:31260, 6-12 packets) is above the 5-packet floor and in the SoT range,
-            // so the floor does not reject it — only the volume ranking does.
+        for s in &corpus.scenarios {
+            let sparse_ids: HashSet<(String, u16)> = s
+                .captures
+                .iter()
+                .map(|c| {
+                    let f = sparse_flow(&c.flows)
+                        .unwrap_or_else(|| panic!("case {}: a capture has no sparse flow", s.case));
+                    (f.remote_ip.clone(), f.remote_port)
+                })
+                .collect();
+            let one_session = sparse_ids.len() == 1;
             assert_eq!(
-                server.remote_ip, "51.103.45.67",
-                "{}: picked the wrong flow",
-                capture.player
+                one_session, s.same_server,
+                "case {}: sparse-flow grouping saw {} session(s), ground truth sameServer={}",
+                s.case,
+                sparse_ids.len(),
+                s.same_server
             );
-            server_ips.insert(server.remote_ip.clone());
         }
-        assert_eq!(
-            server_ips.len(),
-            1,
-            "four players on one server must resolve to one server ip"
+    }
+
+    // Why the shipped identity is wrong. #656 hashes the busy flow's IP, and cases B and D are two
+    // players on DIFFERENT servers that share one host IP (51.103.72.36) — so the busy IP merges
+    // them. This is the false positive #364 was reopened for; the test pins that it is real, and that
+    // ip:port would instead over-split the same-server case A.
+    #[test]
+    fn the_busy_flow_ip_merges_two_servers_on_one_host() {
+        let corpus = load_corpus();
+        let busy_ip_ids = |s: &Scenario| -> usize {
+            s.captures
+                .iter()
+                .filter_map(|c| pick_server_flow(&c.flows, 5).map(|f| f.remote_ip.clone()))
+                .collect::<HashSet<_>>()
+                .len()
+        };
+
+        // A different-server scenario that the busy IP wrongly collapses to one.
+        let false_merge = corpus
+            .scenarios
+            .iter()
+            .any(|s| !s.same_server && busy_ip_ids(s) == 1);
+        assert!(
+            false_merge,
+            "expected a different-server scenario that the busy-IP identity merges (the #364 bug)"
         );
     }
 
