@@ -48,17 +48,18 @@ public class SotServer {
     }
 
     public String generateHash() {
-        // A server is identified by its IP alone, not ip:port.
+        // A server is identified by the session-coordinator endpoint the client reports: ip:port.
         //
-        // Sea of Thieves hands each client on a server its own UDP port on the same host, so ip:port
-        // made every crewmate on one server look like a separate server: issue #364 captured four
-        // players demonstrably sailing together on 51.103.45.67, on ports 30970 / 31106 / 31242 /
-        // 31310, split into four cards. The port is per-connection noise; the host is the server.
-        //
-        // This is also what the client has always assumed - GameSync.ts decides "did I change
-        // servers?" on `player.server.ip != rustSotServer.ip`, never the port. The backend hash was
-        // the one place that disagreed.
-        String input = this.ip;
+        // Post-SDR, every player on one Sea of Thieves world instance shares a low-volume session
+        // endpoint, while their busy gameplay flow is a per-client connection to an Azure host whose
+        // IP is REUSED across different servers (issue #364: several distinct servers ran on
+        // 51.103.72.36). Hashing that host IP (the previous behaviour) merged different servers into
+        // one card — the false positive #364 was reopened for. The session endpoint is instead shared
+        // across ships on one server (case A: four players on different ships, one server, all on
+        // 20.33.49.115:31260) and differs between servers even on a shared host. The client detects
+        // and reports it (fetch_informations.rs / pick_session_flow). The port is part of the
+        // identity: the same session IP recurs across sessions on different ports (cases E/F).
+        String input = this.ip + ":" + this.port;
 
         // Use SHA-256 hash function
         MessageDigest digest = null;
@@ -100,7 +101,7 @@ public class SotServer {
 
     /**
      * Set once the geolocation lands, which happens after the server is already visible to the
-     * fleet. Not part of {@link #generateHash()} (that is the IP), so filling it in later keeps
+     * fleet. Not part of {@link #generateHash()} (that is ip:port), so filling it in later keeps
      * the server's identity stable.
      */
     public void setLocation(String location) {

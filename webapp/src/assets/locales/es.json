@@ -1,7 +1,7 @@
 {
   "alert": {
     "alreadyConnected": {
-      "content": "Ya estás en esta sesión en otra ventana u otro dispositivo. Ciérrala y vuelve a intentarlo.",
+      "content": "Ya estás en esta sesión en otra ventana o dispositivo. Ciérrela y vuelve a intentarlo.",
       "title": "Ya conectado"
     },
     "badRequest": {
@@ -91,11 +91,11 @@
   },
   "config": {
     "banner": {
-      "description": "El estandarte de las sesiones que creas, en la sala y en la lista de sesiones.",
+      "description": "El banner llevan sus sesiones alojadas, en el vestíbulo y en el navegador de sesiones.",
       "pick": "Estandarte {number}",
       "shuffle": {
-        "check": "Estandarte aleatorio",
-        "description": "Elige un estandarte distinto cada vez que creas una sesión"
+        "check": "Mezclar los banners al azar",
+        "description": "Selecciona un banner diferente cada vez que alojas una sesión"
       }
     },
     "device": {
@@ -116,7 +116,7 @@
     },
     "part": {
       "audio": "Audio",
-      "banner": "Estandarte de sesión",
+      "banner": "Banner del servidor",
       "developer": "Desarrollador",
       "general": "General"
     },
@@ -223,21 +223,21 @@
   },
   "session": {
     "empty": {
-      "comment": "No hay barco para surcar los mares…",
-      "title": "¡Caramba!"
+      "comment": "Aprecio que no haya ningún barco para navegar por los mares con…",
+      "title": "¡Blimey!"
     },
     "filter": {
-      "all": "Todas",
-      "private": "Privada",
-      "public": "Pública"
+      "all": "Todos",
+      "private": "Privado",
+      "public": "Público"
     },
-    "issue": "Si tienes algún problema, únete a nuestro",
+    "issue": "Si encuentras algún problema, únete a nuestro",
     "or": "O",
     "connectedPlayers": "Jugadores conectados",
     "playerLabel": "Jugador",
     "playersLabel": "Jugadores",
-    "refresh": "Actualizar",
-    "privateHint": "Sesión privada — pide el código al anfitrión para unirte.",
+    "refresh": "Refrescar",
+    "privateHint": "Sesión privada — pida al anfitrión el código para unirse.",
     "searchPlaceholder": "Buscar una sesión…",
     "autoSetSail": {
       "description": "Zarpa automáticamente cuando todos los jugadores están listos",
@@ -389,14 +389,14 @@
       "waiting": "Espera"
     },
     "visibility": {
-      "description": "Las sesiones públicas aparecen en la lista y cualquiera puede unirse.",
+      "description": "Las sesiones públicas están listadas en el navegador para que cualquiera se una.",
       "label": "Sesión pública",
-      "private": "Privada",
-      "public": "Pública"
+      "private": "Privado",
+      "public": "Público"
     },
     "rename": {
-      "label": "Renombrar la sesión",
-      "placeholder": "Nombre de la sesión"
+      "label": "Cambiar el nombre de la sesión",
+      "placeholder": "Nombre de sesión"
     }
   },
   "tooltips": {
