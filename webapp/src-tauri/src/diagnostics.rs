@@ -261,13 +261,27 @@ pub fn pick_session_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowSt
                 && flow.inbound > 0
                 && flow.outbound > 0
                 && host.map_or(true, |h| !std::ptr::eq(*flow, h))
+                // The coordinator is sparse BY DEFINITION — a handful of packets against the
+                // host's hundreds. Any flow within 4x of the host's volume is host-class traffic
+                // (typically the previous server's gameplay flow caught in a window that straddled
+                // a server switch), and locking it would hand the fleet the ambiguous per-client
+                // host endpoint. 4x keeps a huge margin: the corpus-worst coordinator (24 pkts/20s)
+                // is ~40x below the corpus-weakest host (941 pkts/20s).
+                && host.map_or(true, |h| flow.packets.saturating_mul(4) <= h.packets)
         })
-        // Among the remaining coordinator candidates, the most established one wins.
+        // Among the remaining coordinator candidates, the most established one wins. The remote
+        // endpoint terminates the ordering: coordinator packets are fixed-size (bytes = 76 x
+        // packets across the whole corpus) and the coordinator local socket persists across
+        // servers, so (packets, bytes, local_port) alone can genuinely tie between two remotes —
+        // and a tie must not fall through to HashMap iteration order, or the locked identity
+        // becomes nondeterministic.
         .max_by(|a, b| {
             a.packets
                 .cmp(&b.packets)
                 .then(a.bytes.cmp(&b.bytes))
                 .then(b.local_port.cmp(&a.local_port))
+                .then(b.remote_ip.cmp(&a.remote_ip))
+                .then(b.remote_port.cmp(&a.remote_port))
         })
 }
 
@@ -571,6 +585,51 @@ mod tests {
             (e.remote_ip.clone(), e.remote_port),
             (f.remote_ip.clone(), f.remote_port),
             "the port distinguishes the two servers"
+        );
+    }
+
+    #[test]
+    fn a_host_class_residual_is_never_the_session() {
+        // Two busy-class flows in one accumulation (a window straddling a server switch: the new
+        // host plus the old host's teardown, both bidirectional and in the SoT range). The sparse
+        // guard must reject the residual — locking it would report the ambiguous per-client host
+        // endpoint — and pick the true coordinator when present, or nothing at all.
+        let residual_only = [
+            flow(60445, "51.103.72.36", 30686, 450, 226, 224), // new host (busiest -> excluded)
+            flow(55306, "51.103.72.36", 31037, 300, 150, 150), // old host residual: host-class
+        ];
+        assert!(
+            pick_session_flow(&residual_only, 3).is_none(),
+            "a host-class flow must never pass as the sparse session"
+        );
+
+        let with_coordinator = [
+            flow(60445, "51.103.72.36", 30686, 450, 226, 224),
+            flow(55306, "51.103.72.36", 31037, 300, 150, 150),
+            flow(55329, "145.190.66.42", 30099, 4, 2, 2), // the real coordinator
+        ];
+        let session = pick_session_flow(&with_coordinator, 3).expect("coordinator expected");
+        assert_eq!(session.remote_ip, "145.190.66.42");
+        assert_eq!(session.remote_port, 30099);
+    }
+
+    #[test]
+    fn an_exact_tie_between_two_coordinators_resolves_deterministically() {
+        // Coordinator packets are fixed-size and the coordinator local socket persists across
+        // servers, so two remotes can tie on (packets, bytes, local_port) exactly. The pick must
+        // not depend on slice (or HashMap iteration) order.
+        let host = flow(60445, "51.103.72.36", 30686, 450, 226, 224);
+        let a = flow(52354, "145.190.66.42", 30034, 4, 2, 2);
+        let b = flow(52354, "145.190.66.42", 30099, 4, 2, 2);
+
+        let one_order = [host.clone(), a.clone(), b.clone()];
+        let other_order = [host, b, a];
+        let first = pick_session_flow(&one_order, 3).expect("a pick");
+        let second = pick_session_flow(&other_order, 3).expect("a pick");
+        assert_eq!(
+            (first.remote_ip.clone(), first.remote_port),
+            (second.remote_ip.clone(), second.remote_port),
+            "the tie-break must be a total order, independent of input order"
         );
     }
 

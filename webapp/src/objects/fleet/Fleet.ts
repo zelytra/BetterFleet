@@ -410,17 +410,23 @@ export class Fleet {
   }
 
   leaveServer(): void {
-    if (!this.socket) return;
+    // Drop the local server BEFORE the socket guard: without a fleet session there is nothing to
+    // send, but a stale player.server left behind would be auto-rejoined by joinSession's onopen
+    // on the NEXT session — showing the player on a server they left long ago.
+    const server = UserStore.player.server;
+    UserStore.player.server = undefined;
+    // Nothing joined -> nothing to send. A payload-less LEAVE_SERVER must never go out: the
+    // backend handler dereferences the server and the resulting error closes the socket, kicking
+    // the player out of their whole fleet session.
+    if (!this.socket || !server) return;
     const message: WebSocketMessage = {
-      data: UserStore.player.server,
+      data: server,
       messageType: WebSocketMessageType.LEAVE_SERVER,
     };
     info(
-      "[Fleet.ts][WebSocket] User leave a SOT server " +
-        JSON.stringify(UserStore.player.server),
+      "[Fleet.ts][WebSocket] User leave a SOT server " + JSON.stringify(server),
     );
     this.socket.send(JSON.stringify(message));
-    UserStore.player.server = undefined;
   }
 
   getReadyPlayers(): Player[] {
