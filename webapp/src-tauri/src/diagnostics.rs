@@ -234,6 +234,63 @@ pub fn pick_server_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowSta
         .max_by(|a, b| a.packets.cmp(&b.packets).then(a.bytes.cmp(&b.bytes)))
 }
 
+/// Picks the per-server session-coordinator flow — the one that identifies WHICH server a
+/// player is on. It is the sparse, two-way, plausible-SoT flow that everyone on a world
+/// instance shares, and it is deliberately NOT the busy gameplay flow (that is
+/// [`pick_server_flow`]).
+///
+/// The busy flow is a per-client connection to an Azure game host whose IP is reused across
+/// different servers (issue #364: several distinct servers all ran on 51.103.72.36), so it
+/// cannot tell servers apart — hashing it merged different servers into one card. The session
+/// flow's ip:port instead is identical for everyone on one server (case A: four players on
+/// different ships, one server, all on 20.33.49.115:31260) and differs between servers even on
+/// a shared host (cases B/D). `min_packets` is a small floor that rejects one-off stray packets;
+/// the flow must be bidirectional, which a real coordinator always is and a one-way probe is not.
+///
+/// Live detection accumulates flows across capture windows (see `merge_flows`) before calling
+/// this, because the session flow is only a handful of packets spread over the whole session and
+/// a single short window often misses it.
+pub fn pick_session_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowStat> {
+    // The dominant plausible flow is the game host; exclude it so we pick the coordinator.
+    let host = pick_server_flow(flows, 1);
+    flows
+        .iter()
+        .filter(|flow| {
+            flow.plausible_sot_port
+                && flow.packets >= min_packets
+                && flow.inbound > 0
+                && flow.outbound > 0
+                && host.map_or(true, |h| !std::ptr::eq(*flow, h))
+        })
+        // Among the remaining coordinator candidates, the most established one wins.
+        .max_by(|a, b| {
+            a.packets
+                .cmp(&b.packets)
+                .then(a.bytes.cmp(&b.bytes))
+                .then(b.local_port.cmp(&a.local_port))
+        })
+}
+
+/// Merges one capture window's flows into a running per-game accumulator keyed by
+/// (local_port, remote_ip, remote_port), summing volume and widening the observed time span.
+/// The live loop feeds every window here so the sparse session flow accrues enough packets to be
+/// recognised by [`pick_session_flow`], even though any single window may carry only one or two of
+/// its packets. Kept I/O-free so the accumulation is unit-tested deterministically.
+pub fn merge_flows(acc: &mut HashMap<(u16, String, u16), FlowStat>, window: &[FlowStat]) {
+    for flow in window {
+        acc.entry((flow.local_port, flow.remote_ip.clone(), flow.remote_port))
+            .and_modify(|e| {
+                e.packets += flow.packets;
+                e.bytes += flow.bytes;
+                e.inbound += flow.inbound;
+                e.outbound += flow.outbound;
+                e.first_seen_ms = e.first_seen_ms.min(flow.first_seen_ms);
+                e.last_seen_ms = e.last_seen_ms.max(flow.last_seen_ms);
+            })
+            .or_insert_with(|| flow.clone());
+    }
+}
+
 /// Runs a diagnostic capture and wraps the ranked flows in a shareable report.
 #[allow(clippy::too_many_arguments)]
 pub async fn run_diagnostic(
@@ -393,39 +450,33 @@ mod tests {
             .expect("the detection corpus fixture must parse")
     }
 
-    /// The low-volume plausible flow. pick_server_flow takes the busiest; this takes the sparsest.
-    fn sparse_flow(flows: &[FlowStat]) -> Option<&FlowStat> {
-        flows
-            .iter()
-            .filter(|f| f.plausible_sot_port)
-            .min_by_key(|f| f.packets)
-    }
-
-    // The finding out of #364: the server a player is on is identified by the SPARSE flow, not the
-    // busy gameplay flow. Across every scenario — same-server and different-server, including two
-    // servers sharing one Azure host — grouping the captures by the sparse flow's ip:port matches the
-    // ground truth exactly. The busy flow cannot: see the next test.
+    // The fix for #364: the server a player is on is identified by the session-coordinator flow
+    // (pick_session_flow), not the busy gameplay flow. Across every scenario — same-server and
+    // different-server, including different servers sharing one Azure host — grouping the captures by
+    // the session flow's ip:port matches the ground truth exactly. The busy flow cannot: see the next
+    // test. This drives the live identity, so it validates the shipped pick_session_flow directly.
     #[test]
-    fn the_session_is_the_sparse_flow_across_the_whole_corpus() {
+    fn the_session_flow_ip_port_matches_ground_truth_across_the_whole_corpus() {
         let corpus = load_corpus();
         assert!(corpus.scenarios.len() >= 4, "corpus lost scenarios");
 
         for s in &corpus.scenarios {
-            let sparse_ids: HashSet<(String, u16)> = s
+            let session_ids: HashSet<(String, u16)> = s
                 .captures
                 .iter()
                 .map(|c| {
-                    let f = sparse_flow(&c.flows)
-                        .unwrap_or_else(|| panic!("case {}: a capture has no sparse flow", s.case));
+                    let f = pick_session_flow(&c.flows, 2).unwrap_or_else(|| {
+                        panic!("case {}: a capture has no session flow", s.case)
+                    });
                     (f.remote_ip.clone(), f.remote_port)
                 })
                 .collect();
-            let one_session = sparse_ids.len() == 1;
+            let one_session = session_ids.len() == 1;
             assert_eq!(
                 one_session, s.same_server,
-                "case {}: sparse-flow grouping saw {} session(s), ground truth sameServer={}",
+                "case {}: session-flow grouping saw {} session(s), ground truth sameServer={}",
                 s.case,
-                sparse_ids.len(),
+                session_ids.len(),
                 s.same_server
             );
         }
@@ -455,6 +506,98 @@ mod tests {
             false_merge,
             "expected a different-server scenario that the busy-IP identity merges (the #364 bug)"
         );
+    }
+
+    /// Builds a FlowStat with plausibility derived from the port, for terse synthetic tests.
+    fn flow(local: u16, ip: &str, port: u16, packets: u32, inbound: u32, outbound: u32) -> FlowStat {
+        FlowStat {
+            local_port: local,
+            remote_ip: ip.to_string(),
+            remote_port: port,
+            packets,
+            bytes: packets as u64 * 100,
+            inbound,
+            outbound,
+            plausible_sot_port: is_plausible_sot_port(port),
+            first_seen_ms: 0,
+            last_seen_ms: packets as u64 * 500,
+        }
+    }
+
+    #[test]
+    fn pick_session_flow_excludes_the_busy_host_and_takes_the_coordinator() {
+        // The busy game host (huge volume) and the sparse two-way coordinator both sit in the SoT
+        // port range. The session identity is the coordinator, never the host.
+        let flows = vec![
+            flow(61390, "51.103.45.67", 30970, 1799, 1200, 599), // busy host
+            flow(51485, "20.33.49.115", 31260, 12, 8, 4),        // coordinator
+        ];
+        let session = pick_session_flow(&flows, 3).expect("a session flow should be picked");
+        assert_eq!(session.remote_ip, "20.33.49.115");
+        assert_eq!(session.remote_port, 31260);
+        // pick_server_flow still returns the host, so the two are cleanly distinct.
+        assert_eq!(pick_server_flow(&flows, 5).unwrap().remote_ip, "51.103.45.67");
+    }
+
+    #[test]
+    fn pick_session_flow_ignores_one_way_and_below_floor_noise() {
+        let flows = vec![
+            flow(61390, "51.103.45.67", 30970, 1799, 1200, 599), // busy host
+            flow(50000, "20.9.9.9", 35001, 40, 40, 0),           // one-way probe, never a coordinator
+            flow(50001, "20.8.8.8", 35002, 1, 1, 0),             // single stray packet
+        ];
+        assert!(
+            pick_session_flow(&flows, 3).is_none(),
+            "one-way and sub-floor flows must not be taken as the session"
+        );
+    }
+
+    #[test]
+    fn pick_session_flow_keeps_the_port_so_a_recurring_ip_is_not_merged() {
+        // Cases E/F: the same session IP (20.33.6.37) recurs across two different servers on
+        // different ports. The identity must carry the port, or the two servers merge.
+        let e_flows = [
+            flow(40000, "51.103.72.36", 31059, 935, 470, 465), // host
+            flow(40001, "20.33.6.37", 31127, 6, 3, 3),         // session on :31127
+        ];
+        let f_flows = [
+            flow(40002, "51.103.72.36", 30758, 1123, 560, 563), // host
+            flow(40003, "20.33.6.37", 30879, 6, 3, 3),          // session on :30879
+        ];
+        let e = pick_session_flow(&e_flows, 3).expect("E session");
+        let f = pick_session_flow(&f_flows, 3).expect("F session");
+        assert_eq!(e.remote_ip, f.remote_ip, "same recurring session IP");
+        assert_ne!(
+            (e.remote_ip.clone(), e.remote_port),
+            (f.remote_ip.clone(), f.remote_port),
+            "the port distinguishes the two servers"
+        );
+    }
+
+    #[test]
+    fn merge_flows_accumulates_a_sparse_flow_across_windows() {
+        // The busy host is in every window (that is why pick_session_flow is called at all); the
+        // coordinator drips one packet per window, alternating direction. No single window has the
+        // coordinator both bidirectional and above the floor, but the accumulation does — the point.
+        let mut acc: HashMap<(u16, String, u16), FlowStat> = HashMap::new();
+        let host = flow(61390, "51.103.45.67", 30970, 900, 450, 450);
+
+        merge_flows(&mut acc, &[host.clone(), flow(51485, "20.33.49.115", 31260, 1, 1, 0)]);
+        assert!(
+            pick_session_flow(&acc.values().cloned().collect::<Vec<_>>(), 3).is_none(),
+            "one coordinator packet is not yet a session"
+        );
+        merge_flows(&mut acc, &[host.clone(), flow(51485, "20.33.49.115", 31260, 1, 0, 1)]);
+        merge_flows(&mut acc, &[host.clone(), flow(51485, "20.33.49.115", 31260, 1, 1, 0)]);
+
+        let accumulated: Vec<FlowStat> = acc.values().cloned().collect();
+        assert_eq!(accumulated.len(), 2, "host + coordinator, one logical flow each");
+        let session = pick_session_flow(&accumulated, 3).expect("coordinator now resolvable");
+        assert_eq!(session.remote_ip, "20.33.49.115");
+        assert_eq!(session.remote_port, 31260);
+        assert_eq!(session.packets, 3);
+        assert_eq!(session.inbound, 2);
+        assert_eq!(session.outbound, 1);
     }
 
     #[test]

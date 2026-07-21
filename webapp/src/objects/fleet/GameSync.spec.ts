@@ -90,6 +90,28 @@ describe("syncGameState (detection -> join/leave flow)", () => {
     expect(fleet.leaveServer).not.toHaveBeenCalled();
   });
 
+  it("treats the same ip on a different port as a new server (ip:port identity)", () => {
+    const fleet = spyFleet();
+    const player = playerAt(PlayerStates.IN_GAME);
+    player.server = { ...SERVER_A }; // 20.216.148.125:30101
+
+    // Same session IP, different port: a different server (issue #364 cases E/F). The old identity
+    // was IP-only and would have missed this; ip:port must see it as a server change.
+    syncGameState(
+      detected(PlayerStates.IN_GAME, "20.216.148.125", 39999),
+      player,
+      fleet,
+    );
+
+    expect(fleet.leaveServer).toHaveBeenCalledOnce();
+    expect(fleet.joinServer).toHaveBeenCalledOnce();
+    expect(fleet.leaveServer.mock.invocationCallOrder[0]).toBeLessThan(
+      fleet.joinServer.mock.invocationCallOrder[0],
+    );
+    expect(player.server?.ip).toBe("20.216.148.125");
+    expect(player.server?.port).toBe(39999);
+  });
+
   it("leaves the server when the player returns to the menu", () => {
     const fleet = spyFleet();
     const player = playerAt(PlayerStates.IN_GAME);

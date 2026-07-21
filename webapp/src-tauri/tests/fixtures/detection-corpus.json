@@ -1,10 +1,10 @@
 {
-  "_comment": "Ground-truth SoT server-detection captures (#364). sameServer is the in-game truth. Finding: the session is the SPARSE (low-volume) flow, not the busy gameplay flow — the busy flow is the shared Azure host. See diagnostics.rs tests.",
+  "_comment": "Ground-truth SoT server-detection captures (#364). sameServer is the in-game truth. Finding: a server is identified by the SPARSE (low-volume) session-coordinator flow's ip:port, not the busy gameplay flow — the busy flow is a per-client connection to an Azure host whose IP is reused across different servers. The sparse endpoint is shared by everyone on a world instance (across ships) and differs between servers even on one host. See diagnostics.rs tests.",
   "scenarios": [
     {
       "case": "A",
       "sameServer": true,
-      "note": "#657: four players sailing together, one server. Busy IP shared, busy ports differ, sparse endpoint identical for all four.",
+      "note": "#657: four players on DIFFERENT ships but the same server (the alliance case). Busy IP shared, busy ports differ per client, sparse endpoint identical for all four — proving the sparse flow is per-server (shared across crews), not per-crew.",
       "captures": [
         {
           "player": "A/p1",

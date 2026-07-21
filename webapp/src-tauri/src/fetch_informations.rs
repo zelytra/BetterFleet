@@ -43,13 +43,18 @@ fn dynamic_sleep_ms(status: &GameStatus) -> u64 {
 
 /// How long each detection window sniffs traffic before ranking flows.
 const CAPTURE_WINDOW_MS: u64 = 1500;
-/// Minimum packets a plausible-SoT flow must carry within a window to be accepted as
-/// the server. The real server pushes dozens of packets per second while the sparse
-/// Steam Datagram Relay flows push almost none, so a small floor cleanly separates
-/// them (see the issue #364 captures).
+/// Minimum packets a plausible-SoT flow must carry within a window to be accepted as the busy
+/// gameplay host — our "in a game" signal. The host pushes dozens of packets per second while
+/// everything else is sparse, so a small floor cleanly separates it (issue #364 captures).
 const MIN_SERVER_PACKETS: u32 = 5;
+/// Minimum ACCUMULATED packets for the sparse per-server session flow to be trusted as the server
+/// identity. Unlike the busy host, this flow is only a handful of packets spread across the whole
+/// session, so it is caught across several capture windows (see the accumulator in `init`) — the
+/// floor is low and only rejects one-off stray packets. pick_session_flow also requires it to be
+/// bidirectional. Tunable if in-game validation shows the session resolves too slowly / too eagerly.
+const MIN_SESSION_PACKETS: u32 = 3;
 /// Keep showing the last known server through brief gaps in traffic; only fall back to
-/// the main menu once no server flow has been seen for this long. Avoids flapping.
+/// the main menu once no host flow has been seen for this long. Avoids flapping.
 const SERVER_LOST_GRACE_SECS: u64 = 12;
 
 pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
@@ -57,6 +62,14 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
     let api = Arc::clone(&api_base);
 
     tokio::spawn(async move {
+        // Per-game accumulator of UDP flows. The sparse per-server session flow is only a handful of
+        // packets across the whole session, so a single capture window often misses it; merging
+        // windows lets us lock onto it reliably. Reset on leaving the game or when the host changes.
+        let mut game_flows: std::collections::HashMap<(u16, String, u16), crate::diagnostics::FlowStat> =
+            std::collections::HashMap::new();
+        // Busy host IP of the game we're currently in, used to notice a switch to a different game.
+        let mut game_host_ip = String::new();
+
         loop {
             let pid = find_pid_of("SoTGame.exe");
 
@@ -67,6 +80,8 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     api_lock.game_status = GameStatus::Closed;
                     api_lock.server_ip = String::new();
                     api_lock.server_port = 0;
+                    game_flows.clear();
+                    game_host_ip.clear();
                     info!("Game is closed");
                 }
                 drop(api_lock);
@@ -98,53 +113,71 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                 continue;
             }
 
-            // Sniff every game UDP port for a short window and rank the flows by
-            // volume. The real server flow dominates; the many Steam Datagram Relay
-            // sockets are sparse (issue #364), so the busiest plausible-SoT flow is the
-            // server. This replaces the old "first plausible packet wins" guess, which
-            // raced between 25+ sockets and could latch onto the wrong one.
+            // Sniff every game UDP port for a short window and rank the flows by volume. The busy
+            // plausible-SoT flow is the Azure gameplay host — a reliable "in a game" signal, but its
+            // IP is reused across different servers, so it is NOT the server identity. The identity is
+            // the sparse per-server session flow (issue #364): a handful of packets spread over the
+            // whole session, shared by everyone on the world instance. Because a single window often
+            // misses it, we accumulate windows per game and lock onto it once it appears.
             let port_count = udp_ports.len();
-            let flows = crate::diagnostics::capture_flows(
+            let window_flows = crate::diagnostics::capture_flows(
                 udp_ports,
                 Duration::from_millis(CAPTURE_WINDOW_MS),
             )
             .await;
 
-            match crate::diagnostics::pick_server_flow(&flows, MIN_SERVER_PACKETS) {
-                Some(server) => {
+            match crate::diagnostics::pick_server_flow(&window_flows, MIN_SERVER_PACKETS) {
+                Some(host) => {
+                    // In a game. A different host IP means a new game — drop the old accumulation.
+                    if !game_host_ip.is_empty() && game_host_ip != host.remote_ip {
+                        game_flows.clear();
+                    }
+                    game_host_ip = host.remote_ip.clone();
+
+                    // Accumulate this window, then try to lock the per-server session flow.
+                    crate::diagnostics::merge_flows(&mut game_flows, &window_flows);
+                    let accumulated: Vec<crate::diagnostics::FlowStat> =
+                        game_flows.values().cloned().collect();
+                    let session =
+                        crate::diagnostics::pick_session_flow(&accumulated, MIN_SESSION_PACKETS);
+
+                    // Until the session flow resolves, report in-game with NO server rather than the
+                    // ambiguous host IP — the fleet must never group players merely by a shared host.
+                    let (ip, port) = match session {
+                        Some(s) => (s.remote_ip.clone(), s.remote_port),
+                        None => (String::new(), 0),
+                    };
+
                     let mut api_lock = api.write().await;
                     let changed = api_lock.game_status != GameStatus::InGame
-                        || api_lock.server_ip != server.remote_ip
-                        || api_lock.server_port != server.remote_port;
+                        || api_lock.server_ip != ip
+                        || api_lock.server_port != port;
                     api_lock.game_status = GameStatus::InGame;
-                    api_lock.server_ip = server.remote_ip.clone();
-                    api_lock.server_port = server.remote_port;
+                    api_lock.server_ip = ip;
+                    api_lock.server_port = port;
                     api_lock.last_updated_server_ip = Instant::now();
                     drop(api_lock);
                     if changed {
-                        info!(
-                            "Server detected: {}:{} (local port {}, {} pkts / {} bytes in {}ms, {} game ports)",
-                            server.remote_ip,
-                            server.remote_port,
-                            server.local_port,
-                            server.packets,
-                            server.bytes,
-                            CAPTURE_WINDOW_MS,
-                            port_count
-                        );
+                        match session {
+                            Some(s) => info!(
+                                "Server detected: session {}:{} on host {} ({} pkts accumulated, {} game ports)",
+                                s.remote_ip, s.remote_port, host.remote_ip, s.packets, port_count
+                            ),
+                            None => info!(
+                                "In game on host {} — resolving the session flow ({} game ports)",
+                                host.remote_ip, port_count
+                            ),
+                        }
                     }
                 }
                 None => {
-                    let (had_server, last_updated) = {
-                        let api_lock = api.read().await;
-                        (
-                            !api_lock.server_ip.is_empty(),
-                            api_lock.last_updated_server_ip,
-                        )
-                    };
-                    if had_server {
-                        // Hold the last server through short traffic gaps to avoid flapping.
+                    if !game_host_ip.is_empty() {
+                        // We were in a game; hold through brief gaps in host traffic to avoid flapping,
+                        // then fall back to the menu once the host has been silent past the grace.
+                        let last_updated = api.read().await.last_updated_server_ip;
                         if last_updated.elapsed() > Duration::from_secs(SERVER_LOST_GRACE_SECS) {
+                            game_flows.clear();
+                            game_host_ip.clear();
                             let mut api_lock = api.write().await;
                             api_lock.game_status = GameStatus::MainMenu;
                             api_lock.server_ip = String::new();
@@ -152,7 +185,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                             api_lock.last_updated_server_ip = Instant::now();
                             drop(api_lock);
                             info!(
-                                "Server lost (no traffic for {}s), back to main menu",
+                                "Left the game (no host traffic for {}s), back to main menu",
                                 SERVER_LOST_GRACE_SECS
                             );
                         }
@@ -160,7 +193,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                         let mut api_lock = api.write().await;
                         if api_lock.game_status != GameStatus::MainMenu {
                             api_lock.game_status = GameStatus::MainMenu;
-                            info!("In main menu (no server flow on {} game ports)", port_count);
+                            info!("In main menu (no host flow on {} game ports)", port_count);
                         }
                     }
                 }
