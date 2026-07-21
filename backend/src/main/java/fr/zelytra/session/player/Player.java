@@ -30,6 +30,10 @@ public class Player {
     // copied onto the session when they create it. See issue #602 (frontend banner picker).
     private int banner;
 
+    // The player's country as a lowercase ISO 3166-1 alpha-2 code, derived by the client from the
+    // browser locale. Drives the session owner's flag in the public browser (issue #672).
+    private String country;
+
     // Constructor
     public Player() {
     }
@@ -114,6 +118,14 @@ public class Player {
 
     public void setBanner(int banner) {
         this.banner = banner;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     @Override

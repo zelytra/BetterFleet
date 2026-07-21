@@ -12,8 +12,8 @@ import java.util.List;
  * @param sessionId   the joinable session code — <b>empty for a private session</b>, whose code is
  *                    never published: holding that code is the whole difference between private and
  *                    public, so a private row is shown but cannot be joined from the browser.
- * @param region      ISO 3166-1 alpha-2 country code (lowercase) of the session's detected server,
- *                    or "" when no server has been detected yet.
+ * @param region      ISO 3166-1 alpha-2 country code (lowercase) of the session owner's country,
+ *                    from the master's browser locale (issue #672), or "" when unknown.
  * @param admin       usernames holding the master role.
  * @param name        the session's display name: the master's custom name (#604), or the
  *                    pirate-name seed as digits, which the client localizes.

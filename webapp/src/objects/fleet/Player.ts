@@ -39,6 +39,8 @@ export interface Player extends Preferences {
 
 export interface Preferences {
   lang?: string;
+  /** Lowercase ISO 3166-1 alpha-2 country from the browser locale — the owner flag in the public browser (#672). */
+  country?: string;
   soundEnable: boolean;
   soundLevel: number;
   macroEnable: boolean;

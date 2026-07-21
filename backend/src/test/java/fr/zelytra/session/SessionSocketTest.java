@@ -691,9 +691,10 @@ class SessionSocketTest {
 
     @Test
     void directory_publishesTheCodeOnceTheSessionGoesPublic() throws Exception {
-        String sessionId = createSessionAsMaster("Host");
+        String sessionId = createSessionAsMaster("Host", "fr");
 
-        // A detected server supplies the region (country code); the master then goes public.
+        // The region is the session OWNER's country (#672), not the detected server's: a server is
+        // detected here (geolocated "xx"), yet the published region must be the master's "fr".
         joinServer("1.1.1.1", 30101);
         betterFleetClient.setLatch(new CountDownLatch(1));
         betterFleetClient.sendMessage(MessageType.SET_VISIBILITY, false);
@@ -705,7 +706,7 @@ class SessionSocketTest {
         assertFalse(listed.isPrivate());
         assertEquals(1, listed.playerAmount());
         assertTrue(listed.admin().contains("Host"), "The master must be listed as an admin");
-        assertEquals("xx", listed.region(), "Region must come from the detected server's country code");
+        assertEquals("fr", listed.region(), "Region must be the session owner's country (#672), not the detected server's");
         assertEquals(sessionId, listed.sessionId(), "A public session's code is joinable from the browser");
 
         // The connected-player count rides the same snapshot, so the SSE moves it live instead of
@@ -824,9 +825,14 @@ class SessionSocketTest {
     }
 
     private String createSessionAsMaster(String username) throws Exception {
+        return createSessionAsMaster(username, null);
+    }
+
+    private String createSessionAsMaster(String username, String country) throws Exception {
         Player master = new Player();
         master.setUsername(username);
         master.setClientVersion(appVersion.get(0));
+        master.setCountry(country);
         betterFleetClient.sendMessage(MessageType.CONNECT, master);
         assertTrue(betterFleetClient.getLatch().await(1, TimeUnit.SECONDS));
         return betterFleetClient.getMessageReceived(Fleet.class).getSessionId();
