@@ -13,6 +13,8 @@ import { UserStore } from "@/objects/stores/UserStore.ts";
 const OVERLAY_LABEL = "overlay";
 const UPDATE_EVENT = "overlay:update";
 const REQUEST_EVENT = "overlay:request";
+// Overlay -> main: the local player clicked their ready badge in the overlay.
+const TOGGLE_READY_EVENT = "overlay:toggle-ready";
 
 /** Human-readable label of the toggle hotkey registered in main.rs, shown in the overlay header. */
 export const OVERLAY_HOTKEY_LABEL = "Ctrl+Shift+O";
@@ -36,6 +38,8 @@ export interface OverlaySnapshot {
   /** The main window's active language, so the overlay renders in the player's tongue. */
   locale: string;
   inSession: boolean;
+  /** The local player, always present so the overlay can show their ready state even off a server. */
+  me: OverlayPlayer;
   servers: OverlayServer[];
 }
 
@@ -57,6 +61,11 @@ export function computeSnapshot(): OverlaySnapshot {
   return {
     locale: player.lang ?? "en",
     inSession: !!fleet?.sessionId,
+    me: {
+      username: player.username,
+      isReady: !!player.isReady,
+      isSelf: true,
+    },
     servers: servers
       // Only servers someone is actually on; biggest grouping first so the useful one leads.
       .filter((s) => (s.connectedPlayers?.length ?? 0) > 0)
@@ -92,7 +101,26 @@ export async function startOverlayBroadcaster(): Promise<void> {
   await listen(REQUEST_EVENT, () => {
     emit(UPDATE_EVENT, computeSnapshot()).catch(() => {});
   });
+  // The overlay can't touch the session socket (separate webview): it asks us to flip the ready state.
+  await listen(TOGGLE_READY_EVENT, () => applyToggleReady());
   info("[Overlay] broadcaster started");
+}
+
+/**
+ * Runs in the MAIN window on the overlay's request: flips the local player's ready state exactly the
+ * way the in-app button does (mutate then push to the session), then echoes a fresh snapshot so the
+ * overlay reflects it immediately instead of waiting for the next poll.
+ */
+function applyToggleReady(): void {
+  const player = UserStore.player;
+  player.isReady = !player.isReady;
+  player.fleet?.updateToSession();
+  emit(UPDATE_EVENT, computeSnapshot()).catch(() => {});
+}
+
+/** Called by the OVERLAY window when the local player clicks their ready badge. */
+export function requestToggleReady(): void {
+  emit(TOGGLE_READY_EVENT).catch(() => {});
 }
 
 /** Subscribed by the OVERLAY window: asks for the current state, then follows updates. */
@@ -106,21 +134,31 @@ export async function onOverlayUpdate(
   return unlisten;
 }
 
-/** Shows/hides the overlay window. Bound to the in-app toggle button (the hotkey lives in Rust). */
-export async function toggleOverlay(): Promise<void> {
+/** Shows or hides the overlay window. Bound to the settings checkbox (the hotkey lives in Rust). */
+export async function setOverlayVisible(visible: boolean): Promise<void> {
   const overlay = WebviewWindow.getByLabel(OVERLAY_LABEL);
   if (!overlay) {
     error("[Overlay] window not found");
     return;
   }
   try {
-    if (await overlay.isVisible()) {
-      await overlay.hide();
-    } else {
+    if (visible) {
       await overlay.show();
       emit(UPDATE_EVENT, computeSnapshot()).catch(() => {});
+    } else {
+      await overlay.hide();
     }
   } catch (e) {
-    error("[Overlay] toggle failed: " + e);
+    error("[Overlay] visibility change failed: " + e);
+  }
+}
+
+/** Current visibility of the overlay window, so the settings checkbox can reflect the real state. */
+export async function isOverlayVisible(): Promise<boolean> {
+  const overlay = WebviewWindow.getByLabel(OVERLAY_LABEL);
+  try {
+    return overlay ? await overlay.isVisible() : false;
+  } catch {
+    return false;
   }
 }

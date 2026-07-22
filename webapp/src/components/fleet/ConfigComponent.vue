@@ -49,11 +49,16 @@
       </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.overlay')">
-      <div class="input-section">
-        <button type="button" @click="toggleOverlay()">
-          {{ t("config.overlay.toggle") }}
-        </button>
-        <p class="description">{{ t("config.overlay.description") }}</p>
+      <div class="checkbox-wrapper descriptor">
+        <input v-model="overlayEnabled" type="checkbox" />
+        <div class="label-wrapper">
+          <p @click="overlayEnabled = !overlayEnabled">
+            {{ t("config.overlay.toggle") }}
+          </p>
+          <p class="description" @click="overlayEnabled = !overlayEnabled">
+            {{ t("config.overlay.description") }}
+          </p>
+        </div>
       </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.banner')">
@@ -175,7 +180,7 @@ import { useI18n } from "vue-i18n";
 import InputText from "@/vue/form/InputText.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
-import { inject, onMounted, ref } from "vue";
+import { inject, onMounted, ref, watch } from "vue";
 
 import fr from "@assets/icons/locales/fr.svg";
 import de from "@assets/icons/locales/de.svg";
@@ -186,7 +191,10 @@ import xbox from "@assets/icons/xbox.svg";
 import microsoft from "@assets/icons/microsoft.svg";
 import playstation from "@assets/icons/playstation.svg";
 import { UserStore } from "@/objects/stores/UserStore.ts";
-import { toggleOverlay } from "@/objects/fleet/Overlay.ts";
+import {
+  isOverlayVisible,
+  setOverlayVisible,
+} from "@/objects/fleet/Overlay.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import SaveBar from "@/vue/utils/SaveBar.vue";
 import InputSlider from "@/vue/form/InputSlider.vue";
@@ -220,11 +228,17 @@ const hostName = ref<string>(UserStore.player.serverHostName!);
 const username = ref<string>(UserStore.player.username);
 const inputLoading = ref<boolean>(false);
 
+// The overlay checkbox mirrors the overlay window's real visibility; toggling it shows or hides it.
+const overlayEnabled = ref<boolean>(false);
+watch(overlayEnabled, (visible) => setOverlayVisible(visible));
+
 const sound = new Audio(countdownSound);
 
 onMounted(() => {
   loadOptionList();
   resetConfig();
+  // Reflect whatever the overlay is currently doing (it may have been toggled by its hotkey).
+  isOverlayVisible().then((visible) => (overlayEnabled.value = visible));
 });
 
 function loadOptionList() {

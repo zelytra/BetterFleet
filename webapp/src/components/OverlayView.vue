@@ -1,20 +1,24 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { UnlistenFn } from "@tauri-apps/api/event";
 import {
   onOverlayUpdate,
   OverlaySnapshot,
   OVERLAY_HOTKEY_LABEL,
+  requestToggleReady,
 } from "@/objects/fleet/Overlay.ts";
 import { serverBarColor } from "@/objects/fleet/ServerColor.ts";
 import { countryFlags } from "@/objects/utils/LangIcons.ts";
+import OverlayPlayerRow from "@/components/OverlayPlayerRow.vue";
 
 // The in-game overlay window's view (issue #671). It mirrors the live session the way the app does:
-// each server grouping (hash + region flag) with the pirates on it and their ready state — trimmed to
-// just what matters at a glance in-game. The main window pushes a compact snapshot (including the
-// player's active language) over a Tauri event; this window only listens, translates and renders.
-// Drag it around by its header (a Tauri drag region).
+// each server grouping (hash + region flag) with the pirates on it and their ready state, trimmed to
+// usernames and readiness. The local player always gets a row — inside their server grouping when it
+// is known, otherwise a standalone row on top — so they can see and toggle their ready state even
+// before their server is detected. The main window pushes a compact snapshot (including the player's
+// active language) over a Tauri event; this window only listens, translates and renders. Drag it by
+// its header (a Tauri drag region).
 
 const { t, locale } = useI18n();
 
@@ -25,12 +29,25 @@ function flagFor(code: string): string | undefined {
   return code ? countryFlags.get(code) : undefined;
 }
 
-// The overlay window is transparent; strip the app's opaque background so only the card shows.
+// Whether the local player is already shown inside a server grouping. When not (no server detected
+// yet, or between servers), we surface a standalone row so their ready state is always in reach.
+const meInServer = computed(() =>
+  (snapshot.value?.servers ?? []).some((s) => s.players.some((p) => p.isSelf)),
+);
+
+function onSelfReadyClick(): void {
+  requestToggleReady();
+}
+
+// The overlay window is transparent; strip the app's opaque backgrounds — html/body AND #app, which
+// carries the gradient — so only the rounded card shows and the window corners stay see-through.
 let previousBackground = "";
 onMounted(async () => {
   previousBackground = document.body.style.background;
   document.documentElement.style.background = "transparent";
   document.body.style.background = "transparent";
+  const appEl = document.getElementById("app");
+  if (appEl) appEl.style.background = "transparent";
   unlisten = await onOverlayUpdate((s) => {
     snapshot.value = s;
     // Render in the player's language: the main window ships its active locale in every snapshot.
@@ -53,17 +70,18 @@ onUnmounted(() => {
       <span class="hotkey">{{ OVERLAY_HOTKEY_LABEL }}</span>
     </header>
 
-    <div
-      v-if="!snapshot || !snapshot.inSession || snapshot.servers.length === 0"
-      class="empty"
-      data-tauri-drag-region
-    >
-      {{ t("overlay.empty") }}
-    </div>
+    <div class="body">
+      <!-- The local player, always visible — standalone when no server grouping holds them yet. -->
+      <OverlayPlayerRow
+        v-if="snapshot && !meInServer"
+        class="solo"
+        :player="snapshot.me"
+        :clickable="snapshot.inSession"
+        @toggle="onSelfReadyClick"
+      />
 
-    <div v-else class="servers">
       <section
-        v-for="(server, i) in snapshot.servers"
+        v-for="(server, i) in snapshot?.servers ?? []"
         :key="server.hash + i"
         class="server"
         :style="{ borderColor: server.color || '#8a8a8a' }"
@@ -81,69 +99,20 @@ onUnmounted(() => {
           />
         </div>
 
-        <ul class="players">
-          <li
+        <div class="players">
+          <OverlayPlayerRow
             v-for="player in server.players"
             :key="player.username"
-            :class="{ player: true, self: player.isSelf }"
-          >
-            <svg
-              class="user"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <circle cx="8" cy="5" r="3" />
-              <path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5v1H2z" />
-            </svg>
-            <span class="name">{{ player.username }}</span>
-            <span :class="['status', player.isReady ? 'ready' : 'not-ready']">
-              <span class="label">{{
-                player.isReady
-                  ? t("session.player.ready")
-                  : t("session.player.notReady")
-              }}</span>
-              <svg
-                v-if="player.isReady"
-                class="ico"
-                viewBox="0 0 16 16"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="8"
-                  cy="8"
-                  r="7"
-                  fill="currentColor"
-                  opacity="0.18"
-                />
-                <path
-                  d="M4.6 8.4l2.1 2.1 4.7-4.8"
-                  stroke="currentColor"
-                  stroke-width="1.7"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <svg
-                v-else
-                class="ico"
-                viewBox="0 0 16 16"
-                fill="none"
-                aria-hidden="true"
-              >
-                <circle
-                  cx="8"
-                  cy="8"
-                  r="5"
-                  stroke="currentColor"
-                  stroke-width="1.7"
-                />
-              </svg>
-            </span>
-          </li>
-        </ul>
+            :player="player"
+            :clickable="player.isSelf && (snapshot?.inSession ?? false)"
+            @toggle="onSelfReadyClick"
+          />
+        </div>
       </section>
+
+      <div v-if="!snapshot" class="empty" data-tauri-drag-region>
+        {{ t("overlay.empty") }}
+      </div>
     </div>
   </div>
 </template>
@@ -195,18 +164,7 @@ onUnmounted(() => {
   white-space: nowrap;
 }
 
-.empty {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  opacity: 0.7;
-  font-style: italic;
-  cursor: grab;
-}
-
-.servers {
+.body {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -216,12 +174,23 @@ onUnmounted(() => {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
 }
-.servers::-webkit-scrollbar {
+.body::-webkit-scrollbar {
   width: 6px;
 }
-.servers::-webkit-scrollbar-thumb {
+.body::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.25);
   border-radius: 3px;
+}
+
+.empty {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0.7;
+  font-style: italic;
+  cursor: grab;
 }
 
 .server {
@@ -250,52 +219,9 @@ onUnmounted(() => {
 }
 
 .players {
-  list-style: none;
-  margin: 0;
-  padding: 4px 6px 5px;
   display: flex;
   flex-direction: column;
   gap: 3px;
-}
-.player {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 4px;
-  border-radius: 4px;
-}
-.player.self {
-  background: rgba(50, 212, 153, 0.14);
-}
-.player .user {
-  width: 12px;
-  height: 12px;
-  opacity: 0.55;
-  flex: 0 0 auto;
-}
-.player .name {
-  flex: 1 1 auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex: 0 0 auto;
-  font-size: 10px;
-  font-weight: 600;
-}
-.status .ico {
-  width: 12px;
-  height: 12px;
-  flex: 0 0 auto;
-}
-.status.ready {
-  color: var(--information, #32d499);
-}
-.status.not-ready {
-  color: var(--important, #d43232);
+  padding: 4px 6px 5px;
 }
 </style>
