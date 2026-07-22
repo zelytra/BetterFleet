@@ -5,6 +5,19 @@ import { fileURLToPath, URL } from "node:url";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
+  server: {
+    // Mirror production's topology in dev. Live, the site calls betterfleet.fr/api — same origin,
+    // so CORS never applies. Pointing VITE_BACKEND_HOST at /api and proxying it to the local
+    // backend gives dev the same shape, instead of cross-origin calls the backend's CORS config
+    // doesn't answer (#654) — which silently blanked every API-fed widget in dev.
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:8080",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
   resolve: {
     alias: [
       {
