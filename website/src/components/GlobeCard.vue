@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import Globe from "globe.gl";
+import { feature } from "topojson-client";
+import countriesTopo from "world-atlas/countries-110m.json";
 import { RegionCount } from "@/objects/AllianceStats.ts";
 import { COUNTRY_CENTROIDS } from "@/objects/CountryCentroids.ts";
 
@@ -8,6 +10,13 @@ import { COUNTRY_CENTROIDS } from "@/objects/CountryCentroids.ts";
 // three's types. It's a 2x2 SVG rect in the app's dark tone, stretched over the sphere.
 const DARK_GLOBE_TEXTURE =
   "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='2'%20height='2'%3E%3Crect%20width='2'%20height='2'%20fill='%2318202c'/%3E%3C/svg%3E";
+
+// Country outlines, bundled locally (world-atlas 110m — coarse enough to stay ~100 KB, and it only
+// loads with this lazy chunk). Converted from topojson once at module load; drawn as flat polygons
+// slightly above the sphere so continents and borders actually read on the dark globe.
+const topo = countriesTopo as any;
+const COUNTRY_SHAPES = (feature(topo, topo.objects.countries) as any)
+  .features as object[];
 
 // The 3D user-region globe (issue #673). Lazy-loaded (globe.gl bundles three.js) so it never
 // weighs down the rest of the site. Renders one bar per region at its country centroid, its height
@@ -51,6 +60,13 @@ onMounted(() => {
     .showAtmosphere(true)
     .atmosphereColor("#32d499")
     .atmosphereAltitude(0.16)
+    // Land above the dark ocean: filled a touch lighter, borders in a subtle blue-grey.
+    .polygonsData(COUNTRY_SHAPES)
+    .polygonCapColor(() => "#2a3447")
+    .polygonSideColor(() => "rgba(0, 0, 0, 0)")
+    .polygonStrokeColor(() => "rgba(130, 150, 180, 0.45)")
+    .polygonAltitude(0.006)
+    .polygonsTransitionDuration(0)
     .pointsData(points())
     .pointLat("lat")
     .pointLng("lng")
