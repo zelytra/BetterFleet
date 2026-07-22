@@ -84,9 +84,9 @@ const avgTries = computed(() =>
 const bestHoursLabel = computed(() => {
   const hours = stats.value?.bestHours ?? [];
   if (!hours.length) return t("alliance.bestTimeNone");
-  return hours
-    .map((h) => `${String(h).padStart(2, "0")}:00`)
-    .join(", ") + " UTC";
+  return (
+    hours.map((h) => `${String(h).padStart(2, "0")}:00`).join(", ") + " UTC"
+  );
 });
 
 // Region bars: top owner regions by attempts, width relative to the busiest.
