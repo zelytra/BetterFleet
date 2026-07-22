@@ -42,6 +42,11 @@ export interface OverlaySnapshot {
   me: OverlayPlayer;
   servers: OverlayServer[];
   /**
+   * Session players no detected server holds yet, local player first. Keeps the whole roster
+   * visible — everyone appears with their ready state even before their server is found.
+   */
+  unassigned: OverlayPlayer[];
+  /**
    * ISO time-of-day at which the launch countdown ends (player.countDown.clickTime), or null when no
    * countdown is running. The overlay ticks its own local timer from this so the display stays smooth
    * without the main window streaming every frame — and, unlike the app, it plays no sound.
@@ -62,7 +67,28 @@ export function isOverlayWindow(): boolean {
 export function computeSnapshot(): OverlaySnapshot {
   const player = UserStore.player;
   const fleet = player.fleet;
-  const servers = fleet ? Array.from(fleet.servers.values()) : [];
+
+  // Only servers someone is actually on; biggest grouping first so the useful one leads.
+  const populated = (fleet ? Array.from(fleet.servers.values()) : [])
+    .filter((s) => (s.connectedPlayers?.length ?? 0) > 0)
+    .sort(
+      (a, b) =>
+        (b.connectedPlayers?.length ?? 0) - (a.connectedPlayers?.length ?? 0),
+    );
+
+  // Whoever the session knows but no grouping holds — the rest of the roster stays visible too.
+  const assigned = new Set(
+    populated.flatMap((s) => (s.connectedPlayers ?? []).map((p) => p.username)),
+  );
+  const unassigned = (fleet?.players ?? [])
+    .filter((p) => !assigned.has(p.username))
+    .map((p) => ({
+      username: p.username,
+      isReady: !!p.isReady,
+      isSelf: p.username === player.username,
+    }))
+    // Local player first: their row carries the ready toggle and must stay in reach.
+    .sort((a, b) => Number(b.isSelf) - Number(a.isSelf));
 
   return {
     locale: player.lang ?? "en",
@@ -75,23 +101,17 @@ export function computeSnapshot(): OverlaySnapshot {
     countdownEndsAt: player.countDown?.clickTime
       ? player.countDown.clickTime.toString()
       : null,
-    servers: servers
-      // Only servers someone is actually on; biggest grouping first so the useful one leads.
-      .filter((s) => (s.connectedPlayers?.length ?? 0) > 0)
-      .sort(
-        (a, b) =>
-          (b.connectedPlayers?.length ?? 0) - (a.connectedPlayers?.length ?? 0),
-      )
-      .map((s) => ({
-        hash: s.hash ?? "",
-        countryCode: (s.countryCode ?? "").toLowerCase(),
-        color: s.color ?? "",
-        players: (s.connectedPlayers ?? []).map((p) => ({
-          username: p.username,
-          isReady: !!p.isReady,
-          isSelf: p.username === player.username,
-        })),
+    servers: populated.map((s) => ({
+      hash: s.hash ?? "",
+      countryCode: (s.countryCode ?? "").toLowerCase(),
+      color: s.color ?? "",
+      players: (s.connectedPlayers ?? []).map((p) => ({
+        username: p.username,
+        isReady: !!p.isReady,
+        isSelf: p.username === player.username,
       })),
+    })),
+    unassigned,
   };
 }
 

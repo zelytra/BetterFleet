@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { UnlistenFn } from "@tauri-apps/api/event";
 import {
@@ -29,12 +29,6 @@ let unlisten: UnlistenFn | null = null;
 function flagFor(code: string): string | undefined {
   return code ? countryFlags.get(code) : undefined;
 }
-
-// Whether the local player is already shown inside a server grouping. When not (no server detected
-// yet, or between servers), we surface a standalone row so their ready state is always in reach.
-const meInServer = computed(() =>
-  (snapshot.value?.servers ?? []).some((s) => s.players.some((p) => p.isSelf)),
-);
 
 function onSelfReadyClick(): void {
   requestToggleReady();
@@ -128,13 +122,17 @@ onUnmounted(() => {
            session, the local player still gets a standalone row when no server grouping holds them
            yet, so they can set their ready state before their server is found. -->
       <template v-else-if="snapshot && snapshot.inSession">
-        <OverlayPlayerRow
-          v-if="!meInServer"
-          class="solo"
-          :player="snapshot.me"
-          :clickable="true"
-          @toggle="onSelfReadyClick"
-        />
+        <!-- The whole roster stays visible: session players no detected server holds yet, local
+             player first so their ready toggle is always in reach. -->
+        <div v-if="snapshot.unassigned.length" class="lobby">
+          <OverlayPlayerRow
+            v-for="player in snapshot.unassigned"
+            :key="player.username"
+            :player="player"
+            :clickable="player.isSelf"
+            @toggle="onSelfReadyClick"
+          />
+        </div>
 
         <section
           v-for="(server, i) in snapshot.servers"
@@ -193,6 +191,13 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
+/* The app-wide `* { transition: all 300ms }` (style.scss) makes every element chase the window
+   during a resize — the overlay must track it instantly. :deep(*) reaches the row sub-components. */
+.overlay,
+.overlay :deep(*) {
+  transition: none !important;
+}
+
 /* Header doubles as the drag handle. */
 .bar {
   display: flex;
@@ -227,6 +232,9 @@ onUnmounted(() => {
   gap: 6px;
   overflow-y: auto;
   flex: 1 1 auto;
+  /* A flex child's min-height defaults to its content: without this the body grows past the card
+     instead of shrinking, and the scrollbar never engages however many players pile up. */
+  min-height: 0;
   /* Thin, unobtrusive scrollbar when the session outgrows the window. */
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
@@ -276,10 +284,17 @@ onUnmounted(() => {
   font-weight: 800;
 }
 
+.lobby {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
 .server {
   border: 1.5px solid;
   border-radius: 6px;
   overflow: hidden;
+  flex: 0 0 auto;
 }
 .server-head {
   display: flex;

@@ -177,6 +177,29 @@ describe("Overlay snapshot + bridge (#671)", () => {
       expect(other.isSelf).toBe(false);
     });
 
+    it("lists session players held by no server as unassigned, self first", () => {
+      const onServer = makePlayer({ username: "OnServer" });
+      const fleet = fleetWith({
+        s: server({ connectedPlayers: [onServer] }),
+      });
+      fleet.players = [
+        onServer,
+        makePlayer({ username: "Waiting", isReady: false }),
+        makePlayer({ username: "Me", isReady: true }),
+      ];
+      UserStore.player = makePlayer({ username: "Me", fleet });
+
+      const snap = computeSnapshot();
+
+      // OnServer sits in their grouping, not here; the local player leads the leftovers.
+      expect(snap.unassigned.map((p) => p.username)).toEqual(["Me", "Waiting"]);
+      expect(snap.unassigned[0]).toEqual({
+        username: "Me",
+        isReady: true,
+        isSelf: true,
+      });
+    });
+
     it("still yields `me` with no servers when out of a session", () => {
       UserStore.player = makePlayer({ username: "Me", fleet: undefined });
       const snap = computeSnapshot();

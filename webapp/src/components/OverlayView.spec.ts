@@ -47,6 +47,7 @@ function snapshot(overrides: Partial<OverlaySnapshot> = {}): OverlaySnapshot {
     inSession: true,
     me: { username: "Me", isReady: false, isSelf: true },
     servers: [],
+    unassigned: [],
     countdownEndsAt: null,
     ...overrides,
   };
@@ -93,16 +94,22 @@ describe("OverlayView (#671)", () => {
     expect(w.text()).not.toContain(WAIT);
   });
 
-  it("shows a standalone self row when no server holds the player yet", async () => {
+  it("keeps serverless players visible, with their status", async () => {
     const w = mountOverlay();
     await feed(
       snapshot({
         servers: [],
-        me: { username: "Solo", isReady: false, isSelf: true },
+        unassigned: [
+          { username: "Me", isReady: true, isSelf: true },
+          { username: "Waiting", isReady: false, isSelf: false },
+        ],
       }),
     );
-    expect(w.find(".solo").exists()).toBe(true);
-    expect(w.text()).toContain("Solo");
+    expect(w.find(".lobby").exists()).toBe(true);
+    expect(w.text()).toContain("Me");
+    expect(w.text()).toContain("Waiting");
+    // Both rows carry a status badge — the roster is never a bare name list.
+    expect(w.findAll(".lobby .status")).toHaveLength(2);
   });
 
   it("takes over with the countdown while it runs", async () => {
@@ -119,10 +126,10 @@ describe("OverlayView (#671)", () => {
     await feed(
       snapshot({
         servers: [],
-        me: { username: "Me", isReady: false, isSelf: true },
+        unassigned: [{ username: "Me", isReady: false, isSelf: true }],
       }),
     );
-    await w.find(".solo .status").trigger("click");
+    await w.find(".lobby .self .status").trigger("click");
     expect(emittedEvents.some((e) => e.event === "overlay:toggle-ready")).toBe(
       true,
     );
