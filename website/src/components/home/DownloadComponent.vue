@@ -70,4 +70,28 @@ section {
     z-index: 2;
   }
 }
+
+@media (max-width: $lap) {
+  section {
+    height: 320px;
+    padding: 48px 20px;
+
+    h1 {
+      font-size: 40px;
+      text-align: center;
+
+      span {
+        font-size: 48px;
+      }
+    }
+  }
+}
+
+// A phone cannot install the Windows desktop app, so the call to download one goes away
+// entirely below tablet width (#670).
+@media (max-width: $palm) {
+  section {
+    display: none;
+  }
+}
 </style>

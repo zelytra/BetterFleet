@@ -60,7 +60,10 @@ onMounted(() => {
 
   p.logs,
   p.os {
-    white-space: pre;
+    // pre-wrap, not pre: log lines keep their line breaks but still wrap, instead of one long
+    // line dragging the whole page sideways (#670).
+    white-space: pre-wrap;
+    word-break: break-word;
     font-family: "JetBrains Mono", sans-serif;
   }
 }

@@ -77,7 +77,8 @@ section {
     gap: 70px;
 
     .card {
-      width: 350px;
+      // Never wider than the viewport minus the page's breathing room — the parchment SVG scales.
+      width: min(350px, calc(100vw - 40px));
       height: 190px;
       display: flex;
       flex-direction: column;
@@ -100,6 +101,27 @@ section {
         font-size: 20px;
       }
     }
+  }
+}
+
+// Three 350px cards and their gaps need ~1200px; below that they stack. The fixed 600px height
+// goes with it, or three stacked cards overflow the section and overlap what follows.
+@media (max-width: $lap) {
+  section {
+    height: auto;
+    padding: 60px 20px;
+    gap: 48px;
+
+    .stats-cards-wrapper {
+      flex-direction: column;
+      gap: 24px;
+    }
+  }
+}
+
+@media (max-width: $palm) {
+  section h1 {
+    font-size: 44px;
   }
 }
 </style>
