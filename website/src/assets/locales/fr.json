@@ -31,6 +31,13 @@
   "comparison": {
     "description": "BetterFleet est conçu pour trouver votre serveur de jeu rapidement, et de manière fiable. Dans notre benchmark, la détection prend environ 5 secondes, soit 3 à 4 fois plus vite que Fleet Creator. Il continue aussi de fonctionner là où Fleet Creator décroche : les dernières mises à jour de Sea of Thieves et leurs nouveaux serveurs relais (SDR) ont rendu sa méthode de détection caduque, qui affiche désormais souvent un serveur erroné ou \"corrompu\". Notre nouvelle analyse basée sur le trafic a été pensée pour ces serveurs : elle continue de pointer le bon. Le graphique compare les temps de détection : plus la barre est basse, mieux c'est.",
     "subtitle": "Une détection de serveur plus rapide : moins de temps dans les menus, plus de temps en mer.",
+    "table": {
+      "countdown": "Décompte synchronisé",
+      "detection": "Détection auto du serveur",
+      "free": "Gratuit & open source",
+      "languages": "Disponible en 5 langues",
+      "public": "Navigateur de sessions publiques"
+    },
     "title": "Comparaison avec Fleet Creator"
   },
   "credits": {
@@ -42,7 +49,8 @@
   "descriptions": {
     "globe": "Une interface soignée, inspirée du style de Sea of Thieves : on dirait une extension naturelle du jeu.",
     "hourglass": "Un compte à rebours partagé synchronise le \"Lever l'ancre\" de chaque joueur, pour que vos équipages partent au même instant et se retrouvent plus souvent.",
-    "key": "Open source et auditable : tout le code est public, et une équipe active le maintient à jour et sécurisé."
+    "key": "Open source et auditable : tout le code est public, et une équipe active le maintient à jour et sécurisé.",
+    "title": "L'essentiel"
   },
   "discover": {
     "discord": {
@@ -66,7 +74,13 @@
     }
   },
   "download": {
-    "now": "Télécharger dès maintenant"
+    "now": "Télécharger dès maintenant",
+    "pc": {
+      "content": "Vous êtes sur téléphone — gardez le lien sous la main et installez l'application plus tard sur votre PC Windows.",
+      "copied": "Lien copié !",
+      "copy": "Copier le lien de téléchargement",
+      "title": "BetterFleet s'installe sur PC"
+    }
   },
   "faq": {
     "copy": "Lien copié",
@@ -169,6 +183,8 @@
   },
   "presentation": {
     "content": "Réunir tout votre équipage sur le même serveur Sea of Thieves, c'est souvent laborieux. BetterFleet s'en charge : l'application synchronise le \"Lever l'ancre\" de chacun et vous montre qui s'est retrouvé ensemble — une alliance en quelques minutes plutôt qu'en quelques heures. Gratuit, open source, pensé par des joueurs.",
+    "how": "Voir comment ça marche",
+    "pill": "App Windows — gratuite & open source",
     "title": "BetterFleet"
   },
   "stats": {

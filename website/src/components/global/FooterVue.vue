@@ -1,5 +1,27 @@
 <template>
   <footer>
+    <!-- Phone (#670): the three parchment cards were 1000px of footer. Logo, a grid of tap-sized
+         links and the disclaimer folded away say the same in a third of it. -->
+    <div class="mobile-footer">
+      <img src="@/assets/icons/full-logo.svg" alt="BetterFleet" />
+      <nav class="links">
+        <router-link
+          v-for="route in routes.filter((x) => x.meta.displayInNav)"
+          :key="route.name"
+          :to="route.path"
+        >
+          {{ t(route.name) }}
+        </router-link>
+        <a href="https://discord.gg/sHPp5CPxf2" target="_blank">Discord</a>
+        <a href="https://github.com/zelytra/BetterFleet" target="_blank"
+          >GitHub</a
+        >
+      </nav>
+      <details>
+        <summary>{{ t("footer.warning.title") }}</summary>
+        <p>{{ t("footer.warning.content") }}</p>
+      </details>
+    </div>
     <div class="main-footer">
       <div class="card">
         <img src="@/assets/icons/full-logo.svg" alt="full logo" />
@@ -40,6 +62,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import { ref } from "vue";
+import { routes } from "@/router";
 
 const version = ref(import.meta.env.VITE_VERSION);
 const { t } = useI18n();
@@ -178,6 +201,10 @@ footer {
     }
   }
 
+  .mobile-footer {
+    display: none;
+  }
+
   // The footer is three columns in a row that never wrapped, and `body { overflow-x: hidden }` meant
   // it never looked broken either: at 375px the last card sat at x=677 and was simply clipped away.
   // Nothing scrolled, nothing overlapped, the GitHub link and the warning just were not there.
@@ -202,15 +229,65 @@ footer {
   }
 
   @media (max-width: $palm) {
+    // The parchment cards carry ~1000px of footer on a phone; the compact block above replaces
+    // them wholesale.
     .main-footer {
-      padding: 32px 12px;
+      display: none;
+    }
 
-      .card {
-        padding: 20px;
-        gap: 20px; // 35px of gap on a 3-line card is most of the card
+    .mobile-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 32px 16px 8px;
+      background: var(--secondary-background);
+
+      > img {
+        height: 56px;
+      }
+
+      .links {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 10px;
+        width: 100%;
+
+        a {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 44px;
+          border-radius: 8px;
+          background: rgba(255, 255, 255, 0.04);
+          color: var(--secondary-text);
+          font-size: 14px;
+
+          &.router-link-active {
+            color: var(--primary);
+          }
+        }
+      }
+
+      details {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 10px 12px;
+        color: var(--secondary-text);
+        font-size: 13px;
+        line-height: 1.5;
+
+        summary {
+          cursor: pointer;
+          color: var(--warning, #ffbe5c);
+        }
 
         p {
-          font-size: 16px;
+          margin-top: 8px;
         }
       }
     }
@@ -221,6 +298,11 @@ footer {
       box-sizing: border-box;
       padding: 16px 12px;
       text-align: center;
+      background: var(--secondary-background);
+
+      p {
+        font-size: 12px;
+      }
     }
   }
 }

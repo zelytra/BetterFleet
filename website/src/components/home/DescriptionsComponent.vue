@@ -1,5 +1,7 @@
 <template>
   <section>
+    <!-- Phone only (#670): stacked cards read as a list, a list wants a name. -->
+    <h1 class="mobile-title">{{ t("descriptions.title") }}</h1>
     <div class="description">
       <img src="@/assets/icons/key.svg" />
       <p>{{ t("descriptions.key") }}</p>
@@ -68,9 +70,50 @@ section {
     }
   }
 
+  .mobile-title {
+    display: none;
+  }
+
+  // Phone (#670): three huge centred blocks (741px) become icon-left cards — full copy kept, a
+  // third of the height.
   @media (max-width: $palm) {
-    gap: 44px;
-    padding: 48px 14px;
+    gap: 10px;
+    padding: 40px 16px;
+    align-items: stretch;
+
+    .mobile-title {
+      display: block;
+      font-family: BrushTip, sans-serif;
+      font-size: 34px;
+      font-weight: 400;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .description {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 14px;
+      max-width: none;
+      background: var(--primary-background-static, #171a21);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 14px;
+      box-sizing: border-box;
+
+      img {
+        width: 36px;
+        height: 36px;
+        flex: 0 0 36px;
+        margin-top: 2px;
+      }
+
+      p {
+        text-align: left;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+    }
   }
 }
 </style>

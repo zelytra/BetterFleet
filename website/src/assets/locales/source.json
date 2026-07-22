@@ -7,6 +7,13 @@
   "comparison": {
     "description": "BetterFleet is built to find your game server quickly — and reliably. In our benchmark it detects the server in about 5 seconds, roughly 3 to 4 times faster than Fleet Creator. It also keeps working where Fleet Creator no longer does: recent Sea of Thieves updates and their new relay servers (SDR) broke its detection method, which now often reports a wrong or \"corrupted\" server. Our new traffic-based analysis was built around those servers, so it keeps pointing you to the right one. The chart compares detection times side by side: the lower the bar, the better.",
     "subtitle": "Faster server detection — less time in menus, more time at sea.",
+    "table": {
+      "countdown": "Synced countdown",
+      "detection": "Automatic server detection",
+      "free": "Free & open source",
+      "languages": "Available in 5 languages",
+      "public": "Public session browser"
+    },
     "title": "Comparison with Fleet Creator"
   },
   "credits": {
@@ -18,7 +25,8 @@
   "descriptions": {
     "globe": "A clean interface inspired by the style of Sea of Thieves — it feels like a natural extension of the game.",
     "hourglass": "A shared countdown syncs every player's \"Set sail\" click, so your crews launch at the same moment and land together more often.",
-    "key": "Open source and auditable: the full code is public, and an active team keeps it updated and secure."
+    "key": "Open source and auditable: the full code is public, and an active team keeps it updated and secure.",
+    "title": "The essentials"
   },
   "discover": {
     "discord": {
@@ -42,7 +50,13 @@
     }
   },
   "download": {
-    "now": "Download now"
+    "now": "Download now",
+    "pc": {
+      "content": "You're on your phone — keep the link handy and install the app later on your Windows PC.",
+      "copied": "Link copied!",
+      "copy": "Copy the download link",
+      "title": "BetterFleet installs on PC"
+    }
   },
   "faq": {
     "copy": "Link copied",
@@ -144,6 +158,8 @@
   },
   "presentation": {
     "content": "Getting your whole crew onto the same Sea of Thieves server is often a hassle. BetterFleet takes care of it: the app syncs everyone's \"Set sail\" click and shows you who ended up together — so an alliance comes together in minutes rather than hours. Free, open source, and made by players.",
+    "how": "See how it works",
+    "pill": "Windows app — free & open source",
     "title": "BetterFleet"
   },
   "stats": {
