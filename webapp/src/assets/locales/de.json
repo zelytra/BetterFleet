@@ -110,6 +110,10 @@
       "check": "Sitzungsmakro aktivieren/deaktivieren",
       "description": "Ausführung eines automatischen Klicks am Ende des Countdowns"
     },
+    "overlay": {
+      "toggle": "Show / hide overlay",
+      "description": "Show your server and the session's biggest server on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+    },
     "name": {
       "label": "Nutzername",
       "placeholder": "Nutzername"
@@ -118,7 +122,8 @@
       "audio": "Audio",
       "banner": "Server-Banner",
       "developer": "Entwickler",
-      "general": "Allgemein"
+      "general": "Allgemein",
+      "overlay": "In-game overlay"
     },
     "savebar": {
       "cancel": "Änderungen abbrechen",

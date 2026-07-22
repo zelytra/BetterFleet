@@ -110,6 +110,10 @@
       "check": "Activar/Desactivar macro de sesión",
       "description": "Ejecución de un clic automático al final de la cuenta atrás."
     },
+    "overlay": {
+      "toggle": "Show / hide overlay",
+      "description": "Show your server and the session's biggest server on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+    },
     "name": {
       "label": "Nombre de usuario",
       "placeholder": "Nombre de usuario"
@@ -118,7 +122,8 @@
       "audio": "Audio",
       "banner": "Banner del servidor",
       "developer": "Desarrollador",
-      "general": "General"
+      "general": "General",
+      "overlay": "In-game overlay"
     },
     "savebar": {
       "cancel": "Descartar los cambios",

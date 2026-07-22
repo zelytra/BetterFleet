@@ -48,6 +48,14 @@
         </div>
       </div>
     </ParameterPart>
+    <ParameterPart :title="t('config.part.overlay')">
+      <div class="input-section">
+        <button type="button" @click="toggleOverlay()">
+          {{ t("config.overlay.toggle") }}
+        </button>
+        <p class="description">{{ t("config.overlay.description") }}</p>
+      </div>
+    </ParameterPart>
     <ParameterPart :title="t('config.part.banner')">
       <div class="input-section banner-section">
         <p class="description">{{ t("config.banner.description") }}</p>
@@ -178,6 +186,7 @@ import xbox from "@assets/icons/xbox.svg";
 import microsoft from "@assets/icons/microsoft.svg";
 import playstation from "@assets/icons/playstation.svg";
 import { UserStore } from "@/objects/stores/UserStore.ts";
+import { toggleOverlay } from "@/objects/fleet/Overlay.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import SaveBar from "@/vue/utils/SaveBar.vue";
 import InputSlider from "@/vue/form/InputSlider.vue";

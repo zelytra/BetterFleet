@@ -110,6 +110,10 @@
       "check": "Avvio assistito",
       "description": "Clicca automaticamente su \"Salpa\" alla fine del conto alla rovescia"
     },
+    "overlay": {
+      "toggle": "Show / hide overlay",
+      "description": "Show your server and the session's biggest server on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+    },
     "name": {
       "label": "Username",
       "placeholder": "Username"
@@ -118,7 +122,8 @@
       "audio": "Audio",
       "banner": "Stendardo della sessione",
       "developer": "Sviluppatore",
-      "general": "Generale"
+      "general": "Generale",
+      "overlay": "In-game overlay"
     },
     "savebar": {
       "cancel": "Annulla le modifiche",

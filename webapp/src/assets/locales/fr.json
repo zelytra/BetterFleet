@@ -110,6 +110,10 @@
       "check": "Lancement assisté",
       "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte"
     },
+    "overlay": {
+      "toggle": "Afficher / masquer l'overlay",
+      "description": "Affiche ton serveur et le plus gros serveur de la session par-dessus le jeu (en mode fenêtré sans bordure). Raccourci : Ctrl+Maj+O."
+    },
     "name": {
       "label": "Pseudonyme",
       "placeholder": "Pseudonyme"
@@ -118,7 +122,8 @@
       "audio": "Audio",
       "banner": "Bannière de session",
       "developer": "Développeur",
-      "general": "Général"
+      "general": "Général",
+      "overlay": "Overlay en jeu"
     },
     "savebar": {
       "cancel": "Annuler les modifications",

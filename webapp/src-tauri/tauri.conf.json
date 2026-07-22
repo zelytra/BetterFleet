@@ -26,6 +26,17 @@
           "http://**",
           "https://**"
         ]
+      },
+      "window": {
+        "all": false,
+        "show": true,
+        "hide": true,
+        "setFocus": true,
+        "setAlwaysOnTop": true,
+        "startDragging": true
+      },
+      "globalShortcut": {
+        "all": true
       }
     },
     "bundle": {
@@ -74,7 +85,8 @@
         {
           "domain": "localhost",
           "windows": [
-            "main"
+            "main",
+            "overlay"
           ],
           "enableTauriAPI": true
         }
@@ -93,12 +105,29 @@
     },
     "windows": [
       {
+        "label": "main",
         "fullscreen": false,
         "height": 760,
         "resizable": true,
         "title": "BetterFleet",
         "width": 1260,
         "transparent": true
+      },
+      {
+        "label": "overlay",
+        "title": "BetterFleet Overlay",
+        "url": "index.html",
+        "width": 320,
+        "height": 150,
+        "minWidth": 200,
+        "minHeight": 90,
+        "resizable": true,
+        "transparent": true,
+        "decorations": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "focus": false
       }
     ]
   }
