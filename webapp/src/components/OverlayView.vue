@@ -11,6 +11,7 @@ import {
 import { serverBarColor } from "@/objects/fleet/ServerColor.ts";
 import { countryFlags } from "@/objects/utils/LangIcons.ts";
 import OverlayPlayerRow from "@/components/OverlayPlayerRow.vue";
+import { LocalTime } from "@js-joda/core";
 
 // The in-game overlay window's view (issue #671). It mirrors the live session the way the app does:
 // each server grouping (hash + region flag) with the pirates on it and their ready state, trimmed to
@@ -39,6 +40,43 @@ function onSelfReadyClick(): void {
   requestToggleReady();
 }
 
+// Launch countdown. The main window streams only the end time; the overlay ticks its own timer so the
+// number stays smooth without every frame crossing the window boundary — and, unlike the app's
+// countdown, it plays no sound.
+const countdownText = ref<string | null>(null);
+let countdownTarget: string | null = null;
+let countdownTimer: number | null = null;
+
+function stopCountdown(): void {
+  if (countdownTimer !== null) {
+    clearInterval(countdownTimer);
+    countdownTimer = null;
+  }
+  countdownText.value = null;
+}
+
+function syncCountdown(endsAt: string | null): void {
+  if (endsAt === countdownTarget) return; // unchanged; keep the running ticker as-is
+  countdownTarget = endsAt;
+  stopCountdown();
+  if (!endsAt) return;
+
+  const target = LocalTime.parse(endsAt);
+  const tick = (): void => {
+    const now = LocalTime.now();
+    if (target.isBefore(now)) {
+      stopCountdown();
+      return;
+    }
+    // Same arithmetic as the app's SessionCountdown: seconds + the first two fractional digits.
+    const delta = target.minusSeconds(now.second()).minusNanos(now.nano());
+    countdownText.value =
+      delta.second() + "," + delta.nano().toString().slice(0, 2);
+  };
+  tick();
+  countdownTimer = window.setInterval(tick, 50);
+}
+
 // The overlay window is transparent; strip the app's opaque backgrounds — html/body AND #app, which
 // carries the gradient — so only the rounded card shows and the window corners stay see-through.
 let previousBackground = "";
@@ -54,10 +92,12 @@ onMounted(async () => {
     if (s.locale && s.locale !== locale.value) {
       locale.value = s.locale as typeof locale.value;
     }
+    syncCountdown(s.countdownEndsAt);
   });
 });
 onUnmounted(() => {
   if (unlisten) unlisten();
+  stopCountdown();
   document.body.style.background = previousBackground;
 });
 </script>
@@ -71,10 +111,23 @@ onUnmounted(() => {
     </header>
 
     <div class="body">
-      <!-- Only render the session while there actually is one; otherwise fall back to the wait
-           message. In a session, the local player still gets a standalone row when no server
-           grouping holds them yet, so they can set their ready state before their server is found. -->
-      <template v-if="snapshot && snapshot.inSession">
+      <!-- Launch countdown takes over the card while it runs — silent here, the app plays the sound. -->
+      <div
+        v-if="countdownText !== null"
+        class="countdown"
+        data-tauri-drag-region
+      >
+        <span class="cd-label">{{ t("session.countdown") }}</span>
+        <span class="cd-value"
+          ><strong>{{ countdownText }}</strong
+          >s</span
+        >
+      </div>
+
+      <!-- Otherwise render the session while there is one; else fall back to the wait message. In a
+           session, the local player still gets a standalone row when no server grouping holds them
+           yet, so they can set their ready state before their server is found. -->
+      <template v-else-if="snapshot && snapshot.inSession">
         <OverlayPlayerRow
           v-if="!meInServer"
           class="solo"
@@ -195,6 +248,32 @@ onUnmounted(() => {
   opacity: 0.7;
   font-style: italic;
   cursor: grab;
+}
+
+/* Launch countdown takeover, echoing the app's screen but sized for the overlay. */
+.countdown {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: grab;
+}
+.countdown .cd-label {
+  font-size: 11px;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.countdown .cd-value {
+  font-size: 28px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.countdown .cd-value strong {
+  color: var(--primary, #32d499);
+  font-weight: 800;
 }
 
 .server {

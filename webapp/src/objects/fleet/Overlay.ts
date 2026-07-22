@@ -41,6 +41,12 @@ export interface OverlaySnapshot {
   /** The local player, always present so the overlay can show their ready state even off a server. */
   me: OverlayPlayer;
   servers: OverlayServer[];
+  /**
+   * ISO time-of-day at which the launch countdown ends (player.countDown.clickTime), or null when no
+   * countdown is running. The overlay ticks its own local timer from this so the display stays smooth
+   * without the main window streaming every frame — and, unlike the app, it plays no sound.
+   */
+  countdownEndsAt: string | null;
 }
 
 /** True when the current window is the overlay (so main.ts can route it to the overlay view). */
@@ -66,6 +72,9 @@ export function computeSnapshot(): OverlaySnapshot {
       isReady: !!player.isReady,
       isSelf: true,
     },
+    countdownEndsAt: player.countDown?.clickTime
+      ? player.countDown.clickTime.toString()
+      : null,
     servers: servers
       // Only servers someone is actually on; biggest grouping first so the useful one leads.
       .filter((s) => (s.connectedPlayers?.length ?? 0) > 0)
