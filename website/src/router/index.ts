@@ -3,6 +3,7 @@ import HomeComponent from "@/components/HomeComponent.vue";
 import SupportComponent from "@/components/SupportComponent.vue";
 import ReportsComponent from "@/components/ReportsComponent.vue";
 import TutorialComponent from "@/components/TutorialComponent.vue";
+import StatisticsPage from "@/components/StatisticsPage.vue";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -31,6 +32,14 @@ export const routes = [
     path: "/tutorial",
     name: "nav.documentation",
     component: TutorialComponent,
+    meta: {
+      displayInNav: true,
+    },
+  },
+  {
+    path: "/statistics",
+    name: "nav.statistics",
+    component: StatisticsPage,
     meta: {
       displayInNav: true,
     },
