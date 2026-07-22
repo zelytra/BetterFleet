@@ -71,46 +71,50 @@ onUnmounted(() => {
     </header>
 
     <div class="body">
-      <!-- The local player, always visible — standalone when no server grouping holds them yet. -->
-      <OverlayPlayerRow
-        v-if="snapshot && !meInServer"
-        class="solo"
-        :player="snapshot.me"
-        :clickable="snapshot.inSession"
-        @toggle="onSelfReadyClick"
-      />
+      <!-- Only render the session while there actually is one; otherwise fall back to the wait
+           message. In a session, the local player still gets a standalone row when no server
+           grouping holds them yet, so they can set their ready state before their server is found. -->
+      <template v-if="snapshot && snapshot.inSession">
+        <OverlayPlayerRow
+          v-if="!meInServer"
+          class="solo"
+          :player="snapshot.me"
+          :clickable="true"
+          @toggle="onSelfReadyClick"
+        />
 
-      <section
-        v-for="(server, i) in snapshot?.servers ?? []"
-        :key="server.hash + i"
-        class="server"
-        :style="{ borderColor: server.color || '#8a8a8a' }"
-      >
-        <div
-          class="server-head"
-          :style="{ background: serverBarColor(server.color || '#8a8a8a') }"
+        <section
+          v-for="(server, i) in snapshot.servers"
+          :key="server.hash + i"
+          class="server"
+          :style="{ borderColor: server.color || '#8a8a8a' }"
         >
-          <span class="hash">{{ server.hash || "—" }}</span>
-          <img
-            v-if="flagFor(server.countryCode)"
-            class="flag"
-            :src="flagFor(server.countryCode)"
-            :alt="server.countryCode"
-          />
-        </div>
+          <div
+            class="server-head"
+            :style="{ background: serverBarColor(server.color || '#8a8a8a') }"
+          >
+            <span class="hash">{{ server.hash || "—" }}</span>
+            <img
+              v-if="flagFor(server.countryCode)"
+              class="flag"
+              :src="flagFor(server.countryCode)"
+              :alt="server.countryCode"
+            />
+          </div>
 
-        <div class="players">
-          <OverlayPlayerRow
-            v-for="player in server.players"
-            :key="player.username"
-            :player="player"
-            :clickable="player.isSelf && (snapshot?.inSession ?? false)"
-            @toggle="onSelfReadyClick"
-          />
-        </div>
-      </section>
+          <div class="players">
+            <OverlayPlayerRow
+              v-for="player in server.players"
+              :key="player.username"
+              :player="player"
+              :clickable="player.isSelf"
+              @toggle="onSelfReadyClick"
+            />
+          </div>
+        </section>
+      </template>
 
-      <div v-if="!snapshot" class="empty" data-tauri-drag-region>
+      <div v-else class="empty" data-tauri-drag-region>
         {{ t("overlay.empty") }}
       </div>
     </div>

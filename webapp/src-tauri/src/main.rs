@@ -12,7 +12,7 @@ use std::time::Duration;
 use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
 use serde::Serialize;
-use tauri::{GlobalShortcutManager, Manager, State};
+use tauri::{GlobalShortcutManager, Manager, State, WindowEvent};
 use tauri_plugin_log::fern::colors::ColoredLevelConfig;
 use tauri_plugin_log::{LogTarget, RotationStrategy};
 use tokio::sync::RwLock;
@@ -80,6 +80,18 @@ async fn main() {
             }
 
             Ok(())
+        })
+        .on_window_event(|event| {
+            // The overlay is a separate top-level window; closing the main window must take it down
+            // with it, otherwise it lingers on screen after the app is gone (issue #671).
+            if let WindowEvent::CloseRequested { .. } = event.event() {
+                let window = event.window();
+                if window.label() == "main" {
+                    if let Some(overlay) = window.get_window("overlay") {
+                        let _ = overlay.close();
+                    }
+                }
+            }
         })
         .manage(api_arc)
         .plugin(
