@@ -1,6 +1,40 @@
 <template>
   <section>
     <h1>{{ t("discover.title") }}</h1>
+    <!-- Phone (#670): the tabbed board hid two thirds of this content behind 35px tabs. Three
+         stacked cards show everything at once; the desktop slider stays as it is. -->
+    <div class="mobile-cards">
+      <div class="d-card">
+        <div class="head">
+          <img src="@/assets/icons/discord.svg" alt="" />
+          <h3>{{ t("discover.discord.title") }}</h3>
+        </div>
+        <p>{{ t("discover.discord.content") }}</p>
+        <a href="https://discord.gg/sHPp5CPxf2" target="_blank">
+          <PirateButton :label="t('discover.discord.button')" />
+        </a>
+      </div>
+      <div class="d-card">
+        <div class="head">
+          <img src="@/assets/icons/github.svg" alt="" />
+          <h3>{{ t("discover.github.title") }}</h3>
+        </div>
+        <p>{{ t("discover.github.content") }}</p>
+        <a href="https://github.com/zelytra/BetterFleet" target="_blank">
+          <PirateButton :label="t('discover.github.button')" />
+        </a>
+      </div>
+      <div class="d-card">
+        <div class="head">
+          <img src="@/assets/icons/globe.svg" alt="" />
+          <h3>{{ t("discover.translation.title") }}</h3>
+        </div>
+        <p>{{ t("discover.translation.content") }}</p>
+        <a href="https://crowdin.com/project/betterfleet" target="_blank">
+          <PirateButton :label="t('discover.translation.button')" />
+        </a>
+      </div>
+    </div>
     <div class="slider-wrapper">
       <div class="slider-nav">
         <span :class="{ selected: index == 0 }" @click="index = 0">{{
@@ -166,8 +200,18 @@ section {
     }
   }
 
+  .mobile-cards {
+    display: none;
+  }
+
+  // Below $lap — phones and tablets (#670): the tabbed board (35px tabs hiding two thirds of the
+  // content, inside a fixed 1200px section) becomes three stacked cards, everything visible.
+  // Capped at 560px so tablets keep a readable line length.
   @media (max-width: $lap) {
-    gap: 48px;
+    height: auto;
+    gap: 24px;
+    padding: 44px 16px;
+    box-sizing: border-box;
 
     h1 {
       font-size: 44px;
@@ -175,70 +219,68 @@ section {
       &:after {
         width: min(451px, 88vw);
         background-size: contain;
+        // bottom: 24px was tuned for the 60px desktop line box; on the smaller box it lands in
+        // the middle of the glyphs and reads as a strikethrough. Below the box, it underlines.
+        bottom: -6px;
       }
     }
 
     .slider-wrapper {
-      // The board art is `contain`, so on a narrow screen it scales to the width and its height
-      // collapses (135px at 375px wide) while the stacked content needs far more — the text would
-      // run straight off the bottom of the board. Stretched, it frames whatever height the content
-      // turns out to be.
-      background-size: 100% 100%;
-      max-height: none;
-      height: auto;
+      display: none;
+    }
 
-      .slider-nav {
-        // Three 250px tabs plus their gaps want 774px.
-        position: static;
-        transform: none;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 0 8px;
+    .mobile-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 560px;
 
-        span {
-          width: auto;
-          flex: 1 1 auto;
-          min-width: 0;
-          max-width: 250px;
-          padding: 8px 12px;
-          font-size: 15px;
-        }
-      }
-
-      .content-wrapper .content {
+      .d-card {
+        background: var(--secondary-background);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
         flex-direction: column;
-        // 92px a side is half a phone screen.
-        padding: 32px 20px;
-        gap: 28px;
+        gap: 10px;
 
-        .side-content {
-          max-width: 100%;
+        .head {
+          display: flex;
           align-items: center;
-          text-align: center;
+          gap: 10px;
 
-          &.image img {
-            max-width: 60%;
+          img {
+            width: 30px;
+            height: 30px;
           }
+
+          h3 {
+            font-size: 16px;
+            color: var(--primary);
+          }
+        }
+
+        p {
+          color: var(--secondary-text);
+          font-size: 14px;
+          line-height: 1.55;
+        }
+
+        a {
+          align-self: center;
         }
       }
     }
   }
 
   @media (max-width: $palm) {
-    gap: 32px;
-
     h1 {
       font-size: 34px;
-    }
 
-    .slider-wrapper .slider-nav span {
-      font-size: 13px;
-      padding: 8px 6px;
-    }
-
-    .slider-wrapper .content-wrapper .content {
-      padding: 24px 14px;
+      &:after {
+        bottom: -10px;
+      }
     }
   }
 }

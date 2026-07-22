@@ -1,6 +1,40 @@
 <template>
   <section>
     <h1>{{ t("comparison.title") }}</h1>
+    <!-- Phone (#670): the chart is an image — shrunk to a phone its labels are unreadable. The
+         same comparison as a native table costs no zoom; the chart stays for desktop. -->
+    <div class="compare-table">
+      <div class="c-row head">
+        <div></div>
+        <div class="mark bf">BF</div>
+        <div class="mark">FC</div>
+      </div>
+      <div class="c-row">
+        <div>{{ t("comparison.table.free") }}</div>
+        <div class="mark yes">✓</div>
+        <div class="mark no">✗</div>
+      </div>
+      <div class="c-row">
+        <div>{{ t("comparison.table.detection") }}</div>
+        <div class="mark yes">✓</div>
+        <div class="mark no">✗</div>
+      </div>
+      <div class="c-row">
+        <div>{{ t("comparison.table.public") }}</div>
+        <div class="mark yes">✓</div>
+        <div class="mark no">✗</div>
+      </div>
+      <div class="c-row">
+        <div>{{ t("comparison.table.countdown") }}</div>
+        <div class="mark yes">✓</div>
+        <div class="mark yes">✓</div>
+      </div>
+      <div class="c-row">
+        <div>{{ t("comparison.table.languages") }}</div>
+        <div class="mark yes">✓</div>
+        <div class="mark no">✗</div>
+      </div>
+    </div>
     <div class="content">
       <img src="@/assets/backgrounds/chart.svg" alt="chart" />
       <div class="description">
@@ -67,10 +101,18 @@ section {
     }
   }
 
-  // Image beside text with 120px between them. Below $lap the pair is narrower than that gap, and
-  // the text ends up at two or three words to the line.
+  .compare-table {
+    display: none;
+  }
+
+  // Below $lap — phones and tablets (#670): the chart is an image and its labels stop being
+  // readable, so a native ✓/✗ table (capped at 560px) carries the same data; the text stays,
+  // centred and stacked.
   @media (max-width: $lap) {
-    gap: 48px;
+    height: auto;
+    gap: 24px;
+    padding: 44px 16px;
+    box-sizing: border-box;
 
     h1 {
       font-size: 44px;
@@ -80,6 +122,9 @@ section {
         // 375px screen. It is background art: scale it rather than let it overhang.
         width: min(451px, 88vw);
         background-size: contain;
+        // bottom: 24px was tuned for the 60px desktop line box; on the smaller box it lands in
+        // the middle of the glyphs and reads as a strikethrough. Below the box, it underlines.
+        bottom: -6px;
       }
     }
 
@@ -88,22 +133,76 @@ section {
       gap: 32px;
       padding: 0 16px;
 
+      // The chart image goes; the table below carries its data. The text stays.
       img {
-        max-width: 100%;
+        display: none;
       }
 
       .description {
         // End-aligned reads as a mistake once the image is above the text rather than beside it.
         text-align: center;
+        max-width: 62ch;
+      }
+    }
+
+    .compare-table {
+      display: block;
+      width: 100%;
+      max-width: 560px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 14px;
+      background: var(--primary-background-static, #171a21);
+
+      .c-row {
+        display: grid;
+        grid-template-columns: 1fr 56px 56px;
+        align-items: center;
+
+        > div {
+          padding: 11px 12px;
+        }
+
+        & + .c-row {
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        &.head {
+          font-size: 12px;
+          color: var(--secondary-text);
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+
+          .bf {
+            color: var(--primary);
+            font-weight: 700;
+          }
+        }
+
+        .mark {
+          text-align: center;
+          font-weight: 700;
+
+          &.yes {
+            color: var(--primary);
+          }
+
+          &.no {
+            color: var(--important, #d43232);
+          }
+        }
       }
     }
   }
 
   @media (max-width: $palm) {
-    gap: 32px;
-
     h1 {
       font-size: 34px;
+
+      &:after {
+        bottom: -10px;
+      }
     }
   }
 }

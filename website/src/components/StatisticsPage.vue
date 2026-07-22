@@ -273,6 +273,8 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  text-align: center;
   gap: 12px;
   background: rgba(50, 212, 153, 0.1);
   border: 1px solid rgba(50, 212, 153, 0.35);
@@ -363,31 +365,42 @@ header {
   align-items: center;
   gap: 12px;
   margin-bottom: 8px;
+}
 
-  .region-name {
-    font-weight: 700;
-    font-size: 13px;
+.region-row .region-name {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.region-row .region-bar {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.region-row .region-fill {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+  border-radius: 6px;
+}
+
+.region-row .region-count {
+  text-align: right;
+  color: var(--secondary-text);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+// Phone: the three stat tiles stack, and the display type steps down to keep whole words on a line.
+@media (max-width: $palm) {
+  header h1 {
+    font-size: 40px;
   }
 
-  .region-bar {
-    height: 12px;
-    background: rgba(255, 255, 255, 0.06);
-    border-radius: 6px;
-    overflow: hidden;
-  }
-
-  .region-fill {
-    display: block;
-    height: 100%;
-    background: var(--primary);
-    border-radius: 6px;
-  }
-
-  .region-count {
-    text-align: right;
-    color: var(--secondary-text);
-    font-variant-numeric: tabular-nums;
-    font-size: 13px;
+  .tiles {
+    grid-template-columns: 1fr;
   }
 }
 </style>
