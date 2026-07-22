@@ -112,7 +112,7 @@
     },
     "overlay": {
       "toggle": "Show / hide overlay",
-      "description": "Show your server and the session's biggest server on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+      "description": "Zeige die Live-Session — jeden Server und wer bereit ist — oben auf dem Spiel (benutze den grenzenlosen Fenstermodus). Tastenkürzel: Strg+Umschalt+O."
     },
     "name": {
       "label": "Nutzername",
@@ -123,7 +123,7 @@
       "banner": "Server-Banner",
       "developer": "Entwickler",
       "general": "Allgemein",
-      "overlay": "In-game overlay"
+      "overlay": "In-Game Overlay"
     },
     "savebar": {
       "cancel": "Änderungen abbrechen",
@@ -140,8 +140,8 @@
       "test": "prüfen"
     },
     "stats": {
-      "check": "Anonyme Allianz-Statistiken",
-      "description": "Teilt das anonyme Ergebnis deiner Sitzungen (Erfolg, Regionen — nie wer du bist) für die öffentliche Statistikseite."
+      "check": "Anonyme Allianzstatistiken",
+      "description": "Unterstützen Sie die anonymen Ergebnisse Ihrer Sitzungen (Erfolg, Regionen — nie, wer Sie sind) auf der öffentlichen Statistikseite."
     },
     "subtitle": "Präferenzoptionen",
     "title": "Einstellungen"
@@ -215,7 +215,7 @@
     }
   },
   "overlay": {
-    "empty": "Warte auf deine Sitzung…"
+    "empty": "Warten auf Ihre Sitzung…"
   },
   "report": {
     "bug": {

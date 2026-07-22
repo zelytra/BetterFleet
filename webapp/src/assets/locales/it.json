@@ -112,7 +112,7 @@
     },
     "overlay": {
       "toggle": "Show / hide overlay",
-      "description": "Show your server and the session's biggest server on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+      "description": "Show the live session — every server and who's ready — on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
     },
     "name": {
       "label": "Username",
@@ -140,8 +140,8 @@
       "test": "Prova"
     },
     "stats": {
-      "check": "Statistiche di alleanza anonime",
-      "description": "Condivide l'esito anonimo delle tue sessioni (successo, regioni — mai chi sei) per la pagina pubblica delle statistiche."
+      "check": "Anonymous alliance statistics",
+      "description": "Contribute your sessions' anonymous outcomes (success, regions — never who you are) to the public statistics page."
     },
     "subtitle": "Opzioni di preferenza",
     "title": "Impostazioni"
@@ -215,7 +215,7 @@
     }
   },
   "overlay": {
-    "empty": "In attesa della tua sessione…"
+    "empty": "Waiting for your session…"
   },
   "report": {
     "bug": {
