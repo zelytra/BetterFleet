@@ -78,29 +78,38 @@ async function refresh(): Promise<void> {
  */
 function connectStream(): void {
   disconnect();
-  try {
-    const url = import.meta.env.VITE_BACKEND_HOST + "/public-sessions/stream";
-    stream = new EventSource(url);
-    stream.onmessage = (event: MessageEvent) => {
-      lastFrameAt = Date.now();
-      try {
-        applySnapshot(JSON.parse(event.data));
-      } catch {
-        /* ignore a malformed frame */
-      }
-    };
-    // Without this, a stream that never connects fails in complete silence — which is why nobody
-    // could say why the list was stale.
-    stream.onerror = () => {
+  const url = import.meta.env.VITE_BACKEND_HOST + "/public-sessions/stream";
+  // EventSource is a webview API — unlike our REST calls, which tunnel through Rust — so from the
+  // app's secure origin (https://tauri.localhost on Windows) it cannot open an http:// backend: the
+  // webview blocks it as mixed content before a single frame arrives. That is the whole of local dev,
+  // where the backend is plain http, and it produced nothing but a recurring console error. Skip the
+  // doomed attempt and let the poll carry the list; production is https end to end, so the stream is
+  // still used there. (See POLL_INTERVAL_MS.)
+  const blockedAsMixedContent =
+    window.location.protocol === "https:" && url.startsWith("http://");
+  if (!blockedAsMixedContent) {
+    try {
+      stream = new EventSource(url);
+      stream.onmessage = (event: MessageEvent) => {
+        lastFrameAt = Date.now();
+        try {
+          applySnapshot(JSON.parse(event.data));
+        } catch {
+          /* ignore a malformed frame */
+        }
+      };
+      // A stream that connects and later drops still deserves a breadcrumb; the poll has it covered.
+      stream.onerror = () => {
+        error(
+          "[PublicSessionsStore] SSE stream failed, falling back to polling: " +
+            url,
+        );
+      };
+    } catch (e) {
       error(
-        "[PublicSessionsStore] SSE stream failed, falling back to polling: " +
-          url,
+        "[PublicSessionsStore] EventSource unavailable, polling instead: " + e,
       );
-    };
-  } catch (e) {
-    error(
-      "[PublicSessionsStore] EventSource unavailable, polling instead: " + e,
-    );
+    }
   }
   startPolling();
 }
