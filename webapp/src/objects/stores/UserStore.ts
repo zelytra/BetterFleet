@@ -38,6 +38,8 @@ export const UserStore = reactive({
         readPlayer.bannerShuffle !== undefined
           ? readPlayer.bannerShuffle
           : false,
+      shareStats:
+        readPlayer.shareStats !== undefined ? readPlayer.shareStats : true,
       serverHostName:
         readPlayer.serverHostName || import.meta.env.VITE_SOCKET_HOST,
       clientVersion: import.meta.env.VITE_VERSION,

@@ -640,6 +640,16 @@ public class SessionManager {
     }
 
     /**
+     * Whether this session withholds its attempts from the anonymous statistics (issue #673, the
+     * opt-out). The session's masters decide: the only person-adjacent datum in a row is the owner
+     * region — theirs — while everyone else contributes nothing but an anonymous head-count. Pure,
+     * so the policy is unit-tested next to {@link #buildAttempt}.
+     */
+    boolean statsWithheld(Fleet fleet) {
+        return fleet.getMasters().stream().anyMatch(master -> !master.isShareStats());
+    }
+
+    /**
      * Builds the anonymized outcome of a countdown from the fleet's state (issue #673). Pure (no
      * I/O) so the outcome logic is unit-tested directly; carries no identifiers.
      */
@@ -671,6 +681,9 @@ public class SessionManager {
         Fleet fleet = sessions.get(sessionId);
         if (fleet == null) {
             return;
+        }
+        if (statsWithheld(fleet)) {
+            return; // a session master opted out of the anonymous statistics (#673)
         }
         AllianceAttempt attempt = buildAttempt(fleet, Instant.now());
         if (attempt.players <= 0) {

@@ -67,4 +67,39 @@ class AllianceAttemptBuilderTest {
         assertEquals(2, a.largestGroup, "largest group is the biggest server");
         assertEquals(3, a.players);
     }
+
+    @Test
+    void statsAreSharedByDefault() {
+        // A pre-#673 client never sends the flag; Jackson keeps the initialized true, so a fleet
+        // of old clients keeps contributing.
+        Fleet fleet = new Fleet();
+        fleet.getPlayers().add(player("Host", true, "fr"));
+        fleet.getPlayers().add(player("Mate", false, null));
+
+        assertFalse(new SessionManager().statsWithheld(fleet));
+    }
+
+    @Test
+    void aMasterOptingOutWithholdsTheWholeSession() {
+        Fleet fleet = new Fleet();
+        Player host = player("Host", true, "fr");
+        host.setShareStats(false);
+        fleet.getPlayers().add(host);
+        fleet.getPlayers().add(player("Mate", false, null));
+
+        assertTrue(new SessionManager().statsWithheld(fleet),
+                "the owner region is the master's datum — their opt-out withholds the row");
+    }
+
+    @Test
+    void aRegularPlayerOptingOutDoesNotWithholdTheSession() {
+        // Non-masters contribute nothing but an anonymous head-count; the session keeps counting.
+        Fleet fleet = new Fleet();
+        fleet.getPlayers().add(player("Host", true, "fr"));
+        Player mate = player("Mate", false, null);
+        mate.setShareStats(false);
+        fleet.getPlayers().add(mate);
+
+        assertFalse(new SessionManager().statsWithheld(fleet));
+    }
 }
