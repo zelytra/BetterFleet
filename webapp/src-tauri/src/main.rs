@@ -3,9 +3,10 @@
 
 use std::ffi::CString;
 use std::{fs, io, panic};
-use std::io::BufRead;
+use std::io::{BufRead, Cursor};
 use std::path::PathBuf;
 use std::ptr::null_mut;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::Duration;
@@ -46,6 +47,14 @@ struct GameObject {
 lazy_static! {
     static ref LOG_PATH: Mutex<PathBuf> = Mutex::new(PathBuf::new());
 }
+
+// The launch-countdown jingle, embedded so native playback needs no bundled resource. Played from
+// Rust because webview audio is suspended while the window sits occluded behind the game (#671) —
+// native audio answers to no visibility policy.
+static COUNTDOWN_SOUND: &[u8] = include_bytes!("../../src/assets/sounds/countdown.mp3");
+/// True while the countdown jingle is playing, so the frontend can poke every tick and the sound
+/// still loops cleanly instead of stacking.
+static SOUND_PLAYING: AtomicBool = AtomicBool::new(false);
 #[tokio::main]
 async fn main() {
     let api_arc = fetch_informations::init().await.expect("Failed to initialize API");
@@ -115,7 +124,8 @@ async fn main() {
             rise_anchor,
             get_logs,
             get_system_info,
-            run_server_diagnostic
+            run_server_diagnostic,
+            play_countdown_sound
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -351,4 +361,36 @@ async fn run_server_diagnostic(
     }
 
     Ok(report)
+}
+
+/// Plays the launch-countdown jingle natively (#671). Webview audio is suspended while the window
+/// is occluded behind the game, so `SessionCountdown` asks Rust instead: rodio opens the default
+/// output device on its own thread, immune to the webview's focus/occlusion/autoplay policies.
+///
+/// `volume` is 0.0–1.0 (the app's sound level / 100). Returns `false` when the jingle is already
+/// playing — the frontend pokes every tick and this dedup is what makes it loop instead of stack.
+#[tauri::command]
+fn play_countdown_sound(volume: f32) -> bool {
+    if SOUND_PLAYING.swap(true, Ordering::SeqCst) {
+        return false;
+    }
+    std::thread::spawn(move || {
+        let result = (|| -> Result<(), String> {
+            let (_stream, handle) =
+                rodio::OutputStream::try_default().map_err(|e| e.to_string())?;
+            let sink = rodio::Sink::try_new(&handle).map_err(|e| e.to_string())?;
+            let source =
+                rodio::Decoder::new(Cursor::new(COUNTDOWN_SOUND)).map_err(|e| e.to_string())?;
+            sink.set_volume(volume.clamp(0.0, 1.0));
+            sink.append(source);
+            // Blocks this dedicated thread until the jingle ends; _stream must outlive playback.
+            sink.sleep_until_end();
+            Ok(())
+        })();
+        if let Err(e) = result {
+            error!("[sound] countdown playback failed: {}", e);
+        }
+        SOUND_PLAYING.store(false, Ordering::SeqCst);
+    });
+    true
 }
