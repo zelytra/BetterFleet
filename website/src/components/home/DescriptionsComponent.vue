@@ -47,39 +47,20 @@ section {
     }
   }
 
-  // Three columns with 200px between them — 400px of gap on a 375px screen, so the columns collapsed
-  // to about 70px each, five or six characters to the line. Worse, `height: 140px; overflow: hidden`
-  // on the paragraph lines the three up on desktop and then simply cut the rest of the text away.
-  // The copy here was not hard to read, it was not on the page.
-  @media (max-width: $lap) {
-    flex-direction: column;
-    height: auto;
-    gap: 56px;
-    padding: 64px 16px;
-    box-sizing: border-box;
-
-    .description {
-      max-width: 420px;
-      gap: 24px;
-
-      p {
-        // Stacked, there is nothing left to line up with, and the clip has no job but to lose text.
-        height: auto;
-        overflow: visible;
-      }
-    }
-  }
-
   .mobile-title {
     display: none;
   }
 
-  // Phone (#670): three huge centred blocks (741px) become icon-left cards — full copy kept, a
-  // third of the height.
-  @media (max-width: $palm) {
+  // Below $lap — phones and tablets (#670): three huge centred desktop columns (whose 200px gaps
+  // and clipped paragraphs never fit here) become titled icon-left cards — full copy kept, a
+  // third of the height. Capped at 560px so tablets keep a readable line length.
+  @media (max-width: $lap) {
+    flex-direction: column;
+    align-items: center;
+    height: auto;
     gap: 10px;
-    padding: 40px 16px;
-    align-items: stretch;
+    padding: 44px 16px;
+    box-sizing: border-box;
 
     .mobile-title {
       display: block;
@@ -94,7 +75,8 @@ section {
       flex-direction: row;
       align-items: flex-start;
       gap: 14px;
-      max-width: none;
+      width: 100%;
+      max-width: 560px;
       background: var(--primary-background-static, #171a21);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
@@ -109,6 +91,9 @@ section {
       }
 
       p {
+        // The desktop 140px clip lined three columns up; stacked it would only lose text.
+        height: auto;
+        overflow: visible;
         text-align: left;
         font-size: 14px;
         line-height: 1.55;

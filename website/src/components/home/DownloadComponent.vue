@@ -101,25 +101,10 @@ section {
   }
 }
 
+// Below $lap — phones and tablets (#670): the desktop pitch (giant headline + installer button)
+// makes no sense on a device that cannot run the installer — it becomes one card that keeps the
+// intent: take the link with you, install on PC tonight.
 @media (max-width: $lap) {
-  section {
-    height: 320px;
-    padding: 48px 20px;
-
-    h1 {
-      font-size: 40px;
-      text-align: center;
-
-      span {
-        font-size: 48px;
-      }
-    }
-  }
-}
-
-// Phone (#670): the desktop pitch (giant headline + installer button) makes no sense here — it
-// becomes one card that keeps the intent: take the link with you, install on PC tonight.
-@media (max-width: $palm) {
   section {
     height: auto;
     padding: 40px 16px;

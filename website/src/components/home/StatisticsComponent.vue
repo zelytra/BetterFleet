@@ -104,27 +104,13 @@ section {
   }
 }
 
-// Three 350px cards and their gaps need ~1200px; below that they stack. The fixed 600px height
-// goes with it, or three stacked cards overflow the section and overlap what follows.
+// Below $lap — phones and tablets (#670): three 190px parchment cards (needing ~1200px side by
+// side) become one compact three-column band; the numbers stay the information, the title goes —
+// a strip of counters explains itself. Capped at 560px so tablet widths don't stretch it thin.
 @media (max-width: $lap) {
   section {
     height: auto;
-    padding: 60px 20px;
-    gap: 48px;
-
-    .stats-cards-wrapper {
-      flex-direction: column;
-      gap: 24px;
-    }
-  }
-}
-
-// Phone (#670): three stacked 190px parchment cards were ~860px of scrolling for three numbers.
-// They become one compact three-column band; the numbers stay the information, the title goes —
-// a strip of counters explains itself.
-@media (max-width: $palm) {
-  section {
-    padding: 28px 16px;
+    padding: 32px 16px;
     gap: 0;
 
     h1 {
@@ -136,6 +122,7 @@ section {
       align-items: stretch;
       gap: 0;
       width: 100%;
+      max-width: 560px;
       background: var(--secondary-background);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;

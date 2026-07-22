@@ -115,38 +115,7 @@ section {
     }
   }
 
-  // 64px of padding a side plus two 50% columns leaves each one 124px on a 375px screen: the
-  // headline broke to a word a line, down the middle of the artwork.
-  @media (max-width: $lap) {
-    height: auto;
-    min-height: 560px;
-    padding: 48px 24px;
-    flex-direction: column;
-    justify-content: center;
-    gap: 32px;
-
-    .side-content {
-      width: 100%;
-      align-items: center;
-      text-align: center;
-
-      &.text {
-        h1 {
-          font-size: 38px;
-        }
-
-        p {
-          font-size: 17px;
-        }
-      }
-
-      &.parallax .parallax-image {
-        width: 100%;
-      }
-    }
-  }
-
-  // The pill, the phone CTAs and the framed screenshot only exist below $palm.
+  // The pill and the phone CTAs only exist below $lap.
   .pill {
     display: none;
   }
@@ -155,79 +124,100 @@ section {
     display: none;
   }
 
-  @media (max-width: $palm) {
-    padding: 36px 20px 44px;
+  // Below $lap the hero is the touch design (#670) — tablets included: pill, centred column,
+  // actions a phone or tablet can take, and the app screenshot framed as decoration. The desktop
+  // pair of 50% columns and its installer CTA never made sense this narrow.
+  @media (max-width: $lap) {
+    height: auto;
     min-height: 0;
-    gap: 24px;
+    padding: 44px 24px 48px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 28px;
 
-    .side-content.text {
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        align-self: center;
-        font-size: 12px;
-        color: var(--warning, #ffbe5c);
-        border: 1px solid rgba(255, 190, 92, 0.35);
-        background: rgba(255, 190, 92, 0.08);
-        padding: 5px 12px;
-        border-radius: 999px;
+    .side-content {
+      width: 100%;
+      align-items: center;
+      text-align: center;
+
+      &.text {
+        .pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          align-self: center;
+          font-size: 12px;
+          color: var(--warning, #ffbe5c);
+          border: 1px solid rgba(255, 190, 92, 0.35);
+          background: rgba(255, 190, 92, 0.08);
+          padding: 5px 12px;
+          border-radius: 999px;
+        }
+
+        h1 {
+          font-size: 44px;
+        }
+
+        p {
+          font-size: 16px;
+          line-height: 1.6;
+          max-width: 40ch;
+        }
+
+        // The desktop CTA downloads a Windows installer; pointless from a phone or tablet.
+        .download-cta {
+          display: none;
+        }
+
+        .mobile-cta {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          width: 100%;
+          max-width: 340px;
+          align-self: center;
+
+          .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-weight: 600;
+          }
+
+          .btn.primary {
+            background: var(--primary);
+            color: #0b241b;
+          }
+
+          .btn.ghost {
+            border: 1.5px solid rgba(255, 255, 255, 0.14);
+            color: var(--primary-text);
+          }
+        }
       }
 
-      h1 {
-        font-size: 40px;
-      }
-
-      p {
-        font-size: 16px;
-        line-height: 1.6;
-        max-width: 32ch;
-      }
-
-      // The desktop CTA downloads a Windows installer; pointless from a phone.
-      .download-cta {
-        display: none;
-      }
-
-      .mobile-cta {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+      // The app screenshot is decoration here, not information: framed like a window and faded out
+      // before its unreadable-at-this-size details start to matter.
+      &.parallax .parallax-image {
         width: 100%;
         max-width: 340px;
-        align-self: center;
-
-        .btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 50px;
-          border-radius: 10px;
-          box-sizing: border-box;
-          font-size: 16px;
-          font-weight: 600;
-        }
-
-        .btn.primary {
-          background: var(--primary);
-          color: #0b241b;
-        }
-
-        .btn.ghost {
-          border: 1.5px solid rgba(255, 255, 255, 0.14);
-          color: var(--primary-text);
-        }
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+        -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
       }
     }
+  }
 
-    // The app screenshot is decoration here, not information: framed like a window and faded out
-    // before its unreadable-at-this-size details start to matter.
-    .side-content.parallax .parallax-image {
-      max-width: 320px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 12px;
-      mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
-      -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  @media (max-width: $palm) {
+    padding: 36px 16px 44px;
+
+    .side-content.text h1 {
+      font-size: 40px;
     }
   }
 }

@@ -205,32 +205,10 @@ footer {
     display: none;
   }
 
-  // The footer is three columns in a row that never wrapped, and `body { overflow-x: hidden }` meant
-  // it never looked broken either: at 375px the last card sat at x=677 and was simply clipped away.
-  // Nothing scrolled, nothing overlapped, the GitHub link and the warning just were not there.
+  // Below $lap — phones and tablets (#670): the three parchment columns carry ~1000px of footer;
+  // the compact block above (logo, tap-sized link grid, folded disclaimer) replaces them wholesale.
+  // Inner pieces cap at 560px so tablets don't stretch them thin.
   @media (max-width: $lap) {
-    .main-footer {
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 16px;
-
-      .card,
-      .card-wrapper {
-        // flex-basis and the 300px floor are what forced the row wider than the screen; stacked, the
-        // cards want the column's width and nothing else.
-        flex-basis: auto;
-        max-width: 520px;
-      }
-
-      .card.github {
-        min-width: 0;
-      }
-    }
-  }
-
-  @media (max-width: $palm) {
-    // The parchment cards carry ~1000px of footer on a phone; the compact block above replaces
-    // them wholesale.
     .main-footer {
       display: none;
     }
@@ -254,6 +232,7 @@ footer {
         grid-template-columns: 1fr 1fr;
         gap: 6px 10px;
         width: 100%;
+        max-width: 560px;
 
         a {
           display: flex;
@@ -273,6 +252,7 @@ footer {
 
       details {
         width: 100%;
+        max-width: 560px;
         box-sizing: border-box;
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 10px;

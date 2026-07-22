@@ -115,42 +115,7 @@ header {
   }
 }
 
-// The nav is absolutely centred on the bar, so it does not take part in the row's layout and nothing
-// pushes it aside. Below roughly 900px it simply sits on top of the logo — at 375px "Accueil" is
-// printed across the ship. Logo, nav and the download button want 453px between them, so one row
-// cannot hold them here; the nav drops to its own line instead.
-@media (max-width: $lap) {
-  header {
-    height: auto;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 12px 16px;
-    // The torn-edge background is a 1200px-wide tile anchored at 95%; on a short bar it crops to a
-    // sliver, so it is anchored to the bottom and allowed to scale down with the bar.
-    background-position: 50% 100%;
-    background-size: 900px 108px;
-
-    nav {
-      position: static;
-      transform: none;
-      order: 3;
-      width: 100%;
-      justify-content: center;
-      gap: 32px;
-      padding-top: 4px;
-    }
-  }
-
-  // Absolutely placed 50px down the page to tuck under a 90px bar. The bar is taller than that once
-  // the nav wraps, so it flows after the header instead of being pinned into it.
-  .header-details {
-    position: static;
-    height: 90px;
-    background-size: 900px 108px;
-  }
-}
-
-// The burger and the full-screen menu exist only below $palm; on anything wider the classic nav
+// The burger and the full-screen menu exist only below $lap; on anything wider the classic nav
 // row does the job and these stay out of the way.
 .burger {
   display: none;
@@ -190,10 +155,10 @@ header {
   display: none;
 }
 
-// Phone (#670): the desktop-squeezed header (wrapped 22px links + the 78px "try the app" banner)
-// becomes a 56px sticky bar — real logo, burger, nothing else. The download button goes with it:
-// a phone cannot install the Windows app, the hero says so instead.
-@media (max-width: $palm) {
+// Below $lap — phones AND tablets (#670): the desktop-squeezed header (wrapped 22px links + the
+// 78px "try the app" banner) becomes a 56px sticky bar — real logo, burger, nothing else. The
+// download button goes with it: these devices cannot install the Windows app, the hero says so.
+@media (max-width: $lap) {
   header {
     position: sticky;
     top: 0;

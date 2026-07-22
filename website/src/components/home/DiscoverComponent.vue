@@ -200,13 +200,18 @@ section {
     }
   }
 
+  .mobile-cards {
+    display: none;
+  }
+
+  // Below $lap — phones and tablets (#670): the tabbed board (35px tabs hiding two thirds of the
+  // content, inside a fixed 1200px section) becomes three stacked cards, everything visible.
+  // Capped at 560px so tablets keep a readable line length.
   @media (max-width: $lap) {
-    // The desktop 1200px was sized for the board art; stacked content is shorter and the
-    // difference was dead scroll.
     height: auto;
-    padding: 56px 0;
+    gap: 24px;
+    padding: 44px 16px;
     box-sizing: border-box;
-    gap: 48px;
 
     h1 {
       font-size: 44px;
@@ -221,72 +226,6 @@ section {
     }
 
     .slider-wrapper {
-      // The board art is `contain`, so on a narrow screen it scales to the width and its height
-      // collapses (135px at 375px wide) while the stacked content needs far more — the text would
-      // run straight off the bottom of the board. Stretched, it frames whatever height the content
-      // turns out to be.
-      background-size: 100% 100%;
-      max-height: none;
-      height: auto;
-
-      .slider-nav {
-        // Three 250px tabs plus their gaps want 774px.
-        position: static;
-        transform: none;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 0 8px;
-
-        span {
-          width: auto;
-          flex: 1 1 auto;
-          min-width: 0;
-          max-width: 250px;
-          padding: 8px 12px;
-          font-size: 15px;
-        }
-      }
-
-      .content-wrapper .content {
-        flex-direction: column;
-        // 92px a side is half a phone screen.
-        padding: 32px 20px;
-        gap: 28px;
-
-        .side-content {
-          max-width: 100%;
-          align-items: center;
-          text-align: center;
-
-          &.image img {
-            max-width: 60%;
-          }
-        }
-      }
-    }
-  }
-
-  .mobile-cards {
-    display: none;
-  }
-
-  @media (max-width: $palm) {
-    height: auto;
-    gap: 24px;
-    padding: 40px 16px;
-    box-sizing: border-box;
-
-    h1 {
-      font-size: 34px;
-
-      &:after {
-        bottom: -10px;
-      }
-    }
-
-    // The board and its tabs go; the cards carry the same three destinations.
-    .slider-wrapper {
       display: none;
     }
 
@@ -295,6 +234,7 @@ section {
       flex-direction: column;
       gap: 10px;
       width: 100%;
+      max-width: 560px;
 
       .d-card {
         background: var(--secondary-background);
@@ -330,6 +270,16 @@ section {
         a {
           align-self: center;
         }
+      }
+    }
+  }
+
+  @media (max-width: $palm) {
+    h1 {
+      font-size: 34px;
+
+      &:after {
+        bottom: -10px;
       }
     }
   }

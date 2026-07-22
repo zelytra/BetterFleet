@@ -105,13 +105,14 @@ section {
     display: none;
   }
 
-  // Image beside text with 120px between them. Below $lap the pair is narrower than that gap, and
-  // the text ends up at two or three words to the line.
+  // Below $lap — phones and tablets (#670): the chart is an image and its labels stop being
+  // readable, so a native ✓/✗ table (capped at 560px) carries the same data; the text stays,
+  // centred and stacked.
   @media (max-width: $lap) {
     height: auto;
-    padding: 64px 0;
+    gap: 24px;
+    padding: 44px 16px;
     box-sizing: border-box;
-    gap: 48px;
 
     h1 {
       font-size: 44px;
@@ -132,32 +133,22 @@ section {
       gap: 32px;
       padding: 0 16px;
 
+      // The chart image goes; the table below carries its data. The text stays.
       img {
-        max-width: 100%;
+        display: none;
       }
 
       .description {
         // End-aligned reads as a mistake once the image is above the text rather than beside it.
         text-align: center;
-      }
-    }
-  }
-
-  @media (max-width: $palm) {
-    gap: 24px;
-    padding: 40px 16px;
-
-    h1 {
-      font-size: 34px;
-
-      &:after {
-        bottom: -10px;
+        max-width: 62ch;
       }
     }
 
     .compare-table {
       display: block;
       width: 100%;
+      max-width: 560px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
       overflow: hidden;
@@ -203,10 +194,15 @@ section {
         }
       }
     }
+  }
 
-    // The chart image goes; the table above carries its data. The text stays.
-    .content img {
-      display: none;
+  @media (max-width: $palm) {
+    h1 {
+      font-size: 34px;
+
+      &:after {
+        bottom: -10px;
+      }
     }
   }
 }
