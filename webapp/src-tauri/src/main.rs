@@ -12,7 +12,7 @@ use std::thread::sleep;
 use std::time::Duration;
 use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tauri::{GlobalShortcutManager, Manager, State, WindowEvent};
 use tauri_plugin_log::fern::colors::ColoredLevelConfig;
 use tauri_plugin_log::{LogTarget, RotationStrategy};
@@ -52,6 +52,100 @@ lazy_static! {
 // Rust because webview audio is suspended while the window sits occluded behind the game (#671) —
 // native audio answers to no visibility policy.
 static COUNTDOWN_SOUND: &[u8] = include_bytes!("../../src/assets/sounds/countdown.mp3");
+
+/// The overlay's last position and size in physical desktop coordinates (#671). Desktop coordinates
+/// span every monitor, so persisting them puts the overlay back on the same screen too.
+#[derive(Serialize, Deserialize, Clone, Copy)]
+struct OverlayLayout {
+    x: i32,
+    y: i32,
+    width: u32,
+    height: u32,
+}
+
+fn overlay_layout_path(app: &tauri::AppHandle) -> Option<PathBuf> {
+    app.path_resolver()
+        .app_config_dir()
+        .map(|dir| dir.join("overlay-layout.json"))
+}
+
+/// True when the saved top-left corner still falls on one of the connected monitors — restoring a
+/// position from an unplugged screen would reopen the overlay out of sight, undraggable.
+/// Monitors are (x, y, width, height) in physical desktop coordinates.
+fn layout_is_on_screen(layout: &OverlayLayout, monitors: &[(i32, i32, u32, u32)]) -> bool {
+    monitors.iter().any(|(mx, my, mw, mh)| {
+        layout.x >= *mx
+            && layout.x < mx + *mw as i32
+            && layout.y >= *my
+            && layout.y < my + *mh as i32
+    })
+}
+
+/// Puts the overlay back exactly where the player left it last session. Runs during setup, while
+/// the overlay is still hidden, so the move is never visible. First run (no file) keeps the
+/// tauri.conf.json defaults.
+fn restore_overlay_layout(app: &tauri::AppHandle) {
+    let overlay = match app.get_window("overlay") {
+        Some(window) => window,
+        None => return,
+    };
+    let raw = match overlay_layout_path(app).map(fs::read_to_string) {
+        Some(Ok(raw)) => raw,
+        _ => return,
+    };
+    let layout: OverlayLayout = match serde_json::from_str(&raw) {
+        Ok(layout) => layout,
+        Err(e) => {
+            error!("[overlay] ignoring corrupt layout file: {}", e);
+            return;
+        }
+    };
+    let monitors: Vec<(i32, i32, u32, u32)> = overlay
+        .available_monitors()
+        .unwrap_or_default()
+        .iter()
+        .map(|m| {
+            let (pos, size) = (m.position(), m.size());
+            (pos.x, pos.y, size.width, size.height)
+        })
+        .collect();
+    if !layout_is_on_screen(&layout, &monitors) {
+        info!("[overlay] saved position is on a disconnected screen, keeping defaults");
+        return;
+    }
+    let _ = overlay.set_position(tauri::PhysicalPosition::new(layout.x, layout.y));
+    let _ = overlay.set_size(tauri::PhysicalSize::new(layout.width, layout.height));
+}
+
+/// Remembers where the overlay sits right now. Called as the app closes: the live window carries
+/// its geometry the whole session (hidden or shown), so one read at exit is all persistence needs.
+fn save_overlay_layout(overlay: &tauri::Window) {
+    let path = match overlay_layout_path(&overlay.app_handle()) {
+        Some(path) => path,
+        None => return,
+    };
+    let (pos, size) = match (overlay.outer_position(), overlay.outer_size()) {
+        (Ok(pos), Ok(size)) => (pos, size),
+        _ => return,
+    };
+    let layout = OverlayLayout {
+        x: pos.x,
+        y: pos.y,
+        width: size.width,
+        height: size.height,
+    };
+    if let Some(parent) = path.parent() {
+        let _ = fs::create_dir_all(parent);
+    }
+    match serde_json::to_string(&layout) {
+        Ok(json) => {
+            if let Err(e) = fs::write(&path, json) {
+                error!("[overlay] failed to save layout: {}", e);
+            }
+        }
+        Err(e) => error!("[overlay] failed to serialize layout: {}", e),
+    }
+}
 /// True while the countdown jingle is playing, so the frontend can poke every tick and the sound
 /// still loops cleanly instead of stacking.
 static SOUND_PLAYING: AtomicBool = AtomicBool::new(false);
@@ -88,6 +182,10 @@ async fn main() {
                 error!("Failed to register overlay hotkey: {}", e);
             }
 
+            // Reopen the overlay exactly where the player left it last session (#671) — position,
+            // size, and therefore screen — while it is still hidden, so the move is never seen.
+            restore_overlay_layout(&app.handle());
+
             Ok(())
         })
         .on_window_event(|event| {
@@ -97,6 +195,8 @@ async fn main() {
                 let window = event.window();
                 if window.label() == "main" {
                     if let Some(overlay) = window.get_window("overlay") {
+                        // Remember where the player parked it before taking it down (#671).
+                        save_overlay_layout(&overlay);
                         let _ = overlay.close();
                     }
                 }
@@ -393,4 +493,50 @@ fn play_countdown_sound(volume: f32) -> bool {
         SOUND_PLAYING.store(false, Ordering::SeqCst);
     });
     true
+}
+
+#[cfg(test)]
+mod overlay_layout_tests {
+    use super::*;
+
+    // A 1080p primary at the origin and a second screen to its LEFT — negative desktop coordinates,
+    // the multi-monitor case that breaks naive "x >= 0" assumptions.
+    const MONITORS: &[(i32, i32, u32, u32)] =
+        &[(0, 0, 1920, 1080), (-2560, 0, 2560, 1440)];
+
+    #[test]
+    fn accepts_a_position_on_the_primary_screen() {
+        let layout = OverlayLayout { x: 100, y: 200, width: 300, height: 260 };
+        assert!(layout_is_on_screen(&layout, MONITORS));
+    }
+
+    #[test]
+    fn accepts_a_position_on_a_negative_coordinate_screen() {
+        let layout = OverlayLayout { x: -1800, y: 300, width: 300, height: 260 };
+        assert!(layout_is_on_screen(&layout, MONITORS));
+    }
+
+    #[test]
+    fn rejects_a_position_from_a_disconnected_screen() {
+        // Saved while a third screen sat to the right of the primary; that screen is gone now.
+        let layout = OverlayLayout { x: 2500, y: 100, width: 300, height: 260 };
+        assert!(!layout_is_on_screen(&layout, MONITORS));
+    }
+
+    #[test]
+    fn rejects_everything_when_no_monitor_is_known() {
+        let layout = OverlayLayout { x: 10, y: 10, width: 300, height: 260 };
+        assert!(!layout_is_on_screen(&layout, &[]));
+    }
+
+    #[test]
+    fn layout_survives_a_serde_round_trip() {
+        let layout = OverlayLayout { x: -42, y: 17, width: 320, height: 150 };
+        let json = serde_json::to_string(&layout).unwrap();
+        let back: OverlayLayout = serde_json::from_str(&json).unwrap();
+        assert_eq!(
+            (back.x, back.y, back.width, back.height),
+            (layout.x, layout.y, layout.width, layout.height)
+        );
+    }
 }
