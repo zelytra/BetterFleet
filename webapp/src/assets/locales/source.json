@@ -112,7 +112,7 @@
     },
     "overlay": {
       "toggle": "Show / hide overlay",
-      "description": "Show your server and the session's biggest server on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+      "description": "Show the live session — every server and who's ready — on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
     },
     "name": {
       "label": "Username",
@@ -209,6 +209,9 @@
         "title": "LEAVE THE SESSION"
       }
     }
+  },
+  "overlay": {
+    "empty": "Waiting for your session…"
   },
   "report": {
     "bug": {

@@ -1,35 +1,42 @@
 import { appWindow, WebviewWindow } from "@tauri-apps/api/window";
 import { emit, listen, UnlistenFn } from "@tauri-apps/api/event";
-import {
-  isRegistered,
-  register,
-  unregister,
-} from "@tauri-apps/api/globalShortcut";
 import { info, error } from "tauri-plugin-log-api";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 
 // In-game overlay (issue #671). A second, always-on-top Tauri window (label "overlay", declared in
-// tauri.conf.json, hidden at startup) shows the player their own server and the session's biggest
-// server. It is a separate webview with its own JS context, so the MAIN window is the single source
-// of truth and pushes a compact snapshot over a Tauri event; the overlay only listens and renders.
+// tauri.conf.json, hidden at startup) mirrors the live session: every server grouping with the
+// pirates on it and their ready state. It is a separate webview with its own JS context, so the MAIN
+// window is the single source of truth and pushes a compact snapshot over a Tauri event; the overlay
+// only listens and renders. The global toggle hotkey is owned by the Rust side (main.rs), which
+// proved far more reliable than the JS global-shortcut API.
 
 const OVERLAY_LABEL = "overlay";
 const UPDATE_EVENT = "overlay:update";
 const REQUEST_EVENT = "overlay:request";
-export const OVERLAY_HOTKEY = "CommandOrControl+Shift+O";
+
+/** Human-readable label of the toggle hotkey registered in main.rs, shown in the overlay header. */
+export const OVERLAY_HOTKEY_LABEL = "Ctrl+Shift+O";
+
+export interface OverlayPlayer {
+  username: string;
+  isReady: boolean;
+  /** The local player, so the overlay can pick their row out of the grouping. */
+  isSelf: boolean;
+}
 
 export interface OverlayServer {
-  hash?: string;
-  address: string; // ip:port, "" when unresolved
+  hash: string;
+  /** Lowercase ISO country of the server region, "" when not resolved. Drives the region flag. */
+  countryCode: string;
   color: string;
-  players: number;
+  players: OverlayPlayer[];
 }
 
 export interface OverlaySnapshot {
-  status: string;
+  /** The main window's active language, so the overlay renders in the player's tongue. */
+  locale: string;
   inSession: boolean;
-  myServer: OverlayServer | null;
-  biggestServer: OverlayServer | null;
+  servers: OverlayServer[];
 }
 
 /** True when the current window is the overlay (so main.ts can route it to the overlay view). */
@@ -41,56 +48,32 @@ export function isOverlayWindow(): boolean {
   }
 }
 
-// Structural shape (just the fields the overlay shows), so it accepts both a fleet SotServer and
-// the raw detected server without wrestling with the recursive SotServer/Player types.
-function toOverlayServer(
-  server: { ip: string; port: number; hash?: string; color: string },
-  players: number,
-): OverlayServer {
-  return {
-    hash: server.hash,
-    address: server.ip ? `${server.ip}:${server.port}` : "",
-    color: server.color,
-    players,
-  };
-}
-
 /** Computes the compact snapshot the overlay renders from the live fleet/player state. */
 export function computeSnapshot(): OverlaySnapshot {
   const player = UserStore.player;
   const fleet = player.fleet;
   const servers = fleet ? Array.from(fleet.servers.values()) : [];
 
-  // My server: the authoritative one from the fleet (it carries the player count), matched on
-  // ip:port; fall back to the raw detected server (count 0) if the fleet hasn't echoed it yet.
-  let myServer: OverlayServer | null = null;
-  if (player.server && player.server.ip) {
-    const mine = servers.find(
-      (s) => s.ip === player.server!.ip && s.port === player.server!.port,
-    );
-    myServer = mine
-      ? toOverlayServer(mine, mine.connectedPlayers?.length ?? 0)
-      : toOverlayServer(player.server, 0);
-  }
-
-  let biggestServer: OverlayServer | null = null;
-  if (servers.length) {
-    const biggest = servers.reduce((a, b) =>
-      (b.connectedPlayers?.length ?? 0) > (a.connectedPlayers?.length ?? 0)
-        ? b
-        : a,
-    );
-    biggestServer = toOverlayServer(
-      biggest,
-      biggest.connectedPlayers?.length ?? 0,
-    );
-  }
-
   return {
-    status: player.status,
+    locale: player.lang ?? "en",
     inSession: !!fleet?.sessionId,
-    myServer,
-    biggestServer,
+    servers: servers
+      // Only servers someone is actually on; biggest grouping first so the useful one leads.
+      .filter((s) => (s.connectedPlayers?.length ?? 0) > 0)
+      .sort(
+        (a, b) =>
+          (b.connectedPlayers?.length ?? 0) - (a.connectedPlayers?.length ?? 0),
+      )
+      .map((s) => ({
+        hash: s.hash ?? "",
+        countryCode: (s.countryCode ?? "").toLowerCase(),
+        color: s.color ?? "",
+        players: (s.connectedPlayers ?? []).map((p) => ({
+          username: p.username,
+          isReady: !!p.isReady,
+          isSelf: p.username === player.username,
+        })),
+      })),
   };
 }
 
@@ -123,7 +106,7 @@ export async function onOverlayUpdate(
   return unlisten;
 }
 
-/** Shows/hides the overlay window. Bound to the toggle button and the global hotkey. */
+/** Shows/hides the overlay window. Bound to the in-app toggle button (the hotkey lives in Rust). */
 export async function toggleOverlay(): Promise<void> {
   const overlay = WebviewWindow.getByLabel(OVERLAY_LABEL);
   if (!overlay) {
@@ -139,27 +122,5 @@ export async function toggleOverlay(): Promise<void> {
     }
   } catch (e) {
     error("[Overlay] toggle failed: " + e);
-  }
-}
-
-/** Registers the global toggle hotkey (main window). Safe to call once at startup. */
-export async function registerOverlayHotkey(): Promise<void> {
-  try {
-    if (!(await isRegistered(OVERLAY_HOTKEY))) {
-      await register(OVERLAY_HOTKEY, () => {
-        toggleOverlay();
-      });
-      info("[Overlay] hotkey registered: " + OVERLAY_HOTKEY);
-    }
-  } catch (e) {
-    error("[Overlay] hotkey registration failed: " + e);
-  }
-}
-
-export async function unregisterOverlayHotkey(): Promise<void> {
-  try {
-    await unregister(OVERLAY_HOTKEY);
-  } catch {
-    /* ignore */
   }
 }

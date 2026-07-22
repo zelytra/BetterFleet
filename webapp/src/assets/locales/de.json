@@ -210,6 +210,9 @@
       }
     }
   },
+  "overlay": {
+    "empty": "Warte auf deine Sitzung…"
+  },
   "report": {
     "bug": {
       "button": "Bericht senden",

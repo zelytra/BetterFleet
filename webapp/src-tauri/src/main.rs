@@ -12,7 +12,7 @@ use std::time::Duration;
 use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
 use serde::Serialize;
-use tauri::State;
+use tauri::{GlobalShortcutManager, Manager, State};
 use tauri_plugin_log::fern::colors::ColoredLevelConfig;
 use tauri_plugin_log::{LogTarget, RotationStrategy};
 use tokio::sync::RwLock;
@@ -61,6 +61,24 @@ async fn main() {
         .setup(move |app| {
             let log_path = app.path_resolver().app_log_dir().unwrap();
             *LOG_PATH.lock().unwrap() = log_path;
+
+            // Global hotkey to toggle the in-game overlay (issue #671). Registered in Rust rather
+            // than through the JS global-shortcut API, which did not fire reliably. Ctrl+Shift+O
+            // shows/hides the overlay window; the main window keeps its content fresh over events.
+            let handle = app.handle();
+            let mut shortcuts = app.global_shortcut_manager();
+            if let Err(e) = shortcuts.register("CommandOrControl+Shift+O", move || {
+                if let Some(overlay) = handle.get_window("overlay") {
+                    if overlay.is_visible().unwrap_or(false) {
+                        let _ = overlay.hide();
+                    } else {
+                        let _ = overlay.show();
+                    }
+                }
+            }) {
+                error!("Failed to register overlay hotkey: {}", e);
+            }
+
             Ok(())
         })
         .manage(api_arc)

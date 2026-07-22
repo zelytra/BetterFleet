@@ -1,14 +1,29 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { UnlistenFn } from "@tauri-apps/api/event";
-import { onOverlayUpdate, OverlaySnapshot } from "@/objects/fleet/Overlay.ts";
+import {
+  onOverlayUpdate,
+  OverlaySnapshot,
+  OVERLAY_HOTKEY_LABEL,
+} from "@/objects/fleet/Overlay.ts";
+import { serverBarColor } from "@/objects/fleet/ServerColor.ts";
+import { countryFlags } from "@/objects/utils/LangIcons.ts";
 
-// The in-game overlay window's view (issue #671). Renders the compact snapshot the main window
-// pushes: the player's own server and the session's biggest server. Movable by dragging (the whole
-// card is a Tauri drag region).
+// The in-game overlay window's view (issue #671). It mirrors the live session the way the app does:
+// each server grouping (hash + region flag) with the pirates on it and their ready state — trimmed to
+// just what matters at a glance in-game. The main window pushes a compact snapshot (including the
+// player's active language) over a Tauri event; this window only listens, translates and renders.
+// Drag it around by its header (a Tauri drag region).
+
+const { t, locale } = useI18n();
 
 const snapshot = ref<OverlaySnapshot | null>(null);
 let unlisten: UnlistenFn | null = null;
+
+function flagFor(code: string): string | undefined {
+  return code ? countryFlags.get(code) : undefined;
+}
 
 // The overlay window is transparent; strip the app's opaque background so only the card shows.
 let previousBackground = "";
@@ -16,64 +31,119 @@ onMounted(async () => {
   previousBackground = document.body.style.background;
   document.documentElement.style.background = "transparent";
   document.body.style.background = "transparent";
-  unlisten = await onOverlayUpdate((s) => (snapshot.value = s));
+  unlisten = await onOverlayUpdate((s) => {
+    snapshot.value = s;
+    // Render in the player's language: the main window ships its active locale in every snapshot.
+    if (s.locale && s.locale !== locale.value) {
+      locale.value = s.locale as typeof locale.value;
+    }
+  });
 });
 onUnmounted(() => {
   if (unlisten) unlisten();
   document.body.style.background = previousBackground;
 });
-
-const statusLabel = computed(() => {
-  const s = snapshot.value;
-  if (!s) return "Waiting for BetterFleet…";
-  if (!s.inSession) return "Not in a session";
-  switch (s.status) {
-    case "IN_GAME":
-      return "";
-    case "MAIN_MENU":
-      return "In the main menu";
-    case "STARTED":
-      return "Game starting…";
-    case "CLOSED":
-      return "Game closed";
-    default:
-      return "Waiting…";
-  }
-});
 </script>
 
 <template>
-  <div class="overlay" data-tauri-drag-region>
-    <div class="header" data-tauri-drag-region>
-      <span class="brand">🏴‍☠️ BetterFleet</span>
-      <span class="grip">⠿</span>
+  <div class="overlay">
+    <header class="bar" data-tauri-drag-region>
+      <img class="logo" src="@/assets/icons/logo.svg" alt="BetterFleet" />
+      <span class="brand">BetterFleet</span>
+      <span class="hotkey">{{ OVERLAY_HOTKEY_LABEL }}</span>
+    </header>
+
+    <div
+      v-if="!snapshot || !snapshot.inSession || snapshot.servers.length === 0"
+      class="empty"
+      data-tauri-drag-region
+    >
+      {{ t("overlay.empty") }}
     </div>
 
-    <div v-if="statusLabel" class="empty">{{ statusLabel }}</div>
+    <div v-else class="servers">
+      <section
+        v-for="(server, i) in snapshot.servers"
+        :key="server.hash + i"
+        class="server"
+        :style="{ borderColor: server.color || '#8a8a8a' }"
+      >
+        <div
+          class="server-head"
+          :style="{ background: serverBarColor(server.color || '#8a8a8a') }"
+        >
+          <span class="hash">{{ server.hash || "—" }}</span>
+          <img
+            v-if="flagFor(server.countryCode)"
+            class="flag"
+            :src="flagFor(server.countryCode)"
+            :alt="server.countryCode"
+          />
+        </div>
 
-    <div v-else class="rows">
-      <div class="row">
-        <span class="tag">You</span>
-        <template v-if="snapshot?.myServer">
-          <span
-            class="dot"
-            :style="{ background: snapshot.myServer.color || '#8a8a8a' }"
-          ></span>
-          <span class="addr">{{ snapshot.myServer.address || "—" }}</span>
-          <span class="count">{{ snapshot.myServer.players }}</span>
-        </template>
-        <span v-else class="addr muted">resolving…</span>
-      </div>
-
-      <div v-if="snapshot?.biggestServer" class="row">
-        <span class="tag top">Top</span>
-        <span
-          class="dot"
-          :style="{ background: snapshot.biggestServer.color || '#8a8a8a' }"
-        ></span>
-        <span class="addr">{{ snapshot.biggestServer.address || "—" }}</span>
-        <span class="count">{{ snapshot.biggestServer.players }}</span>
-      </div>
+        <ul class="players">
+          <li
+            v-for="player in server.players"
+            :key="player.username"
+            :class="{ player: true, self: player.isSelf }"
+          >
+            <svg
+              class="user"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <circle cx="8" cy="5" r="3" />
+              <path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5v1H2z" />
+            </svg>
+            <span class="name">{{ player.username }}</span>
+            <span :class="['status', player.isReady ? 'ready' : 'not-ready']">
+              <span class="label">{{
+                player.isReady
+                  ? t("session.player.ready")
+                  : t("session.player.notReady")
+              }}</span>
+              <svg
+                v-if="player.isReady"
+                class="ico"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="8"
+                  cy="8"
+                  r="7"
+                  fill="currentColor"
+                  opacity="0.18"
+                />
+                <path
+                  d="M4.6 8.4l2.1 2.1 4.7-4.8"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <svg
+                v-else
+                class="ico"
+                viewBox="0 0 16 16"
+                fill="none"
+                aria-hidden="true"
+              >
+                <circle
+                  cx="8"
+                  cy="8"
+                  r="5"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                />
+              </svg>
+            </span>
+          </li>
+        </ul>
+      </section>
     </div>
   </div>
 </template>
@@ -83,82 +153,149 @@ const statusLabel = computed(() => {
   box-sizing: border-box;
   width: 100vw;
   height: 100vh;
-  padding: 8px 10px;
+  padding: 7px 8px 8px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(14, 18, 26, 0.82);
+  background: rgba(14, 18, 26, 0.85);
   color: #eef1f5;
   font-family: system-ui, sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow: hidden;
+}
+
+/* Header doubles as the drag handle. */
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   cursor: grab;
+  flex: 0 0 auto;
+}
+.bar .logo {
+  height: 16px;
+  width: auto;
+  display: block;
+}
+.bar .brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.bar .hotkey {
+  margin-left: auto;
+  font-size: 10px;
+  opacity: 0.65;
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.empty {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0.7;
+  font-style: italic;
+  cursor: grab;
+}
+
+.servers {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  /* Thin, unobtrusive scrollbar when the session outgrows the window. */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+.servers::-webkit-scrollbar {
+  width: 6px;
+}
+.servers::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+}
+
+.server {
+  border: 1.5px solid;
+  border-radius: 6px;
   overflow: hidden;
 }
-.header {
+.server-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  opacity: 0.75;
-  font-size: 11px;
-  letter-spacing: 0.04em;
+  justify-content: center;
+  gap: 6px;
+  padding: 3px 6px;
+  font-weight: 700;
 }
-.grip {
-  opacity: 0.5;
+.server-head .hash {
+  letter-spacing: 0.03em;
 }
-.rows {
+.server-head .flag {
+  height: 12px;
+  width: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+.players {
+  list-style: none;
+  margin: 0;
+  padding: 4px 6px 5px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
 }
-.row {
+.player {
   display: flex;
   align-items: center;
-  gap: 7px;
-  white-space: nowrap;
+  gap: 6px;
+  padding: 2px 4px;
+  border-radius: 4px;
 }
-.tag {
-  flex: 0 0 30px;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  opacity: 0.6;
+.player.self {
+  background: rgba(50, 212, 153, 0.14);
 }
-.tag.top {
-  color: #f4c95d;
-  opacity: 0.9;
-}
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+.player .user {
+  width: 12px;
+  height: 12px;
+  opacity: 0.55;
   flex: 0 0 auto;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
 }
-.addr {
-  font-variant-numeric: tabular-nums;
+.player .name {
+  flex: 1 1 auto;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 1 1 auto;
+  white-space: nowrap;
 }
-.muted {
-  opacity: 0.55;
-  font-style: italic;
-}
-.count {
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   flex: 0 0 auto;
-  opacity: 0.85;
-  font-variant-numeric: tabular-nums;
-}
-.count::after {
-  content: " 👤";
   font-size: 10px;
+  font-weight: 600;
 }
-.empty {
-  opacity: 0.7;
-  font-style: italic;
-  padding: 2px 0;
+.status .ico {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+}
+.status.ready {
+  color: var(--information, #32d499);
+}
+.status.not-ready {
+  color: var(--important, #d43232);
 }
 </style>

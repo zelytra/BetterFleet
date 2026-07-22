@@ -15,7 +15,6 @@ import { AlertProvider } from "@/vue/alert/Alert.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 import {
   isOverlayWindow,
-  registerOverlayHotkey,
   startOverlayBroadcaster,
 } from "@/objects/fleet/Overlay.ts";
 
@@ -29,9 +28,11 @@ export const i18n = createI18n({
 const alertProvider = reactive(new AlertProvider());
 
 // The overlay lives in its own Tauri window (issue #671). It mounts the standalone OverlayView
-// directly — no app chrome, router, i18n or auth — and is fed by the main window over Tauri events.
+// directly — no app chrome, router or auth — and is fed by the main window over Tauri events. It
+// still gets i18n so it can render in the player's language (the snapshot carries the active locale).
 const overlay = isOverlayWindow();
 const app = createApp(overlay ? OverlayView : App);
+app.use(i18n);
 
 if (!overlay) {
   keycloakStore.init(window.location.origin);
@@ -52,15 +53,13 @@ if (!overlay) {
     },
   });
   app.use(router);
-  app.use(i18n);
 }
 
 app.mount("#app");
 
 if (!overlay) {
-  // Main window: feed the overlay and register its global toggle hotkey.
+  // Main window: feed the overlay. Its global toggle hotkey is registered in Rust (main.rs).
   startOverlayBroadcaster();
-  registerOverlayHotkey();
 }
 
 export { alertProvider };
