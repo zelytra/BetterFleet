@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, defineAsyncComponent, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   AllianceStats,
@@ -7,6 +7,11 @@ import {
   fetchRegions,
   RegionCount,
 } from "@/objects/AllianceStats.ts";
+
+// Lazy: globe.gl bundles three.js, so it stays out of the main bundle and loads only here.
+const GlobeCard = defineAsyncComponent(
+  () => import("@/components/GlobeCard.vue"),
+);
 
 // The public alliance-analytics dashboard (issue #673). Anonymous, aggregated data on how often
 // crews converge onto one server, and when it works best.
@@ -169,6 +174,7 @@ const hasData = computed(() => (stats.value?.totalAttempts ?? 0) > 0);
 
       <div v-if="topRegions.length" class="card regions-card">
         <h3>{{ t("alliance.regions.title") }}</h3>
+        <GlobeCard :regions="regions" />
         <div v-for="r in topRegions" :key="r.region" class="region-row">
           <span class="region-name">{{ r.region }}</span>
           <span class="region-bar">
