@@ -214,6 +214,9 @@ section {
       &:after {
         width: min(451px, 88vw);
         background-size: contain;
+        // bottom: 24px was tuned for the 60px desktop line box; on the smaller box it lands in
+        // the middle of the glyphs and reads as a strikethrough. Below the box, it underlines.
+        bottom: -6px;
       }
     }
 
@@ -276,6 +279,10 @@ section {
 
     h1 {
       font-size: 34px;
+
+      &:after {
+        bottom: -10px;
+      }
     }
 
     // The board and its tabs go; the cards carry the same three destinations.

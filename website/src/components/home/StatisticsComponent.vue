@@ -150,6 +150,12 @@ section {
         gap: 4px;
         padding: 2px 4px;
 
+        // .card.important is more specific than the plain background: none above — without this
+        // the online-players column keeps its green parchment inside the flat band.
+        &.important {
+          background: none;
+        }
+
         & + .card {
           border-left: 1px solid rgba(255, 255, 255, 0.08);
         }
