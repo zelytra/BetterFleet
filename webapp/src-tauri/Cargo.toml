@@ -17,7 +17,7 @@ tauri-build = { version = "1.5.1", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.6.0", features = [ "http-all", "updater", "shell-all"] }
+tauri = { version = "1.6.0", features = [ "window-start-dragging", "window-show", "window-set-focus", "window-set-always-on-top", "window-hide", "global-shortcut-all", "http-all", "updater", "shell-all"] }
 anyhow = "1.0.80"
 socket2 = "0.5.6"
 tokio = { version = "1.43.1", features = ["full"] }
@@ -30,6 +30,9 @@ idna = "1.0.3"
 log = "^0.4"
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"] }
 lazy_static = "1.4.0"
+# Native audio for the launch-countdown sound (#671): webview audio is suspended when the window is
+# occluded behind the game, native playback is not.
+rodio = "0.20.1"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

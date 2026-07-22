@@ -21,17 +21,22 @@ import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import { invoke } from "@tauri-apps/api/tauri";
 import { PlayerStates } from "@/objects/fleet/Player.ts";
 import { onBeforeRouteLeave } from "vue-router";
-import countdownSound from "@assets/sounds/countdown.mp3";
 
 const delta = ref<LocalTime>(LocalTime.now());
 const { t } = useI18n();
 const alerts = inject<AlertProvider>("alertProvider");
-const sound = new Audio(countdownSound);
+
+// The countdown jingle is played natively by Rust (#671): webview audio is suspended while the app
+// sits occluded behind the game, native playback is not. Rust dedups repeat calls (no-op while the
+// jingle is playing), so poking it at most every 250ms is what loops it for the whole countdown.
+let lastSoundPoke = 0;
 
 let updateTimer = setInterval(() => {
-  if (sound.paused && UserStore.player.soundEnable) {
-    sound.volume = UserStore.player.soundLevel / 100;
-    sound.play();
+  if (UserStore.player.soundEnable && Date.now() - lastSoundPoke > 250) {
+    lastSoundPoke = Date.now();
+    invoke("play_countdown_sound", {
+      volume: UserStore.player.soundLevel / 100,
+    }).catch(() => {});
   }
 
   if (!UserStore.player.countDown || !UserStore.player.countDown.clickTime)

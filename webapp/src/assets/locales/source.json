@@ -110,6 +110,10 @@
       "check": "Assisted launch",
       "description": "Automatically clicks on \"Set sail\" at the end of the countdown"
     },
+    "overlay": {
+      "toggle": "Show / hide overlay",
+      "description": "Show the live session — every server and who's ready — on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+    },
     "name": {
       "label": "Username",
       "placeholder": "Username"
@@ -118,7 +122,8 @@
       "audio": "Audio",
       "banner": "Server banner",
       "developer": "Developer",
-      "general": "General"
+      "general": "General",
+      "overlay": "In-game overlay"
     },
     "savebar": {
       "cancel": "Cancel modifications",
@@ -204,6 +209,9 @@
         "title": "LEAVE THE SESSION"
       }
     }
+  },
+  "overlay": {
+    "empty": "Waiting for your session…"
   },
   "report": {
     "bug": {

@@ -93,3 +93,71 @@ export function installFakeTransports(): void {
   (globalThis as any).WebSocket = FakeWebSocket;
   (globalThis as any).EventSource = FakeEventSource;
 }
+
+// --- Tauri event bus + window, for the in-game overlay (#671) ------------------------------------
+// The overlay is a second Tauri window fed over `@tauri-apps/api/event`, and toggled through
+// `@tauri-apps/api/window`. Neither exists under vitest, so these are in-memory stand-ins: `emit`
+// delivers synchronously to every `listen` for that event (so a main->overlay round-trip resolves in
+// one tick), and the recorder lets a test assert what crossed the window boundary.
+
+type EventListener = (event: { payload: unknown }) => void;
+const eventListeners = new Map<string, Set<EventListener>>();
+/** Every payload emitted since the last reset, so a test can assert what was pushed. */
+export const emittedEvents: { event: string; payload: unknown }[] = [];
+
+export function eventMock() {
+  return {
+    emit: async (event: string, payload?: unknown) => {
+      emittedEvents.push({ event, payload });
+      for (const cb of [...(eventListeners.get(event) ?? [])]) cb({ payload });
+    },
+    listen: async (event: string, cb: EventListener) => {
+      const set = eventListeners.get(event) ?? new Set<EventListener>();
+      set.add(cb);
+      eventListeners.set(event, set);
+      return () => set.delete(cb);
+    },
+  };
+}
+
+/** A stand-in overlay window whose visibility a test can read and drive. */
+export const fakeOverlayWindow = {
+  visible: false,
+  async show() {
+    fakeOverlayWindow.visible = true;
+  },
+  async hide() {
+    fakeOverlayWindow.visible = false;
+  },
+  async isVisible() {
+    return fakeOverlayWindow.visible;
+  },
+};
+
+let currentWindowLabel = "main";
+/** Pretend the code is running in the window with this label (drives isOverlayWindow()). */
+export function setCurrentWindowLabel(label: string): void {
+  currentWindowLabel = label;
+}
+
+export function windowMock() {
+  return {
+    appWindow: {
+      get label() {
+        return currentWindowLabel;
+      },
+    },
+    WebviewWindow: {
+      getByLabel: (label: string) =>
+        label === "overlay" ? fakeOverlayWindow : null,
+    },
+  };
+}
+
+/** Clears emitted events + window state. Pass true to also drop every registered listener. */
+export function resetTauriEvents(dropListeners = false): void {
+  emittedEvents.length = 0;
+  fakeOverlayWindow.visible = false;
+  currentWindowLabel = "main";
+  if (dropListeners) eventListeners.clear();
+}
