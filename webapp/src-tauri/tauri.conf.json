@@ -111,7 +111,8 @@
         "resizable": true,
         "title": "BetterFleet",
         "width": 1260,
-        "transparent": true
+        "transparent": true,
+        "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows"
       },
       {
         "label": "overlay",
@@ -127,7 +128,8 @@
         "alwaysOnTop": true,
         "skipTaskbar": true,
         "visible": false,
-        "focus": false
+        "focus": false,
+        "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows"
       }
     ]
   }

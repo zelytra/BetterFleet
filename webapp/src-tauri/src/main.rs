@@ -48,19 +48,6 @@ lazy_static! {
 }
 #[tokio::main]
 async fn main() {
-    // Keep the app alive while it sits behind the game. WebView2/Chromium throttles — and eventually
-    // pauses — timers in unfocused/occluded windows, which froze the overlay's snapshot feed and the
-    // launch countdown's sound the moment the main window lost focus. These flags disable that so the
-    // overlay keeps updating and the countdown keeps ticking (and playing) in-game (issue #671).
-    // The first group are Tauri's own defaults, kept because this env var can replace them rather
-    // than append; the rest are the throttling switches we actually need.
-    std::env::set_var(
-        "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS",
-        "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection \
-         --disable-background-timer-throttling --disable-renderer-backgrounding \
-         --disable-backgrounding-occluded-windows",
-    );
-
     let api_arc = fetch_informations::init().await.expect("Failed to initialize API");
 
     panic::set_hook(Box::new(move |panic_info| {
