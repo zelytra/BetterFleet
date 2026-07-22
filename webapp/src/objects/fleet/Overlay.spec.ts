@@ -65,6 +65,7 @@ function makePlayer(overrides: Partial<Player> = {}): Player {
     macroEnable: false,
     banner: 0,
     bannerShuffle: false,
+    shareStats: true,
     lang: "fr",
     ...overrides,
   };

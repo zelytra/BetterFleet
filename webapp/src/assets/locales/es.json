@@ -139,6 +139,10 @@
       "label": "Conteo de sonidos",
       "test": "prueba"
     },
+    "stats": {
+      "check": "Estadísticas de alianza anónimas",
+      "description": "Comparte el resultado anónimo de tus sesiones (éxito, regiones — nunca quién eres) para la página pública de estadísticas."
+    },
     "subtitle": "Opciones de preferencia",
     "title": "Configuraciones"
   },

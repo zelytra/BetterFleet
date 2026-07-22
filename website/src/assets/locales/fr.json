@@ -1,4 +1,28 @@
 {
+  "alliance": {
+    "title": "Statistiques d'alliance",
+    "subtitle": "À quelle fréquence les équipages tombent vraiment sur le même serveur — et à quels moments ça marche le mieux. Données anonymes et agrégées.",
+    "empty": "Pas encore de données — reviens quand des équipages auront commencé à former des alliances.",
+    "bestTime": "Meilleur créneau pour former une alliance",
+    "bestTimeNone": "Pas encore assez de données",
+    "tile": {
+      "attempts": "Tentatives enregistrées",
+      "convergence": "Taux de convergence",
+      "tries": "Essais moy. pour converger"
+    },
+    "region": {
+      "label": "Région du proprio",
+      "all": "Toutes les régions"
+    },
+    "heatmap": {
+      "title": "Convergence par heure & jour (UTC)",
+      "low": "rarement ensemble",
+      "high": "souvent ensemble"
+    },
+    "regions": {
+      "title": "D'où viennent les joueurs"
+    }
+  },
   "button": {
     "download": "Télécharger",
     "downloadApp": "Télécharger l'application",
@@ -140,7 +164,8 @@
   "nav": {
     "documentation": "Découvrir",
     "home": "Accueil",
-    "support": "Support"
+    "support": "Support",
+    "statistics": "Statistiques"
   },
   "presentation": {
     "content": "Réunir tout votre équipage sur le même serveur Sea of Thieves, c'est souvent laborieux. BetterFleet s'en charge : l'application synchronise le \"Lever l'ancre\" de chacun et vous montre qui s'est retrouvé ensemble — une alliance en quelques minutes plutôt qu'en quelques heures. Gratuit, open source, pensé par des joueurs.",

@@ -139,6 +139,10 @@
       "label": "Audio del conto alla rovescia",
       "test": "Prova"
     },
+    "stats": {
+      "check": "Statistiche di alleanza anonime",
+      "description": "Condivide l'esito anonimo delle tue sessioni (successo, regioni — mai chi sei) per la pagina pubblica delle statistiche."
+    },
     "subtitle": "Opzioni di preferenza",
     "title": "Impostazioni"
   },

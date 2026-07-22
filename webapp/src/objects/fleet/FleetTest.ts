@@ -21,6 +21,7 @@ export function getStressTestFleet(): Fleet {
       macroEnable: true,
       banner: 0,
       bannerShuffle: false,
+      shareStats: true,
     },
     {
       username: "Player 2",
@@ -34,6 +35,7 @@ export function getStressTestFleet(): Fleet {
       macroEnable: true,
       banner: 0,
       bannerShuffle: false,
+      shareStats: true,
     },
     {
       username: "Player 3",
@@ -47,6 +49,7 @@ export function getStressTestFleet(): Fleet {
       macroEnable: true,
       banner: 0,
       bannerShuffle: false,
+      shareStats: true,
     },
     {
       username: "Player 4",
@@ -60,6 +63,7 @@ export function getStressTestFleet(): Fleet {
       macroEnable: true,
       banner: 0,
       bannerShuffle: false,
+      shareStats: true,
     },
     {
       username: "Player 5",
@@ -73,6 +77,7 @@ export function getStressTestFleet(): Fleet {
       macroEnable: true,
       banner: 0,
       bannerShuffle: false,
+      shareStats: true,
     },
   ];
 

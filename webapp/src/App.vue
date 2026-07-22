@@ -38,6 +38,7 @@ onMounted(() => {
     macroEnable: true,
     banner: 0,
     bannerShuffle: false,
+    shareStats: true,
   });
 });
 </script>

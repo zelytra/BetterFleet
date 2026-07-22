@@ -52,6 +52,12 @@ export interface Preferences {
   banner: number;
   /** When set, each hosted session gets a random template instead of the fixed pick above. */
   bannerShuffle: boolean;
+  /**
+   * Whether this player contributes to the anonymous alliance statistics (issue #673). Opt-out —
+   * defaults to true. Travels on CONNECT like every preference; the backend skips recording a
+   * session's attempts when one of its masters turned this off.
+   */
+  shareStats: boolean;
 }
 
 export interface ActionPlayer {

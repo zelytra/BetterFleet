@@ -139,6 +139,10 @@
       "label": "Décompte sonore",
       "test": "Tester"
     },
+    "stats": {
+      "check": "Statistiques d'alliance anonymes",
+      "description": "Partage le résultat anonyme de tes sessions (réussite, régions — jamais qui tu es) pour la page publique de statistiques."
+    },
     "subtitle": "Options de préférence",
     "title": "Paramètres"
   },

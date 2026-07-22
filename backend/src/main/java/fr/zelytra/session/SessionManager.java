@@ -14,6 +14,8 @@ import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
 import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.session.socket.SocketMessage;
+import fr.zelytra.statistics.AllianceAttempt;
+import fr.zelytra.statistics.AllianceAttemptRepository;
 import fr.zelytra.statistics.StatisticsEntity;
 import fr.zelytra.statistics.StatisticsRepository;
 import io.quarkus.arc.Lock;
@@ -30,6 +32,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -65,6 +68,9 @@ public class SessionManager {
 
     @Inject
     StatisticsRepository statisticsRepository;
+
+    @Inject
+    AllianceAttemptRepository allianceAttemptRepository;
 
     @Inject
     ExecutorService executor;
@@ -622,6 +628,70 @@ public class SessionManager {
                 .filter(code -> code != null && !code.isBlank())
                 .findFirst()
                 .orElse("");
+    }
+
+    /** The country of the server carrying the most players, or "" — the attempt's server region (#673). */
+    private String serverRegion(Fleet fleet) {
+        return fleet.getServers().values().stream()
+                .max(Comparator.comparingInt(server -> server.getConnectedPlayers().size()))
+                .map(SotServer::getCountryCode)
+                .filter(code -> code != null && !code.isBlank())
+                .orElse("");
+    }
+
+    /**
+     * Whether this session withholds its attempts from the anonymous statistics (issue #673, the
+     * opt-out). The session's masters decide: the only person-adjacent datum in a row is the owner
+     * region — theirs — while everyone else contributes nothing but an anonymous head-count. Pure,
+     * so the policy is unit-tested next to {@link #buildAttempt}.
+     */
+    boolean statsWithheld(Fleet fleet) {
+        return fleet.getMasters().stream().anyMatch(master -> !master.isShareStats());
+    }
+
+    /**
+     * Builds the anonymized outcome of a countdown from the fleet's state (issue #673). Pure (no
+     * I/O) so the outcome logic is unit-tested directly; carries no identifiers.
+     */
+    AllianceAttempt buildAttempt(Fleet fleet, Instant now) {
+        var servers = fleet.getServers().values();
+        int distinct = servers.size();
+        int largest = servers.stream().mapToInt(s -> s.getConnectedPlayers().size()).max().orElse(0);
+        int onServers = servers.stream().mapToInt(s -> s.getConnectedPlayers().size()).sum();
+
+        AllianceAttempt attempt = new AllianceAttempt();
+        attempt.tsUtc = now;
+        attempt.ownerRegion = ownerRegion(fleet);
+        attempt.serverRegion = serverRegion(fleet);
+        attempt.players = onServers;
+        attempt.distinctServers = distinct;
+        attempt.largestGroup = largest;
+        attempt.converged = distinct == 1;
+        attempt.tryNumber = fleet.getStats().getTryAmount();
+        return attempt;
+    }
+
+    /**
+     * Records the outcome of a session's countdown once detection has settled — scheduled by
+     * {@code SessionSocket} a while after the countdown. Skips silently if the session is gone or
+     * nobody resolved onto a server. Anonymous: only the aggregated outcome + coarse regions.
+     */
+    @Transactional
+    public void recordAllianceAttempt(String sessionId) {
+        Fleet fleet = sessions.get(sessionId);
+        if (fleet == null) {
+            return;
+        }
+        if (statsWithheld(fleet)) {
+            return; // a session master opted out of the anonymous statistics (#673)
+        }
+        AllianceAttempt attempt = buildAttempt(fleet, Instant.now());
+        if (attempt.players <= 0) {
+            return; // nobody landed on a detected server yet — not a meaningful data point
+        }
+        allianceAttemptRepository.persist(attempt);
+        Log.info("[" + sessionId + "] Recorded alliance attempt: converged=" + attempt.converged
+                + " servers=" + attempt.distinctServers + " players=" + attempt.players);
     }
 
     /**

@@ -16,8 +16,10 @@ export class HTTPAxios {
     this.path = path;
     this.json = json;
 
+    // No baseURL here: every method already prepends this.url itself. With an absolute backend
+    // host axios ignored the baseURL anyway; with a relative one (dev's /api proxy, mirroring
+    // production's same-origin setup) the two would stack into /api/api/....
     this.axios = axios.create({
-      baseURL: this.url,
       timeout: 10000,
       headers: this.header,
     });

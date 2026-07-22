@@ -34,6 +34,11 @@ public class Player {
     // browser locale. Drives the session owner's flag in the public browser (issue #672).
     private String country;
 
+    // Whether this player contributes to the anonymous alliance statistics (issue #673). Opt-out:
+    // initialized true so a client that never sends the field — every pre-#673 client — keeps
+    // participating; Jackson only overwrites fields present in the JSON.
+    private boolean shareStats = true;
+
     // Constructor
     public Player() {
     }
@@ -126,6 +131,14 @@ public class Player {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public boolean isShareStats() {
+        return shareStats;
+    }
+
+    public void setShareStats(boolean shareStats) {
+        this.shareStats = shareStats;
     }
 
     @Override

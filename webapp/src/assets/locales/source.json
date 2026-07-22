@@ -139,6 +139,10 @@
       "label": "Audio countdown",
       "test": "Test"
     },
+    "stats": {
+      "check": "Anonymous alliance statistics",
+      "description": "Contribute your sessions' anonymous outcomes (success, regions — never who you are) to the public statistics page."
+    },
     "subtitle": "Preference options",
     "title": "Settings"
   },

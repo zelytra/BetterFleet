@@ -47,6 +47,17 @@
           </p>
         </div>
       </div>
+      <div class="checkbox-wrapper descriptor">
+        <input v-model="shareStats" type="checkbox" />
+        <div class="label-wrapper">
+          <p @click="shareStats = !shareStats">
+            {{ t("config.stats.check") }}
+          </p>
+          <p class="description" @click="shareStats = !shareStats">
+            {{ t("config.stats.description") }}
+          </p>
+        </div>
+      </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.overlay')">
       <div class="checkbox-wrapper descriptor">
@@ -223,6 +234,7 @@ const activeSound = ref<boolean>(true);
 const activeMacro = ref<boolean>(true);
 const banner = ref<number>(0);
 const shuffleBanner = ref<boolean>(false);
+const shareStats = ref<boolean>(true);
 const bannerIndexes = Array.from({ length: BANNER_COUNT }, (_, i) => i);
 const hostName = ref<string>(UserStore.player.serverHostName!);
 const username = ref<string>(UserStore.player.username);
@@ -323,6 +335,7 @@ function resetConfig() {
   activeMacro.value = UserStore.player.macroEnable;
   banner.value = clampBanner(UserStore.player.banner);
   shuffleBanner.value = UserStore.player.bannerShuffle;
+  shareStats.value = UserStore.player.shareStats;
   inputLoading.value = true;
 }
 
@@ -346,6 +359,7 @@ function onSave() {
   UserStore.player.macroEnable = activeMacro.value;
   UserStore.player.banner = banner.value;
   UserStore.player.bannerShuffle = shuffleBanner.value;
+  UserStore.player.shareStats = shareStats.value;
   if (username.value.length == 0 || username.value.length >= 16) {
     alerts!.sendAlert({
       content: t("alert.username.length.content"),
@@ -377,6 +391,7 @@ function isConfigDifferent(): boolean {
   if (activeMacro.value != UserStore.player.macroEnable) return true;
   if (banner.value != UserStore.player.banner) return true;
   if (shuffleBanner.value != UserStore.player.bannerShuffle) return true;
+  if (shareStats.value != UserStore.player.shareStats) return true;
   if (
     boatSizeOptions.value.selectedValue != undefined &&
     UserStore.player.boatSize != boatSizeOptions.value.selectedValue!.id

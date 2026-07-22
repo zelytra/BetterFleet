@@ -139,6 +139,10 @@
       "label": "Tonanzahl",
       "test": "prüfen"
     },
+    "stats": {
+      "check": "Anonyme Allianz-Statistiken",
+      "description": "Teilt das anonyme Ergebnis deiner Sitzungen (Erfolg, Regionen — nie wer du bist) für die öffentliche Statistikseite."
+    },
     "subtitle": "Präferenzoptionen",
     "title": "Einstellungen"
   },
