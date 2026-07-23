@@ -46,6 +46,28 @@ struct GameObject {
 
 lazy_static! {
     static ref LOG_PATH: Mutex<PathBuf> = Mutex::new(PathBuf::new());
+    // The accelerator currently bound to the overlay toggle (#687). Registration lives in Rust
+    // (the JS global-shortcut API was unreliable, see #671), so rebinding must too.
+    static ref OVERLAY_HOTKEY: Mutex<String> = Mutex::new(String::from(DEFAULT_OVERLAY_HOTKEY));
+}
+
+const DEFAULT_OVERLAY_HOTKEY: &str = "CommandOrControl+Shift+O";
+
+/// Binds `accelerator` to the overlay show/hide toggle. Fails (with the manager's reason) when the
+/// combo is invalid or already taken system-wide — the caller decides what to keep bound.
+fn register_overlay_toggle(app: &tauri::AppHandle, accelerator: &str) -> Result<(), String> {
+    let handle = app.clone();
+    app.global_shortcut_manager()
+        .register(accelerator, move || {
+            if let Some(overlay) = handle.get_window("overlay") {
+                if overlay.is_visible().unwrap_or(false) {
+                    let _ = overlay.hide();
+                } else {
+                    let _ = overlay.show();
+                }
+            }
+        })
+        .map_err(|e| e.to_string())
 }
 
 // The launch-countdown jingle, embedded so native playback needs no bundled resource. Played from
@@ -265,19 +287,9 @@ async fn main() {
             *LOG_PATH.lock().unwrap() = log_path;
 
             // Global hotkey to toggle the in-game overlay (issue #671). Registered in Rust rather
-            // than through the JS global-shortcut API, which did not fire reliably. Ctrl+Shift+O
-            // shows/hides the overlay window; the main window keeps its content fresh over events.
-            let handle = app.handle();
-            let mut shortcuts = app.global_shortcut_manager();
-            if let Err(e) = shortcuts.register("CommandOrControl+Shift+O", move || {
-                if let Some(overlay) = handle.get_window("overlay") {
-                    if overlay.is_visible().unwrap_or(false) {
-                        let _ = overlay.hide();
-                    } else {
-                        let _ = overlay.show();
-                    }
-                }
-            }) {
+            // than through the JS global-shortcut API, which did not fire reliably. The default
+            // binds at startup; the frontend re-binds the player's saved combo right after (#687).
+            if let Err(e) = register_overlay_toggle(&app.handle(), DEFAULT_OVERLAY_HOTKEY) {
                 error!("Failed to register overlay hotkey: {}", e);
             }
 
@@ -325,6 +337,7 @@ async fn main() {
             get_system_info,
             run_server_diagnostic,
             play_countdown_sound,
+            set_overlay_hotkey,
             update_presence,
             clear_presence
         ])
@@ -594,6 +607,25 @@ fn play_countdown_sound(volume: f32) -> bool {
         SOUND_PLAYING.store(false, Ordering::SeqCst);
     });
     true
+}
+
+/// Rebinds the overlay toggle (#687). The new combo registers FIRST: if it is invalid or taken,
+/// this errs with the reason and the previous combo keeps working; only a successful registration
+/// unbinds the old one. Called at startup with the persisted preference and from the settings.
+#[tauri::command]
+fn set_overlay_hotkey(app_handle: tauri::AppHandle, accelerator: String) -> Result<(), String> {
+    let mut current = OVERLAY_HOTKEY.lock().unwrap();
+    if *current == accelerator {
+        return Ok(());
+    }
+    register_overlay_toggle(&app_handle, &accelerator)?;
+    if let Err(e) = app_handle.global_shortcut_manager().unregister(&current) {
+        // The new combo works; a stale extra binding is worth a log line, not a failure.
+        error!("[hotkey] failed to unregister {}: {}", *current, e);
+    }
+    info!("[hotkey] overlay toggle rebound: {} -> {}", *current, accelerator);
+    *current = accelerator;
+    Ok(())
 }
 
 #[cfg(test)]

@@ -82,15 +82,50 @@
       </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.overlay')">
-      <div class="checkbox-wrapper descriptor">
-        <input v-model="overlayEnabled" type="checkbox" />
-        <div class="label-wrapper">
-          <p @click="overlayEnabled = !overlayEnabled">
-            {{ t("config.overlay.toggle") }}
-          </p>
-          <p class="description" @click="overlayEnabled = !overlayEnabled">
-            {{ t("config.overlay.description") }}
-          </p>
+      <!-- One full-width column so the toggle and the hotkey field share a left edge, instead of
+           ParameterPart centre-wrapping them onto differently-offset lines (same fix as #694). -->
+      <div class="overlay-layout">
+        <div class="checkbox-wrapper descriptor">
+          <input v-model="overlayEnabled" type="checkbox" />
+          <div class="label-wrapper">
+            <p @click="overlayEnabled = !overlayEnabled">
+              {{ t("config.overlay.toggle") }}
+            </p>
+            <p class="description" @click="overlayEnabled = !overlayEnabled">
+              {{ t("config.overlay.description") }}
+            </p>
+          </div>
+        </div>
+        <!-- Styled after InputText (label above, same field box, cross to reset) so it reads as one
+             of the app's inputs rather than a foreign button — review feedback on #692. -->
+        <div class="hotkey-field">
+          <div class="field-wrapper">
+            <label>{{ t("config.overlay.hotkey.label") }}</label>
+            <div
+              :class="{ 'input-look': true, recording: recordingHotkey }"
+              role="button"
+              tabindex="0"
+              @click="startHotkeyRecording()"
+              @keydown.enter.prevent="startHotkeyRecording()"
+            >
+              <span class="value">
+                {{
+                  recordingHotkey
+                    ? t("config.overlay.hotkey.recording")
+                    : hotkeyLabel(UserStore.player.overlayHotkey)
+                }}
+              </span>
+              <span
+                v-if="UserStore.player.overlayHotkey && !recordingHotkey"
+                class="cross"
+                :title="t('config.overlay.hotkey.reset')"
+                @click.stop="applyHotkey(undefined)"
+              >
+                <img src="@/assets/icons/cross.svg" />
+              </span>
+            </div>
+          </div>
+          <p class="description">{{ t("config.overlay.hotkey.hint") }}</p>
         </div>
       </div>
     </ParameterPart>
@@ -213,7 +248,8 @@ import { useI18n } from "vue-i18n";
 import InputText from "@/vue/form/InputText.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
-import { onMounted, ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, ref, watch } from "vue";
+import { invoke } from "@tauri-apps/api/tauri";
 
 import fr from "@assets/icons/locales/fr.svg";
 import de from "@assets/icons/locales/de.svg";
@@ -225,6 +261,8 @@ import microsoft from "@assets/icons/microsoft.svg";
 import playstation from "@assets/icons/playstation.svg";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import {
+  DEFAULT_OVERLAY_HOTKEY,
+  hotkeyLabel,
   isOverlayVisible,
   setOverlayVisible,
 } from "@/objects/fleet/Overlay.ts";
@@ -242,8 +280,10 @@ import ParameterPart from "@/vue/templates/ParameterPart.vue";
 import { Utils } from "@/objects/utils/Utils.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 import { info } from "tauri-plugin-log-api";
+import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 
 const { t, availableLocales } = useI18n();
+const alerts = inject<AlertProvider>("alertProvider");
 
 const langOptions = ref<SingleSelectInterface>({ data: [] });
 const deviceOptions = ref<SingleSelectInterface>({ data: [] });
@@ -263,6 +303,71 @@ const inputLoading = ref<boolean>(false);
 // The overlay checkbox mirrors the overlay window's real visibility; toggling it shows or hides it.
 const overlayEnabled = ref<boolean>(false);
 watch(overlayEnabled, (visible) => setOverlayVisible(visible));
+
+// Overlay hotkey recorder (#687). Press-to-set: the next modifier+key combo becomes the toggle,
+// applied immediately through Rust — which keeps the previous combo bound if the new one is
+// invalid or already taken. Escape cancels, reset returns to the default.
+const recordingHotkey = ref(false);
+const HOTKEY_ALIASES: Record<string, string> = {
+  ArrowUp: "Up",
+  ArrowDown: "Down",
+  ArrowLeft: "Left",
+  ArrowRight: "Right",
+  " ": "Space",
+};
+
+function startHotkeyRecording(): void {
+  if (recordingHotkey.value) return;
+  recordingHotkey.value = true;
+  window.addEventListener("keydown", captureHotkey, { capture: true });
+}
+
+function stopHotkeyRecording(): void {
+  recordingHotkey.value = false;
+  window.removeEventListener("keydown", captureHotkey, { capture: true });
+}
+
+function captureHotkey(event: KeyboardEvent): void {
+  event.preventDefault();
+  event.stopPropagation();
+  if (event.key === "Escape") {
+    stopHotkeyRecording();
+    return;
+  }
+  if (["Control", "Shift", "Alt", "Meta"].includes(event.key)) {
+    return; // modifiers held, still waiting for the actual key
+  }
+  const mods: string[] = [];
+  if (event.ctrlKey || event.metaKey) mods.push("CommandOrControl");
+  if (event.altKey) mods.push("Alt");
+  if (event.shiftKey) mods.push("Shift");
+  if (!mods.length) {
+    return; // a bare key as a global shortcut would fire while typing anywhere
+  }
+  const key =
+    HOTKEY_ALIASES[event.key] ??
+    (event.key.length === 1 ? event.key.toUpperCase() : event.key);
+  stopHotkeyRecording();
+  applyHotkey([...mods, key].join("+"));
+}
+
+function applyHotkey(accelerator: string | undefined): void {
+  invoke("set_overlay_hotkey", {
+    accelerator: accelerator ?? DEFAULT_OVERLAY_HOTKEY,
+  })
+    .then(() => {
+      UserStore.player.overlayHotkey = accelerator;
+    })
+    .catch((e) =>
+      alerts!.sendAlert({
+        title: t("config.overlay.hotkey.invalid"),
+        content: String(e),
+        type: AlertType.ERROR,
+      }),
+    );
+}
+
+onUnmounted(() => stopHotkeyRecording());
 
 const sound = new Audio(countdownSound);
 
@@ -721,6 +826,72 @@ button {
     display: flex;
     align-items: center;
     gap: 12px;
+  }
+}
+
+// Overlay hotkey recorder (#687), dressed exactly like InputText (same wrapper metrics, same
+// cross-to-reset) so it reads as one of the app's inputs — review feedback on #692. Top level:
+// nested inside another section's selector it silently never applies, which is exactly how the
+// first cut shipped browser-default buttons.
+// Full-width column so the overlay toggle and the hotkey field share the section's left edge,
+// instead of ParameterPart centre-wrapping each onto its own differently-offset line (same shape
+// as the General section's .general-layout, added in #694).
+.overlay-layout {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hotkey-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  // The field-wrapper keeps the box hugging its combo (below), but the wrapper and the hint still
+  // span the section's full width, so the hint wraps at the section edge like every other input's
+  // description instead of in a narrow column.
+  .field-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 9px;
+
+    .input-look {
+      position: relative;
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1px solid var(--white-10, rgba(255, 255, 255, 0.1));
+      background: var(--white-5, rgba(255, 255, 255, 0.05));
+      display: flex;
+      box-sizing: border-box;
+      align-items: center;
+      gap: 12px;
+      // The box takes only the width its text needs, like a label rather than a full input strip.
+      width: fit-content;
+      cursor: pointer;
+
+      &.recording {
+        border-color: var(--warning);
+
+        .value {
+          color: var(--warning);
+        }
+      }
+
+      .value {
+        font-variant-numeric: tabular-nums;
+      }
+
+      span.cross {
+        cursor: pointer;
+        display: flex;
+      }
+    }
+  }
+
+  p.description {
+    color: var(--secondary-text);
   }
 }
 </style>

@@ -63,6 +63,11 @@ export interface Preferences {
    * turns it off. Purely client-side — the presence talks to the local Discord over Rust.
    */
   richPresence?: boolean;
+  /**
+   * The overlay-toggle accelerator, in Tauri syntax (issue #687). Optional: absent means the
+   * built-in default (CommandOrControl+Shift+O). Registration itself lives in Rust.
+   */
+  overlayHotkey?: string;
 }
 
 export interface ActionPlayer {

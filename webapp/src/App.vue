@@ -15,7 +15,10 @@ import LoadingVue from "@/vue/templates/LoadingVue.vue";
 import AlertComponent from "@/vue/alert/AlertComponent.vue";
 import { useI18n } from "vue-i18n";
 import { onMounted } from "vue";
+import { invoke } from "@tauri-apps/api/tauri";
+import { error } from "tauri-plugin-log-api";
 import { UserStore } from "@/objects/stores/UserStore.ts";
+import { DEFAULT_OVERLAY_HOTKEY } from "@/objects/fleet/Overlay.ts";
 import {
   BoatSize,
   PlayerDevice,
@@ -40,6 +43,15 @@ onMounted(() => {
     bannerShuffle: false,
     shareStats: true,
   });
+  // Rebind the overlay toggle to the player's saved combo (#687) — Rust bound the default at boot.
+  if (
+    UserStore.player.overlayHotkey &&
+    UserStore.player.overlayHotkey !== DEFAULT_OVERLAY_HOTKEY
+  ) {
+    invoke("set_overlay_hotkey", {
+      accelerator: UserStore.player.overlayHotkey,
+    }).catch((e) => error("[App] failed to bind saved overlay hotkey: " + e));
+  }
 });
 </script>
 

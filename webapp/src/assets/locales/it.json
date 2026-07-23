@@ -111,8 +111,15 @@
       "description": "Clicca automaticamente su \"Salpa\" alla fine del conto alla rovescia"
     },
     "overlay": {
+      "hotkey": {
+        "hint": "Clicca e poi premi una combinazione di tasti. Un singolo tasto non funziona: serve un modificatore (Ctrl, Alt o Maiusc).",
+        "invalid": "Questa scorciatoia non può essere usata",
+        "label": "Scorciatoia di attivazione",
+        "recording": "Premi una combinazione…",
+        "reset": "Reimposta"
+      },
       "toggle": "Show / hide overlay",
-      "description": "Show the live session — every server and who's ready — on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+      "description": "Show the live session (servers and ready states) on top of the game, in borderless windowed mode."
     },
     "name": {
       "label": "Username",
@@ -145,7 +152,7 @@
     },
     "stats": {
       "check": "Anonymous alliance statistics",
-      "description": "Contribute your sessions' anonymous outcomes (success, regions — never who you are) to the public statistics page."
+      "description": "Contribute your sessions' anonymous outcomes (success, regions, never who you are) to the public statistics page."
     },
     "subtitle": "Opzioni di preferenza",
     "title": "Impostazioni"

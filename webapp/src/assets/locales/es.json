@@ -111,8 +111,15 @@
       "description": "Ejecución de un clic automático al final de la cuenta atrás."
     },
     "overlay": {
+      "hotkey": {
+        "hint": "Haz clic y pulsa una combinación de teclas. Una sola tecla no funciona: se necesita un modificador (Ctrl, Alt o Mayús).",
+        "invalid": "Este atajo no se puede usar",
+        "label": "Atajo de alternancia",
+        "recording": "Pulsa una combinación…",
+        "reset": "Restablecer"
+      },
       "toggle": "Show / hide overlay",
-      "description": "Muestra la sesión en vivo — todos los servidores y que están listos — encima del juego (usa el modo de ventana sin bordes). Atajo: Ctrl+Shift+O."
+      "description": "Muestra la sesión en vivo (servidores y jugadores listos) encima del juego, en modo ventana sin bordes."
     },
     "name": {
       "label": "Nombre de usuario",
@@ -145,7 +152,7 @@
     },
     "stats": {
       "check": "Estadísticas anónimas de la alianza",
-      "description": "Contribuya los resultados anónimos de sus sesiones (éxito, regiones — nunca quién eres) a la página de estadísticas públicas."
+      "description": "Contribuya los resultados anónimos de sus sesiones (éxito, regiones, nunca quién eres) a la página de estadísticas públicas."
     },
     "subtitle": "Opciones de preferencia",
     "title": "Configuraciones"
