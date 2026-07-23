@@ -395,6 +395,11 @@
       }
     },
     "run": "Salpa",
+    "statsHint": {
+      "dismiss": "Nascondi",
+      "text": "Fascia migliore: {range} ({best}% di alleanze riuscite — in questo momento: {now}%)",
+      "textNoNow": "Fascia migliore: {range} ({best}% di alleanze riuscite)"
+    },
     "status": {
       "countdown": "Avvia in",
       "ready": "Pronto",

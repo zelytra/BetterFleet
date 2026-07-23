@@ -395,6 +395,11 @@
       }
     },
     "run": "Segel setzen",
+    "statsHint": {
+      "dismiss": "Ausblenden",
+      "text": "Bestes Zeitfenster: {range} ({best}% erfolgreiche Allianzen — gerade jetzt: {now}%)",
+      "textNoNow": "Bestes Zeitfenster: {range} ({best}% erfolgreiche Allianzen)"
+    },
     "status": {
       "countdown": "Starten in",
       "ready": "Bereit",

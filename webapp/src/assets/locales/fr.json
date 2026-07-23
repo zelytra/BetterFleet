@@ -395,6 +395,11 @@
       }
     },
     "run": "Lever l'ancre",
+    "statsHint": {
+      "dismiss": "Masquer",
+      "text": "Meilleur créneau : {range} ({best}% d'alliances réussies — en ce moment : {now}%)",
+      "textNoNow": "Meilleur créneau : {range} ({best}% d'alliances réussies)"
+    },
     "status": {
       "countdown": "Lancement dans",
       "ready": "Prêt",
