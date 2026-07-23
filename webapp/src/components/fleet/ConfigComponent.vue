@@ -25,15 +25,9 @@
     </BannerTemplate>
     <ParameterPart :title="t('config.part.general')">
       <!-- One column, two aligned blocks: a grid of equal-width fields, then a left-aligned list
-           of toggles — instead of everything centre-wrapping freely. The username field is
-           back: its save logic never left, only the input had disappeared. -->
+           of toggles — instead of everything centre-wrapping freely. -->
       <div class="general-layout">
         <div class="fields">
-          <InputText
-            v-model:input-value="username"
-            :placeholder="t('config.name.placeholder')"
-            :label="t('config.name.label')"
-          />
           <SingleSelect
             v-model:data="langOptions"
             :label="t('config.lang.label')"
@@ -205,7 +199,7 @@ import { useI18n } from "vue-i18n";
 import InputText from "@/vue/form/InputText.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
-import { inject, onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 import fr from "@assets/icons/locales/fr.svg";
 import de from "@assets/icons/locales/de.svg";
@@ -220,7 +214,6 @@ import {
   isOverlayVisible,
   setOverlayVisible,
 } from "@/objects/fleet/Overlay.ts";
-import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import SaveBar from "@/vue/utils/SaveBar.vue";
 import InputSlider from "@/vue/form/InputSlider.vue";
 import countdownSound from "@assets/sounds/countdown.mp3";
@@ -237,7 +230,6 @@ import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 import { info } from "tauri-plugin-log-api";
 
 const { t, availableLocales } = useI18n();
-const alerts = inject<AlertProvider>("alertProvider");
 
 const langOptions = ref<SingleSelectInterface>({ data: [] });
 const deviceOptions = ref<SingleSelectInterface>({ data: [] });
@@ -251,7 +243,6 @@ const shuffleBanner = ref<boolean>(false);
 const shareStats = ref<boolean>(true);
 const bannerIndexes = Array.from({ length: BANNER_COUNT }, (_, i) => i);
 const hostName = ref<string>(UserStore.player.serverHostName!);
-const username = ref<string>(UserStore.player.username);
 const inputLoading = ref<boolean>(false);
 
 // The overlay checkbox mirrors the overlay window's real visibility; toggling it shows or hides it.
@@ -336,10 +327,6 @@ function resetConfig() {
     langOptions.value.selectedValue = langOptions.value.data[0];
   }
 
-  if (UserStore.player.username) {
-    username.value = UserStore.player.username;
-  }
-
   if (UserStore.player.serverHostName) {
     hostName.value = UserStore.player.serverHostName;
   }
@@ -374,15 +361,6 @@ function onSave() {
   UserStore.player.banner = banner.value;
   UserStore.player.bannerShuffle = shuffleBanner.value;
   UserStore.player.shareStats = shareStats.value;
-  if (username.value.length == 0 || username.value.length >= 16) {
-    alerts!.sendAlert({
-      content: t("alert.username.length.content"),
-      title: t("alert.username.length.title"),
-      type: AlertType.ERROR,
-    });
-  } else {
-    UserStore.player.username = username.value;
-  }
   UserStore.player.serverHostName = hostName.value;
   if (UserStore.player.fleet && UserStore.player.fleet.sessionId) {
     UserStore.player.fleet.updateToSession();
@@ -393,7 +371,6 @@ function onSave() {
 
 function isConfigDifferent(): boolean {
   if (!inputLoading.value) return false;
-  if (UserStore.player.username != username.value) return true;
   if (UserStore.player.serverHostName != hostName.value) return true;
   if (
     langOptions.value.selectedValue &&
