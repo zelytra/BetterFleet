@@ -16,8 +16,16 @@ const REQUEST_EVENT = "overlay:request";
 // Overlay -> main: the local player clicked their ready badge in the overlay.
 const TOGGLE_READY_EVENT = "overlay:toggle-ready";
 
-/** Human-readable label of the toggle hotkey registered in main.rs, shown in the overlay header. */
-export const OVERLAY_HOTKEY_LABEL = "Ctrl+Shift+O";
+/** The built-in toggle accelerator, in Tauri syntax — what main.rs binds before any preference. */
+export const DEFAULT_OVERLAY_HOTKEY = "CommandOrControl+Shift+O";
+
+/** Human-readable form of an accelerator for the overlay header ("Ctrl+Shift+O"). */
+export function hotkeyLabel(accelerator?: string): string {
+  return (accelerator ?? DEFAULT_OVERLAY_HOTKEY).replace(
+    "CommandOrControl",
+    "Ctrl",
+  );
+}
 
 export interface OverlayPlayer {
   username: string;
@@ -40,6 +48,8 @@ export interface OverlaySnapshot {
   inSession: boolean;
   /** The local player, always present so the overlay can show their ready state even off a server. */
   me: OverlayPlayer;
+  /** Human-readable toggle combo for the header — follows the player's rebind (#687). */
+  hotkeyLabel: string;
   servers: OverlayServer[];
   /**
    * Session players no detected server holds yet, local player first. Keeps the whole roster
@@ -98,6 +108,7 @@ export function computeSnapshot(): OverlaySnapshot {
       isReady: !!player.isReady,
       isSelf: true,
     },
+    hotkeyLabel: hotkeyLabel(player.overlayHotkey),
     countdownEndsAt: player.countDown?.clickTime
       ? player.countDown.clickTime.toString()
       : null,

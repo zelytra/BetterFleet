@@ -58,6 +58,11 @@ export interface Preferences {
    * session's attempts when one of its masters turned this off.
    */
   shareStats: boolean;
+  /**
+   * The overlay-toggle accelerator, in Tauri syntax (issue #687). Optional: absent means the
+   * built-in default (CommandOrControl+Shift+O). Registration itself lives in Rust.
+   */
+  overlayHotkey?: string;
 }
 
 export interface ActionPlayer {

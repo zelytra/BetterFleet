@@ -111,6 +111,12 @@
       "description": "Clicca automaticamente su \"Salpa\" alla fine del conto alla rovescia"
     },
     "overlay": {
+      "hotkey": {
+        "invalid": "Questa scorciatoia non può essere usata",
+        "label": "Scorciatoia di attivazione",
+        "recording": "Premi una combinazione…",
+        "reset": "Reimposta"
+      },
       "toggle": "Show / hide overlay",
       "description": "Show the live session — every server and who's ready — on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
     },

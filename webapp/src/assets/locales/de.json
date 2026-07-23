@@ -111,6 +111,12 @@
       "description": "Ausführung eines automatischen Klicks am Ende des Countdowns"
     },
     "overlay": {
+      "hotkey": {
+        "invalid": "Dieses Kürzel kann nicht verwendet werden",
+        "label": "Umschalt-Kürzel",
+        "recording": "Drücke eine Kombination…",
+        "reset": "Zurücksetzen"
+      },
       "toggle": "Show / hide overlay",
       "description": "Zeige die Live-Session — jeden Server und wer bereit ist — oben auf dem Spiel (benutze den grenzenlosen Fenstermodus). Tastenkürzel: Strg+Umschalt+O."
     },

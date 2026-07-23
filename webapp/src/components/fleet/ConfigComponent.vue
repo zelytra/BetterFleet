@@ -71,6 +71,28 @@
           </p>
         </div>
       </div>
+      <div class="hotkey-row">
+        <p>{{ t("config.overlay.hotkey.label") }}</p>
+        <button
+          type="button"
+          :class="{ combo: true, recording: recordingHotkey }"
+          @click="startHotkeyRecording()"
+        >
+          {{
+            recordingHotkey
+              ? t("config.overlay.hotkey.recording")
+              : hotkeyLabel(UserStore.player.overlayHotkey)
+          }}
+        </button>
+        <button
+          v-if="UserStore.player.overlayHotkey"
+          type="button"
+          class="reset"
+          @click="applyHotkey(undefined)"
+        >
+          {{ t("config.overlay.hotkey.reset") }}
+        </button>
+      </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.banner')">
       <div class="input-section banner-section">
@@ -191,7 +213,8 @@ import { useI18n } from "vue-i18n";
 import InputText from "@/vue/form/InputText.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
-import { inject, onMounted, ref, watch } from "vue";
+import { inject, onMounted, onUnmounted, ref, watch } from "vue";
+import { invoke } from "@tauri-apps/api/tauri";
 
 import fr from "@assets/icons/locales/fr.svg";
 import de from "@assets/icons/locales/de.svg";
@@ -203,6 +226,8 @@ import microsoft from "@assets/icons/microsoft.svg";
 import playstation from "@assets/icons/playstation.svg";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import {
+  DEFAULT_OVERLAY_HOTKEY,
+  hotkeyLabel,
   isOverlayVisible,
   setOverlayVisible,
 } from "@/objects/fleet/Overlay.ts";
@@ -243,6 +268,71 @@ const inputLoading = ref<boolean>(false);
 // The overlay checkbox mirrors the overlay window's real visibility; toggling it shows or hides it.
 const overlayEnabled = ref<boolean>(false);
 watch(overlayEnabled, (visible) => setOverlayVisible(visible));
+
+// Overlay hotkey recorder (#687). Press-to-set: the next modifier+key combo becomes the toggle,
+// applied immediately through Rust — which keeps the previous combo bound if the new one is
+// invalid or already taken. Escape cancels, reset returns to the default.
+const recordingHotkey = ref(false);
+const HOTKEY_ALIASES: Record<string, string> = {
+  ArrowUp: "Up",
+  ArrowDown: "Down",
+  ArrowLeft: "Left",
+  ArrowRight: "Right",
+  " ": "Space",
+};
+
+function startHotkeyRecording(): void {
+  if (recordingHotkey.value) return;
+  recordingHotkey.value = true;
+  window.addEventListener("keydown", captureHotkey, { capture: true });
+}
+
+function stopHotkeyRecording(): void {
+  recordingHotkey.value = false;
+  window.removeEventListener("keydown", captureHotkey, { capture: true });
+}
+
+function captureHotkey(event: KeyboardEvent): void {
+  event.preventDefault();
+  event.stopPropagation();
+  if (event.key === "Escape") {
+    stopHotkeyRecording();
+    return;
+  }
+  if (["Control", "Shift", "Alt", "Meta"].includes(event.key)) {
+    return; // modifiers held, still waiting for the actual key
+  }
+  const mods: string[] = [];
+  if (event.ctrlKey || event.metaKey) mods.push("CommandOrControl");
+  if (event.altKey) mods.push("Alt");
+  if (event.shiftKey) mods.push("Shift");
+  if (!mods.length) {
+    return; // a bare key as a global shortcut would fire while typing anywhere
+  }
+  const key =
+    HOTKEY_ALIASES[event.key] ??
+    (event.key.length === 1 ? event.key.toUpperCase() : event.key);
+  stopHotkeyRecording();
+  applyHotkey([...mods, key].join("+"));
+}
+
+function applyHotkey(accelerator: string | undefined): void {
+  invoke("set_overlay_hotkey", {
+    accelerator: accelerator ?? DEFAULT_OVERLAY_HOTKEY,
+  })
+    .then(() => {
+      UserStore.player.overlayHotkey = accelerator;
+    })
+    .catch((e) =>
+      alerts!.sendAlert({
+        title: t("config.overlay.hotkey.invalid"),
+        content: String(e),
+        type: AlertType.ERROR,
+      }),
+    );
+}
+
+onUnmounted(() => stopHotkeyRecording());
 
 const sound = new Audio(countdownSound);
 
@@ -678,6 +768,41 @@ button {
     display: flex;
     align-items: center;
     gap: 12px;
+  }
+
+  // Overlay hotkey recorder row (#687).
+  .hotkey-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    p {
+      color: var(--secondary-text);
+    }
+
+    button {
+      all: unset;
+      cursor: pointer;
+      padding: 6px 14px;
+      border-radius: 5px;
+      font-size: 14px;
+
+      &.combo {
+        border: 1px solid var(--primary);
+        color: var(--primary-text);
+        font-variant-numeric: tabular-nums;
+
+        &.recording {
+          border-color: var(--warning);
+          color: var(--warning);
+        }
+      }
+
+      &.reset {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: var(--secondary-text);
+      }
+    }
   }
 }
 </style>

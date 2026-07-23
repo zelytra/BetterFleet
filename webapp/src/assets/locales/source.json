@@ -111,6 +111,12 @@
       "description": "Automatically clicks on \"Set sail\" at the end of the countdown"
     },
     "overlay": {
+      "hotkey": {
+        "invalid": "This shortcut cannot be used",
+        "label": "Toggle shortcut",
+        "recording": "Press a combo…",
+        "reset": "Reset"
+      },
       "toggle": "Show / hide overlay",
       "description": "Show the live session — every server and who's ready — on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
     },

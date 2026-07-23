@@ -46,6 +46,7 @@ function snapshot(overrides: Partial<OverlaySnapshot> = {}): OverlaySnapshot {
     locale: "fr",
     inSession: true,
     me: { username: "Me", isReady: false, isSelf: true },
+    hotkeyLabel: "Ctrl+Shift+O",
     servers: [],
     unassigned: [],
     countdownEndsAt: null,

@@ -126,6 +126,16 @@ describe("Overlay snapshot + bridge (#671)", () => {
       expect(snap.locale).toBe("en");
     });
 
+    it("labels the toggle hotkey, following the player's rebind (#687)", () => {
+      UserStore.player = makePlayer({ fleet: fleetWith() });
+      expect(computeSnapshot().hotkeyLabel).toBe("Ctrl+Shift+O");
+      UserStore.player = makePlayer({
+        overlayHotkey: "Alt+F6",
+        fleet: fleetWith(),
+      });
+      expect(computeSnapshot().hotkeyLabel).toBe("Alt+F6");
+    });
+
     it("falls back to `en` when the player has no language", () => {
       UserStore.player = makePlayer({ lang: undefined, fleet: fleetWith() });
       expect(computeSnapshot().locale).toBe("en");

@@ -111,6 +111,12 @@
       "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte"
     },
     "overlay": {
+      "hotkey": {
+        "invalid": "Ce raccourci ne peut pas être utilisé",
+        "label": "Raccourci d'affichage",
+        "recording": "Appuyez sur un raccourci…",
+        "reset": "Réinitialiser"
+      },
       "toggle": "Afficher / masquer l'overlay",
       "description": "Affiche la session en direct — chaque serveur et qui est prêt — par-dessus le jeu (en mode fenêtré sans bordure). Raccourci : Ctrl+Maj+O."
     },
