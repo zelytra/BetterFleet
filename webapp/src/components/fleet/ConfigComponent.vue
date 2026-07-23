@@ -24,38 +24,52 @@
       </template>
     </BannerTemplate>
     <ParameterPart :title="t('config.part.general')">
-      <SingleSelect
-        v-model:data="langOptions"
-        :label="t('config.lang.label')"
-      />
-      <SingleSelect
-        v-model:data="deviceOptions"
-        :label="t('config.device.label')"
-      />
-      <SingleSelect
-        v-model:data="boatSizeOptions"
-        :label="t('boatSize.label')"
-      />
-      <div class="checkbox-wrapper descriptor">
-        <input v-model="activeMacro" type="checkbox" />
-        <div class="label-wrapper">
-          <p @click="activeMacro = !activeMacro">
-            {{ t("config.macro.check") }}
-          </p>
-          <p class="description" @click="activeMacro = !activeMacro">
-            {{ t("config.macro.description") }}
-          </p>
+      <!-- One column, two aligned blocks: a grid of equal-width fields, then a left-aligned list
+           of toggles — instead of everything centre-wrapping freely. The username field is
+           back: its save logic never left, only the input had disappeared. -->
+      <div class="general-layout">
+        <div class="fields">
+          <InputText
+            v-model:input-value="username"
+            :placeholder="t('config.name.placeholder')"
+            :label="t('config.name.label')"
+          />
+          <SingleSelect
+            v-model:data="langOptions"
+            :label="t('config.lang.label')"
+          />
+          <SingleSelect
+            v-model:data="deviceOptions"
+            :label="t('config.device.label')"
+          />
+          <SingleSelect
+            v-model:data="boatSizeOptions"
+            :label="t('boatSize.label')"
+          />
         </div>
-      </div>
-      <div class="checkbox-wrapper descriptor">
-        <input v-model="shareStats" type="checkbox" />
-        <div class="label-wrapper">
-          <p @click="shareStats = !shareStats">
-            {{ t("config.stats.check") }}
-          </p>
-          <p class="description" @click="shareStats = !shareStats">
-            {{ t("config.stats.description") }}
-          </p>
+        <div class="toggles">
+          <div class="checkbox-wrapper descriptor">
+            <input v-model="activeMacro" type="checkbox" />
+            <div class="label-wrapper">
+              <p @click="activeMacro = !activeMacro">
+                {{ t("config.macro.check") }}
+              </p>
+              <p class="description" @click="activeMacro = !activeMacro">
+                {{ t("config.macro.description") }}
+              </p>
+            </div>
+          </div>
+          <div class="checkbox-wrapper descriptor">
+            <input v-model="shareStats" type="checkbox" />
+            <div class="label-wrapper">
+              <p @click="shareStats = !shareStats">
+                {{ t("config.stats.check") }}
+              </p>
+              <p class="description" @click="shareStats = !shareStats">
+                {{ t("config.stats.description") }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </ParameterPart>
@@ -497,6 +511,38 @@ button {
   width: 100%;
   position: relative;
   margin-bottom: 40px;
+
+  // General section: ParameterPart lays its children out as a centre-wrapping flex row,
+  // which scattered mixed-width fields and toggles onto differently-centred lines. One full-width
+  // column instead: a grid of equal-width fields, then a left-aligned list of toggles.
+  .general-layout {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px 24px;
+      // Bottom-align the boxes so a label wrapping to two lines never pushes its input out of row.
+      align-items: end;
+
+      // InputText and SingleSelect share this root; stretch them to their cell instead of each
+      // bringing its own intrinsic width.
+      :deep(.input-global-wrapper) {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+    }
+
+    .toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+  }
 
   .input-section {
     display: flex;
