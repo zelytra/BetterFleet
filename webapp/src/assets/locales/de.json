@@ -433,5 +433,10 @@
       "fleet": "Sitzung",
       "home": "Page d'acceuil"
     }
+  },
+  "whatsnew": {
+    "full": "Vollständiges Änderungsprotokoll ansehen",
+    "offline": "Die Notizen konnten nicht geladen werden — das vollständige Änderungsprotokoll online enthält sie.",
+    "title": "Neu in {version}"
   }
 }

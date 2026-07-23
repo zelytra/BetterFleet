@@ -433,5 +433,10 @@
       "fleet": "Session",
       "home": "Page d'accueil"
     }
+  },
+  "whatsnew": {
+    "full": "Voir le changelog complet",
+    "offline": "Impossible de charger les notes — le changelog complet en ligne les contient.",
+    "title": "Nouveautés de la {version}"
   }
 }
