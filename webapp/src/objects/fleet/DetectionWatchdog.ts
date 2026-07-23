@@ -6,7 +6,7 @@ import { Player, PlayerStates } from "@/objects/fleet/Player.ts";
 // fed by the existing 400ms game poll, so the timing rules are unit-testable without timers.
 
 /** How long detection may stay silent in game before the offer shows. */
-export const DETECTION_PROMPT_AFTER_MS = 3 * 60 * 1000;
+export const DETECTION_PROMPT_AFTER_MS = 60 * 1000;
 
 export class DetectionWatchdog {
   private inGameSilentSince: number | null = null;
