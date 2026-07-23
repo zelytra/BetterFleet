@@ -171,9 +171,108 @@ fn save_overlay_layout(overlay: &tauri::Window) {
 /// True while the countdown jingle is playing, so the frontend can poke every tick and the sound
 /// still loops cleanly instead of stacking.
 static SOUND_PLAYING: AtomicBool = AtomicBool::new(false);
+
+// Discord Rich Presence (#684). The BetterFleet application's ID from the Discord developer
+// portal — a public identifier, not a secret. Emptying it puts the whole feature back to sleep:
+// no worker, no IPC, commands become no-ops.
+const DISCORD_APP_ID: &str = "1529819901605183561";
+
+enum PresenceCommand {
+    Update {
+        state: String,
+        details: String,
+        start_epoch: Option<i64>,
+    },
+    Clear,
+}
+
+lazy_static! {
+    static ref PRESENCE_TX: Mutex<Option<std::sync::mpsc::Sender<PresenceCommand>>> =
+        Mutex::new(None);
+}
+
+/// Owns the Discord IPC client on its own thread. Connects lazily and retries at most every 15s,
+/// so Discord being closed costs nothing but a dropped update; an IPC error drops the client and
+/// the next update reconnects. The frontend only ever talks to the channel.
+fn spawn_presence_worker() -> std::sync::mpsc::Sender<PresenceCommand> {
+    use discord_rich_presence::activity::{Activity, Timestamps};
+    use discord_rich_presence::{DiscordIpc, DiscordIpcClient};
+
+    let (tx, rx) = std::sync::mpsc::channel::<PresenceCommand>();
+    std::thread::spawn(move || {
+        let mut client: Option<DiscordIpcClient> = None;
+        let mut last_attempt: Option<std::time::Instant> = None;
+        for command in rx {
+            if client.is_none() {
+                let due = last_attempt
+                    .map(|t| t.elapsed() >= Duration::from_secs(15))
+                    .unwrap_or(true);
+                if !due {
+                    continue;
+                }
+                last_attempt = Some(std::time::Instant::now());
+                if let Ok(mut fresh) = DiscordIpcClient::new(DISCORD_APP_ID) {
+                    if fresh.connect().is_ok() {
+                        info!("[presence] connected to Discord");
+                        client = Some(fresh);
+                    }
+                }
+            }
+            let connected = match client.as_mut() {
+                Some(connected) => connected,
+                None => continue,
+            };
+            let result = match &command {
+                PresenceCommand::Update {
+                    state,
+                    details,
+                    start_epoch,
+                } => {
+                    let mut activity = Activity::new().state(state).details(details);
+                    if let Some(epoch) = start_epoch {
+                        activity = activity.timestamps(Timestamps::new().start(*epoch));
+                    }
+                    connected.set_activity(activity)
+                }
+                PresenceCommand::Clear => connected.clear_activity(),
+            };
+            if result.is_err() {
+                // Discord went away mid-session; reconnect on a later update.
+                info!("[presence] lost Discord, will reconnect");
+                client = None;
+            }
+        }
+    });
+    tx
+}
+
+/// Pushes the session state onto the player's Discord profile (#684). No-op while the feature is
+/// dormant (no Application ID) or Discord is not running.
+#[tauri::command]
+fn update_presence(state: String, details: String, start_epoch: Option<i64>) {
+    if let Some(tx) = PRESENCE_TX.lock().unwrap().as_ref() {
+        let _ = tx.send(PresenceCommand::Update {
+            state,
+            details,
+            start_epoch,
+        });
+    }
+}
+
+#[tauri::command]
+fn clear_presence() {
+    if let Some(tx) = PRESENCE_TX.lock().unwrap().as_ref() {
+        let _ = tx.send(PresenceCommand::Clear);
+    }
+}
 #[tokio::main]
 async fn main() {
     let api_arc = fetch_informations::init().await.expect("Failed to initialize API");
+
+    // Rich Presence stays entirely dormant until a Discord Application ID is provided (#684).
+    if !DISCORD_APP_ID.is_empty() {
+        *PRESENCE_TX.lock().unwrap() = Some(spawn_presence_worker());
+    }
 
     panic::set_hook(Box::new(move |panic_info| {
         error!("Crashed, gathering informations");
@@ -238,7 +337,9 @@ async fn main() {
             get_system_info,
             run_server_diagnostic,
             play_countdown_sound,
-            set_overlay_hotkey
+            set_overlay_hotkey,
+            update_presence,
+            clear_presence
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

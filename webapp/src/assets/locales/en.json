@@ -132,6 +132,10 @@
       "general": "General",
       "overlay": "In-game overlay"
     },
+    "presence": {
+      "check": "Discord Rich Presence",
+      "description": "Show your session on your Discord profile — lobby size, ready count, and the code for public sessions."
+    },
     "savebar": {
       "cancel": "Cancel modifications",
       "content": "Hold on there! I see you've made some changes!",
@@ -180,7 +184,7 @@
       "title": "Let the journey begin"
     },
     "description": "Please enter your current gamertag to oversee the smooth running of the alliance",
-    "tips": "You can change your username at any moment in the settings",
+    "tips": "This name is how your crewmates will see you in the session",
     "title": "What's your name lad?"
   },
   "loading": {
@@ -402,6 +406,11 @@
       }
     },
     "run": "Set sail",
+    "statsHint": {
+      "dismiss": "Hide",
+      "text": "Best window: {range} ({best}% of alliances succeed — right now: {now}%)",
+      "textNoNow": "Best window: {range} ({best}% of alliances succeed)"
+    },
     "status": {
       "countdown": "Launch in",
       "ready": "Ready",

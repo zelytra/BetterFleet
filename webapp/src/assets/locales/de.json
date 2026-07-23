@@ -132,6 +132,10 @@
       "general": "Allgemein",
       "overlay": "In-Game Overlay"
     },
+    "presence": {
+      "check": "Discord Rich Presence",
+      "description": "Zeigt deine Sitzung in deinem Discord-Profil — Lobby-Größe, bereite Spieler und den Code öffentlicher Sitzungen."
+    },
     "savebar": {
       "cancel": "Änderungen abbrechen",
       "content": "Hop Hop Hop! Ich habe gesehen, dass du einige Änderungen vorgenommen hast! ",
@@ -180,7 +184,7 @@
       "title": "Lasst die Reise beginnen"
     },
     "description": "Bitte geben Sie Ihren aktuellen Gamertag ein, um den reibungslosen Ablauf der Allianz zu überwachen",
-    "tips": "Sie können Ihren Benutzernamen jederzeit im Abschnitt „Einstellungen“ ändern",
+    "tips": "Unter diesem Namen sehen Ihre Crew-Mitglieder Sie in der Sitzung",
     "title": "Wie heißt du?"
   },
   "loading": {
@@ -402,6 +406,11 @@
       }
     },
     "run": "Segel setzen",
+    "statsHint": {
+      "dismiss": "Ausblenden",
+      "text": "Bestes Zeitfenster: {range} ({best}% erfolgreiche Allianzen — gerade jetzt: {now}%)",
+      "textNoNow": "Bestes Zeitfenster: {range} ({best}% erfolgreiche Allianzen)"
+    },
     "status": {
       "countdown": "Starten in",
       "ready": "Bereit",

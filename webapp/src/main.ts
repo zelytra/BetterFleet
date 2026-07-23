@@ -17,6 +17,7 @@ import {
   isOverlayWindow,
   startOverlayBroadcaster,
 } from "@/objects/fleet/Overlay.ts";
+import { startPresenceSync } from "@/objects/fleet/PresenceSync.ts";
 
 export const i18n = createI18n({
   legacy: false, // you must set `false`, to use Composition API
@@ -60,6 +61,8 @@ app.mount("#app");
 if (!overlay) {
   // Main window: feed the overlay. Its global toggle hotkey is registered in Rust (main.rs).
   startOverlayBroadcaster();
+  // And mirror the session onto Discord (#684) — a no-op until Rust holds an Application ID.
+  startPresenceSync();
 }
 
 export { alertProvider };

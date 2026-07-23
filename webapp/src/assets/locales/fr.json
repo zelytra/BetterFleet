@@ -132,6 +132,10 @@
       "general": "Général",
       "overlay": "Overlay en jeu"
     },
+    "presence": {
+      "check": "Rich Presence Discord",
+      "description": "Affiche ta session sur ton profil Discord — taille du lobby, joueurs prêts, et le code pour les sessions publiques."
+    },
     "savebar": {
       "cancel": "Annuler les modifications",
       "content": "Hop hop hop ! J’ai vu que tu as fait des modifications !",
@@ -180,7 +184,7 @@
       "title": "Commencer l’aventure"
     },
     "description": "Veuillez saisir votre gamertag actuel afin de veiller au bon déroulement de l'alliance",
-    "tips": "Vous pouvez modifier votre pseudo à tout moment dans les paramètres",
+    "tips": "Ce nom est celui que vos coéquipiers verront dans la session",
     "title": "Comment tu t'appelles l'ami ?"
   },
   "loading": {
@@ -402,6 +406,11 @@
       }
     },
     "run": "Lever l'ancre",
+    "statsHint": {
+      "dismiss": "Masquer",
+      "text": "Meilleur créneau : {range} ({best}% d'alliances réussies — en ce moment : {now}%)",
+      "textNoNow": "Meilleur créneau : {range} ({best}% d'alliances réussies)"
+    },
     "status": {
       "countdown": "Lancement dans",
       "ready": "Prêt",

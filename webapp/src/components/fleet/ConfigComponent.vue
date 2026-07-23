@@ -24,38 +24,60 @@
       </template>
     </BannerTemplate>
     <ParameterPart :title="t('config.part.general')">
-      <SingleSelect
-        v-model:data="langOptions"
-        :label="t('config.lang.label')"
-      />
-      <SingleSelect
-        v-model:data="deviceOptions"
-        :label="t('config.device.label')"
-      />
-      <SingleSelect
-        v-model:data="boatSizeOptions"
-        :label="t('boatSize.label')"
-      />
-      <div class="checkbox-wrapper descriptor">
-        <input v-model="activeMacro" type="checkbox" />
-        <div class="label-wrapper">
-          <p @click="activeMacro = !activeMacro">
-            {{ t("config.macro.check") }}
-          </p>
-          <p class="description" @click="activeMacro = !activeMacro">
-            {{ t("config.macro.description") }}
-          </p>
+      <!-- One column, two aligned blocks: a grid of equal-width fields, then a left-aligned list
+           of toggles — instead of everything centre-wrapping freely. -->
+      <div class="general-layout">
+        <div class="fields">
+          <SingleSelect
+            v-model:data="langOptions"
+            :label="t('config.lang.label')"
+          />
+          <SingleSelect
+            v-model:data="deviceOptions"
+            :label="t('config.device.label')"
+          />
+          <SingleSelect
+            v-model:data="boatSizeOptions"
+            :label="t('boatSize.label')"
+          />
         </div>
-      </div>
-      <div class="checkbox-wrapper descriptor">
-        <input v-model="shareStats" type="checkbox" />
-        <div class="label-wrapper">
-          <p @click="shareStats = !shareStats">
-            {{ t("config.stats.check") }}
-          </p>
-          <p class="description" @click="shareStats = !shareStats">
-            {{ t("config.stats.description") }}
-          </p>
+        <div class="toggles">
+          <div class="checkbox-wrapper descriptor">
+            <input v-model="activeMacro" type="checkbox" />
+            <div class="label-wrapper">
+              <p @click="activeMacro = !activeMacro">
+                {{ t("config.macro.check") }}
+              </p>
+              <p class="description" @click="activeMacro = !activeMacro">
+                {{ t("config.macro.description") }}
+              </p>
+            </div>
+          </div>
+          <div class="checkbox-wrapper descriptor">
+            <input v-model="shareStats" type="checkbox" />
+            <div class="label-wrapper">
+              <p @click="shareStats = !shareStats">
+                {{ t("config.stats.check") }}
+              </p>
+              <p class="description" @click="shareStats = !shareStats">
+                {{ t("config.stats.description") }}
+              </p>
+            </div>
+          </div>
+          <div class="checkbox-wrapper descriptor">
+            <input v-model="presenceEnabled" type="checkbox" />
+            <div class="label-wrapper">
+              <p @click="presenceEnabled = !presenceEnabled">
+                {{ t("config.presence.check") }}
+              </p>
+              <p
+                class="description"
+                @click="presenceEnabled = !presenceEnabled"
+              >
+                {{ t("config.presence.description") }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </ParameterPart>
@@ -240,7 +262,6 @@ import {
   isOverlayVisible,
   setOverlayVisible,
 } from "@/objects/fleet/Overlay.ts";
-import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import SaveBar from "@/vue/utils/SaveBar.vue";
 import InputSlider from "@/vue/form/InputSlider.vue";
 import countdownSound from "@assets/sounds/countdown.mp3";
@@ -255,6 +276,7 @@ import ParameterPart from "@/vue/templates/ParameterPart.vue";
 import { Utils } from "@/objects/utils/Utils.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 import { info } from "tauri-plugin-log-api";
+import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 
 const { t, availableLocales } = useI18n();
 const alerts = inject<AlertProvider>("alertProvider");
@@ -269,9 +291,9 @@ const activeMacro = ref<boolean>(true);
 const banner = ref<number>(0);
 const shuffleBanner = ref<boolean>(false);
 const shareStats = ref<boolean>(true);
+const presenceEnabled = ref<boolean>(true);
 const bannerIndexes = Array.from({ length: BANNER_COUNT }, (_, i) => i);
 const hostName = ref<string>(UserStore.player.serverHostName!);
-const username = ref<string>(UserStore.player.username);
 const inputLoading = ref<boolean>(false);
 
 // The overlay checkbox mirrors the overlay window's real visibility; toggling it shows or hides it.
@@ -421,10 +443,6 @@ function resetConfig() {
     langOptions.value.selectedValue = langOptions.value.data[0];
   }
 
-  if (UserStore.player.username) {
-    username.value = UserStore.player.username;
-  }
-
   if (UserStore.player.serverHostName) {
     hostName.value = UserStore.player.serverHostName;
   }
@@ -435,6 +453,8 @@ function resetConfig() {
   banner.value = clampBanner(UserStore.player.banner);
   shuffleBanner.value = UserStore.player.bannerShuffle;
   shareStats.value = UserStore.player.shareStats;
+  // Absent means enabled: only an explicit false turns the presence off (#684).
+  presenceEnabled.value = UserStore.player.richPresence !== false;
   inputLoading.value = true;
 }
 
@@ -459,15 +479,7 @@ function onSave() {
   UserStore.player.banner = banner.value;
   UserStore.player.bannerShuffle = shuffleBanner.value;
   UserStore.player.shareStats = shareStats.value;
-  if (username.value.length == 0 || username.value.length >= 16) {
-    alerts!.sendAlert({
-      content: t("alert.username.length.content"),
-      title: t("alert.username.length.title"),
-      type: AlertType.ERROR,
-    });
-  } else {
-    UserStore.player.username = username.value;
-  }
+  UserStore.player.richPresence = presenceEnabled.value;
   UserStore.player.serverHostName = hostName.value;
   if (UserStore.player.fleet && UserStore.player.fleet.sessionId) {
     UserStore.player.fleet.updateToSession();
@@ -478,7 +490,6 @@ function onSave() {
 
 function isConfigDifferent(): boolean {
   if (!inputLoading.value) return false;
-  if (UserStore.player.username != username.value) return true;
   if (UserStore.player.serverHostName != hostName.value) return true;
   if (
     langOptions.value.selectedValue &&
@@ -491,6 +502,8 @@ function isConfigDifferent(): boolean {
   if (banner.value != UserStore.player.banner) return true;
   if (shuffleBanner.value != UserStore.player.bannerShuffle) return true;
   if (shareStats.value != UserStore.player.shareStats) return true;
+  if (presenceEnabled.value != (UserStore.player.richPresence !== false))
+    return true;
   if (
     boatSizeOptions.value.selectedValue != undefined &&
     UserStore.player.boatSize != boatSizeOptions.value.selectedValue!.id
@@ -596,6 +609,38 @@ button {
   width: 100%;
   position: relative;
   margin-bottom: 40px;
+
+  // General section: ParameterPart lays its children out as a centre-wrapping flex row,
+  // which scattered mixed-width fields and toggles onto differently-centred lines. One full-width
+  // column instead: a grid of equal-width fields, then a left-aligned list of toggles.
+  .general-layout {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px 24px;
+      // Bottom-align the boxes so a label wrapping to two lines never pushes its input out of row.
+      align-items: end;
+
+      // InputText and SingleSelect share this root; stretch them to their cell instead of each
+      // bringing its own intrinsic width.
+      :deep(.input-global-wrapper) {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+      }
+    }
+
+    .toggles {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+  }
 
   .input-section {
     display: flex;

@@ -132,6 +132,10 @@
       "general": "General",
       "overlay": "Capa en juego"
     },
+    "presence": {
+      "check": "Rich Presence de Discord",
+      "description": "Muestra tu sesión en tu perfil de Discord — tamaño de la sala, jugadores listos y el código de las sesiones públicas."
+    },
     "savebar": {
       "cancel": "Descartar los cambios",
       "content": "¡Salto, salto, salto! ¡Vi que hiciste algunos cambios!",
@@ -180,7 +184,7 @@
       "title": "Que comience la jornada"
     },
     "description": "Ingrese su gamertag actual para supervisar el buen funcionamiento de la alianza.",
-    "tips": "Puedes cambiar tu nombre de usuario en cualquier momento en la sección \"Preferencias\"",
+    "tips": "Este nombre es el que verán tus compañeros en la sesión",
     "title": "¿Cómo te llamas muchacho?"
   },
   "loading": {
@@ -402,6 +406,11 @@
       }
     },
     "run": "Zarpar",
+    "statsHint": {
+      "dismiss": "Ocultar",
+      "text": "Mejor franja: {range} ({best}% de alianzas logradas — ahora mismo: {now}%)",
+      "textNoNow": "Mejor franja: {range} ({best}% de alianzas logradas)"
+    },
     "status": {
       "countdown": "Lanzará en",
       "ready": "Listo",
