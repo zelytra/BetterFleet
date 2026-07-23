@@ -180,6 +180,16 @@
   },
   "diagnostic": {
     "banner": "Il rilevamento del server sembra bloccato — una cattura di 20s può dirci perché.",
+    "capture": {
+      "capturing": "Cattura in corso…",
+      "copied": "Copiato negli appunti",
+      "copy": "Copia",
+      "description": "Cattura i flussi UDP del gioco per ~20s per diagnosticare il rilevamento del server (issue #364). Eseguila una volta nel menu principale e una in partita, poi copia e condividi ogni risultato.",
+      "error": "Errore: {error}",
+      "inGame": "Cattura (in partita)",
+      "mainMenu": "Cattura (menu principale)",
+      "title": "Diagnostica del rilevamento del server"
+    },
     "dismiss": "Non ora",
     "prefill": "Il rilevamento del server è rimasto muto in partita — diagnostica automatica allegata nei log.",
     "run": "Avvia la diagnostica"

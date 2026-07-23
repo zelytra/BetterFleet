@@ -180,6 +180,16 @@
   },
   "diagnostic": {
     "banner": "Server detection seems stuck — a 20s capture can tell us why.",
+    "capture": {
+      "capturing": "Capturing…",
+      "copied": "Copied to clipboard",
+      "copy": "Copy",
+      "description": "Captures the game's UDP flows for ~20s to debug server detection (issue #364). Run it once in the main menu and once in game, then copy and share each result.",
+      "error": "Error: {error}",
+      "inGame": "Capture (in game)",
+      "mainMenu": "Capture (main menu)",
+      "title": "Server detection diagnostic"
+    },
     "dismiss": "Not now",
     "prefill": "Server detection stayed silent in game — automatic diagnostic attached in the logs.",
     "run": "Run the diagnostic"

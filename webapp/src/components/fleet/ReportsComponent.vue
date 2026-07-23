@@ -20,8 +20,8 @@
         <p>{{ t("report.bug.content1") }}</p>
         <p>{{ t("report.bug.content2") }}</p>
         <div class="text-area-wrapper">
-          <textarea v-model="reportMessage" maxlength="500" />
-          <p>{{ reportMessage.length }}/500</p>
+          <textarea v-model="reportMessage" :maxlength="MESSAGE_MAX_LENGTH" />
+          <p>{{ reportMessage.length }}/{{ MESSAGE_MAX_LENGTH }}</p>
         </div>
         <PirateButton
           :label="t('report.bug.button')"
@@ -31,25 +31,32 @@
     </ParameterPart>
     <ParameterPart>
       <div class="report-wrapper">
-        <h2>Server detection diagnostic</h2>
-        <p>
-          Captures the game's UDP flows for ~20s to debug server detection
-          (issue #364). Run it once in the main menu and once in game, then copy
-          and share each result.
-        </p>
+        <h2>{{ t("diagnostic.capture.title") }}</h2>
+        <p>{{ t("diagnostic.capture.description") }}</p>
         <div class="button-row">
           <PirateButton
-            :label="diagRunning ? 'Capturing…' : 'Capture (main menu)'"
+            :label="
+              diagRunning
+                ? t('diagnostic.capture.capturing')
+                : t('diagnostic.capture.mainMenu')
+            "
             @on-button-click="runDiagnostic('main menu')"
           />
           <PirateButton
-            :label="diagRunning ? 'Capturing…' : 'Capture (in game)'"
+            :label="
+              diagRunning
+                ? t('diagnostic.capture.capturing')
+                : t('diagnostic.capture.inGame')
+            "
             @on-button-click="runDiagnostic('in game')"
           />
         </div>
         <div v-if="diagOutput" class="text-area-wrapper">
           <textarea readonly :value="diagOutput" />
-          <PirateButton label="Copy" @on-button-click="copyDiag()" />
+          <PirateButton
+            :label="t('diagnostic.capture.copy')"
+            @on-button-click="copyDiag()"
+          />
         </div>
       </div>
     </ParameterPart>
@@ -67,6 +74,12 @@ import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import { invoke } from "@tauri-apps/api/tauri";
 
 const { t } = useI18n();
+
+// A bug message is plain text in a Postgres `text` column, so the cap is only there to keep a stray
+// paste sane. Room for a player's note plus two pasted diagnostic captures (each a few KB of
+// pretty-printed JSON) — 500 filled up the moment one capture was pasted in.
+const MESSAGE_MAX_LENGTH = 15000;
+
 const reportMessage = ref("");
 const alerts = inject<AlertProvider>("alertProvider");
 const diagRunning = ref(false);
@@ -96,7 +109,7 @@ async function runDiagnostic(note: string) {
     });
     diagOutput.value = JSON.stringify(report, null, 2);
   } catch (error) {
-    diagOutput.value = "Error: " + String(error);
+    diagOutput.value = t("diagnostic.capture.error", { error: String(error) });
   } finally {
     diagRunning.value = false;
   }
@@ -105,7 +118,7 @@ async function runDiagnostic(note: string) {
 function copyDiag() {
   navigator.clipboard.writeText(diagOutput.value);
   alerts?.sendAlert({
-    title: "Copied to clipboard",
+    title: t("diagnostic.capture.copied"),
     content: "",
     type: AlertType.VALID,
   });
