@@ -60,7 +60,8 @@
 import ParameterPart from "@/vue/templates/ParameterPart.vue";
 import { useI18n } from "vue-i18n";
 import PirateButton from "@/vue/form/PirateButton.vue";
-import { inject, ref } from "vue";
+import { inject, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 import { BugReport, ReportInterface } from "@/objects/report/Report.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import { invoke } from "@tauri-apps/api/tauri";
@@ -70,6 +71,19 @@ const reportMessage = ref("");
 const alerts = inject<AlertProvider>("alertProvider");
 const diagRunning = ref(false);
 const diagOutput = ref("");
+const route = useRoute();
+
+// Guided diagnostic (#688): arriving from the lobby banner runs the capture immediately and
+// pre-fills the message. The Rust side logs the full report, so sending the bug report attaches it
+// through the logs — the 500-character message never has to carry the JSON.
+onMounted(() => {
+  if (route.query.diagnostic === "auto") {
+    if (!reportMessage.value) {
+      reportMessage.value = t("diagnostic.prefill");
+    }
+    runDiagnostic("in game (guided)");
+  }
+});
 
 async function runDiagnostic(note: string) {
   if (diagRunning.value) return;

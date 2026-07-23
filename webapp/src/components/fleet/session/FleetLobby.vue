@@ -63,6 +63,18 @@
         </button>
       </template>
     </BannerTemplate>
+    <!-- Guided diagnostic (#688): shows once when detection stays silent in game. -->
+    <div v-if="detectionPrompt.visible" class="detection-banner">
+      <p>{{ t("diagnostic.banner") }}</p>
+      <div class="actions">
+        <button type="button" class="run" @click="runGuidedDiagnostic()">
+          {{ t("diagnostic.run") }}
+        </button>
+        <button type="button" class="later" @click="dismissDetectionPrompt()">
+          {{ t("diagnostic.dismiss") }}
+        </button>
+      </div>
+    </div>
     <div class="lobby-content">
       <div class="player-table">
         <div v-if="computedSession.servers.size > 0" class="server-list">
@@ -216,8 +228,20 @@ import { Player } from "@/objects/fleet/Player.ts";
 import { WebSocketMessageType } from "@/objects/fleet/WebSocet.ts";
 import lockIcon from "@/assets/icons/lock.svg";
 import lockOpenIcon from "@/assets/icons/lock_open.svg";
+import router from "@/router";
+import {
+  detectionPrompt,
+  dismissDetectionPrompt,
+} from "@/objects/fleet/DetectionWatchdog.ts";
 
 const { t } = useI18n();
+
+// Guided diagnostic (#688): the banner's action lands on the Reports page, which auto-runs the
+// capture and pre-fills the message; sending stays the player's call.
+function runGuidedDiagnostic(): void {
+  dismissDetectionPrompt();
+  router.push({ name: "Report", query: { diagnostic: "auto" } });
+}
 const displayIdCopy = ref<boolean>(false);
 const launchConfirmation = ref<boolean>(false);
 const leaveConfirmation = ref<boolean>(false);
@@ -574,6 +598,49 @@ function onContextAction(action: string) {
         rgba(212, 147, 50, 0.2) 0%,
         rgba(212, 147, 50, 0) 108.45%
       );
+    }
+  }
+
+  // Guided diagnostic offer (#688): a quiet warning strip between the banner and the tables.
+  .detection-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 190, 92, 0.45);
+    background: rgba(255, 190, 92, 0.08);
+
+    p {
+      font-size: 14px;
+      color: var(--warning);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+
+      button {
+        all: unset;
+        cursor: pointer;
+        padding: 6px 14px;
+        border-radius: 5px;
+        font-size: 13px;
+
+        &.run {
+          background: var(--warning);
+          color: #241a05;
+          font-weight: 600;
+        }
+
+        &.later {
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: var(--secondary-text);
+        }
+      }
     }
   }
 

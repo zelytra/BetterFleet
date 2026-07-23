@@ -167,6 +167,12 @@
     },
     "title": "Riconoscimenti"
   },
+  "diagnostic": {
+    "banner": "Il rilevamento del server sembra bloccato — una cattura di 20s può dirci perché.",
+    "dismiss": "Non ora",
+    "prefill": "Il rilevamento del server è rimasto muto in partita — diagnostica automatica allegata nei log.",
+    "run": "Avvia la diagnostica"
+  },
   "firstLogin": {
     "button": {
       "description": "Ragazzi, alzate le vele, afferrate il timone e prendete il largo!",

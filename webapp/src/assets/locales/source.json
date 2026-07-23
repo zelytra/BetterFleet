@@ -167,6 +167,12 @@
     },
     "title": "Credits"
   },
+  "diagnostic": {
+    "banner": "Server detection seems stuck — a 20s capture can tell us why.",
+    "dismiss": "Not now",
+    "prefill": "Server detection stayed silent in game — automatic diagnostic attached in the logs.",
+    "run": "Run the diagnostic"
+  },
   "firstLogin": {
     "button": {
       "description": "Hoist the sails lads, take the helm and head out to sea!",

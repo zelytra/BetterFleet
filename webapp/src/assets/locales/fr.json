@@ -167,6 +167,12 @@
     },
     "title": "Crédits"
   },
+  "diagnostic": {
+    "banner": "La détection du serveur semble bloquée — une capture de 20s peut nous dire pourquoi.",
+    "dismiss": "Pas maintenant",
+    "prefill": "La détection du serveur est restée muette en jeu — diagnostic automatique joint dans les logs.",
+    "run": "Lancer le diagnostic"
+  },
   "firstLogin": {
     "button": {
       "description": "Hissons les voiles, main à la barre et cap sur le large !",

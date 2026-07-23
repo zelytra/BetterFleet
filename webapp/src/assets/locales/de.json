@@ -167,6 +167,12 @@
     },
     "title": "Credits"
   },
+  "diagnostic": {
+    "banner": "Die Servererkennung scheint zu hängen — eine 20s-Aufzeichnung kann uns sagen, warum.",
+    "dismiss": "Nicht jetzt",
+    "prefill": "Die Servererkennung blieb im Spiel stumm — automatische Diagnose in den Logs angehängt.",
+    "run": "Diagnose ausführen"
+  },
   "firstLogin": {
     "button": {
       "description": "Hissen Sie die Segel, Jungs, übernehmen Sie das Ruder und machen Sie sich auf den Weg zur See!",

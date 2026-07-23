@@ -167,6 +167,12 @@
     },
     "title": "Crédito"
   },
+  "diagnostic": {
+    "banner": "La detección del servidor parece bloqueada — una captura de 20s puede decirnos por qué.",
+    "dismiss": "Ahora no",
+    "prefill": "La detección del servidor quedó en silencio en partida — diagnóstico automático adjunto en los logs.",
+    "run": "Ejecutar el diagnóstico"
+  },
   "firstLogin": {
     "button": {
       "description": "¡Icen las velas muchachos, tomen el timón y salgan al mar!",
