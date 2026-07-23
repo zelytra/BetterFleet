@@ -9,6 +9,11 @@ backend, public statistics site.
 This file is loaded automatically by Claude Code (and read by other agents) — keep it accurate as
 the project evolves, and keep it free of machine-specific paths or secrets.
 
+**Deeper reference lives in [`.claude/docs/`](.claude/docs/README.md)** — a library covering
+architecture, per-module deep dives (frontend/backend), workflows, conventions, gotchas, and
+step-by-step recipes. This file is the concise entry point; reach for the docs folder when you need
+depth on a specific area.
+
 ## Repository layout
 
 The repo is three independent apps plus infra:

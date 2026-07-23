@@ -1,0 +1,5 @@
+# Only the shared documentation under .claude/docs/ is tracked. Everything else in this
+# directory is per-developer or per-session working state and must stay local.
+/*
+!/.gitignore
+!/docs/
