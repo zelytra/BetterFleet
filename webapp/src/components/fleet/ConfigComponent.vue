@@ -846,8 +846,8 @@ button {
 .hotkey-field {
   display: flex;
   flex-direction: column;
-  // Size to content and left-align: the field box stays at its InputText width instead of
-  // stretching to the full section, and the hint wraps under it rather than forcing a long line.
+  // Size to content and left-align: the field box hugs the combo it holds instead of stretching
+  // to the full section, and the hint wraps under it rather than forcing a long line.
   align-items: flex-start;
   gap: 8px;
 
@@ -865,10 +865,10 @@ button {
       background: var(--white-5, rgba(255, 255, 255, 0.05));
       display: flex;
       box-sizing: border-box;
-      justify-content: space-between;
       align-items: center;
       gap: 12px;
-      min-width: 300px;
+      // The box takes only the width its text needs, like a label rather than a full input strip.
+      width: fit-content;
       cursor: pointer;
 
       &.recording {
