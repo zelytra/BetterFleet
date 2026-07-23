@@ -150,12 +150,10 @@ fn save_overlay_layout(overlay: &tauri::Window) {
 /// still loops cleanly instead of stacking.
 static SOUND_PLAYING: AtomicBool = AtomicBool::new(false);
 
-// Discord Rich Presence (#684).
-//
-// !!! To enable it, create a Discord application named "BetterFleet" on
-// https://discord.com/developers/applications and paste its Application ID here. While this is
-// empty the whole feature stays dormant: no worker, no IPC, commands are no-ops.
-const DISCORD_APP_ID: &str = "";
+// Discord Rich Presence (#684). The BetterFleet application's ID from the Discord developer
+// portal — a public identifier, not a secret. Emptying it puts the whole feature back to sleep:
+// no worker, no IPC, commands become no-ops.
+const DISCORD_APP_ID: &str = "1529819901605183561";
 
 enum PresenceCommand {
     Update {
