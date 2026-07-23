@@ -76,6 +76,10 @@ export function keycloakMock() {
         updateToken: async () => false,
         logout: () => {},
       },
+      isAuthenticated: false,
+      // Mirrors the real store's shape so UserStore.init(), which reads keycloakStore.user.username,
+      // can run under the harness.
+      user: { username: "tester" },
       init: () => {},
     },
   };
