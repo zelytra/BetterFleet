@@ -417,5 +417,10 @@
       "fleet": "Sesión",
       "home": "Page d'acceuil"
     }
+  },
+  "whatsnew": {
+    "full": "Ver el registro de cambios completo",
+    "offline": "No se pudieron cargar las notas — el registro completo en línea las contiene.",
+    "title": "Novedades de la {version}"
   }
 }

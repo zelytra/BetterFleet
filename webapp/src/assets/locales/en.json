@@ -417,5 +417,10 @@
       "fleet": "Session",
       "home": "Home page"
     }
+  },
+  "whatsnew": {
+    "full": "See the full changelog",
+    "offline": "Could not load the notes — the full changelog online has them.",
+    "title": "What's new in {version}"
   }
 }

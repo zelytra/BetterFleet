@@ -20,4 +20,6 @@ export default function (key: string, defaultValue: any) {
 
 export enum LocalKey {
   USER_STORE = "user-store",
+  // Last app version whose "what's new" the player saw (#686).
+  LAST_SEEN_VERSION = "last-seen-version",
 }
