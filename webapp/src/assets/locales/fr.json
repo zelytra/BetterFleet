@@ -125,6 +125,10 @@
       "general": "Général",
       "overlay": "Overlay en jeu"
     },
+    "presence": {
+      "check": "Rich Presence Discord",
+      "description": "Affiche ta session sur ton profil Discord — taille du lobby, joueurs prêts, et le code pour les sessions publiques."
+    },
     "savebar": {
       "cancel": "Annuler les modifications",
       "content": "Hop hop hop ! J’ai vu que tu as fait des modifications !",
@@ -395,6 +399,11 @@
       }
     },
     "run": "Lever l'ancre",
+    "statsHint": {
+      "dismiss": "Masquer",
+      "text": "Meilleur créneau : {range} ({best}% d'alliances réussies — en ce moment : {now}%)",
+      "textNoNow": "Meilleur créneau : {range} ({best}% d'alliances réussies)"
+    },
     "status": {
       "countdown": "Lancement dans",
       "ready": "Prêt",

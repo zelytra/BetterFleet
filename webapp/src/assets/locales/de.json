@@ -125,6 +125,10 @@
       "general": "Allgemein",
       "overlay": "In-Game Overlay"
     },
+    "presence": {
+      "check": "Discord Rich Presence",
+      "description": "Zeigt deine Sitzung in deinem Discord-Profil — Lobby-Größe, bereite Spieler und den Code öffentlicher Sitzungen."
+    },
     "savebar": {
       "cancel": "Änderungen abbrechen",
       "content": "Hop Hop Hop! Ich habe gesehen, dass du einige Änderungen vorgenommen hast! ",
@@ -395,6 +399,11 @@
       }
     },
     "run": "Segel setzen",
+    "statsHint": {
+      "dismiss": "Ausblenden",
+      "text": "Bestes Zeitfenster: {range} ({best}% erfolgreiche Allianzen — gerade jetzt: {now}%)",
+      "textNoNow": "Bestes Zeitfenster: {range} ({best}% erfolgreiche Allianzen)"
+    },
     "status": {
       "countdown": "Starten in",
       "ready": "Bereit",
