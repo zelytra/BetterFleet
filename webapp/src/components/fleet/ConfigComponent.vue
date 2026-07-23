@@ -846,11 +846,11 @@ button {
 .hotkey-field {
   display: flex;
   flex-direction: column;
-  // Size to content and left-align: the field box hugs the combo it holds instead of stretching
-  // to the full section, and the hint wraps under it rather than forcing a long line.
-  align-items: flex-start;
   gap: 8px;
 
+  // The field-wrapper keeps the box hugging its combo (below), but the wrapper and the hint still
+  // span the section's full width, so the hint wraps at the section edge like every other input's
+  // description instead of in a narrow column.
   .field-wrapper {
     display: flex;
     flex-direction: column;
@@ -891,8 +891,6 @@ button {
   }
 
   p.description {
-    // Wrap under the field box rather than stretching into a long single line.
-    max-width: 340px;
     color: var(--secondary-text);
   }
 }
