@@ -58,6 +58,11 @@ export interface Preferences {
    * session's attempts when one of its masters turned this off.
    */
   shareStats: boolean;
+  /**
+   * Discord Rich Presence (issue #684). Optional: absent means enabled; only an explicit false
+   * turns it off. Purely client-side — the presence talks to the local Discord over Rust.
+   */
+  richPresence?: boolean;
 }
 
 export interface ActionPlayer {

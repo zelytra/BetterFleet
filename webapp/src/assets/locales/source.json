@@ -125,6 +125,10 @@
       "general": "General",
       "overlay": "In-game overlay"
     },
+    "presence": {
+      "check": "Discord Rich Presence",
+      "description": "Show your session on your Discord profile — lobby size, ready count, and the code for public sessions."
+    },
     "savebar": {
       "cancel": "Cancel modifications",
       "content": "Hold on there! I see you've made some changes!",

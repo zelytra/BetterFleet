@@ -125,6 +125,10 @@
       "general": "Generale",
       "overlay": "In-game overlay"
     },
+    "presence": {
+      "check": "Rich Presence di Discord",
+      "description": "Mostra la tua sessione sul tuo profilo Discord — dimensione della lobby, giocatori pronti e il codice delle sessioni pubbliche."
+    },
     "savebar": {
       "cancel": "Annulla le modifiche",
       "content": "Aspetta un attimo! Vedo che hai fatto delle modifiche!",
