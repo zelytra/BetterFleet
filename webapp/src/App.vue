@@ -8,13 +8,11 @@
     <h1>{{ t("loading.targetGame") }}</h1>
   </LoadingVue>
   <AlertComponent />
-  <WhatsNewModal />
 </template>
 
 <script setup lang="ts">
 import LoadingVue from "@/vue/templates/LoadingVue.vue";
 import AlertComponent from "@/vue/alert/AlertComponent.vue";
-import WhatsNewModal from "@/components/WhatsNewModal.vue";
 import { useI18n } from "vue-i18n";
 import { onMounted } from "vue";
 import { UserStore } from "@/objects/stores/UserStore.ts";

@@ -1,5 +1,5 @@
 import { fetch, ResponseType } from "@tauri-apps/api/http";
-import { info } from "tauri-plugin-log-api";
+import { error, info } from "tauri-plugin-log-api";
 
 // In-app changelog (#686). The updater ships new versions silently; this decides when a "what's
 // new" is due and turns the GitHub release body into a few readable lines. Pure parts are exported
@@ -26,17 +26,25 @@ export function whatsNewDecision(
  * modal. Exported for tests.
  */
 export function simplifyReleaseNotes(body: string): string[] {
-  return body
-    .split(/\r?\n/)
-    .map((line) =>
-      line
-        .replace(/^#+\s*/, "")
-        .replace(/\*\*([^*]+)\*\*/g, "$1")
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-        .trimEnd(),
-    )
-    .filter((line) => line.trim().length > 0)
-    .slice(0, 20);
+  return (
+    body
+      .split(/\r?\n/)
+      .map((line) =>
+        line
+          .replace(/^#+\s*/, "")
+          .replace(/\*\*([^*]+)\*\*/g, "$1")
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+          // The auto-generated bullets end with "by @user in https://…/pull/N" — the modal reader
+          // cares about the change, not the plumbing.
+          .replace(/\s+by @[\w-]+ in https?:\/\/\S+$/, "")
+          .trimEnd(),
+      )
+      .filter((line) => line.trim().length > 0)
+      // tauri-action boilerplate and the trailing compare link say nothing about the release.
+      .filter((line) => !/^See the assets to download/i.test(line))
+      .filter((line) => !/^Full Changelog:/i.test(line))
+      .slice(0, 20)
+  );
 }
 
 export function releaseUrl(version: string): string {
@@ -62,12 +70,28 @@ export async function fetchReleaseNotes(
         timeout: 8,
       },
     );
+    if (!response.ok) {
+      // GitHub answered but refused (rate limit, missing tag…): name it in the logs instead of
+      // failing into the fallback silently — that silence is exactly what made this undebuggable.
+      const reason = (response.data as { message?: string } | undefined)
+        ?.message;
+      error(
+        "[WhatsNew] GitHub refused the release notes: HTTP " +
+          response.status +
+          (reason ? " — " + reason : ""),
+      );
+      return null;
+    }
     const body = (response.data as { body?: string } | undefined)?.body;
-    if (!body) return null;
+    if (!body) {
+      error("[WhatsNew] release v" + version + " has no body");
+      return null;
+    }
     const lines = simplifyReleaseNotes(body);
     info("[WhatsNew] release notes loaded for v" + version);
     return lines.length ? lines : null;
-  } catch {
+  } catch (e) {
+    error("[WhatsNew] release notes fetch failed: " + e);
     return null;
   }
 }

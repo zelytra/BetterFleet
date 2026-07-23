@@ -39,6 +39,17 @@ describe("simplifyReleaseNotes", () => {
     ]);
   });
 
+  it("strips the auto-generated plumbing from a real release body", () => {
+    // The shape tauri-action + GitHub's generator actually produce (v2.1.0's body).
+    const lines = simplifyReleaseNotes(
+      "See the assets to download this version and install.\r\n\r\n## What's Changed\r\n* feat(overlay): in-game session overlay by @zelytra in https://github.com/zelytra/BetterFleet/pull/678\r\n\r\n**Full Changelog**: https://github.com/zelytra/BetterFleet/compare/v2.0.0...v2.1.0",
+    );
+    expect(lines).toEqual([
+      "What's Changed",
+      "* feat(overlay): in-game session overlay",
+    ]);
+  });
+
   it("caps the list so the modal stays a modal", () => {
     const body = Array.from({ length: 40 }, (_, i) => "- line " + i).join("\n");
     expect(simplifyReleaseNotes(body)).toHaveLength(20);
