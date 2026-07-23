@@ -177,7 +177,7 @@
       "title": "Commencer l’aventure"
     },
     "description": "Veuillez saisir votre gamertag actuel afin de veiller au bon déroulement de l'alliance",
-    "tips": "Vous pouvez modifier votre pseudo à tout moment dans les paramètres",
+    "tips": "Ce nom est celui que vos coéquipiers verront dans la session",
     "title": "Comment tu t'appelles l'ami ?"
   },
   "loading": {
