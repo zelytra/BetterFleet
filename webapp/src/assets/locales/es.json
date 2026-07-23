@@ -126,8 +126,8 @@
       "overlay": "Capa en juego"
     },
     "presence": {
-      "check": "Rich Presence de Discord",
-      "description": "Muestra tu sesión en tu perfil de Discord — tamaño de la sala, jugadores listos y el código de las sesiones públicas."
+      "check": "Discord Rich Presence",
+      "description": "Show your session on your Discord profile — lobby size, ready count, and the code for public sessions."
     },
     "savebar": {
       "cancel": "Descartar los cambios",
@@ -401,8 +401,8 @@
     "run": "Zarpar",
     "statsHint": {
       "dismiss": "Ocultar",
-      "text": "Mejor franja: {range} ({best}% de alianzas logradas — ahora mismo: {now}%)",
-      "textNoNow": "Mejor franja: {range} ({best}% de alianzas logradas)"
+      "text": "Mejor ventana: {range} ({best}% de las alianzas éxito — ahora mismo: {now}%)",
+      "textNoNow": "Mejor ventana: {range} ({best}% de las alianzas exitosas)"
     },
     "status": {
       "countdown": "Lanzará en",

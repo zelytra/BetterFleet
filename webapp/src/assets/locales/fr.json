@@ -126,8 +126,8 @@
       "overlay": "Overlay en jeu"
     },
     "presence": {
-      "check": "Rich Presence Discord",
-      "description": "Affiche ta session sur ton profil Discord — taille du lobby, joueurs prêts, et le code pour les sessions publiques."
+      "check": "Discord Rich Presence",
+      "description": "Show your session on your Discord profile — lobby size, ready count, and the code for public sessions."
     },
     "savebar": {
       "cancel": "Annuler les modifications",
@@ -400,9 +400,9 @@
     },
     "run": "Lever l'ancre",
     "statsHint": {
-      "dismiss": "Masquer",
-      "text": "Meilleur créneau : {range} ({best}% d'alliances réussies — en ce moment : {now}%)",
-      "textNoNow": "Meilleur créneau : {range} ({best}% d'alliances réussies)"
+      "dismiss": "Hide",
+      "text": "Best window: {range} ({best}% of alliances succeed — right now: {now}%)",
+      "textNoNow": "Best window: {range} ({best}% of alliances succeed)"
     },
     "status": {
       "countdown": "Lancement dans",

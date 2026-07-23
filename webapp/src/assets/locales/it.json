@@ -126,8 +126,8 @@
       "overlay": "In-game overlay"
     },
     "presence": {
-      "check": "Rich Presence di Discord",
-      "description": "Mostra la tua sessione sul tuo profilo Discord — dimensione della lobby, giocatori pronti e il codice delle sessioni pubbliche."
+      "check": "Discord Rich Presence",
+      "description": "Show your session on your Discord profile — lobby size, ready count, and the code for public sessions."
     },
     "savebar": {
       "cancel": "Annulla le modifiche",
@@ -400,9 +400,9 @@
     },
     "run": "Salpa",
     "statsHint": {
-      "dismiss": "Nascondi",
-      "text": "Fascia migliore: {range} ({best}% di alleanze riuscite — in questo momento: {now}%)",
-      "textNoNow": "Fascia migliore: {range} ({best}% di alleanze riuscite)"
+      "dismiss": "Hide",
+      "text": "Best window: {range} ({best}% of alliances succeed — right now: {now}%)",
+      "textNoNow": "Best window: {range} ({best}% of alliances succeed)"
     },
     "status": {
       "countdown": "Avvia in",
