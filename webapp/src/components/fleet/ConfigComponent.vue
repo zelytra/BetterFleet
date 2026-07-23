@@ -58,6 +58,17 @@
           </p>
         </div>
       </div>
+      <div class="checkbox-wrapper descriptor">
+        <input v-model="presenceEnabled" type="checkbox" />
+        <div class="label-wrapper">
+          <p @click="presenceEnabled = !presenceEnabled">
+            {{ t("config.presence.check") }}
+          </p>
+          <p class="description" @click="presenceEnabled = !presenceEnabled">
+            {{ t("config.presence.description") }}
+          </p>
+        </div>
+      </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.overlay')">
       <div class="checkbox-wrapper descriptor">
@@ -235,6 +246,7 @@ const activeMacro = ref<boolean>(true);
 const banner = ref<number>(0);
 const shuffleBanner = ref<boolean>(false);
 const shareStats = ref<boolean>(true);
+const presenceEnabled = ref<boolean>(true);
 const bannerIndexes = Array.from({ length: BANNER_COUNT }, (_, i) => i);
 const hostName = ref<string>(UserStore.player.serverHostName!);
 const username = ref<string>(UserStore.player.username);
@@ -336,6 +348,8 @@ function resetConfig() {
   banner.value = clampBanner(UserStore.player.banner);
   shuffleBanner.value = UserStore.player.bannerShuffle;
   shareStats.value = UserStore.player.shareStats;
+  // Absent means enabled: only an explicit false turns the presence off (#684).
+  presenceEnabled.value = UserStore.player.richPresence !== false;
   inputLoading.value = true;
 }
 
@@ -360,6 +374,7 @@ function onSave() {
   UserStore.player.banner = banner.value;
   UserStore.player.bannerShuffle = shuffleBanner.value;
   UserStore.player.shareStats = shareStats.value;
+  UserStore.player.richPresence = presenceEnabled.value;
   if (username.value.length == 0 || username.value.length >= 16) {
     alerts!.sendAlert({
       content: t("alert.username.length.content"),
@@ -392,6 +407,8 @@ function isConfigDifferent(): boolean {
   if (banner.value != UserStore.player.banner) return true;
   if (shuffleBanner.value != UserStore.player.bannerShuffle) return true;
   if (shareStats.value != UserStore.player.shareStats) return true;
+  if (presenceEnabled.value != (UserStore.player.richPresence !== false))
+    return true;
   if (
     boatSizeOptions.value.selectedValue != undefined &&
     UserStore.player.boatSize != boatSizeOptions.value.selectedValue!.id
