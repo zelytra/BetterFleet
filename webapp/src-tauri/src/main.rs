@@ -46,6 +46,28 @@ struct GameObject {
 
 lazy_static! {
     static ref LOG_PATH: Mutex<PathBuf> = Mutex::new(PathBuf::new());
+    // The accelerator currently bound to the overlay toggle (#687). Registration lives in Rust
+    // (the JS global-shortcut API was unreliable, see #671), so rebinding must too.
+    static ref OVERLAY_HOTKEY: Mutex<String> = Mutex::new(String::from(DEFAULT_OVERLAY_HOTKEY));
+}
+
+const DEFAULT_OVERLAY_HOTKEY: &str = "CommandOrControl+Shift+O";
+
+/// Binds `accelerator` to the overlay show/hide toggle. Fails (with the manager's reason) when the
+/// combo is invalid or already taken system-wide — the caller decides what to keep bound.
+fn register_overlay_toggle(app: &tauri::AppHandle, accelerator: &str) -> Result<(), String> {
+    let handle = app.clone();
+    app.global_shortcut_manager()
+        .register(accelerator, move || {
+            if let Some(overlay) = handle.get_window("overlay") {
+                if overlay.is_visible().unwrap_or(false) {
+                    let _ = overlay.hide();
+                } else {
+                    let _ = overlay.show();
+                }
+            }
+        })
+        .map_err(|e| e.to_string())
 }
 
 // The launch-countdown jingle, embedded so native playback needs no bundled resource. Played from
@@ -149,9 +171,108 @@ fn save_overlay_layout(overlay: &tauri::Window) {
 /// True while the countdown jingle is playing, so the frontend can poke every tick and the sound
 /// still loops cleanly instead of stacking.
 static SOUND_PLAYING: AtomicBool = AtomicBool::new(false);
+
+// Discord Rich Presence (#684). The BetterFleet application's ID from the Discord developer
+// portal — a public identifier, not a secret. Emptying it puts the whole feature back to sleep:
+// no worker, no IPC, commands become no-ops.
+const DISCORD_APP_ID: &str = "1529819901605183561";
+
+enum PresenceCommand {
+    Update {
+        state: String,
+        details: String,
+        start_epoch: Option<i64>,
+    },
+    Clear,
+}
+
+lazy_static! {
+    static ref PRESENCE_TX: Mutex<Option<std::sync::mpsc::Sender<PresenceCommand>>> =
+        Mutex::new(None);
+}
+
+/// Owns the Discord IPC client on its own thread. Connects lazily and retries at most every 15s,
+/// so Discord being closed costs nothing but a dropped update; an IPC error drops the client and
+/// the next update reconnects. The frontend only ever talks to the channel.
+fn spawn_presence_worker() -> std::sync::mpsc::Sender<PresenceCommand> {
+    use discord_rich_presence::activity::{Activity, Timestamps};
+    use discord_rich_presence::{DiscordIpc, DiscordIpcClient};
+
+    let (tx, rx) = std::sync::mpsc::channel::<PresenceCommand>();
+    std::thread::spawn(move || {
+        let mut client: Option<DiscordIpcClient> = None;
+        let mut last_attempt: Option<std::time::Instant> = None;
+        for command in rx {
+            if client.is_none() {
+                let due = last_attempt
+                    .map(|t| t.elapsed() >= Duration::from_secs(15))
+                    .unwrap_or(true);
+                if !due {
+                    continue;
+                }
+                last_attempt = Some(std::time::Instant::now());
+                if let Ok(mut fresh) = DiscordIpcClient::new(DISCORD_APP_ID) {
+                    if fresh.connect().is_ok() {
+                        info!("[presence] connected to Discord");
+                        client = Some(fresh);
+                    }
+                }
+            }
+            let connected = match client.as_mut() {
+                Some(connected) => connected,
+                None => continue,
+            };
+            let result = match &command {
+                PresenceCommand::Update {
+                    state,
+                    details,
+                    start_epoch,
+                } => {
+                    let mut activity = Activity::new().state(state).details(details);
+                    if let Some(epoch) = start_epoch {
+                        activity = activity.timestamps(Timestamps::new().start(*epoch));
+                    }
+                    connected.set_activity(activity)
+                }
+                PresenceCommand::Clear => connected.clear_activity(),
+            };
+            if result.is_err() {
+                // Discord went away mid-session; reconnect on a later update.
+                info!("[presence] lost Discord, will reconnect");
+                client = None;
+            }
+        }
+    });
+    tx
+}
+
+/// Pushes the session state onto the player's Discord profile (#684). No-op while the feature is
+/// dormant (no Application ID) or Discord is not running.
+#[tauri::command]
+fn update_presence(state: String, details: String, start_epoch: Option<i64>) {
+    if let Some(tx) = PRESENCE_TX.lock().unwrap().as_ref() {
+        let _ = tx.send(PresenceCommand::Update {
+            state,
+            details,
+            start_epoch,
+        });
+    }
+}
+
+#[tauri::command]
+fn clear_presence() {
+    if let Some(tx) = PRESENCE_TX.lock().unwrap().as_ref() {
+        let _ = tx.send(PresenceCommand::Clear);
+    }
+}
 #[tokio::main]
 async fn main() {
     let api_arc = fetch_informations::init().await.expect("Failed to initialize API");
+
+    // Rich Presence stays entirely dormant until a Discord Application ID is provided (#684).
+    if !DISCORD_APP_ID.is_empty() {
+        *PRESENCE_TX.lock().unwrap() = Some(spawn_presence_worker());
+    }
 
     panic::set_hook(Box::new(move |panic_info| {
         error!("Crashed, gathering informations");
@@ -166,19 +287,9 @@ async fn main() {
             *LOG_PATH.lock().unwrap() = log_path;
 
             // Global hotkey to toggle the in-game overlay (issue #671). Registered in Rust rather
-            // than through the JS global-shortcut API, which did not fire reliably. Ctrl+Shift+O
-            // shows/hides the overlay window; the main window keeps its content fresh over events.
-            let handle = app.handle();
-            let mut shortcuts = app.global_shortcut_manager();
-            if let Err(e) = shortcuts.register("CommandOrControl+Shift+O", move || {
-                if let Some(overlay) = handle.get_window("overlay") {
-                    if overlay.is_visible().unwrap_or(false) {
-                        let _ = overlay.hide();
-                    } else {
-                        let _ = overlay.show();
-                    }
-                }
-            }) {
+            // than through the JS global-shortcut API, which did not fire reliably. The default
+            // binds at startup; the frontend re-binds the player's saved combo right after (#687).
+            if let Err(e) = register_overlay_toggle(&app.handle(), DEFAULT_OVERLAY_HOTKEY) {
                 error!("Failed to register overlay hotkey: {}", e);
             }
 
@@ -225,7 +336,10 @@ async fn main() {
             get_logs,
             get_system_info,
             run_server_diagnostic,
-            play_countdown_sound
+            play_countdown_sound,
+            set_overlay_hotkey,
+            update_presence,
+            clear_presence
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -493,6 +607,25 @@ fn play_countdown_sound(volume: f32) -> bool {
         SOUND_PLAYING.store(false, Ordering::SeqCst);
     });
     true
+}
+
+/// Rebinds the overlay toggle (#687). The new combo registers FIRST: if it is invalid or taken,
+/// this errs with the reason and the previous combo keeps working; only a successful registration
+/// unbinds the old one. Called at startup with the persisted preference and from the settings.
+#[tauri::command]
+fn set_overlay_hotkey(app_handle: tauri::AppHandle, accelerator: String) -> Result<(), String> {
+    let mut current = OVERLAY_HOTKEY.lock().unwrap();
+    if *current == accelerator {
+        return Ok(());
+    }
+    register_overlay_toggle(&app_handle, &accelerator)?;
+    if let Err(e) = app_handle.global_shortcut_manager().unregister(&current) {
+        // The new combo works; a stale extra binding is worth a log line, not a failure.
+        error!("[hotkey] failed to unregister {}: {}", *current, e);
+    }
+    info!("[hotkey] overlay toggle rebound: {} -> {}", *current, accelerator);
+    *current = accelerator;
+    Ok(())
 }
 
 #[cfg(test)]

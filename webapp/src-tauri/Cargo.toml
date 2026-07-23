@@ -33,6 +33,8 @@ lazy_static = "1.4.0"
 # Native audio for the launch-countdown sound (#671): webview audio is suspended when the window is
 # occluded behind the game, native playback is not.
 rodio = "0.20.1"
+# Discord Rich Presence over the local client's IPC (#684) — no bot, no OAuth.
+discord-rich-presence = "0.2.5"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

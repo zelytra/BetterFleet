@@ -111,8 +111,15 @@
       "description": "Ausführung eines automatischen Klicks am Ende des Countdowns"
     },
     "overlay": {
+      "hotkey": {
+        "hint": "Klicken und dann eine Tastenkombination drücken. Eine einzelne Taste funktioniert nicht: ein Modifikator (Strg, Alt oder Umschalt) ist nötig.",
+        "invalid": "Dieses Kürzel kann nicht verwendet werden",
+        "label": "Umschalt-Kürzel",
+        "recording": "Drücke eine Kombination…",
+        "reset": "Zurücksetzen"
+      },
       "toggle": "Show / hide overlay",
-      "description": "Zeige die Live-Session — jeden Server und wer bereit ist — oben auf dem Spiel (benutze den grenzenlosen Fenstermodus). Tastenkürzel: Strg+Umschalt+O."
+      "description": "Zeigt die Live-Sitzung (Server und bereite Spieler) über dem Spiel, im randlosen Fenstermodus."
     },
     "name": {
       "label": "Nutzername",
@@ -124,6 +131,10 @@
       "developer": "Entwickler",
       "general": "Allgemein",
       "overlay": "In-Game Overlay"
+    },
+    "presence": {
+      "check": "Discord Rich Presence",
+      "description": "Zeigt deine Sitzung in deinem Discord-Profil — Lobby-Größe, bereite Spieler und den Code öffentlicher Sitzungen."
     },
     "savebar": {
       "cancel": "Änderungen abbrechen",
@@ -141,7 +152,7 @@
     },
     "stats": {
       "check": "Anonyme Allianzstatistiken",
-      "description": "Unterstützen Sie die anonymen Ergebnisse Ihrer Sitzungen (Erfolg, Regionen — nie, wer Sie sind) auf der öffentlichen Statistikseite."
+      "description": "Unterstützen Sie die anonymen Ergebnisse Ihrer Sitzungen (Erfolg, Regionen, nie wer Sie sind) auf der öffentlichen Statistikseite."
     },
     "subtitle": "Präferenzoptionen",
     "title": "Einstellungen"
@@ -179,7 +190,7 @@
       "title": "Lasst die Reise beginnen"
     },
     "description": "Bitte geben Sie Ihren aktuellen Gamertag ein, um den reibungslosen Ablauf der Allianz zu überwachen",
-    "tips": "Sie können Ihren Benutzernamen jederzeit im Abschnitt „Einstellungen“ ändern",
+    "tips": "Unter diesem Namen sehen Ihre Crew-Mitglieder Sie in der Sitzung",
     "title": "Wie heißt du?"
   },
   "loading": {
@@ -401,6 +412,11 @@
       }
     },
     "run": "Segel setzen",
+    "statsHint": {
+      "dismiss": "Ausblenden",
+      "text": "Bestes Zeitfenster: {range} ({best}% erfolgreiche Allianzen — gerade jetzt: {now}%)",
+      "textNoNow": "Bestes Zeitfenster: {range} ({best}% erfolgreiche Allianzen)"
+    },
     "status": {
       "countdown": "Starten in",
       "ready": "Bereit",
@@ -423,5 +439,10 @@
       "fleet": "Sitzung",
       "home": "Page d'acceuil"
     }
+  },
+  "whatsnew": {
+    "full": "Vollständiges Änderungsprotokoll ansehen",
+    "offline": "Die Notizen konnten nicht geladen werden — das vollständige Änderungsprotokoll online enthält sie.",
+    "title": "Neu in {version}"
   }
 }

@@ -111,8 +111,15 @@
       "description": "Clicca automaticamente su \"Salpa\" alla fine del conto alla rovescia"
     },
     "overlay": {
+      "hotkey": {
+        "hint": "Clicca e poi premi una combinazione di tasti. Un singolo tasto non funziona: serve un modificatore (Ctrl, Alt o Maiusc).",
+        "invalid": "Questa scorciatoia non può essere usata",
+        "label": "Scorciatoia di attivazione",
+        "recording": "Premi una combinazione…",
+        "reset": "Reimposta"
+      },
       "toggle": "Show / hide overlay",
-      "description": "Show the live session — every server and who's ready — on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+      "description": "Show the live session (servers and ready states) on top of the game, in borderless windowed mode."
     },
     "name": {
       "label": "Username",
@@ -124,6 +131,10 @@
       "developer": "Sviluppatore",
       "general": "Generale",
       "overlay": "In-game overlay"
+    },
+    "presence": {
+      "check": "Rich Presence di Discord",
+      "description": "Mostra la tua sessione sul tuo profilo Discord — dimensione della lobby, giocatori pronti e il codice delle sessioni pubbliche."
     },
     "savebar": {
       "cancel": "Annulla le modifiche",
@@ -141,7 +152,7 @@
     },
     "stats": {
       "check": "Anonymous alliance statistics",
-      "description": "Contribute your sessions' anonymous outcomes (success, regions — never who you are) to the public statistics page."
+      "description": "Contribute your sessions' anonymous outcomes (success, regions, never who you are) to the public statistics page."
     },
     "subtitle": "Opzioni di preferenza",
     "title": "Impostazioni"
@@ -179,7 +190,7 @@
       "title": "Che il viaggio abbia inizio"
     },
     "description": "Inserisci il tuo attuale gamertag per controllare il corretto svolgimento dell'alleanza",
-    "tips": "Puoi cambiare il tuo username in qualsiasi momento nelle impostazioni",
+    "tips": "Questo è il nome che i tuoi compagni vedranno nella sessione",
     "title": "Come ti chiami, ragazzo?"
   },
   "loading": {
@@ -401,6 +412,11 @@
       }
     },
     "run": "Salpa",
+    "statsHint": {
+      "dismiss": "Nascondi",
+      "text": "Fascia migliore: {range} ({best}% di alleanze riuscite — in questo momento: {now}%)",
+      "textNoNow": "Fascia migliore: {range} ({best}% di alleanze riuscite)"
+    },
     "status": {
       "countdown": "Avvia in",
       "ready": "Pronto",
@@ -423,5 +439,10 @@
       "fleet": "Sessione",
       "home": "Pagina iniziale"
     }
+  },
+  "whatsnew": {
+    "full": "Vedi il changelog completo",
+    "offline": "Impossibile caricare le note — il changelog completo online le contiene.",
+    "title": "Novità della {version}"
   }
 }

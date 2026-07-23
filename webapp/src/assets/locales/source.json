@@ -111,8 +111,15 @@
       "description": "Automatically clicks on \"Set sail\" at the end of the countdown"
     },
     "overlay": {
+      "hotkey": {
+        "hint": "Click, then press a key combination. A single key does not work: a modifier (Ctrl, Alt or Shift) is required.",
+        "invalid": "This shortcut cannot be used",
+        "label": "Toggle shortcut",
+        "recording": "Press a combo…",
+        "reset": "Reset"
+      },
       "toggle": "Show / hide overlay",
-      "description": "Show the live session — every server and who's ready — on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+      "description": "Show the live session (servers and ready states) on top of the game, in borderless windowed mode."
     },
     "name": {
       "label": "Username",
@@ -124,6 +131,10 @@
       "developer": "Developer",
       "general": "General",
       "overlay": "In-game overlay"
+    },
+    "presence": {
+      "check": "Discord Rich Presence",
+      "description": "Show your session on your Discord profile — lobby size, ready count, and the code for public sessions."
     },
     "savebar": {
       "cancel": "Cancel modifications",
@@ -141,7 +152,7 @@
     },
     "stats": {
       "check": "Anonymous alliance statistics",
-      "description": "Contribute your sessions' anonymous outcomes (success, regions — never who you are) to the public statistics page."
+      "description": "Contribute your sessions' anonymous outcomes (success, regions, never who you are) to the public statistics page."
     },
     "subtitle": "Preference options",
     "title": "Settings"
@@ -179,7 +190,7 @@
       "title": "Let the journey begin"
     },
     "description": "Please enter your current gamertag to oversee the smooth running of the alliance",
-    "tips": "You can change your username at any moment in the settings",
+    "tips": "This name is how your crewmates will see you in the session",
     "title": "What's your name lad?"
   },
   "loading": {
@@ -401,6 +412,11 @@
       }
     },
     "run": "Set sail",
+    "statsHint": {
+      "dismiss": "Hide",
+      "text": "Best window: {range} ({best}% of alliances succeed — right now: {now}%)",
+      "textNoNow": "Best window: {range} ({best}% of alliances succeed)"
+    },
     "status": {
       "countdown": "Launch in",
       "ready": "Ready",
@@ -423,5 +439,10 @@
       "fleet": "Session",
       "home": "Home page"
     }
+  },
+  "whatsnew": {
+    "full": "See the full changelog",
+    "offline": "Could not load the notes — the full changelog online has them.",
+    "title": "What's new in {version}"
   }
 }

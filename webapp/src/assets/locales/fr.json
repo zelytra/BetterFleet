@@ -111,8 +111,15 @@
       "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte"
     },
     "overlay": {
+      "hotkey": {
+        "hint": "Cliquez puis appuyez sur une combinaison de touches. Une touche seule ne fonctionne pas : il faut un modificateur (Ctrl, Alt ou Maj).",
+        "invalid": "Ce raccourci ne peut pas être utilisé",
+        "label": "Raccourci d'affichage",
+        "recording": "Appuyez sur un raccourci…",
+        "reset": "Réinitialiser"
+      },
       "toggle": "Afficher / masquer l'overlay",
-      "description": "Affiche la session en direct — chaque serveur et qui est prêt — par-dessus le jeu (en mode fenêtré sans bordure). Raccourci : Ctrl+Maj+O."
+      "description": "Affiche la session en direct (serveurs et joueurs prêts) par-dessus le jeu, en mode fenêtré sans bordure."
     },
     "name": {
       "label": "Pseudonyme",
@@ -124,6 +131,10 @@
       "developer": "Développeur",
       "general": "Général",
       "overlay": "Overlay en jeu"
+    },
+    "presence": {
+      "check": "Rich Presence Discord",
+      "description": "Affiche ta session sur ton profil Discord — taille du lobby, joueurs prêts, et le code pour les sessions publiques."
     },
     "savebar": {
       "cancel": "Annuler les modifications",
@@ -141,7 +152,7 @@
     },
     "stats": {
       "check": "Statistiques d'alliance anonymes",
-      "description": "Partage le résultat anonyme de tes sessions (réussite, régions — jamais qui tu es) pour la page publique de statistiques."
+      "description": "Partage le résultat anonyme de tes sessions (réussite, régions, jamais qui tu es) pour la page publique de statistiques."
     },
     "subtitle": "Options de préférence",
     "title": "Paramètres"
@@ -179,7 +190,7 @@
       "title": "Commencer l’aventure"
     },
     "description": "Veuillez saisir votre gamertag actuel afin de veiller au bon déroulement de l'alliance",
-    "tips": "Vous pouvez modifier votre pseudo à tout moment dans les paramètres",
+    "tips": "Ce nom est celui que vos coéquipiers verront dans la session",
     "title": "Comment tu t'appelles l'ami ?"
   },
   "loading": {
@@ -401,6 +412,11 @@
       }
     },
     "run": "Lever l'ancre",
+    "statsHint": {
+      "dismiss": "Masquer",
+      "text": "Meilleur créneau : {range} ({best}% d'alliances réussies — en ce moment : {now}%)",
+      "textNoNow": "Meilleur créneau : {range} ({best}% d'alliances réussies)"
+    },
     "status": {
       "countdown": "Lancement dans",
       "ready": "Prêt",
@@ -423,5 +439,10 @@
       "fleet": "Session",
       "home": "Page d'accueil"
     }
+  },
+  "whatsnew": {
+    "full": "Voir le changelog complet",
+    "offline": "Impossible de charger les notes — le changelog complet en ligne les contient.",
+    "title": "Nouveautés de la {version}"
   }
 }

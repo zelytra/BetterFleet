@@ -3,9 +3,9 @@ import { onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { UnlistenFn } from "@tauri-apps/api/event";
 import {
+  hotkeyLabel,
   onOverlayUpdate,
   OverlaySnapshot,
-  OVERLAY_HOTKEY_LABEL,
   requestToggleReady,
 } from "@/objects/fleet/Overlay.ts";
 import { serverBarColor } from "@/objects/fleet/ServerColor.ts";
@@ -101,7 +101,7 @@ onUnmounted(() => {
     <header class="bar" data-tauri-drag-region>
       <img class="logo" src="@/assets/icons/logo.svg" alt="BetterFleet" />
       <span class="brand">BetterFleet</span>
-      <span class="hotkey">{{ OVERLAY_HOTKEY_LABEL }}</span>
+      <span class="hotkey">{{ snapshot?.hotkeyLabel ?? hotkeyLabel() }}</span>
     </header>
 
     <div class="body">
