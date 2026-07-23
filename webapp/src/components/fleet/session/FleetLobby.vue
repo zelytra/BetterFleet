@@ -103,6 +103,31 @@
           <p v-if="UserStore.player.isReady">{{ t("session.player.ready") }}</p>
           <p v-else>{{ t("session.player.notReady") }}</p>
         </button>
+        <div v-if="statsHint && !statsHintDismissed" class="stats-hint">
+          <p>
+            🕑
+            {{
+              statsHint.nowRate !== null
+                ? t("session.statsHint.text", {
+                    range: statsHint.localRange,
+                    best: statsHint.bestRate,
+                    now: statsHint.nowRate,
+                  })
+                : t("session.statsHint.textNoNow", {
+                    range: statsHint.localRange,
+                    best: statsHint.bestRate,
+                  })
+            }}
+          </p>
+          <button
+            type="button"
+            class="dismiss"
+            :aria-label="t('session.statsHint.dismiss')"
+            @click="statsHintDismissed = true"
+          >
+            ✕
+          </button>
+        </div>
         <div class="details-content">
           <div class="top-content">
             <div class="header-information">
@@ -193,6 +218,7 @@
 import {
   computed,
   nextTick,
+  onMounted,
   onUnmounted,
   PropType,
   reactive,
@@ -216,8 +242,27 @@ import { Player } from "@/objects/fleet/Player.ts";
 import { WebSocketMessageType } from "@/objects/fleet/WebSocet.ts";
 import lockIcon from "@/assets/icons/lock.svg";
 import lockOpenIcon from "@/assets/icons/lock_open.svg";
+import {
+  AllianceHint,
+  computeHint,
+  fetchAllianceStats,
+  utcHourToLocal,
+} from "@/objects/fleet/AllianceHint.ts";
 
 const { t } = useI18n();
+
+// Best-window hint from the anonymous alliance stats (#683): fetched once (module-cached an hour),
+// hidden whenever the data is too thin, dismissable for the session.
+const statsHint = ref<AllianceHint | null>(null);
+const statsHintDismissed = ref(false);
+onMounted(async () => {
+  const payload = await fetchAllianceStats();
+  statsHint.value = computeHint(
+    payload,
+    new Date().getUTCHours(),
+    utcHourToLocal,
+  );
+});
 const displayIdCopy = ref<boolean>(false);
 const launchConfirmation = ref<boolean>(false);
 const leaveConfirmation = ref<boolean>(false);
@@ -644,6 +689,40 @@ function onContextAction(action: string) {
             rgba(212, 50, 50, 0.2) -14.61%,
             rgba(212, 50, 50, 0.07) 167.42%
           );
+        }
+      }
+
+      // Best-window hint from the alliance stats (#683): quiet, one line, dismissable.
+      .stats-hint {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+        padding: 8px 10px;
+        border-radius: 5px;
+        border: 1px solid rgba(50, 212, 153, 0.35);
+        background: rgba(50, 212, 153, 0.08);
+
+        p {
+          flex: 1 1 auto;
+          font-size: 12px;
+          line-height: 1.45;
+          color: var(--secondary-text);
+        }
+
+        .dismiss {
+          all: unset;
+          cursor: pointer;
+          font-size: 11px;
+          line-height: 1;
+          padding: 2px;
+          color: var(--secondary-text);
+
+          &:hover {
+            color: var(--primary-text);
+          }
         }
       }
 

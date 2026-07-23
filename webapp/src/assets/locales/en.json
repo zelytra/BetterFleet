@@ -399,6 +399,11 @@
       }
     },
     "run": "Set sail",
+    "statsHint": {
+      "dismiss": "Hide",
+      "text": "Best window: {range} ({best}% of alliances succeed — right now: {now}%)",
+      "textNoNow": "Best window: {range} ({best}% of alliances succeed)"
+    },
     "status": {
       "countdown": "Launch in",
       "ready": "Ready",
