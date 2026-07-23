@@ -395,6 +395,11 @@
       }
     },
     "run": "Zarpar",
+    "statsHint": {
+      "dismiss": "Ocultar",
+      "text": "Mejor franja: {range} ({best}% de alianzas logradas — ahora mismo: {now}%)",
+      "textNoNow": "Mejor franja: {range} ({best}% de alianzas logradas)"
+    },
     "status": {
       "countdown": "Lanzará en",
       "ready": "Listo",
