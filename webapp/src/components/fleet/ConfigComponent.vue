@@ -82,47 +82,51 @@
       </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.overlay')">
-      <div class="checkbox-wrapper descriptor">
-        <input v-model="overlayEnabled" type="checkbox" />
-        <div class="label-wrapper">
-          <p @click="overlayEnabled = !overlayEnabled">
-            {{ t("config.overlay.toggle") }}
-          </p>
-          <p class="description" @click="overlayEnabled = !overlayEnabled">
-            {{ t("config.overlay.description") }}
-          </p>
-        </div>
-      </div>
-      <!-- Styled after InputText (label above, same field box, cross to reset) so it reads as one
-           of the app's inputs rather than a foreign button — review feedback on #692. -->
-      <div class="hotkey-field">
-        <div class="field-wrapper">
-          <label>{{ t("config.overlay.hotkey.label") }}</label>
-          <div
-            :class="{ 'input-look': true, recording: recordingHotkey }"
-            role="button"
-            tabindex="0"
-            @click="startHotkeyRecording()"
-            @keydown.enter.prevent="startHotkeyRecording()"
-          >
-            <span class="value">
-              {{
-                recordingHotkey
-                  ? t("config.overlay.hotkey.recording")
-                  : hotkeyLabel(UserStore.player.overlayHotkey)
-              }}
-            </span>
-            <span
-              v-if="UserStore.player.overlayHotkey && !recordingHotkey"
-              class="cross"
-              :title="t('config.overlay.hotkey.reset')"
-              @click.stop="applyHotkey(undefined)"
-            >
-              <img src="@/assets/icons/cross.svg" />
-            </span>
+      <!-- One full-width column so the toggle and the hotkey field share a left edge, instead of
+           ParameterPart centre-wrapping them onto differently-offset lines (same fix as #694). -->
+      <div class="overlay-layout">
+        <div class="checkbox-wrapper descriptor">
+          <input v-model="overlayEnabled" type="checkbox" />
+          <div class="label-wrapper">
+            <p @click="overlayEnabled = !overlayEnabled">
+              {{ t("config.overlay.toggle") }}
+            </p>
+            <p class="description" @click="overlayEnabled = !overlayEnabled">
+              {{ t("config.overlay.description") }}
+            </p>
           </div>
         </div>
-        <p class="description">{{ t("config.overlay.hotkey.hint") }}</p>
+        <!-- Styled after InputText (label above, same field box, cross to reset) so it reads as one
+             of the app's inputs rather than a foreign button — review feedback on #692. -->
+        <div class="hotkey-field">
+          <div class="field-wrapper">
+            <label>{{ t("config.overlay.hotkey.label") }}</label>
+            <div
+              :class="{ 'input-look': true, recording: recordingHotkey }"
+              role="button"
+              tabindex="0"
+              @click="startHotkeyRecording()"
+              @keydown.enter.prevent="startHotkeyRecording()"
+            >
+              <span class="value">
+                {{
+                  recordingHotkey
+                    ? t("config.overlay.hotkey.recording")
+                    : hotkeyLabel(UserStore.player.overlayHotkey)
+                }}
+              </span>
+              <span
+                v-if="UserStore.player.overlayHotkey && !recordingHotkey"
+                class="cross"
+                :title="t('config.overlay.hotkey.reset')"
+                @click.stop="applyHotkey(undefined)"
+              >
+                <img src="@/assets/icons/cross.svg" />
+              </span>
+            </div>
+          </div>
+          <p class="description">{{ t("config.overlay.hotkey.hint") }}</p>
+        </div>
       </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.banner')">
@@ -829,14 +833,28 @@ button {
 // cross-to-reset) so it reads as one of the app's inputs — review feedback on #692. Top level:
 // nested inside another section's selector it silently never applies, which is exactly how the
 // first cut shipped browser-default buttons.
+// Full-width column so the overlay toggle and the hotkey field share the section's left edge,
+// instead of ParameterPart centre-wrapping each onto its own differently-offset line (same shape
+// as the General section's .general-layout, added in #694).
+.overlay-layout {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .hotkey-field {
   display: flex;
   flex-direction: column;
+  // Size to content and left-align: the field box stays at its InputText width instead of
+  // stretching to the full section, and the hint wraps under it rather than forcing a long line.
+  align-items: flex-start;
   gap: 8px;
 
   .field-wrapper {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 9px;
 
     .input-look {
@@ -873,6 +891,8 @@ button {
   }
 
   p.description {
+    // Wrap under the field box rather than stretching into a long single line.
+    max-width: 340px;
     color: var(--secondary-text);
   }
 }
