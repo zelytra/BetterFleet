@@ -112,13 +112,14 @@
     },
     "overlay": {
       "hotkey": {
+        "hint": "Click, then press a key combination. A single key does not work: a modifier (Ctrl, Alt or Shift) is required.",
         "invalid": "This shortcut cannot be used",
         "label": "Toggle shortcut",
         "recording": "Press a combo…",
         "reset": "Reset"
       },
       "toggle": "Show / hide overlay",
-      "description": "Show the live session — every server and who's ready — on top of the game (use borderless windowed mode). Shortcut: Ctrl+Shift+O."
+      "description": "Show the live session (servers and ready states) on top of the game, in borderless windowed mode."
     },
     "name": {
       "label": "Username",
@@ -147,7 +148,7 @@
     },
     "stats": {
       "check": "Anonymous alliance statistics",
-      "description": "Contribute your sessions' anonymous outcomes (success, regions — never who you are) to the public statistics page."
+      "description": "Contribute your sessions' anonymous outcomes (success, regions, never who you are) to the public statistics page."
     },
     "subtitle": "Preference options",
     "title": "Settings"

@@ -112,13 +112,14 @@
     },
     "overlay": {
       "hotkey": {
+        "hint": "Cliquez puis appuyez sur une combinaison de touches. Une touche seule ne fonctionne pas : il faut un modificateur (Ctrl, Alt ou Maj).",
         "invalid": "Ce raccourci ne peut pas être utilisé",
         "label": "Raccourci d'affichage",
         "recording": "Appuyez sur un raccourci…",
         "reset": "Réinitialiser"
       },
       "toggle": "Afficher / masquer l'overlay",
-      "description": "Affiche la session en direct — chaque serveur et qui est prêt — par-dessus le jeu (en mode fenêtré sans bordure). Raccourci : Ctrl+Maj+O."
+      "description": "Affiche la session en direct (serveurs et joueurs prêts) par-dessus le jeu, en mode fenêtré sans bordure."
     },
     "name": {
       "label": "Pseudonyme",
@@ -147,7 +148,7 @@
     },
     "stats": {
       "check": "Statistiques d'alliance anonymes",
-      "description": "Partage le résultat anonyme de tes sessions (réussite, régions — jamais qui tu es) pour la page publique de statistiques."
+      "description": "Partage le résultat anonyme de tes sessions (réussite, régions, jamais qui tu es) pour la page publique de statistiques."
     },
     "subtitle": "Options de préférence",
     "title": "Paramètres"

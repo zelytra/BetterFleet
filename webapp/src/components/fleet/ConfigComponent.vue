@@ -71,27 +71,36 @@
           </p>
         </div>
       </div>
-      <div class="hotkey-row">
-        <p>{{ t("config.overlay.hotkey.label") }}</p>
-        <button
-          type="button"
-          :class="{ combo: true, recording: recordingHotkey }"
-          @click="startHotkeyRecording()"
-        >
-          {{
-            recordingHotkey
-              ? t("config.overlay.hotkey.recording")
-              : hotkeyLabel(UserStore.player.overlayHotkey)
-          }}
-        </button>
-        <button
-          v-if="UserStore.player.overlayHotkey"
-          type="button"
-          class="reset"
-          @click="applyHotkey(undefined)"
-        >
-          {{ t("config.overlay.hotkey.reset") }}
-        </button>
+      <!-- Styled after InputText (label above, same field box, cross to reset) so it reads as one
+           of the app's inputs rather than a foreign button — review feedback on #692. -->
+      <div class="hotkey-field">
+        <div class="field-wrapper">
+          <label>{{ t("config.overlay.hotkey.label") }}</label>
+          <div
+            :class="{ 'input-look': true, recording: recordingHotkey }"
+            role="button"
+            tabindex="0"
+            @click="startHotkeyRecording()"
+            @keydown.enter.prevent="startHotkeyRecording()"
+          >
+            <span class="value">
+              {{
+                recordingHotkey
+                  ? t("config.overlay.hotkey.recording")
+                  : hotkeyLabel(UserStore.player.overlayHotkey)
+              }}
+            </span>
+            <span
+              v-if="UserStore.player.overlayHotkey && !recordingHotkey"
+              class="cross"
+              :title="t('config.overlay.hotkey.reset')"
+              @click.stop="applyHotkey(undefined)"
+            >
+              <img src="@/assets/icons/cross.svg" />
+            </span>
+          </div>
+        </div>
+        <p class="description">{{ t("config.overlay.hotkey.hint") }}</p>
       </div>
     </ParameterPart>
     <ParameterPart :title="t('config.part.banner')">
@@ -769,40 +778,57 @@ button {
     align-items: center;
     gap: 12px;
   }
+}
 
-  // Overlay hotkey recorder row (#687).
-  .hotkey-row {
+// Overlay hotkey recorder (#687), dressed exactly like InputText (same wrapper metrics, same
+// cross-to-reset) so it reads as one of the app's inputs — review feedback on #692. Top level:
+// nested inside another section's selector it silently never applies, which is exactly how the
+// first cut shipped browser-default buttons.
+.hotkey-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .field-wrapper {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    gap: 9px;
 
-    p {
-      color: var(--secondary-text);
-    }
-
-    button {
-      all: unset;
-      cursor: pointer;
-      padding: 6px 14px;
+    .input-look {
+      position: relative;
+      padding: 5px 10px;
       border-radius: 5px;
-      font-size: 14px;
+      border: 1px solid var(--white-10, rgba(255, 255, 255, 0.1));
+      background: var(--white-5, rgba(255, 255, 255, 0.05));
+      display: flex;
+      box-sizing: border-box;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      cursor: pointer;
 
-      &.combo {
-        border: 1px solid var(--primary);
-        color: var(--primary-text);
-        font-variant-numeric: tabular-nums;
+      &.recording {
+        border-color: var(--warning);
 
-        &.recording {
-          border-color: var(--warning);
+        .value {
           color: var(--warning);
         }
       }
 
-      &.reset {
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: var(--secondary-text);
+      .value {
+        font-variant-numeric: tabular-nums;
+      }
+
+      span.cross {
+        cursor: pointer;
+        display: flex;
       }
     }
+  }
+
+  p.description {
+    color: var(--secondary-text);
   }
 }
 </style>
