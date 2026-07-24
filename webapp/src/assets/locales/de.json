@@ -423,12 +423,9 @@
     },
     "run": "Segel setzen",
     "recap": {
-      "copied": "Kopiert!",
-      "copy": "Für Discord kopieren",
       "dismiss": "Schließen",
       "duration": "Dauer",
       "pirates": "Piraten",
-      "share": "⚓ Allianz mit BetterFleet gebildet — {players} Piraten auf einem Server{region}, {tries} Versuche in {duration}. https://betterfleet.fr",
       "title": "Allianz gebildet! ⚓",
       "tries": "Versuche"
     },

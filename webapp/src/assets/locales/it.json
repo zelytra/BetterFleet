@@ -423,12 +423,9 @@
     },
     "run": "Salpa",
     "recap": {
-      "copied": "Copiato!",
-      "copy": "Copia per Discord",
       "dismiss": "Chiudi",
       "duration": "Durata",
       "pirates": "Pirati",
-      "share": "⚓ Alleanza formata con BetterFleet — {players} pirati su un solo server{region}, {tries} tentativi in {duration}. https://betterfleet.fr",
       "title": "Alleanza formata! ⚓",
       "tries": "Tentativi"
     },

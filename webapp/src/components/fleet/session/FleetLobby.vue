@@ -96,11 +96,6 @@
         </div>
       </div>
       <div class="actions">
-        <button type="button" class="copy" @click="copyRecap()">
-          {{
-            recapCopied ? t("session.recap.copied") : t("session.recap.copy")
-          }}
-        </button>
         <button
           type="button"
           class="dismiss"
@@ -302,7 +297,6 @@ import {
   utcHourToLocal,
 } from "@/objects/fleet/AllianceHint.ts";
 import {
-  buildShareText,
   countryFlagEmoji,
   dismissRecap,
   formatClock,
@@ -330,20 +324,13 @@ onMounted(async () => {
     utcHourToLocal,
   );
 });
-// Shareable recap (#685): the card's numbers, its region flag, and the copy-to-Discord confirmation.
+// Shareable recap (#685): the card's numbers and its region flag.
 const recapFlag = computed(() =>
   countryFlagEmoji(sessionRecap.data?.countryCode),
 );
 const recapDuration = computed(() =>
   formatClock(sessionRecap.data?.durationMs ?? 0),
 );
-const recapCopied = ref(false);
-function copyRecap(): void {
-  if (!sessionRecap.data) return;
-  navigator.clipboard.writeText(buildShareText(sessionRecap.data, t));
-  recapCopied.value = true;
-  setTimeout(() => (recapCopied.value = false), 2000);
-}
 
 const displayIdCopy = ref<boolean>(false);
 const launchConfirmation = ref<boolean>(false);
@@ -808,13 +795,6 @@ function onContextAction(action: string) {
         cursor: pointer;
         border-radius: 5px;
         font-size: 13px;
-
-        &.copy {
-          padding: 6px 14px;
-          background: var(--primary);
-          color: #062418;
-          font-weight: 600;
-        }
 
         &.dismiss {
           padding: 6px 10px;

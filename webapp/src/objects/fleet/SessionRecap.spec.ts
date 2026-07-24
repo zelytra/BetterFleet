@@ -3,7 +3,6 @@ import {
   RECAP_DEBOUNCE_MS,
   RecapWatchdog,
   buildRecap,
-  buildShareText,
   convergedServer,
   countryFlagEmoji,
   formatClock,
@@ -37,9 +36,16 @@ describe("convergedServer", () => {
     expect(convergedServer(withEmpty)?.countryCode).toBe("us");
   });
 
-  it("is null when the fleet is split across two servers", () => {
-    const split = serversOf(server(["a", "b"]), server(["c"]));
-    expect(convergedServer(split)).toBeNull();
+  it("picks the biggest group when the fleet is split across servers", () => {
+    // Three on one server, two on another: alliances formed on both; the card celebrates the larger.
+    const big = server(["a", "b", "c"], "fr");
+    const small = server(["d", "e"], "us");
+    expect(convergedServer(serversOf(small, big))).toBe(big);
+  });
+
+  it("is null when players are scattered one per server", () => {
+    const scattered = serversOf(server(["a"]), server(["b"]));
+    expect(convergedServer(scattered)).toBeNull();
   });
 
   it("is null with no populated server", () => {
@@ -129,36 +135,5 @@ describe("countryFlagEmoji", () => {
     expect(countryFlagEmoji("f")).toBe("");
     expect(countryFlagEmoji("fra")).toBe("");
     expect(countryFlagEmoji("f1")).toBe("");
-  });
-});
-
-describe("buildShareText", () => {
-  it("passes aggregate params and a spaced flag into the share key", () => {
-    const seen: Record<string, unknown> = {};
-    const t = (key: string, params?: Record<string, unknown>) => {
-      Object.assign(seen, { key, ...params });
-      return key;
-    };
-    buildShareText(
-      { tries: 2, players: 12, durationMs: 165_000, countryCode: "fr" },
-      t,
-    );
-    expect(seen).toMatchObject({
-      key: "session.recap.share",
-      players: 12,
-      tries: 2,
-      duration: "2:45",
-      region: " 🇫🇷",
-    });
-  });
-
-  it("leaves the region blank when the flag is unknown", () => {
-    let region: unknown = "unset";
-    const t = (_key: string, params?: Record<string, unknown>) => {
-      region = params?.region;
-      return "";
-    };
-    buildShareText({ tries: 1, players: 4, durationMs: 1_000 }, t);
-    expect(region).toBe("");
   });
 });

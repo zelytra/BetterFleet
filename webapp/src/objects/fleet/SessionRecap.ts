@@ -4,29 +4,34 @@ import type { Player } from "@/objects/fleet/Player.ts";
 import type { SotServer } from "@/objects/fleet/SotServer.ts";
 import type { Fleet } from "@/objects/fleet/Fleet.ts";
 
-// Shareable session recap (#685). When the alliance converges — everyone lands on ONE detected
-// server — a dismissable card celebrates it and offers a Discord-ready line to paste. The decision
-// logic is pure and fed the fleet state, so the "once per convergence, debounced, not mid-countdown"
-// rules are unit-testable without timers, exactly like the detection watchdog (#688).
+// Shareable session recap (#685). When an alliance forms — two or more players group onto one
+// server — a dismissable card celebrates it (the biggest group, if the fleet split across servers).
+// The decision logic is pure and fed the fleet state, so the "once per convergence, debounced, not
+// mid-countdown" rules are unit-testable without timers, exactly like the detection watchdog (#688).
 
 /** Convergence must hold this long before the card shows, so a flickering grouping doesn't fire it early. */
 export const RECAP_DEBOUNCE_MS = 4000;
 
 /**
- * The single server the alliance formed on, or null if it hasn't. Mirrors the backend's convergence
- * (#673, #685): exactly one server holds players (distinctServers === 1) and it holds an actual
- * alliance — **two or more**. A lone player on a server is not a solo alliance. Players still
- * detecting (on no server yet) don't block it.
+ * The server the alliance formed on — the **biggest** grouping, when it holds two or more players
+ * (#685). A lone player is not a solo alliance; but the whole fleet need not land on one server, so a
+ * crew split 5+5 across two servers still counts — the largest group is the one the card celebrates.
+ * Mirrors the backend's `largestGroup >= 2`.
  */
 export function convergedServer(
   servers: Map<string, SotServer>,
 ): SotServer | null {
-  const populated = Array.from(servers.values()).filter(
-    (server) => (server.connectedPlayers?.length ?? 0) > 0,
-  );
-  if (populated.length !== 1) return null;
-  const server = populated[0];
-  return server.connectedPlayers.length >= 2 ? server : null;
+  let biggest: SotServer | null = null;
+  for (const server of servers.values()) {
+    const count = server.connectedPlayers?.length ?? 0;
+    if (
+      count >= 2 &&
+      (biggest === null || count > biggest.connectedPlayers.length)
+    ) {
+      biggest = server;
+    }
+  }
+  return biggest;
 }
 
 /**
@@ -112,20 +117,6 @@ export function countryFlagEmoji(countryCode?: string): string {
     base + (cc.charCodeAt(0) - 65),
     base + (cc.charCodeAt(1) - 65),
   );
-}
-
-/** The Discord-ready line: aggregate numbers only, no usernames. */
-export function buildShareText(
-  recap: SessionRecap,
-  t: (key: string, params?: Record<string, unknown>) => string,
-): string {
-  const flag = countryFlagEmoji(recap.countryCode);
-  return t("session.recap.share", {
-    players: recap.players,
-    tries: recap.tries,
-    duration: formatClock(recap.durationMs),
-    region: flag ? " " + flag : "",
-  });
 }
 
 /** What the lobby renders: the card flips visible when the watchdog fires, false on dismiss. */
