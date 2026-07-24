@@ -118,7 +118,7 @@
         "recording": "Pulsa una combinación…",
         "reset": "Restablecer"
       },
-      "toggle": "Show / hide overlay",
+      "toggle": "Mostrar / ocultar la capa",
       "description": "Muestra la sesión en vivo (servidores y jugadores listos) encima del juego, en modo ventana sin bordes."
     },
     "name": {

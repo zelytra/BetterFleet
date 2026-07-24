@@ -118,7 +118,7 @@
         "recording": "Drücke eine Kombination…",
         "reset": "Zurücksetzen"
       },
-      "toggle": "Show / hide overlay",
+      "toggle": "Overlay ein-/ausblenden",
       "description": "Zeigt die Live-Sitzung (Server und bereite Spieler) über dem Spiel, im randlosen Fenstermodus."
     },
     "name": {
