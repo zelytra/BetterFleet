@@ -422,6 +422,16 @@
       }
     },
     "run": "Lever l'ancre",
+    "recap": {
+      "copied": "Copié !",
+      "copy": "Copier pour Discord",
+      "dismiss": "Fermer",
+      "duration": "Durée",
+      "pirates": "Pirates",
+      "share": "⚓ Alliance formée avec BetterFleet — {players} pirates sur un seul serveur{region}, {tries} essais en {duration}. https://betterfleet.fr",
+      "title": "Alliance formée ! ⚓",
+      "tries": "Essais"
+    },
     "statsHint": {
       "dismiss": "Masquer",
       "text": "Meilleur créneau : {range} ({best}% d'alliances réussies — en ce moment : {now}%)",
