@@ -178,6 +178,22 @@
     },
     "title": "Credits"
   },
+  "diagnostic": {
+    "banner": "Die Servererkennung scheint zu hängen — eine 20s-Aufzeichnung kann uns sagen, warum.",
+    "capture": {
+      "capturing": "Aufzeichnung läuft…",
+      "copied": "In die Zwischenablage kopiert",
+      "copy": "Kopieren",
+      "description": "Zeichnet die UDP-Flows des Spiels ~20s lang auf, um die Servererkennung zu diagnostizieren (Issue #364). Führe sie einmal im Hauptmenü und einmal im Spiel aus, dann kopiere und teile jedes Ergebnis.",
+      "error": "Fehler: {error}",
+      "inGame": "Aufzeichnen (im Spiel)",
+      "mainMenu": "Aufzeichnen (Hauptmenü)",
+      "title": "Diagnose der Servererkennung"
+    },
+    "dismiss": "Nicht jetzt",
+    "prefill": "Die Servererkennung blieb im Spiel stumm — automatische Diagnose in den Logs angehängt.",
+    "run": "Diagnose ausführen"
+  },
   "firstLogin": {
     "button": {
       "description": "Hissen Sie die Segel, Jungs, übernehmen Sie das Ruder und machen Sie sich auf den Weg zur See!",

@@ -63,6 +63,18 @@
         </button>
       </template>
     </BannerTemplate>
+    <!-- Guided diagnostic (#688): shows once when detection stays silent in game. -->
+    <div v-if="detectionPrompt.visible" class="detection-banner">
+      <p>{{ t("diagnostic.banner") }}</p>
+      <div class="actions">
+        <button type="button" class="run" @click="runGuidedDiagnostic()">
+          {{ t("diagnostic.run") }}
+        </button>
+        <button type="button" class="later" @click="dismissDetectionPrompt()">
+          {{ t("diagnostic.dismiss") }}
+        </button>
+      </div>
+    </div>
     <div class="lobby-content">
       <div class="player-table">
         <div v-if="computedSession.servers.size > 0" class="server-list">
@@ -242,6 +254,11 @@ import { Player } from "@/objects/fleet/Player.ts";
 import { WebSocketMessageType } from "@/objects/fleet/WebSocet.ts";
 import lockIcon from "@/assets/icons/lock.svg";
 import lockOpenIcon from "@/assets/icons/lock_open.svg";
+import router from "@/router";
+import {
+  detectionPrompt,
+  dismissDetectionPrompt,
+} from "@/objects/fleet/DetectionWatchdog.ts";
 import {
   AllianceHint,
   computeHint,
@@ -250,6 +267,13 @@ import {
 } from "@/objects/fleet/AllianceHint.ts";
 
 const { t } = useI18n();
+
+// Guided diagnostic (#688): the banner's action lands on the Reports page, which auto-runs the
+// capture and pre-fills the message; sending stays the player's call.
+function runGuidedDiagnostic(): void {
+  dismissDetectionPrompt();
+  router.push({ name: "Report", query: { diagnostic: "auto" } });
+}
 
 // Best-window hint from the anonymous alliance stats (#683): fetched once (module-cached an hour),
 // hidden whenever the data is too thin, dismissable for the session.
@@ -500,6 +524,12 @@ function onContextAction(action: string) {
   display: flex;
   flex-direction: column;
 
+  // The session banner keeps its full 120px however tight the column gets — it must never fold to
+  // make room for the detection strip; the lobby content below yields that space instead.
+  :deep(.header-wrapper) {
+    flex-shrink: 0;
+  }
+
   .header-content {
     display: flex;
     height: 100%;
@@ -622,9 +652,57 @@ function onContextAction(action: string) {
     }
   }
 
+  // Guided diagnostic offer (#688): a quiet warning strip between the banner and the tables.
+  .detection-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 5px;
+    border: 1px solid rgba(255, 190, 92, 0.45);
+    background: rgba(255, 190, 92, 0.08);
+
+    p {
+      font-size: 14px;
+      color: var(--warning);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+
+      button {
+        all: unset;
+        cursor: pointer;
+        padding: 6px 14px;
+        border-radius: 5px;
+        font-size: 13px;
+
+        &.run {
+          background: var(--warning);
+          color: #241a05;
+          font-weight: 600;
+        }
+
+        &.later {
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: var(--secondary-text);
+        }
+      }
+    }
+  }
+
   .lobby-content {
     margin-top: 12px;
-    height: calc(100% - 128px); // Minus header height
+    // Fills whatever is left under the banner (and the detection strip, when it shows) and scrolls
+    // inside itself. A fixed height here didn't count the strip, so the column overflowed and flex
+    // folded the banner above to make room — this pane gives the room instead.
+    flex: 1;
+    min-height: 0;
     display: flex;
     gap: 12px;
 

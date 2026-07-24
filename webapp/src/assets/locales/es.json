@@ -178,6 +178,22 @@
     },
     "title": "Crédito"
   },
+  "diagnostic": {
+    "banner": "La detección del servidor parece bloqueada — una captura de 20s puede decirnos por qué.",
+    "capture": {
+      "capturing": "Capturando…",
+      "copied": "Copiado al portapapeles",
+      "copy": "Copiar",
+      "description": "Captura los flujos UDP del juego durante ~20s para diagnosticar la detección del servidor (issue #364). Ejecútala una vez en el menú principal y otra en partida, luego copia y comparte cada resultado.",
+      "error": "Error: {error}",
+      "inGame": "Capturar (en partida)",
+      "mainMenu": "Capturar (menú principal)",
+      "title": "Diagnóstico de detección del servidor"
+    },
+    "dismiss": "Ahora no",
+    "prefill": "La detección del servidor quedó en silencio en partida — diagnóstico automático adjunto en los logs.",
+    "run": "Ejecutar el diagnóstico"
+  },
   "firstLogin": {
     "button": {
       "description": "¡Icen las velas muchachos, tomen el timón y salgan al mar!",

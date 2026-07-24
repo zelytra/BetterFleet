@@ -25,6 +25,7 @@ import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { invoke } from "@tauri-apps/api/tauri";
 import { RustSotServer } from "@/objects/fleet/SotServer.ts";
 import { syncGameState } from "@/objects/fleet/GameSync.ts";
+import { observeDetection } from "@/objects/fleet/DetectionWatchdog.ts";
 import { Utils } from "@/objects/utils/Utils.ts";
 import router from "@/router";
 import { HTTPAxios } from "@/objects/utils/HTTPAxios.ts";
@@ -44,6 +45,8 @@ const gameStatusRefresh: number = setInterval(() => {
       UserStore.player as Player,
       UserStore.player.fleet as Fleet,
     );
+    // Guided diagnostic (#688): the same poll feeds the silent-detection watchdog.
+    observeDetection(UserStore.player as Player);
   });
 }, 400);
 
