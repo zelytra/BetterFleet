@@ -422,6 +422,16 @@
       }
     },
     "run": "Set sail",
+    "recap": {
+      "copied": "Copied!",
+      "copy": "Copy for Discord",
+      "dismiss": "Dismiss",
+      "duration": "Duration",
+      "pirates": "Pirates",
+      "share": "⚓ Alliance formed with BetterFleet — {players} pirates on one server{region}, {tries} tries in {duration}. https://betterfleet.fr",
+      "title": "Alliance formed! ⚓",
+      "tries": "Tries"
+    },
     "statsHint": {
       "dismiss": "Hide",
       "text": "Best window: {range} ({best}% of alliances succeed — right now: {now}%)",

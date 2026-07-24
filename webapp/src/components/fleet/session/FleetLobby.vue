@@ -75,6 +75,42 @@
         </button>
       </div>
     </div>
+    <!-- Shareable recap (#685): appears once when the alliance converges onto one server. -->
+    <div v-if="sessionRecap.visible && sessionRecap.data" class="recap-card">
+      <div class="summary">
+        <span class="icon">⚓</span>
+        <div class="text">
+          <p class="title">{{ t("session.recap.title") }}</p>
+          <p class="stats">
+            <span
+              >{{ t("session.recap.tries") }}:
+              {{ sessionRecap.data.tries }}</span
+            >
+            <span
+              >{{ t("session.recap.pirates") }}:
+              {{ sessionRecap.data.players }}</span
+            >
+            <span>{{ t("session.recap.duration") }}: {{ recapDuration }}</span>
+            <span v-if="recapFlag" class="flag">{{ recapFlag }}</span>
+          </p>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="copy" @click="copyRecap()">
+          {{
+            recapCopied ? t("session.recap.copied") : t("session.recap.copy")
+          }}
+        </button>
+        <button
+          type="button"
+          class="dismiss"
+          :title="t('session.recap.dismiss')"
+          @click="dismissRecap()"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
     <div class="lobby-content">
       <div class="player-table">
         <div v-if="computedSession.servers.size > 0" class="server-list">
@@ -265,6 +301,13 @@ import {
   fetchAllianceStats,
   utcHourToLocal,
 } from "@/objects/fleet/AllianceHint.ts";
+import {
+  buildShareText,
+  countryFlagEmoji,
+  dismissRecap,
+  formatClock,
+  sessionRecap,
+} from "@/objects/fleet/SessionRecap.ts";
 
 const { t } = useI18n();
 
@@ -287,6 +330,21 @@ onMounted(async () => {
     utcHourToLocal,
   );
 });
+// Shareable recap (#685): the card's numbers, its region flag, and the copy-to-Discord confirmation.
+const recapFlag = computed(() =>
+  countryFlagEmoji(sessionRecap.data?.countryCode),
+);
+const recapDuration = computed(() =>
+  formatClock(sessionRecap.data?.durationMs ?? 0),
+);
+const recapCopied = ref(false);
+function copyRecap(): void {
+  if (!sessionRecap.data) return;
+  navigator.clipboard.writeText(buildShareText(sessionRecap.data, t));
+  recapCopied.value = true;
+  setTimeout(() => (recapCopied.value = false), 2000);
+}
+
 const displayIdCopy = ref<boolean>(false);
 const launchConfirmation = ref<boolean>(false);
 const leaveConfirmation = ref<boolean>(false);
@@ -690,6 +748,76 @@ function onContextAction(action: string) {
 
         &.later {
           border: 1px solid rgba(255, 255, 255, 0.2);
+          color: var(--secondary-text);
+        }
+      }
+    }
+  }
+
+  // Shareable recap (#685): a celebratory strip in the same slot as the detection offer (the two are
+  // mutually exclusive states), tinted with the success accent rather than the warning one.
+  .recap-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 5px;
+    border: 1px solid rgba(50, 212, 153, 0.45);
+    background: rgba(50, 212, 153, 0.08);
+
+    .summary {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+
+      .icon {
+        font-size: 22px;
+      }
+
+      .title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 14px;
+        font-size: 13px;
+        color: var(--secondary-text);
+
+        .flag {
+          font-size: 15px;
+        }
+      }
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      button {
+        all: unset;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 13px;
+
+        &.copy {
+          padding: 6px 14px;
+          background: var(--primary);
+          color: #062418;
+          font-weight: 600;
+        }
+
+        &.dismiss {
+          padding: 6px 10px;
           color: var(--secondary-text);
         }
       }

@@ -422,6 +422,16 @@
       }
     },
     "run": "Zarpar",
+    "recap": {
+      "copied": "¡Copiado!",
+      "copy": "Copiar para Discord",
+      "dismiss": "Cerrar",
+      "duration": "Duración",
+      "pirates": "Piratas",
+      "share": "⚓ Alianza formada con BetterFleet — {players} piratas en un solo servidor{region}, {tries} intentos en {duration}. https://betterfleet.fr",
+      "title": "¡Alianza formada! ⚓",
+      "tries": "Intentos"
+    },
     "statsHint": {
       "dismiss": "Ocultar",
       "text": "Mejor franja: {range} ({best}% de alianzas logradas — ahora mismo: {now}%)",
