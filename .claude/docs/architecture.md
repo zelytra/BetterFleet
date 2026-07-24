@@ -54,6 +54,7 @@ Knowing which transport a feature uses saves a lot of guessing:
 | Anonymous statistics + globe | REST | `/stats/all`, `/stats/alliance`, `/stats/regions`, `/stats/online-users` |
 | Diagnostic / feedback reports | REST | `/report/*` |
 | Self-update (installer URL) | REST | `/github/release/download` (backend proxies the Tauri release manifest) |
+| What's-new modal after an update (#686) | Tauri HTTP plugin → GitHub API | release notes for the installed tag |
 | Game server detection | none — **native**, in the Rust shell | reads the running game process |
 
 The WebSocket handshake is gated by a one-time token from the authenticated `GET /socket/register`;
