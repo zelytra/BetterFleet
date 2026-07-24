@@ -206,7 +206,7 @@
     "error": {
       "generic": "Algo salió mal. Comprueba tu conexión e inténtalo de nuevo.",
       "notFound": "No se encontró ninguna sesión con ese código. Verifícalo con tu tripulación.",
-      "refused": "No se pudo unir a esta sesión."
+      "refused": "No se pudo unir. Ese nombre puede estar en uso en esta sesión. Prueba otro."
     },
     "imNotReady": "No estoy listo",
     "imReady": "¡Estoy listo!",

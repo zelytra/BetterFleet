@@ -94,6 +94,11 @@ function mePayload() {
     device,
     isReady: lobby.isReady,
     isMaster: false,
+    // A console player is in the game on their console — the desktop reads this as their status
+    // (without it the app's status render blows up on a null). sessionId routes their UPDATE frames:
+    // the backend finds the fleet by the sessionId in the payload, not the socket.
+    status: "IN_GAME",
+    sessionId: lobby.code,
   };
 }
 

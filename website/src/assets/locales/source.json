@@ -222,7 +222,7 @@
     "error": {
       "generic": "Something went wrong. Check your connection and try again.",
       "notFound": "No session found for that code. Double-check it with your crew.",
-      "refused": "Couldn't join this session."
+      "refused": "Couldn't join. That name may already be taken in this session. Try another one."
     },
     "imNotReady": "I'm not ready",
     "imReady": "I'm ready!",

@@ -206,7 +206,7 @@
     "error": {
       "generic": "Etwas ist schiefgelaufen. Prüfe deine Verbindung und versuche es erneut.",
       "notFound": "Keine Sitzung mit diesem Code gefunden. Prüfe ihn mit deiner Crew.",
-      "refused": "Dieser Sitzung konnte nicht beigetreten werden."
+      "refused": "Beitritt fehlgeschlagen. Dieser Name ist in der Sitzung vielleicht schon vergeben. Versuche einen anderen."
     },
     "imNotReady": "Ich bin nicht bereit",
     "imReady": "Ich bin bereit!",

@@ -97,6 +97,10 @@ describe("MobileSession guest client", () => {
       username: "Bob",
       device: "PLAYSTATION",
       isMaster: false,
+      // Carries a status (so the desktop's row doesn't crash on null) and the sessionId (so the
+      // backend can route this guest's later UPDATE frames).
+      status: "IN_GAME",
+      sessionId: "ABC1234",
     });
   });
 

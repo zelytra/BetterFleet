@@ -206,7 +206,7 @@
     "error": {
       "generic": "Qualcosa è andato storto. Controlla la connessione e riprova.",
       "notFound": "Nessuna sessione trovata per questo codice. Controllalo con la tua ciurma.",
-      "refused": "Impossibile unirsi a questa sessione."
+      "refused": "Impossibile unirsi. Quel nome potrebbe essere già in uso nella sessione. Provane un altro."
     },
     "imNotReady": "Non sono pronto",
     "imReady": "Sono pronto!",

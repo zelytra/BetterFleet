@@ -247,7 +247,7 @@
     "error": {
       "generic": "Une erreur est survenue. Vérifiez votre connexion et réessayez.",
       "notFound": "Aucune session trouvée pour ce code. Vérifiez-le avec votre équipage.",
-      "refused": "Impossible de rejoindre cette session."
+      "refused": "Impossible de rejoindre. Ce nom est peut-être déjà pris dans la session. Essayez-en un autre."
     },
     "imNotReady": "Je ne suis pas prêt",
     "imReady": "Je suis prêt !",
