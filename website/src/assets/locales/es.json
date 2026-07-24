@@ -7,7 +7,14 @@
   "comparison": {
     "description": "BetterFleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de \"Fleet Creator\". Lorsqu'on observe notre graphique, les barres vertes, correspondant à BetterFleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, BetterFleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. BetterFleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
     "subtitle": "¡Una conexión turbo para una experiencia de juego de triple velocidad!",
-    "title": "Comparación con Fleet Creator"
+    "title": "Comparación con Fleet Creator",
+    "table": {
+      "countdown": "Cuenta atrás sincronizada",
+      "detection": "Detección automática del servidor",
+      "free": "Gratis y de código abierto",
+      "languages": "Disponible en 5 idiomas",
+      "public": "Explorador de sesiones públicas"
+    }
   },
   "credits": {
     "and": "&",
@@ -18,7 +25,8 @@
   "descriptions": {
     "globe": "Notre application offre une recherche rapide et visuellement agréable pour Sea of Thieves, vous plongeant dans l'aventure pirate sans délai et avec style.",
     "hourglass": "Notre fonctionnalité d'auto-click synchronisée met en œuvre un timer parfaitement coordonné entre tous les joueurs de la session, garantissant une recherche de serveur d'une efficacité redoutable qui réduit le temps d'attente au minimum. Grâce à cette innovation, lancer une partie de Sea of Thieves avec vos amis devient une expérience fluide et synchronisée, vous immergeant directement dans l'action et l'aventure.",
-    "key": "Nuestra aplicación garantiza la seguridad del usuario gracias a su código fuente abierto, lo que permite una total transparencia y un equipo activo de desarrolladores dedicados a actualizaciones periódicas y mantenimiento de seguridad."
+    "key": "Nuestra aplicación garantiza la seguridad del usuario gracias a su código fuente abierto, lo que permite una total transparencia y un equipo activo de desarrolladores dedicados a actualizaciones periódicas y mantenimiento de seguridad.",
+    "title": "Lo esencial"
   },
   "discover": {
     "discord": {
@@ -42,7 +50,13 @@
     }
   },
   "download": {
-    "now": "Descargar ahora"
+    "now": "Descargar ahora",
+    "pc": {
+      "content": "Estás en el teléfono: guarda el enlace e instala la app más tarde en tu PC con Windows.",
+      "copied": "¡Enlace copiado!",
+      "copy": "Copiar el enlace de descarga",
+      "title": "BetterFleet se instala en PC"
+    }
   },
   "faq": {
     "copy": "Enlace copiado",
@@ -140,12 +154,15 @@
   "nav": {
     "documentation": "Documentación",
     "home": "bienvenida",
-    "support": "Apoyo"
+    "support": "Apoyo",
+    "statistics": "Estadísticas"
   },
   "presentation": {
     "joinConsole": "Unirse desde consola",
     "content": "Sumérgete en el mundo de Sea of Thieves con la herramienta definitiva diseñada para forjar alianzas como nunca antes. Nuestra aplicación revoluciona la forma en que los jugadores se conectan, brindando una fluidez excepcional y aumentando significativamente sus posibilidades de encontrar una alianza, superando con creces las capacidades de otras aplicaciones. Únase a nuestra comunidad y transforme su experiencia de juego en una aventura épica, donde unirse y navegar juntos se convierte en una realidad accesible con cada clic.",
-    "title": "Mejor flota"
+    "title": "Mejor flota",
+    "how": "Mira cómo funciona",
+    "pill": "App para Windows, gratis y de código abierto"
   },
   "stats": {
     "download": "Téléchargement",
@@ -259,20 +276,44 @@
       "title": "Unirse a la alianza | BetterFleet"
     },
     "home": {
-      "title": "BetterFleet — get your Sea of Thieves crew on the same server",
-      "description": "Free, open-source app that syncs your crew’s Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."
+      "title": "BetterFleet, reúne a tu tripulación de Sea of Thieves en el mismo servidor",
+      "description": "Aplicación gratuita y de código abierto que sincroniza el «¡A navegar!» de tu tripulación para que lleguéis todos al mismo servidor de Sea of Thieves. Cuenta atrás compartida, comprobación del servidor en vivo, se acabó zarpar en solitario por error."
     },
     "tutorial": {
-      "title": "How to get your crew on the same server — BetterFleet",
-      "description": "Step by step: install BetterFleet, create an alliance, share the code and use the shared countdown so your whole Sea of Thieves crew lands on one server."
+      "title": "Cómo reunir a tu tripulación en el mismo servidor, BetterFleet",
+      "description": "Paso a paso: instala BetterFleet, crea una alianza, comparte el código y usa la cuenta atrás compartida para que toda tu tripulación de Sea of Thieves llegue a un mismo servidor."
     },
     "support": {
-      "title": "Help and FAQ — BetterFleet",
-      "description": "Answers about installing and updating BetterFleet, whether it is safe to use with Sea of Thieves, what happens to your data, and how to report a problem."
+      "title": "Ayuda y preguntas frecuentes, BetterFleet",
+      "description": "Respuestas sobre cómo instalar y actualizar BetterFleet, si es seguro usarlo con Sea of Thieves, qué pasa con tus datos y cómo informar de un problema."
     },
     "reports": {
-      "title": "Reports — BetterFleet",
-      "description": "Bug reports sent from the BetterFleet app."
+      "title": "Informes, BetterFleet",
+      "description": "Informes de errores enviados desde la aplicación BetterFleet."
+    }
+  },
+  "alliance": {
+    "title": "Estadísticas de alianzas",
+    "subtitle": "Con qué frecuencia las tripulaciones acaban en el mismo servidor, y cuándo funciona mejor. Datos anónimos y agregados.",
+    "empty": "Aún no hay datos. Vuelve cuando las tripulaciones empiecen a formar alianzas.",
+    "bestTime": "Mejor momento para formar una alianza",
+    "bestTimeNone": "Aún no hay suficientes datos",
+    "tile": {
+      "attempts": "Intentos registrados",
+      "convergence": "Tasa de convergencia",
+      "tries": "Intentos medios para converger"
+    },
+    "region": {
+      "label": "Región del propietario",
+      "all": "Todas las regiones"
+    },
+    "heatmap": {
+      "title": "Convergencia por hora y día (UTC)",
+      "low": "rara vez juntos",
+      "high": "a menudo juntos"
+    },
+    "regions": {
+      "title": "De dónde vienen los jugadores"
     }
   }
 }
