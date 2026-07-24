@@ -136,6 +136,10 @@
       "check": "Rich Presence Discord",
       "description": "Affiche ta session sur ton profil Discord — taille du lobby, joueurs prêts, et le code pour les sessions publiques."
     },
+    "recap": {
+      "check": "Carte d'alliance formée",
+      "description": "Affiche une carte dans le salon quand ton équipage se regroupe sur un serveur, avec les essais, la taille de l'équipage et le temps mis."
+    },
     "savebar": {
       "cancel": "Annuler les modifications",
       "content": "Hop hop hop ! J’ai vu que tu as fait des modifications !",
@@ -423,12 +427,9 @@
     },
     "run": "Lever l'ancre",
     "recap": {
-      "copied": "Copié !",
-      "copy": "Copier pour Discord",
       "dismiss": "Fermer",
       "duration": "Durée",
       "pirates": "Pirates",
-      "share": "⚓ Alliance formée avec BetterFleet — {players} pirates sur un seul serveur{region}, {tries} essais en {duration}. https://betterfleet.fr",
       "title": "Alliance formée ! ⚓",
       "tries": "Essais"
     },

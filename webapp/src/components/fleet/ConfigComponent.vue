@@ -78,6 +78,17 @@
               </p>
             </div>
           </div>
+          <div class="checkbox-wrapper descriptor">
+            <input v-model="recapEnabled" type="checkbox" />
+            <div class="label-wrapper">
+              <p @click="recapEnabled = !recapEnabled">
+                {{ t("config.recap.check") }}
+              </p>
+              <p class="description" @click="recapEnabled = !recapEnabled">
+                {{ t("config.recap.description") }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </ParameterPart>
@@ -296,6 +307,7 @@ const banner = ref<number>(0);
 const shuffleBanner = ref<boolean>(false);
 const shareStats = ref<boolean>(true);
 const presenceEnabled = ref<boolean>(true);
+const recapEnabled = ref<boolean>(true);
 const bannerIndexes = Array.from({ length: BANNER_COUNT }, (_, i) => i);
 const hostName = ref<string>(UserStore.player.serverHostName!);
 const inputLoading = ref<boolean>(false);
@@ -459,6 +471,7 @@ function resetConfig() {
   shareStats.value = UserStore.player.shareStats;
   // Absent means enabled: only an explicit false turns the presence off (#684).
   presenceEnabled.value = UserStore.player.richPresence !== false;
+  recapEnabled.value = UserStore.player.recapCard !== false;
   inputLoading.value = true;
 }
 
@@ -484,6 +497,7 @@ function onSave() {
   UserStore.player.bannerShuffle = shuffleBanner.value;
   UserStore.player.shareStats = shareStats.value;
   UserStore.player.richPresence = presenceEnabled.value;
+  UserStore.player.recapCard = recapEnabled.value;
   UserStore.player.serverHostName = hostName.value;
   if (UserStore.player.fleet && UserStore.player.fleet.sessionId) {
     UserStore.player.fleet.updateToSession();
@@ -508,6 +522,7 @@ function isConfigDifferent(): boolean {
   if (shareStats.value != UserStore.player.shareStats) return true;
   if (presenceEnabled.value != (UserStore.player.richPresence !== false))
     return true;
+  if (recapEnabled.value != (UserStore.player.recapCard !== false)) return true;
   if (
     boatSizeOptions.value.selectedValue != undefined &&
     UserStore.player.boatSize != boatSizeOptions.value.selectedValue!.id

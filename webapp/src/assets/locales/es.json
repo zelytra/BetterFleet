@@ -136,6 +136,10 @@
       "check": "Rich Presence de Discord",
       "description": "Muestra tu sesión en tu perfil de Discord — tamaño de la sala, jugadores listos y el código de las sesiones públicas."
     },
+    "recap": {
+      "check": "Tarjeta de alianza formada",
+      "description": "Muestra una tarjeta en la sala cuando tu tripulación se agrupa en un servidor, con los intentos, el tamaño y el tiempo que llevó."
+    },
     "savebar": {
       "cancel": "Descartar los cambios",
       "content": "¡Salto, salto, salto! ¡Vi que hiciste algunos cambios!",
@@ -423,12 +427,9 @@
     },
     "run": "Zarpar",
     "recap": {
-      "copied": "¡Copiado!",
-      "copy": "Copiar para Discord",
       "dismiss": "Cerrar",
       "duration": "Duración",
       "pirates": "Piratas",
-      "share": "⚓ Alianza formada con BetterFleet — {players} piratas en un solo servidor{region}, {tries} intentos en {duration}. https://betterfleet.fr",
       "title": "¡Alianza formada! ⚓",
       "tries": "Intentos"
     },

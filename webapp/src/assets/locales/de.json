@@ -136,6 +136,10 @@
       "check": "Discord Rich Presence",
       "description": "Zeigt deine Sitzung in deinem Discord-Profil — Lobby-Größe, bereite Spieler und den Code öffentlicher Sitzungen."
     },
+    "recap": {
+      "check": "Allianz-gebildet-Karte",
+      "description": "Zeigt eine Karte in der Lobby, wenn sich deine Crew auf einem Server sammelt, mit Versuchen, Crew-Größe und benötigter Zeit."
+    },
     "savebar": {
       "cancel": "Änderungen abbrechen",
       "content": "Hop Hop Hop! Ich habe gesehen, dass du einige Änderungen vorgenommen hast! ",
@@ -423,12 +427,9 @@
     },
     "run": "Segel setzen",
     "recap": {
-      "copied": "Kopiert!",
-      "copy": "Für Discord kopieren",
       "dismiss": "Schließen",
       "duration": "Dauer",
       "pirates": "Piraten",
-      "share": "⚓ Allianz mit BetterFleet gebildet — {players} Piraten auf einem Server{region}, {tries} Versuche in {duration}. https://betterfleet.fr",
       "title": "Allianz gebildet! ⚓",
       "tries": "Versuche"
     },

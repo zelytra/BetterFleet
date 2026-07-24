@@ -4,32 +4,34 @@ import type { Player } from "@/objects/fleet/Player.ts";
 import type { SotServer } from "@/objects/fleet/SotServer.ts";
 import type { Fleet } from "@/objects/fleet/Fleet.ts";
 
-// Shareable session recap (#685). When the alliance converges — everyone lands on ONE detected
-// server — a dismissable card celebrates it and offers a Discord-ready line to paste. The decision
-// logic is pure and fed the fleet state, so the "once per convergence, debounced, not mid-countdown"
-// rules are unit-testable without timers, exactly like the detection watchdog (#688).
+// Shareable session recap (#685). When an alliance forms — two or more players group onto one
+// server — a dismissable card celebrates it (the biggest group, if the fleet split across servers).
+// The decision logic is pure and fed the fleet state, so the "once per convergence, debounced, not
+// mid-countdown" rules are unit-testable without timers, exactly like the detection watchdog (#688).
 
 /** Convergence must hold this long before the card shows, so a flickering grouping doesn't fire it early. */
 export const RECAP_DEBOUNCE_MS = 4000;
 
 /**
- * The single server everyone sits on, or null if the fleet hasn't converged. Mirrors the backend's
- * `distinctServers === 1` convergence (#673): exactly one populated server, and nobody the session
- * knows is left ungrouped.
+ * The server the alliance formed on — the **biggest** grouping, when it holds two or more players
+ * (#685). A lone player is not a solo alliance; but the whole fleet need not land on one server, so a
+ * crew split 5+5 across two servers still counts — the largest group is the one the card celebrates.
+ * Mirrors the backend's `largestGroup >= 2`.
  */
 export function convergedServer(
-  players: Player[],
   servers: Map<string, SotServer>,
 ): SotServer | null {
-  if (players.length === 0) return null;
-  const populated = Array.from(servers.values()).filter(
-    (server) => (server.connectedPlayers?.length ?? 0) > 0,
-  );
-  if (populated.length !== 1) return null;
-  const server = populated[0];
-  const onServer = new Set(server.connectedPlayers.map((p) => p.username));
-  const everyone = players.every((p) => onServer.has(p.username));
-  return everyone ? server : null;
+  let biggest: SotServer | null = null;
+  for (const server of servers.values()) {
+    const count = server.connectedPlayers?.length ?? 0;
+    if (
+      count >= 2 &&
+      (biggest === null || count > biggest.connectedPlayers.length)
+    ) {
+      biggest = server;
+    }
+  }
+  return biggest;
 }
 
 /**
@@ -84,7 +86,9 @@ export function buildRecap(
 ): SessionRecap {
   return {
     tries: Math.max(0, fleet.stats?.tryAmount ?? 0),
-    players: fleet.players.length,
+    // The head-count on the converged server, matching the backend's — not the whole fleet, since a
+    // straggler may still be detecting.
+    players: server.connectedPlayers.length,
     durationMs: Math.max(0, nowMs - startedAtMs),
     countryCode: server.countryCode || undefined,
   };
@@ -115,20 +119,6 @@ export function countryFlagEmoji(countryCode?: string): string {
   );
 }
 
-/** The Discord-ready line: aggregate numbers only, no usernames. */
-export function buildShareText(
-  recap: SessionRecap,
-  t: (key: string, params?: Record<string, unknown>) => string,
-): string {
-  const flag = countryFlagEmoji(recap.countryCode);
-  return t("session.recap.share", {
-    players: recap.players,
-    tries: recap.tries,
-    duration: formatClock(recap.durationMs),
-    region: flag ? " " + flag : "",
-  });
-}
-
 /** What the lobby renders: the card flips visible when the watchdog fires, false on dismiss. */
 export const sessionRecap = reactive({
   visible: false,
@@ -153,13 +143,15 @@ export function observeConvergence(player: Player, nowMs = Date.now()): void {
   if (startedAtMs === null) {
     startedAtMs = nowMs;
   }
-  const server = convergedServer(fleet.players, fleet.servers);
+  const server = convergedServer(fleet.servers);
   const fired = watchdog.observe(
     server !== null,
     player.countDown !== undefined,
     nowMs,
   );
-  if (fired && server) {
+  // The watchdog still runs (its once-per-convergence state stays honest), but a player who turned
+  // the card off in the settings never sees it (#685). Absent means shown; only an explicit false hides.
+  if (fired && server && player.recapCard !== false) {
     sessionRecap.data = buildRecap(fleet, server, startedAtMs, nowMs);
     sessionRecap.visible = true;
   }
@@ -167,4 +159,30 @@ export function observeConvergence(player: Player, nowMs = Date.now()): void {
 
 export function dismissRecap(): void {
   sessionRecap.visible = false;
+}
+
+// --- Dev-only preview handle (removed from production builds) -------------------------------------
+// Staging a real convergence (a crew of two landing on one server) to see the card is a hassle, so a
+// dev build exposes it on the console. Open the lobby, then call it:
+//   betterfleet.recap.show()                       — sample card (4 pirates, 2 tries, 2:45, 🇫🇷)
+//   betterfleet.recap.show(3, 1, 40, "us")         — your own numbers (players, tries, seconds, cc)
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  const scope = window as unknown as { betterfleet?: Record<string, unknown> };
+  scope.betterfleet = {
+    ...(scope.betterfleet ?? {}),
+    recap: {
+      show: (players = 4, tries = 2, durationSec = 165, countryCode = "fr") => {
+        sessionRecap.data = {
+          players,
+          tries,
+          durationMs: durationSec * 1000,
+          countryCode,
+        };
+        sessionRecap.visible = true;
+      },
+    },
+  };
+  console.info(
+    "[BetterFleet] dev: betterfleet.recap.show() previews the alliance-formed card.",
+  );
 }

@@ -136,6 +136,10 @@
       "check": "Rich Presence di Discord",
       "description": "Mostra la tua sessione sul tuo profilo Discord — dimensione della lobby, giocatori pronti e il codice delle sessioni pubbliche."
     },
+    "recap": {
+      "check": "Scheda alleanza formata",
+      "description": "Mostra una scheda nella lobby quando la tua ciurma si raggruppa su un server, con i tentativi, la dimensione e il tempo impiegato."
+    },
     "savebar": {
       "cancel": "Annulla le modifiche",
       "content": "Aspetta un attimo! Vedo che hai fatto delle modifiche!",
@@ -423,12 +427,9 @@
     },
     "run": "Salpa",
     "recap": {
-      "copied": "Copiato!",
-      "copy": "Copia per Discord",
       "dismiss": "Chiudi",
       "duration": "Durata",
       "pirates": "Pirati",
-      "share": "⚓ Alleanza formata con BetterFleet — {players} pirati su un solo server{region}, {tries} tentativi in {duration}. https://betterfleet.fr",
       "title": "Alleanza formata! ⚓",
       "tries": "Tentativi"
     },

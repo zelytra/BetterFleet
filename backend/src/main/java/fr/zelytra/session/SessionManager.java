@@ -666,10 +666,10 @@ public class SessionManager {
         attempt.players = onServers;
         attempt.distinctServers = distinct;
         attempt.largestGroup = largest;
-        // An alliance is formed only when at least two players share one server: everyone landed on a
-        // single server (distinct == 1) AND that server holds 2+ of them. A lone player on a server is
-        // not a solo alliance (#685).
-        attempt.converged = distinct == 1 && largest >= 2;
+        // An alliance is formed when at least two players share one server (#685). A lone player is
+        // not a solo alliance; but the whole fleet need not converge onto a single server — a crew
+        // of 10 that groups 5+5 on two servers has formed alliances, so the biggest grouping decides.
+        attempt.converged = largest >= 2;
         attempt.tryNumber = fleet.getStats().getTryAmount();
         return attempt;
     }

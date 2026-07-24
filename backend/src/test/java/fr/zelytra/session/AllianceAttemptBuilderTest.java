@@ -54,18 +54,34 @@ class AllianceAttemptBuilderTest {
     }
 
     @Test
-    void twoServersIsNotConverged() {
+    void aGroupFormingOnOneOfTwoServersStillConverges() {
+        // A crew of ten split 5+5 across two servers has formed alliances — the whole fleet need not
+        // land on a single server (#685). The biggest grouping decides.
         Fleet fleet = new Fleet();
         fleet.getPlayers().add(player("Host", true, "de"));
-        fleet.getServers().put("s1", server("1.1.1.1", "gb", 2));
+        fleet.getServers().put("s1", server("1.1.1.1", "gb", 5));
+        fleet.getServers().put("s2", server("2.2.2.2", "us", 5));
+
+        AllianceAttempt a = new SessionManager().buildAttempt(fleet, Instant.EPOCH);
+
+        assertTrue(a.converged, "5+5 on two servers is a formed alliance, not a failure");
+        assertEquals(2, a.distinctServers);
+        assertEquals(5, a.largestGroup);
+        assertEquals(10, a.players);
+    }
+
+    @Test
+    void singletonsScatteredAcrossServersDoNotConverge() {
+        // One player per server, nobody grouped: no alliance formed.
+        Fleet fleet = new Fleet();
+        fleet.getPlayers().add(player("Host", true, "de"));
+        fleet.getServers().put("s1", server("1.1.1.1", "gb", 1));
         fleet.getServers().put("s2", server("2.2.2.2", "us", 1));
 
         AllianceAttempt a = new SessionManager().buildAttempt(fleet, Instant.EPOCH);
 
-        assertFalse(a.converged);
-        assertEquals(2, a.distinctServers);
-        assertEquals(2, a.largestGroup, "largest group is the biggest server");
-        assertEquals(3, a.players);
+        assertFalse(a.converged, "nobody shares a server");
+        assertEquals(1, a.largestGroup);
     }
 
     @Test

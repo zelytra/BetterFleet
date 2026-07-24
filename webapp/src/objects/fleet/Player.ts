@@ -68,6 +68,11 @@ export interface Preferences {
    * built-in default (CommandOrControl+Shift+O). Registration itself lives in Rust.
    */
   overlayHotkey?: string;
+  /**
+   * The "alliance formed" recap card (issue #685). Optional: absent means shown; only an explicit
+   * false hides it. Purely client-side — it never affects the anonymous statistics.
+   */
+  recapCard?: boolean;
 }
 
 export interface ActionPlayer {
