@@ -22,33 +22,29 @@ const serversOf = (...list: SotServer[]): Map<string, SotServer> =>
   new Map(list.map((s, i) => [String(i), s]));
 
 describe("convergedServer", () => {
-  it("returns the server when everyone sits on one grouping", () => {
-    const players = [player("a"), player("b"), player("c")];
+  it("returns the server when two or more players share it", () => {
     const s = server(["a", "b", "c"], "fr");
-    expect(convergedServer(players, serversOf(s))).toBe(s);
+    expect(convergedServer(serversOf(s))).toBe(s);
   });
 
-  it("is null when a player is still ungrouped", () => {
-    const players = [player("a"), player("b"), player("c")];
-    // The server holds only two of the three.
-    expect(convergedServer(players, serversOf(server(["a", "b"])))).toBeNull();
+  it("is null for a lone player on a server (no solo alliance)", () => {
+    expect(convergedServer(serversOf(server(["a"])))).toBeNull();
+  });
+
+  it("still converges while a third player is detecting", () => {
+    // Two share the server; the third is on no server yet — the alliance is formed all the same.
+    const withEmpty = serversOf(server([]), server(["a", "b"], "us"));
+    expect(convergedServer(withEmpty)?.countryCode).toBe("us");
   });
 
   it("is null when the fleet is split across two servers", () => {
-    const players = [player("a"), player("b")];
-    const split = serversOf(server(["a"]), server(["b"]));
-    expect(convergedServer(players, split)).toBeNull();
+    const split = serversOf(server(["a", "b"]), server(["c"]));
+    expect(convergedServer(split)).toBeNull();
   });
 
-  it("ignores empty groupings and converges on the single populated one", () => {
-    const players = [player("a"), player("b")];
-    const withEmpty = serversOf(server([]), server(["a", "b"], "us"));
-    expect(convergedServer(players, withEmpty)?.countryCode).toBe("us");
-  });
-
-  it("is null with no players or no servers", () => {
-    expect(convergedServer([], serversOf(server(["a"])))).toBeNull();
-    expect(convergedServer([player("a")], serversOf())).toBeNull();
+  it("is null with no populated server", () => {
+    expect(convergedServer(serversOf())).toBeNull();
+    expect(convergedServer(serversOf(server([])))).toBeNull();
   });
 });
 
@@ -90,10 +86,11 @@ describe("RecapWatchdog", () => {
 });
 
 describe("buildRecap", () => {
-  it("snapshots tries, head count, duration and region", () => {
+  it("snapshots tries, the converged-server head count, duration and region", () => {
     const fleet = {
       stats: { tryAmount: 3 },
-      players: [player("a"), player("b")],
+      // Three in the fleet, but only two landed on the server — the third is still detecting.
+      players: [player("a"), player("b"), player("c")],
     } as unknown as Fleet;
     const recap = buildRecap(fleet, server(["a", "b"], "fr"), 1_000, 121_000);
     expect(recap).toEqual({
