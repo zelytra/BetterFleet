@@ -306,6 +306,8 @@
     "countdown": "La recherche commence dans...",
     "id": "Code de session",
     "idCopy": "Copié !",
+    "inviteConsole": "Inviter des joueurs console",
+    "inviteCopied": "Lien copié !",
     "informations": {
       "success": "Chance de succès",
       "title": "Informations",

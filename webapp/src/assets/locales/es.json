@@ -306,6 +306,8 @@
     "countdown": "La investigación comienza en...",
     "id": "ID de sesión",
     "idCopy": "¡Copiado!",
+    "inviteConsole": "Invitar a jugadores de consola",
+    "inviteCopied": "¡Enlace copiado!",
     "informations": {
       "success": "Tasa de éxito",
       "title": "Información",

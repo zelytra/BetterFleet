@@ -355,8 +355,25 @@ public class SessionSocket {
         }
         SocketSecurityEntity.websocketUser.remove(token);
 
-        // Refuse connection from client with different version
-        if (player.getClientVersion() == null || !appVersion.contains(player.getClientVersion())) {
+        // Guest join (web console players, #682): the session code is the credential, so a guest token
+        // may only open the exact session it was minted for and never creates one, and a guest is
+        // never a host (they can't self-declare master to gain kick/rename/visibility rights).
+        boolean guest = socketSecurity.isGuest();
+        if (guest) {
+            if (sessionId == null || sessionId.isEmpty()
+                    || !sessionId.equalsIgnoreCase(socketSecurity.getBoundSessionId())) {
+                Log.info("Guest token used outside its bound session, connection refused");
+                sessionManager.sendDataToPlayer(session, MessageType.CONNECTION_REFUSED, null);
+                session.close();
+                return;
+            }
+            player.setMaster(false);
+            player.setGuest(true);
+        }
+
+        // Refuse connection from an out-of-date client. Web guests carry no app version (they follow
+        // the live site, not a released build), so the allowlist only gates the desktop app.
+        if (!guest && (player.getClientVersion() == null || !appVersion.contains(player.getClientVersion()))) {
             Log.warn("[" + player.getUsername() + "] Client is out of date, connection refused (" + player.getClientVersion() + ")");
             try {
                 sessionManager.sendDataToPlayer(session, MessageType.OUTDATED_CLIENT, null);

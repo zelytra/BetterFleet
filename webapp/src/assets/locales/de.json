@@ -306,6 +306,8 @@
     "countdown": "Die Forschung beginnt in...",
     "id": "Session-ID",
     "idCopy": "Kopiert !",
+    "inviteConsole": "Konsolenspieler einladen",
+    "inviteCopied": "Link kopiert!",
     "informations": {
       "success": "Erfolgsrate",
       "title": "Information",

@@ -39,6 +39,13 @@ public class Player {
     // participating; Jackson only overwrites fields present in the JSON.
     private boolean shareStats = true;
 
+    // True when this player joined through the web console-guest path (#682), not the desktop app.
+    // Set server-side on the guest CONNECT and never read from the client (JsonIgnore). A session
+    // with no app player left — only guests — is disbanded, since a guest can neither host nor
+    // detect a server.
+    @JsonIgnore
+    private boolean guest = false;
+
     // Constructor
     public Player() {
     }
@@ -139,6 +146,14 @@ public class Player {
 
     public void setShareStats(boolean shareStats) {
         this.shareStats = shareStats;
+    }
+
+    public boolean isGuest() {
+        return guest;
+    }
+
+    public void setGuest(boolean guest) {
+        this.guest = guest;
     }
 
     @Override

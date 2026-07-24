@@ -159,6 +159,7 @@
   "presentation": {
     "content": "Getting your whole crew onto the same Sea of Thieves server is often a hassle. BetterFleet takes care of it: the app syncs everyone's \"Set sail\" click and shows you who ended up together — so an alliance comes together in minutes rather than hours. Free, open source, and made by players.",
     "how": "See how it works",
+    "joinConsole": "Join from console",
     "pill": "Windows app — free & open source",
     "title": "BetterFleet"
   },
@@ -214,7 +215,65 @@
       "title": "What is an alliance server on Sea of Thieves?"
     }
   },
+  "mobileLobby": {
+    "countdown": {
+      "go": "Set sail!",
+      "label": "Set sail in"
+    },
+    "ended": {
+      "again": "Join another",
+      "text": "The crew closed the session, or your connection dropped.",
+      "title": "Session ended"
+    },
+    "error": {
+      "generic": "Something went wrong. Check your connection and try again.",
+      "notFound": "No session found for that code. Double-check it with your crew.",
+      "refused": "Couldn't join. That name may already be taken in this session. Try another one."
+    },
+    "imNotReady": "I'm not ready",
+    "imReady": "I'm ready!",
+    "join": {
+      "button": "Join the lobby",
+      "code": "Session code",
+      "codePlaceholder": "ABC1234",
+      "connecting": "Connecting…",
+      "device": "Your console",
+      "subtitle": "See your crew's servers and the countdown, right from your phone.",
+      "title": "Join your alliance",
+      "username": "Your name",
+      "usernamePlaceholder": "Pirate name"
+    },
+    "noServer": "Not on a server yet",
+    "readyCount": "ready"
+  },
+  "consoleGuide": {
+    "intro": "Xbox and PlayStation players can join a crew's alliance right from a phone. No app, no account.",
+    "note": "The session stays open as long as a PC player is in it.",
+    "step1": "A crewmate on PC opens BetterFleet and creates a session.",
+    "step2": "In the lobby, they tap \"Invite console players\" to copy a link, or read you the session code.",
+    "step3": "On your phone, open that link, or go to betterfleet.fr and enter the code.",
+    "step4": "Pick a name, choose your console, and tap Join.",
+    "step5": "Watch the lobby fill up. When the countdown hits zero, set sail in the game at the same moment as your crew.",
+    "title": "Join from your console"
+  },
+  "notFound": {
+    "home": "Back to home",
+    "text": "This page doesn't exist or has moved.",
+    "title": "Page not found"
+  },
   "seo": {
+    "console": {
+      "description": "How Xbox and PlayStation players join a Sea of Thieves alliance from their phone with BetterFleet.",
+      "title": "Join from console | BetterFleet"
+    },
+    "notFound": {
+      "description": "This page could not be found.",
+      "title": "Page not found | BetterFleet"
+    },
+    "lobby": {
+      "description": "Join your crew's Sea of Thieves alliance from your phone: live servers, ready states, and the synced countdown.",
+      "title": "Join the alliance | BetterFleet"
+    },
     "home": {
       "title": "BetterFleet — get your Sea of Thieves crew on the same server",
       "description": "Free, open-source app that syncs your crew’s Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."

@@ -52,6 +52,34 @@ export const routes = [
       displayInNav: false,
     },
   },
+  {
+    // Console players join a session lobby from their phone (#682). Lazy: the realtime lobby is
+    // dead weight for every marketing visit, so it only loads when someone opens their invite link.
+    path: "/s/:code",
+    name: "session",
+    component: () => import("@/components/session/MobileLobby.vue"),
+    meta: {
+      displayInNav: false,
+    },
+  },
+  {
+    // How a console player joins a session — the mobile CTA points here (#682).
+    path: "/console",
+    name: "console",
+    component: () => import("@/components/ConsoleGuidePage.vue"),
+    meta: {
+      displayInNav: false,
+    },
+  },
+  {
+    // Catch-all 404 — must stay last so it only matches when nothing else did.
+    path: "/:pathMatch(.*)*",
+    name: "not-found",
+    component: () => import("@/components/NotFoundPage.vue"),
+    meta: {
+      displayInNav: false,
+    },
+  },
 ];
 
 export const router = createRouter({

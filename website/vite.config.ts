@@ -14,6 +14,9 @@ export default defineConfig({
       "/api": {
         target: "http://127.0.0.1:8080",
         changeOrigin: true,
+        // Upgrade WebSocket connections too, so the mobile lobby's /api/sessions socket works in dev
+        // (#682). Production is same-origin, so this only matters for the proxy.
+        ws: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },

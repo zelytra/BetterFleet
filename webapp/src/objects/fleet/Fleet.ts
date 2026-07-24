@@ -443,7 +443,12 @@ export class Fleet {
   }
 
   public static getFormatedStatus(player: Player) {
-    return player.status.toString().toLowerCase().replace("_", "-");
+    // Fall back to "closed" when a player carries no status — a web console guest (#682) may join
+    // without one, and reading .toString() off null would crash their whole row (and the list).
+    return (player.status ?? "CLOSED")
+      .toString()
+      .toLowerCase()
+      .replace("_", "-");
   }
 
   /**

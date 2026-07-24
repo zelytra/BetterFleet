@@ -202,26 +202,35 @@ public class SessionManager {
         fleet.getPlayers().removeAll(playerToRemove);
         fleet.getServers().forEach((key, value) -> value.getConnectedPlayers().remove(player));
 
-        // Check if player was master, then give another user the master role
-        if (player.isMaster() && !fleet.getPlayers().isEmpty()) {
-            Player newMaster = fleet.getPlayers().get(0);
-            newMaster.setMaster(true);
-            Log.info("[" + fleet.getSessionId() + "] Master as left, giving the role to " + newMaster.getUsername());
+        // A session exists to get the desktop crew onto one server. Once no app player is left — only
+        // web console guests, or nobody — it has no purpose, so disband it and disconnect any
+        // lingering guests (#682).
+        boolean hasAppPlayer = fleet.getPlayers().stream().anyMatch(fleetPlayer -> !fleetPlayer.isGuest());
+        if (!hasAppPlayer) {
+            for (Player remaining : fleet.getPlayers()) {
+                closeSocketQuietly(remaining.getSocket());
+            }
+            sessions.remove(fleet.getSessionId());
+            Log.info("[" + fleet.getSessionId() + "] Has been disbanded (no app player left)");
+            publishDirectoryChange();
+            closeSocketQuietly(player.getSocket());
+            return;
         }
 
-        // Broadcast player leave data to the session
-        if (!fleet.getPlayers().isEmpty()) {
-            broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
+        // The master left: hand the role to another app player (a guest never hosts).
+        if (player.isMaster()) {
+            fleet.getPlayers().stream()
+                    .filter(fleetPlayer -> !fleetPlayer.isGuest())
+                    .findFirst()
+                    .ifPresent(newMaster -> {
+                        newMaster.setMaster(true);
+                        Log.info("[" + fleet.getSessionId() + "] Master left, giving the role to " + newMaster.getUsername());
+                    });
         }
+
+        broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
         Log.info("[" + fleet.getSessionId() + "] " + player.getUsername() + " Leave the session !");
 
-        // Clean empty session
-        if (fleet.getPlayers().isEmpty()) {
-            sessions.remove(fleet.getSessionId());
-            Log.info("[" + fleet.getSessionId() + "] Has been disbanded");
-        }
-
-        //Close the socket if not yet closed
         publishDirectoryChange();
         closeSocketQuietly(player.getSocket());
     }

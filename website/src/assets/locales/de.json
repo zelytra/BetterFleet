@@ -143,6 +143,7 @@
     "support": "Unterstützung"
   },
   "presentation": {
+    "joinConsole": "Von der Konsole beitreten",
     "content": "Tauchen Sie ein in die Welt von Sea of Thieves mit dem ultimativen Tool, mit dem Sie Allianzen wie nie zuvor schmieden können. Unsere App revolutioniert die Art und Weise, wie Spieler miteinander in Kontakt treten. Sie bietet eine außergewöhnliche Flexibilität und erhöht Ihre Chancen, eine Allianz zu finden, erheblich, indem sie die Möglichkeiten anderer Apps bei weitem übertrifft. Treten Sie unserer Community bei und verwandeln Sie Ihr Spielerlebnis in ein episches Abenteuer, bei dem Bindung und gemeinsames Segeln mit jedem Klick zur Realität werden.",
     "title": "BetterFleet"
   },
@@ -198,7 +199,65 @@
       "title": "Was ist ein Allianzserver in Sea Of Thieves?"
     }
   },
+  "mobileLobby": {
+    "countdown": {
+      "go": "Leinen los!",
+      "label": "Ablegen in"
+    },
+    "ended": {
+      "again": "Einer anderen beitreten",
+      "text": "Die Crew hat die Sitzung geschlossen, oder deine Verbindung ist abgebrochen.",
+      "title": "Sitzung beendet"
+    },
+    "error": {
+      "generic": "Etwas ist schiefgelaufen. Prüfe deine Verbindung und versuche es erneut.",
+      "notFound": "Keine Sitzung mit diesem Code gefunden. Prüfe ihn mit deiner Crew.",
+      "refused": "Beitritt fehlgeschlagen. Dieser Name ist in der Sitzung vielleicht schon vergeben. Versuche einen anderen."
+    },
+    "imNotReady": "Ich bin nicht bereit",
+    "imReady": "Ich bin bereit!",
+    "join": {
+      "button": "Lobby beitreten",
+      "code": "Sitzungscode",
+      "codePlaceholder": "ABC1234",
+      "connecting": "Verbinden…",
+      "device": "Deine Konsole",
+      "subtitle": "Sieh die Server deiner Crew und den Countdown direkt auf deinem Handy.",
+      "title": "Tritt deiner Allianz bei",
+      "username": "Dein Name",
+      "usernamePlaceholder": "Piratenname"
+    },
+    "noServer": "Noch auf keinem Server",
+    "readyCount": "bereit"
+  },
+  "consoleGuide": {
+    "intro": "Xbox- und PlayStation-Spieler können der Allianz einer Crew direkt vom Handy aus beitreten. Ohne App, ohne Konto.",
+    "note": "Die Sitzung bleibt offen, solange ein PC-Spieler darin ist.",
+    "step1": "Ein Crewmitglied am PC öffnet BetterFleet und erstellt eine Sitzung.",
+    "step2": "In der Lobby tippt es auf „Konsolenspieler einladen“, um einen Link zu kopieren, oder liest dir den Sitzungscode vor.",
+    "step3": "Öffne diesen Link auf deinem Handy, oder gehe auf betterfleet.fr und gib den Code ein.",
+    "step4": "Wähle einen Namen, deine Konsole, und tippe auf Beitreten.",
+    "step5": "Sieh zu, wie sich die Lobby füllt. Wenn der Countdown null erreicht, leg im Spiel im selben Moment ab wie deine Crew.",
+    "title": "Von deiner Konsole beitreten"
+  },
+  "notFound": {
+    "home": "Zurück zur Startseite",
+    "text": "Diese Seite existiert nicht oder wurde verschoben.",
+    "title": "Seite nicht gefunden"
+  },
   "seo": {
+    "console": {
+      "description": "Wie Xbox- und PlayStation-Spieler mit BetterFleet vom Handy aus einer Sea-of-Thieves-Allianz beitreten.",
+      "title": "Von der Konsole beitreten | BetterFleet"
+    },
+    "notFound": {
+      "description": "Diese Seite konnte nicht gefunden werden.",
+      "title": "Seite nicht gefunden | BetterFleet"
+    },
+    "lobby": {
+      "description": "Tritt der Sea-of-Thieves-Allianz deiner Crew vom Handy aus bei: Live-Server, Bereit-Status und der synchronisierte Countdown.",
+      "title": "Der Allianz beitreten | BetterFleet"
+    },
     "home": {
       "title": "BetterFleet — get your Sea of Thieves crew on the same server",
       "description": "Free, open-source app that syncs your crew’s Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."

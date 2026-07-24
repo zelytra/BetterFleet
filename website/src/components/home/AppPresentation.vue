@@ -16,10 +16,11 @@
             @on-button-click="incrementDownload"
           />
         </a>
-        <!-- Phone (#670): actions a phone can actually take — understand the app, join the crew. -->
+        <!-- Phone/tablet: the desktop app can't run here, so point console players at how to join a
+             crew's session from their phone (#682) instead of a dead download button. -->
         <div class="mobile-cta">
-          <router-link class="btn primary" to="/tutorial">
-            {{ t("presentation.how") }}
+          <router-link class="btn primary" to="/console">
+            {{ t("presentation.joinConsole") }}
           </router-link>
           <a
             class="btn ghost"

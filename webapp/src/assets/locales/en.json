@@ -306,6 +306,8 @@
     "countdown": "The research begins in...",
     "id": "Session ID",
     "idCopy": "Copied!",
+    "inviteConsole": "Invite console players",
+    "inviteCopied": "Link copied!",
     "informations": {
       "success": "Success rate",
       "title": "Information",
