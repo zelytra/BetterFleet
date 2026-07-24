@@ -55,11 +55,22 @@ export const detectionPrompt = reactive({ visible: false });
 
 const watchdog = new DetectionWatchdog();
 
+// Dev builds can force the watchdog's input to "in game, no server" so the offer can be exercised
+// without staging a genuinely stuck detection in game. Always false in production (the toggle below
+// is stripped from the bundle), so the branch that reads it is dead-code-eliminated.
+let devForceStuck = false;
+
 /** Called from the game poll: one observation per tick. */
 export function observeDetection(player: Player): void {
+  let status = player.status;
+  let hasServer = !!player.server?.ip;
+  if (import.meta.env.DEV && devForceStuck) {
+    status = PlayerStates.IN_GAME;
+    hasServer = false;
+  }
   const fired = watchdog.observe(
-    player.status,
-    !!player.server?.ip,
+    status,
+    hasServer,
     player.countDown !== undefined,
     Date.now(),
   );
@@ -70,4 +81,31 @@ export function observeDetection(player: Player): void {
 
 export function dismissDetectionPrompt(): void {
   detectionPrompt.visible = false;
+}
+
+// --- Dev-only preview handles (removed from production builds) ------------------------------------
+// Reproducing the offer for real means sitting in game for a minute with detection genuinely stuck,
+// which is awkward to stage on purpose. In a dev build these expose it on the browser console (open
+// the dev webview's devtools). You must be in a session lobby for the banner to have somewhere to
+// render:
+//   betterfleet.detection.offer()             — show the banner right now
+//   betterfleet.detection.simulateStuck()     — feed the watchdog "in game, no server" so the offer
+//                                               fires through the real 60s path; pass false to stop
+if (import.meta.env.DEV && typeof window !== "undefined") {
+  const scope = window as unknown as { betterfleet?: Record<string, unknown> };
+  scope.betterfleet = {
+    ...(scope.betterfleet ?? {}),
+    detection: {
+      offer: () => {
+        detectionPrompt.visible = true;
+      },
+      simulateStuck: (on = true) => {
+        devForceStuck = on;
+      },
+    },
+  };
+  console.info(
+    "[BetterFleet] dev: betterfleet.detection.offer() shows the stuck-detection banner now; " +
+      "betterfleet.detection.simulateStuck() drives it through the real 60s path.",
+  );
 }
