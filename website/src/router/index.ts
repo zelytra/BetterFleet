@@ -52,6 +52,16 @@ export const routes = [
       displayInNav: false,
     },
   },
+  {
+    // Console players join a session lobby from their phone (#682). Lazy: the realtime lobby is
+    // dead weight for every marketing visit, so it only loads when someone opens their invite link.
+    path: "/s/:code",
+    name: "session",
+    component: () => import("@/components/session/MobileLobby.vue"),
+    meta: {
+      displayInNav: false,
+    },
+  },
 ];
 
 export const router = createRouter({

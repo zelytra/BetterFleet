@@ -239,7 +239,37 @@
       "title": "Qu'est-ce qu'un serveur alliance sur Sea of Thieves ?"
     }
   },
+  "mobileLobby": {
+    "countdown": {
+      "go": "Larguez les amarres !",
+      "label": "Départ dans"
+    },
+    "error": {
+      "generic": "Une erreur est survenue. Vérifiez votre connexion et réessayez.",
+      "notFound": "Aucune session trouvée pour ce code. Vérifiez-le avec votre équipage.",
+      "refused": "Impossible de rejoindre cette session."
+    },
+    "imNotReady": "Je ne suis pas prêt",
+    "imReady": "Je suis prêt !",
+    "join": {
+      "button": "Rejoindre le salon",
+      "code": "Code de session",
+      "codePlaceholder": "ABC1234",
+      "connecting": "Connexion…",
+      "device": "Votre console",
+      "subtitle": "Voyez les serveurs de votre équipage et le décompte, directement depuis votre téléphone.",
+      "title": "Rejoignez votre alliance",
+      "username": "Votre nom",
+      "usernamePlaceholder": "Nom de pirate"
+    },
+    "noServer": "Pas encore sur un serveur",
+    "readyCount": "prêts"
+  },
   "seo": {
+    "lobby": {
+      "description": "Rejoignez l'alliance Sea of Thieves de votre équipage depuis votre téléphone : serveurs en direct, états prêts et le décompte synchronisé.",
+      "title": "Rejoindre l'alliance | BetterFleet"
+    },
     "home": {
       "title": "BetterFleet — get your Sea of Thieves crew on the same server",
       "description": "Free, open-source app that syncs your crew’s Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."

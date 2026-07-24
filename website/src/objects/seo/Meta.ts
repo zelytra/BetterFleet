@@ -36,6 +36,13 @@ const PAGES: Record<
     // robots.txt whether it may index what it already has.
     noindex: true,
   },
+  // The console-guest lobby (#682): a personal deep link keyed on a session code — never something a
+  // crawler should index. Keyed by the route pattern, matched via route.matched below.
+  "/s/:code": {
+    title: "seo.lobby.title",
+    description: "seo.lobby.description",
+    noindex: true,
+  },
 };
 
 /** name="x" or property="x" — Open Graph uses property, everything else uses name. */
@@ -71,7 +78,9 @@ export function applyRouteMeta(
   t: (key: string) => string,
   lang: string,
 ) {
-  const page = PAGES[route.path];
+  // Static paths match directly; a param route (e.g. /s/ABC123) falls back to its pattern (/s/:code).
+  const page =
+    PAGES[route.path] ?? PAGES[route.matched[route.matched.length - 1]?.path];
   if (!page) return;
 
   const title = t(page.title);

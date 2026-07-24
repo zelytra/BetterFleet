@@ -198,7 +198,37 @@
       "title": "¿Qué es un servidor de alianza en Sea Of Thieves?"
     }
   },
+  "mobileLobby": {
+    "countdown": {
+      "go": "¡A zarpar!",
+      "label": "Zarpe en"
+    },
+    "error": {
+      "generic": "Algo salió mal. Comprueba tu conexión e inténtalo de nuevo.",
+      "notFound": "No se encontró ninguna sesión con ese código. Verifícalo con tu tripulación.",
+      "refused": "No se pudo unir a esta sesión."
+    },
+    "imNotReady": "No estoy listo",
+    "imReady": "¡Estoy listo!",
+    "join": {
+      "button": "Unirse a la sala",
+      "code": "Código de sesión",
+      "codePlaceholder": "ABC1234",
+      "connecting": "Conectando…",
+      "device": "Tu consola",
+      "subtitle": "Mira los servidores de tu tripulación y la cuenta atrás, desde tu teléfono.",
+      "title": "Únete a tu alianza",
+      "username": "Tu nombre",
+      "usernamePlaceholder": "Nombre pirata"
+    },
+    "noServer": "Aún no en un servidor",
+    "readyCount": "listos"
+  },
   "seo": {
+    "lobby": {
+      "description": "Únete a la alianza de Sea of Thieves de tu tripulación desde tu teléfono: servidores en vivo, estados de listo y la cuenta atrás sincronizada.",
+      "title": "Unirse a la alianza | BetterFleet"
+    },
     "home": {
       "title": "BetterFleet — get your Sea of Thieves crew on the same server",
       "description": "Free, open-source app that syncs your crew’s Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."

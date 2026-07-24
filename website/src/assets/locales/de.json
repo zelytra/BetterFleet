@@ -198,7 +198,37 @@
       "title": "Was ist ein Allianzserver in Sea Of Thieves?"
     }
   },
+  "mobileLobby": {
+    "countdown": {
+      "go": "Leinen los!",
+      "label": "Ablegen in"
+    },
+    "error": {
+      "generic": "Etwas ist schiefgelaufen. Prüfe deine Verbindung und versuche es erneut.",
+      "notFound": "Keine Sitzung mit diesem Code gefunden. Prüfe ihn mit deiner Crew.",
+      "refused": "Dieser Sitzung konnte nicht beigetreten werden."
+    },
+    "imNotReady": "Ich bin nicht bereit",
+    "imReady": "Ich bin bereit!",
+    "join": {
+      "button": "Lobby beitreten",
+      "code": "Sitzungscode",
+      "codePlaceholder": "ABC1234",
+      "connecting": "Verbinden…",
+      "device": "Deine Konsole",
+      "subtitle": "Sieh die Server deiner Crew und den Countdown direkt auf deinem Handy.",
+      "title": "Tritt deiner Allianz bei",
+      "username": "Dein Name",
+      "usernamePlaceholder": "Piratenname"
+    },
+    "noServer": "Noch auf keinem Server",
+    "readyCount": "bereit"
+  },
   "seo": {
+    "lobby": {
+      "description": "Tritt der Sea-of-Thieves-Allianz deiner Crew vom Handy aus bei: Live-Server, Bereit-Status und der synchronisierte Countdown.",
+      "title": "Der Allianz beitreten | BetterFleet"
+    },
     "home": {
       "title": "BetterFleet — get your Sea of Thieves crew on the same server",
       "description": "Free, open-source app that syncs your crew’s Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."
