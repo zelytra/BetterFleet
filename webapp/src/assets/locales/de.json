@@ -436,9 +436,9 @@
       "tries": "Versuche"
     },
     "statsHint": {
-      "dismiss": "Ausblenden",
-      "text": "Bestes Zeitfenster: {range} ({best}% erfolgreiche Allianzen — gerade jetzt: {now}%)",
-      "textNoNow": "Bestes Zeitfenster: {range} ({best}% erfolgreiche Allianzen)"
+      "dismiss": "Verstecken",
+      "text": "Bestes Fenster: {range} ({best}% der Allianzen erfolgreich — gerade jetzt: {now}%)",
+      "textNoNow": "Bestes Fenster: {range} ({best}% der Allianzen erfolgreich)"
     },
     "status": {
       "countdown": "Starten in",

@@ -133,7 +133,7 @@
       "overlay": "Overlay en jeu"
     },
     "presence": {
-      "check": "Rich Presence Discord",
+      "check": "Discord Rich Presence",
       "description": "Affiche ta session sur ton profil Discord — taille du lobby, joueurs prêts, et le code pour les sessions publiques."
     },
     "recap": {

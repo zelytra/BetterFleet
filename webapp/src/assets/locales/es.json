@@ -133,7 +133,7 @@
       "overlay": "Capa en juego"
     },
     "presence": {
-      "check": "Rich Presence de Discord",
+      "check": "Discord Rich Presence",
       "description": "Muestra tu sesión en tu perfil de Discord — tamaño de la sala, jugadores listos y el código de las sesiones públicas."
     },
     "recap": {
@@ -437,8 +437,8 @@
     },
     "statsHint": {
       "dismiss": "Ocultar",
-      "text": "Mejor franja: {range} ({best}% de alianzas logradas — ahora mismo: {now}%)",
-      "textNoNow": "Mejor franja: {range} ({best}% de alianzas logradas)"
+      "text": "Mejor ventana: {range} ({best}% de las alianzas exitosas — ahora mismo: {now}%)",
+      "textNoNow": "Mejor ventana: {range} ({best}% de las alianzas exitosas)"
     },
     "status": {
       "countdown": "Lanzará en",
