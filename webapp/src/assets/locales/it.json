@@ -118,8 +118,8 @@
         "recording": "Premi una combinazione…",
         "reset": "Reimposta"
       },
-      "toggle": "Show / hide overlay",
-      "description": "Show the live session (servers and ready states) on top of the game, in borderless windowed mode."
+      "toggle": "Mostra / nascondi l'overlay",
+      "description": "Mostra la sessione in diretta (server e giocatori pronti) sopra il gioco, in modalità finestra senza bordi."
     },
     "name": {
       "label": "Username",
@@ -130,7 +130,7 @@
       "banner": "Stendardo della sessione",
       "developer": "Sviluppatore",
       "general": "Generale",
-      "overlay": "In-game overlay"
+      "overlay": "Overlay in gioco"
     },
     "presence": {
       "check": "Discord Rich Presence",
@@ -155,8 +155,8 @@
       "test": "Prova"
     },
     "stats": {
-      "check": "Anonymous alliance statistics",
-      "description": "Contribute your sessions' anonymous outcomes (success, regions, never who you are) to the public statistics page."
+      "check": "Statistiche anonime delle alleanze",
+      "description": "Contribuisci i risultati anonimi delle tue sessioni (successo, regioni, mai chi sei) alla pagina pubblica delle statistiche."
     },
     "subtitle": "Opzioni di preferenza",
     "title": "Impostazioni"
@@ -246,7 +246,7 @@
     }
   },
   "overlay": {
-    "empty": "Waiting for your session…"
+    "empty": "In attesa della tua sessione…"
   },
   "report": {
     "bug": {
