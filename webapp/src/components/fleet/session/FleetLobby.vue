@@ -524,6 +524,12 @@ function onContextAction(action: string) {
   display: flex;
   flex-direction: column;
 
+  // The session banner keeps its full 120px however tight the column gets — it must never fold to
+  // make room for the detection strip; the lobby content below yields that space instead.
+  :deep(.header-wrapper) {
+    flex-shrink: 0;
+  }
+
   .header-content {
     display: flex;
     height: 100%;
@@ -653,6 +659,7 @@ function onContextAction(action: string) {
     justify-content: space-between;
     gap: 12px;
     flex-wrap: wrap;
+    flex-shrink: 0;
     margin-top: 12px;
     padding: 10px 14px;
     border-radius: 5px;
@@ -691,7 +698,11 @@ function onContextAction(action: string) {
 
   .lobby-content {
     margin-top: 12px;
-    height: calc(100% - 128px); // Minus header height
+    // Fills whatever is left under the banner (and the detection strip, when it shows) and scrolls
+    // inside itself. A fixed height here didn't count the strip, so the column overflowed and flex
+    // folded the banner above to make room — this pane gives the room instead.
+    flex: 1;
+    min-height: 0;
     display: flex;
     gap: 12px;
 
