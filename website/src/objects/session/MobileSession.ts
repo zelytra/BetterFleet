@@ -145,7 +145,11 @@ export async function joinLobby(
     return;
   }
 
-  socket = new WebSocket(socketBase() + "/" + token + "/" + lobby.code);
+  // Backend endpoint is /sessions/{token}/{sessionId}; socketBase() is the /api origin, so the
+  // /sessions segment must be added or the upgrade hits a route that doesn't exist.
+  socket = new WebSocket(
+    socketBase() + "/sessions/" + token + "/" + lobby.code,
+  );
 
   socket.onopen = () => {
     send(MobileMessageType.CONNECT, mePayload());

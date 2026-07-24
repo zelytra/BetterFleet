@@ -84,7 +84,7 @@ describe("MobileSession guest client", () => {
     expect(fetch).toHaveBeenCalledWith(
       expect.stringContaining("/guest/register?sessionId=ABC1234"),
     );
-    expect(FakeWebSocket.last?.url).toContain("/guest-token/ABC1234");
+    expect(FakeWebSocket.last?.url).toContain("/sessions/guest-token/ABC1234");
     expect(lobby.status).toBe("connecting");
   });
 
