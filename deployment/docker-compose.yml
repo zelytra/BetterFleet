@@ -39,8 +39,13 @@ services:
     restart: unless-stopped
 
   backend:
-    image: zelytra/better-fleet-backend:${BACKEND_TAG:-latest}
+    image: zelytra/better-fleet-backend:latest
     container_name: betterfleet-backend
+    # Hairpin NAT: the box can't reach its own public IP, so betterfleet.fr must resolve to the LAN
+    # address inside the backend, or its OIDC discovery to https://betterfleet.fr/auth fails (#655).
+    # Backend only; set this to the host's LAN address.
+    extra_hosts:
+      - "betterfleet.fr:192.168.1.103"
     depends_on:
       # Not the short form: that only waits for Keycloak's *container* to start, and Keycloak needs
       # a further ~15s before it answers. The backend was doing OIDC discovery in that window, got a
@@ -80,7 +85,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: zelytra/better-fleet-website:${WEBSITE_TAG:-latest}
+    image: zelytra/better-fleet-website:latest
     container_name: betterfleet-website
     depends_on:
       keycloak:
@@ -184,3 +189,11 @@ services:
         limits:
           memory: 1536M
     restart: unless-stopped
+
+# The histeria.fr uplink has a reduced path MTU; Docker's default 1500-byte bridge MTU makes
+# container TLS handshakes stall for several seconds. Pin the bridge MTU to 1420 to match the link.
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: "1420"
