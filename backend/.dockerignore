@@ -1,4 +1,7 @@
-!target/*-runner
-!target/*-runner.jar
-!target/lib/*
-!target/quarkus-app/*
+# The image builds from source inside the build stage, so keep the build context lean.
+target
+.git
+.gitignore
+.idea
+.vscode
+*.md
