@@ -154,7 +154,8 @@
   "nav": {
     "documentation": "Discover",
     "home": "Home",
-    "support": "Support"
+    "support": "Support",
+    "statistics": "Statistics"
   },
   "presentation": {
     "content": "Getting your whole crew onto the same Sea of Thieves server is often a hassle. BetterFleet takes care of it: the app syncs everyone's \"Set sail\" click and shows you who ended up together — so an alliance comes together in minutes rather than hours. Free, open source, and made by players.",
@@ -289,6 +290,30 @@
     "reports": {
       "title": "Reports — BetterFleet",
       "description": "Bug reports sent from the BetterFleet app."
+    }
+  },
+  "alliance": {
+    "title": "Alliance statistics",
+    "subtitle": "How often crews actually land on the same server, and when it works best. Anonymous, aggregated data.",
+    "empty": "No data yet. Check back once crews start forming alliances.",
+    "bestTime": "Best time to form an alliance",
+    "bestTimeNone": "Not enough data yet",
+    "tile": {
+      "attempts": "Recorded attempts",
+      "convergence": "Convergence rate",
+      "tries": "Avg. tries to converge"
+    },
+    "region": {
+      "label": "Owner region",
+      "all": "All regions"
+    },
+    "heatmap": {
+      "title": "Convergence by hour & day (UTC)",
+      "low": "rarely together",
+      "high": "often together"
+    },
+    "regions": {
+      "title": "Where players come from"
     }
   }
 }

@@ -300,20 +300,20 @@
       "title": "Rejoindre l'alliance | BetterFleet"
     },
     "home": {
-      "title": "BetterFleet — get your Sea of Thieves crew on the same server",
-      "description": "Free, open-source app that syncs your crew’s Set sail so you all land on the same Sea of Thieves server. Shared countdown, live server check, no more sailing solo by accident."
+      "title": "BetterFleet, réunissez votre équipage Sea of Thieves sur le même serveur",
+      "description": "Application gratuite et open source qui synchronise le « Larguez les amarres » de votre équipage pour que vous arriviez tous sur le même serveur Sea of Thieves. Décompte partagé, vérification du serveur en direct, fini de partir en solo par accident."
     },
     "tutorial": {
-      "title": "How to get your crew on the same server — BetterFleet",
-      "description": "Step by step: install BetterFleet, create an alliance, share the code and use the shared countdown so your whole Sea of Thieves crew lands on one server."
+      "title": "Comment réunir votre équipage sur le même serveur, BetterFleet",
+      "description": "Pas à pas : installez BetterFleet, créez une alliance, partagez le code et utilisez le décompte partagé pour que tout votre équipage Sea of Thieves arrive sur un seul serveur."
     },
     "support": {
-      "title": "Help and FAQ — BetterFleet",
-      "description": "Answers about installing and updating BetterFleet, whether it is safe to use with Sea of Thieves, what happens to your data, and how to report a problem."
+      "title": "Aide et FAQ, BetterFleet",
+      "description": "Réponses sur l'installation et la mise à jour de BetterFleet, sa sécurité avec Sea of Thieves, ce que deviennent vos données et comment signaler un problème."
     },
     "reports": {
-      "title": "Reports — BetterFleet",
-      "description": "Bug reports sent from the BetterFleet app."
+      "title": "Rapports, BetterFleet",
+      "description": "Rapports de bug envoyés depuis l'application BetterFleet."
     }
   }
 }
