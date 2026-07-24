@@ -80,9 +80,9 @@
                                 </div>
                             </#if>
                             </div>
-                            <div class="${properties.kcFormOptionsWrapperClass!}">
+                            <div class="${properties.kcFormOptionsWrapperClass!} bf-forgot-wrapper">
                                 <#if realm.resetPasswordAllowed>
-                                    <span><a tabindex="5" href="${url.loginResetCredentialsUrl}">${msg("doForgotPassword")}</a></span>
+                                    <span><a tabindex="5" class="bf-link" href="${url.loginResetCredentialsUrl}">${msg("doForgotPassword")}</a></span>
                                 </#if>
                             </div>
 
