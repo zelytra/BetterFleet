@@ -1,12 +1,22 @@
 # No `version:` key: obsolete since Compose v2, and it earns a warning on every command.
 name: betterfleet
+
+# Cap container logs so they can never fill the host disk.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
 
   postgres-app:
-    image: postgres:14.2-alpine
+    image: postgres:14-alpine
     container_name: betterfleet-postgres-app
+    # Loopback-only: the backend reaches this over the compose network (DB_HOST: postgres-app).
+    # The host port stays for local admin (psql / SSH tunnel) without exposing the DB to the internet.
     ports:
-      - "2600:5432"
+      - "127.0.0.1:2600:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./psql-data/app:/var/lib/postgresql/betterfleet/data/pgdata
@@ -16,10 +26,20 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: BetterFleet
       PGDATA: /var/lib/postgresql/betterfleet/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d BetterFleet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     restart: unless-stopped
 
   backend:
-    image: zelytra/better-fleet-backend:latest
+    image: zelytra/better-fleet-backend:${BACKEND_TAG:-latest}
     container_name: betterfleet-backend
     depends_on:
       # Not the short form: that only waits for Keycloak's *container* to start, and Keycloak needs
@@ -28,9 +48,10 @@ services:
       keycloak:
         condition: service_healthy
       postgres-app:
-        condition: service_started
+        condition: service_healthy
+    # Loopback-only: only the host's edge nginx (proxy_pass 127.0.0.1:2601) needs to reach it.
     ports:
-      - "2601:8080"
+      - "127.0.0.1:2601:8080"
     environment:
       DB_HOST: postgres-app
       DB_DATABASE: BetterFleet
@@ -38,27 +59,54 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       KEYCLOAK_HOST: ${PUBLIC_KEYCLOAK_HOSTNAME}
       PROXY_CHECK_API_KEY: ${PROXY_CHECK_API_KEY}
+    healthcheck:
+      # No curl/wget in the UBI OpenJDK image; /bin/sh is bash, so probe the "/" (Pong!) endpoint
+      # over /dev/tcp like the Keycloak check does.
+      test:
+        - CMD-SHELL
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/8080 &&
+          printf 'GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 &&
+          grep -q '200 OK' <&3
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 40s
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
     restart: unless-stopped
 
   frontend:
-    image: zelytra/better-fleet-website:latest
+    image: zelytra/better-fleet-website:${WEBSITE_TAG:-latest}
     container_name: betterfleet-website
     depends_on:
-      - keycloak
-      - postgres-app
-      - backend
+      keycloak:
+        condition: service_started
+      postgres-app:
+        condition: service_started
+      backend:
+        condition: service_healthy
+    # Loopback-only: only the host's edge nginx (proxy_pass 127.0.0.1:2602) needs to reach it.
     ports:
-      - "2602:80"
+      - "127.0.0.1:2602:80"
     environment:
       VITE_BACKEND_HOST: ${PUBLIC_QUARKUS_HOSTNAME}
       VITE_KEYCLOAK_HOST: ${PUBLIC_KEYCLOAK_HOSTNAME}
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 192M
     restart: unless-stopped
 
   postgres-auth:
-    image: postgres:14.2-alpine
+    image: postgres:14-alpine
     container_name: betterfleet-postgres-auth
     ports:
-      - "2603:5432"
+      - "127.0.0.1:2603:5432"
     volumes:
       - ./psql-data/auth:/var/lib/postgresql/data/pgdata
       - /etc/localtime:/etc/localtime:ro
@@ -67,6 +115,16 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: Keycloak
       PGDATA: /var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d Keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     restart: unless-stopped
 
   keycloak:
@@ -96,8 +154,9 @@ services:
       # Measured at ~12s to import the realm and serve on this host; 60s leaves room for a cold,
       # loaded production box without ever marking a healthy Keycloak as failed.
       start_period: 60s
+    # Loopback-only: only the host's edge nginx (proxy_pass 127.0.0.1:2604) needs to reach it.
     ports:
-      - "2604:8080"
+      - "127.0.0.1:2604:8080"
     volumes:
       - ./keycloak/config:/opt/keycloak/data/import
       - ./keycloak/themes/betterfleet:/opt/keycloak/themes/betterfleet
@@ -119,4 +178,9 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
       KC_OVERRIDE: "false"
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
     restart: unless-stopped
