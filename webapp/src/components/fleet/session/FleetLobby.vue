@@ -47,6 +47,18 @@
                 <p v-if="displayIdCopy">{{ t("session.idCopy") }}</p>
               </transition>
             </div>
+            <!-- Invite console players to the phone lobby (#682): copies their deep link. -->
+            <button
+              type="button"
+              class="invite-console"
+              @click="copyConsoleInvite()"
+            >
+              {{
+                displayInviteCopy
+                  ? t("session.inviteCopied")
+                  : t("session.inviteConsole")
+              }}
+            </button>
           </div>
         </div>
       </template>
@@ -460,6 +472,17 @@ function copyIdToClipboard(id: string) {
   setTimeout(() => (displayIdCopy.value = false), 2000);
 }
 
+// Invite console players (#682): the public site hosts a phone lobby at /s/<CODE>. Console players
+// open the link, pick a name, and join over the same WebSocket — no app, no account.
+const displayInviteCopy = ref<boolean>(false);
+function copyConsoleInvite() {
+  const link =
+    "https://betterfleet.fr/s/" + props.session.sessionId.toUpperCase();
+  navigator.clipboard.writeText(link);
+  displayInviteCopy.value = true;
+  setTimeout(() => (displayInviteCopy.value = false), 2000);
+}
+
 function openContextMenu(event: any, player: Player) {
   if (
     !UserStore.player.isMaster ||
@@ -610,6 +633,21 @@ function onContextAction(action: string) {
         font-size: 20px;
         font-weight: 400;
         height: 16px;
+      }
+    }
+
+    // Invite console players (#682): a quiet secondary action under the session id.
+    .invite-console {
+      all: unset;
+      margin-top: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--secondary-text);
+      border-bottom: 1px dashed var(--secondary-text);
+      width: fit-content;
+
+      &:hover {
+        color: var(--primary-text);
       }
     }
 
