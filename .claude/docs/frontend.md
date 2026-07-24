@@ -4,9 +4,9 @@ A **Vue 3 + TypeScript** UI (`<script setup>`, Composition API, Vite) wrapped in
 shell. The Rust side (`webapp/src-tauri/src/`) does the OS-level work; the Vue side is the UI and all
 the session logic. Entry point: `webapp/src/main.ts`.
 
-> This describes the code on `master`. Features still in open PRs (in-app "what's new", a
-> configurable overlay hotkey, a detection watchdog) are **not** here yet — update this doc when they
-> land.
+> This describes the code on `master`, which now includes the 2.2.0 wave — the in-app "what's new"
+> modal (#686), the configurable overlay hotkey (#687), the guided-diagnostic detection watchdog
+> (#688), the Rich Presence sync (#684), and the lobby alliance hint (#683).
 
 ## Bootstrap
 
@@ -44,12 +44,20 @@ when Keycloak isn't authenticated; `meta.displayInNav` drives the nav bar.
   `WebSocketMessageType` enum. The actual client is in `Fleet.ts`, not here — easy to mis-cite.
 - **`Player.ts`** — `interface Player extends Preferences` + enums `PlayerStates`
   (CLOSED/STARTED/MAIN_MENU/IN_GAME), `PlayerDevice`, `BoatSize`. `Preferences` = lang, country,
-  sound, macro, banner, bannerShuffle, shareStats, richPresence.
+  sound, macro, banner, bannerShuffle, shareStats, richPresence, overlayHotkey.
 - **`Overlay.ts`** — the in-game overlay (#671). `OverlaySnapshot`/`OverlayServer`/`OverlayPlayer`
   types, `isOverlayWindow()`, `computeSnapshot()` (builds the compact snapshot from `UserStore`),
   `startOverlayBroadcaster()` (main window emits `overlay:update` every 1s), `onOverlayUpdate()`
-  (overlay window subscribes), `setOverlayVisible`/`isOverlayVisible`. `OVERLAY_HOTKEY_LABEL` is
-  display-only — the actual toggle is a hardcoded Rust global shortcut.
+  (overlay window subscribes), `setOverlayVisible`/`isOverlayVisible`, `hotkeyLabel()` +
+  `DEFAULT_OVERLAY_HOTKEY`. The toggle shortcut is configurable (#687): the player's `overlayHotkey`
+  is (re)bound in Rust via `invoke("set_overlay_hotkey")`; the default is `CommandOrControl+Shift+O`.
+- **`DetectionWatchdog.ts`** — the guided-diagnostic offer (#688): the pure `DetectionWatchdog` class
+  fires once after detection stays silent in game past `DETECTION_PROMPT_AFTER_MS`; `observeDetection`
+  is fed by the 400ms poll, `detectionPrompt` is the reactive banner state. (Dev builds expose
+  `betterfleet.detection.offer()` / `.simulateStuck()` on the console.)
+- **`WhatsNew.ts`** + `components/WhatsNewModal.vue` — the after-update changelog modal (#686): fetches
+  the installed tag's release notes from the GitHub API (through the Tauri http plugin) and shows them
+  once per new version (last-seen tracked in `LocalStore`).
 - **`PublicSessionsStore.ts`** — the public-session **browser** store (reactive singleton).
   `refresh()` = REST `GET public-sessions`; `connectStream()` = SSE `EventSource` on
   `/public-sessions/stream` with a **mixed-content guard** and a 5s **poll backstop**. This is what
@@ -74,8 +82,8 @@ when Keycloak isn't authenticated; `meta.displayInNav` drives the nav bar.
 
 ## The Tauri bridge (JS `invoke` ↔ Rust)
 
-`webapp/src-tauri/src/main.rs` exposes **12** `#[tauri::command]` fns. The frontend currently calls
-eight of them:
+`webapp/src-tauri/src/main.rs` exposes **13** `#[tauri::command]` fns. The frontend currently calls
+nine of them:
 
 | Command | Caller | Purpose |
 |---|---|---|
@@ -86,12 +94,13 @@ eight of them:
 | `get_logs` | `ReportsComponent.vue` | Read rotated log files (for bug reports) |
 | `get_system_info` | `ReportsComponent.vue` | System/network dump (for bug reports) |
 | `update_presence` / `clear_presence` | `PresenceSync.ts` | Discord Rich Presence (#684) |
+| `set_overlay_hotkey` | `ConfigComponent.vue` | Re-bind the overlay-toggle global shortcut (#687) |
 
 `get_game_status`, `get_server_ip`, `get_server_port`, `get_last_updated_server_ip` exist but are
 bundled into `get_game_object`. Native logic lives in `api.rs` / `fetch_informations.rs` (detection),
 `diagnostics.rs` (UDP capture), `window_interaction.rs` (focus/click). The overlay toggle is a
-**hardcoded** `CommandOrControl+Shift+O` global shortcut registered in `main.rs` `setup()` (there is
-no `set_overlay_hotkey` on `master`).
+`CommandOrControl+Shift+O` global shortcut by default, re-bindable via `set_overlay_hotkey` (#687),
+registered in `main.rs` `setup()`.
 
 **Overlay snapshot event bus** (Tauri `emit`/`listen`, defined in `Overlay.ts`, consumed in
 `OverlayView.vue`): `overlay:update` (main → overlay, the snapshot, every 1s + on request),

@@ -69,6 +69,35 @@ class AllianceAttemptBuilderTest {
     }
 
     @Test
+    void aSoloPlayerOnOneServerIsNotAFormedAlliance() {
+        // distinctServers == 1, but a lone pirate is not an alliance — forming one solo makes no
+        // sense (#685).
+        Fleet fleet = new Fleet();
+        fleet.getPlayers().add(player("Host", true, "fr"));
+        fleet.getServers().put("s1", server("1.1.1.1", "fr", 1));
+
+        AllianceAttempt a = new SessionManager().buildAttempt(fleet, Instant.EPOCH);
+
+        assertFalse(a.converged, "one player on a server is not a formed alliance");
+        assertEquals(1, a.distinctServers);
+        assertEquals(1, a.largestGroup);
+    }
+
+    @Test
+    void twoPlayersSharingOneServerIsTheMinimumAlliance() {
+        Fleet fleet = new Fleet();
+        fleet.getPlayers().add(player("Host", true, "fr"));
+        fleet.getPlayers().add(player("Mate", false, null));
+        fleet.getServers().put("s1", server("1.1.1.1", "fr", 2));
+
+        AllianceAttempt a = new SessionManager().buildAttempt(fleet, Instant.EPOCH);
+
+        assertTrue(a.converged, "two players on one server is a formed alliance");
+        assertEquals(1, a.distinctServers);
+        assertEquals(2, a.largestGroup);
+    }
+
+    @Test
     void statsAreSharedByDefault() {
         // A pre-#673 client never sends the flag; Jackson keeps the initialized true, so a fleet
         // of old clients keeps contributing.

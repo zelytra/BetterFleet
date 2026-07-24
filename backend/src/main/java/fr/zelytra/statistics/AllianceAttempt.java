@@ -42,7 +42,7 @@ public class AllianceAttempt extends PanacheEntity {
     @Column(name = "largest_group")
     public int largestGroup;
 
-    /** True when the whole fleet reached one server (distinctServers == 1). */
+    /** True when at least two players reached one shared server (distinctServers == 1 &amp;&amp; largestGroup &gt;= 2). */
     @Column(name = "converged")
     public boolean converged;
 
