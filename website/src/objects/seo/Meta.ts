@@ -43,6 +43,17 @@ const PAGES: Record<
     description: "seo.lobby.description",
     noindex: true,
   },
+  // How a console player joins — real, indexable content (#682).
+  "/console": {
+    title: "seo.console.title",
+    description: "seo.console.description",
+  },
+  // Catch-all 404, keyed by the route pattern (matched via route.matched). Never indexed.
+  "/:pathMatch(.*)*": {
+    title: "seo.notFound.title",
+    description: "seo.notFound.description",
+    noindex: true,
+  },
 };
 
 /** name="x" or property="x" — Open Graph uses property, everything else uses name. */

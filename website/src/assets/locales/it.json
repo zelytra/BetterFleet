@@ -143,6 +143,7 @@
     "support": "Supporto"
   },
   "presentation": {
+    "joinConsole": "Unisciti da console",
     "content": "Immergetevi nel mondo del Mare dei Ladri con lo strumento ultimo progettato per forgiare alleanze come mai prima d'ora. La nostra applicazione rivoluziona il modo in cui i giocatori accedono, fornendo una fluidità eccezionale e aumentando significativamente le vostre possibilità di trovare un'alleanza, superando di gran lunga le capacità di altre applicazioni. Unisciti alla nostra comunità e trasforma la tua esperienza di gioco in un'avventura epica, dove il legame e la vela insieme diventano una realtà accessibile con ogni clic.",
     "title": "BetterFleet"
   },
@@ -203,6 +204,11 @@
       "go": "Si salpa!",
       "label": "Partenza tra"
     },
+    "ended": {
+      "again": "Unisciti a un'altra",
+      "text": "La ciurma ha chiuso la sessione, o la tua connessione è caduta.",
+      "title": "Sessione terminata"
+    },
     "error": {
       "generic": "Qualcosa è andato storto. Controlla la connessione e riprova.",
       "notFound": "Nessuna sessione trovata per questo codice. Controllalo con la tua ciurma.",
@@ -224,7 +230,30 @@
     "noServer": "Non ancora su un server",
     "readyCount": "pronti"
   },
+  "consoleGuide": {
+    "intro": "I giocatori Xbox e PlayStation possono unirsi all'alleanza di una ciurma direttamente dal telefono. Senza app, senza account.",
+    "note": "La sessione resta aperta finché c'è un giocatore PC.",
+    "step1": "Un compagno su PC apre BetterFleet e crea una sessione.",
+    "step2": "Nella lobby, tocca «Invita giocatori console» per copiare un link, o ti legge il codice della sessione.",
+    "step3": "Sul tuo telefono, apri quel link, o vai su betterfleet.fr e inserisci il codice.",
+    "step4": "Scegli un nome, seleziona la tua console e tocca Entra.",
+    "step5": "Guarda la lobby riempirsi. Quando il conto alla rovescia arriva a zero, salpa nel gioco nello stesso momento della tua ciurma.",
+    "title": "Unisciti dalla tua console"
+  },
+  "notFound": {
+    "home": "Torna alla home",
+    "text": "Questa pagina non esiste o è stata spostata.",
+    "title": "Pagina non trovata"
+  },
   "seo": {
+    "console": {
+      "description": "Come i giocatori Xbox e PlayStation si uniscono a un'alleanza di Sea of Thieves dal telefono con BetterFleet.",
+      "title": "Unisciti da console | BetterFleet"
+    },
+    "notFound": {
+      "description": "Impossibile trovare questa pagina.",
+      "title": "Pagina non trovata | BetterFleet"
+    },
     "lobby": {
       "description": "Unisciti all'alleanza di Sea of Thieves della tua ciurma dal telefono: server dal vivo, stati di pronto e il conto alla rovescia sincronizzato.",
       "title": "Unirsi all'alleanza | BetterFleet"

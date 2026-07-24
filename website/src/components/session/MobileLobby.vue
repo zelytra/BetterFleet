@@ -8,8 +8,18 @@
       </p>
     </div>
 
+    <!-- Session ended: the app crew left (backend disbanded it) or the link dropped. -->
+    <div v-if="isEnded" class="ended">
+      <img class="logo" :src="logo" alt="BetterFleet" />
+      <h1>{{ t("mobileLobby.ended.title") }}</h1>
+      <p class="sub">{{ t("mobileLobby.ended.text") }}</p>
+      <button type="button" class="btn primary" @click="restart()">
+        {{ t("mobileLobby.ended.again") }}
+      </button>
+    </div>
+
     <!-- Join form: shown until we're live in the lobby. -->
-    <div v-if="!isLive" class="join">
+    <div v-else-if="!isLive" class="join">
       <img class="logo" :src="logo" alt="BetterFleet" />
       <h1>{{ t("mobileLobby.join.title") }}</h1>
       <p class="sub">{{ t("mobileLobby.join.subtitle") }}</p>
@@ -146,9 +156,12 @@ const code = ref((route.params.code as string)?.toUpperCase() ?? "");
 const username = ref("");
 const device = ref<ConsoleDevice>("XBOX");
 
-const isLive = computed(
-  () => lobby.status === "connected" || lobby.status === "closed",
-);
+const isLive = computed(() => lobby.status === "connected");
+const isEnded = computed(() => lobby.status === "closed");
+
+function restart() {
+  leaveLobby();
+}
 const canJoin = computed(
   () =>
     lobby.status !== "connecting" &&
@@ -316,6 +329,43 @@ function join() {
         opacity: 0.5;
         cursor: default;
       }
+    }
+  }
+
+  .ended {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    padding-top: 48px;
+
+    .logo {
+      width: 56px;
+      height: 56px;
+    }
+
+    h1 {
+      margin: 8px 0 0;
+      font-size: 24px;
+    }
+
+    .sub {
+      color: var(--secondary-text);
+      margin: 0 0 8px;
+    }
+
+    .btn.primary {
+      margin-top: 12px;
+      min-height: 52px;
+      padding: 0 28px;
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: #05231a;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
     }
   }
 

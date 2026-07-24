@@ -68,6 +68,7 @@ export const lobby = reactive({
 
 let socket: WebSocket | null = null;
 let keepAlive: ReturnType<typeof setInterval> | null = null;
+let countdownReset: ReturnType<typeof setTimeout> | null = null;
 let device: ConsoleDevice = "XBOX";
 
 const restBase = (): string =>
@@ -174,9 +175,17 @@ export async function joinLobby(
         lobby.status = "connected";
         applyUpdate(message.data as FleetPayload);
         break;
-      case MobileMessageType.RUN_COUNTDOWN:
-        lobby.countdownEndsAt = Date.now() + (message.data as number) * 1000;
+      case MobileMessageType.RUN_COUNTDOWN: {
+        const seconds = message.data as number;
+        lobby.countdownEndsAt = Date.now() + seconds * 1000;
+        // Return to the lobby a few seconds after "set sail" instead of freezing on the countdown.
+        if (countdownReset) clearTimeout(countdownReset);
+        countdownReset = setTimeout(
+          () => (lobby.countdownEndsAt = null),
+          (seconds + 4) * 1000,
+        );
         break;
+      }
       case MobileMessageType.SESSION_NOT_FOUND:
         lobby.status = "not_found";
         break;
@@ -198,8 +207,11 @@ export async function joinLobby(
   socket.onclose = () => {
     if (keepAlive) clearInterval(keepAlive);
     keepAlive = null;
+    if (countdownReset) clearTimeout(countdownReset);
+    countdownReset = null;
     lobby.countdownEndsAt = null;
-    // A close after a clean session is "closed"; a close mid-connect is the failure already set.
+    // A close after a clean session is "closed" (the app crew left, so the backend disbanded it, or
+    // the link dropped); a close mid-connect is the failure already set.
     if (lobby.status === "connected") lobby.status = "closed";
   };
 }
@@ -214,6 +226,8 @@ export function toggleReady(): void {
 export function leaveLobby(): void {
   if (keepAlive) clearInterval(keepAlive);
   keepAlive = null;
+  if (countdownReset) clearTimeout(countdownReset);
+  countdownReset = null;
   if (socket) {
     socket.onclose = null;
     if (socket.readyState <= WebSocket.OPEN) socket.close();

@@ -184,6 +184,7 @@
   "presentation": {
     "content": "Réunir tout votre équipage sur le même serveur Sea of Thieves, c'est souvent laborieux. BetterFleet s'en charge : l'application synchronise le \"Lever l'ancre\" de chacun et vous montre qui s'est retrouvé ensemble — une alliance en quelques minutes plutôt qu'en quelques heures. Gratuit, open source, pensé par des joueurs.",
     "how": "Voir comment ça marche",
+    "joinConsole": "Rejoindre depuis une console",
     "pill": "App Windows — gratuite & open source",
     "title": "BetterFleet"
   },
@@ -244,6 +245,11 @@
       "go": "Larguez les amarres !",
       "label": "Départ dans"
     },
+    "ended": {
+      "again": "Rejoindre une autre",
+      "text": "L'équipage a fermé la session, ou ta connexion a été perdue.",
+      "title": "Session terminée"
+    },
     "error": {
       "generic": "Une erreur est survenue. Vérifiez votre connexion et réessayez.",
       "notFound": "Aucune session trouvée pour ce code. Vérifiez-le avec votre équipage.",
@@ -265,7 +271,30 @@
     "noServer": "Pas encore sur un serveur",
     "readyCount": "prêts"
   },
+  "consoleGuide": {
+    "intro": "Les joueurs Xbox et PlayStation peuvent rejoindre l'alliance d'un équipage directement depuis un téléphone. Sans app, sans compte.",
+    "note": "La session reste ouverte tant qu'un joueur PC y est.",
+    "step1": "Un coéquipier sur PC ouvre BetterFleet et crée une session.",
+    "step2": "Dans le salon, il appuie sur « Inviter des joueurs console » pour copier un lien, ou te lit le code de session.",
+    "step3": "Sur ton téléphone, ouvre ce lien, ou va sur betterfleet.fr et saisis le code.",
+    "step4": "Choisis un nom, sélectionne ta console, puis appuie sur Rejoindre.",
+    "step5": "Regarde le salon se remplir. Quand le décompte atteint zéro, largue les amarres dans le jeu au même moment que ton équipage.",
+    "title": "Rejoindre depuis ta console"
+  },
+  "notFound": {
+    "home": "Retour à l'accueil",
+    "text": "Cette page n'existe pas ou a été déplacée.",
+    "title": "Page introuvable"
+  },
   "seo": {
+    "console": {
+      "description": "Comment les joueurs Xbox et PlayStation rejoignent une alliance Sea of Thieves depuis leur téléphone avec BetterFleet.",
+      "title": "Rejoindre depuis une console | BetterFleet"
+    },
+    "notFound": {
+      "description": "Cette page est introuvable.",
+      "title": "Page introuvable | BetterFleet"
+    },
     "lobby": {
       "description": "Rejoignez l'alliance Sea of Thieves de votre équipage depuis votre téléphone : serveurs en direct, états prêts et le décompte synchronisé.",
       "title": "Rejoindre l'alliance | BetterFleet"

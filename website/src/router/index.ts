@@ -62,6 +62,24 @@ export const routes = [
       displayInNav: false,
     },
   },
+  {
+    // How a console player joins a session — the mobile CTA points here (#682).
+    path: "/console",
+    name: "console",
+    component: () => import("@/components/ConsoleGuidePage.vue"),
+    meta: {
+      displayInNav: false,
+    },
+  },
+  {
+    // Catch-all 404 — must stay last so it only matches when nothing else did.
+    path: "/:pathMatch(.*)*",
+    name: "not-found",
+    component: () => import("@/components/NotFoundPage.vue"),
+    meta: {
+      displayInNav: false,
+    },
+  },
 ];
 
 export const router = createRouter({

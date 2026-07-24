@@ -143,6 +143,7 @@
     "support": "Apoyo"
   },
   "presentation": {
+    "joinConsole": "Unirse desde consola",
     "content": "Sumérgete en el mundo de Sea of Thieves con la herramienta definitiva diseñada para forjar alianzas como nunca antes. Nuestra aplicación revoluciona la forma en que los jugadores se conectan, brindando una fluidez excepcional y aumentando significativamente sus posibilidades de encontrar una alianza, superando con creces las capacidades de otras aplicaciones. Únase a nuestra comunidad y transforme su experiencia de juego en una aventura épica, donde unirse y navegar juntos se convierte en una realidad accesible con cada clic.",
     "title": "Mejor flota"
   },
@@ -203,6 +204,11 @@
       "go": "¡A zarpar!",
       "label": "Zarpe en"
     },
+    "ended": {
+      "again": "Unirse a otra",
+      "text": "La tripulación cerró la sesión, o se perdió tu conexión.",
+      "title": "Sesión finalizada"
+    },
     "error": {
       "generic": "Algo salió mal. Comprueba tu conexión e inténtalo de nuevo.",
       "notFound": "No se encontró ninguna sesión con ese código. Verifícalo con tu tripulación.",
@@ -224,7 +230,30 @@
     "noServer": "Aún no en un servidor",
     "readyCount": "listos"
   },
+  "consoleGuide": {
+    "intro": "Los jugadores de Xbox y PlayStation pueden unirse a la alianza de una tripulación desde el teléfono. Sin app, sin cuenta.",
+    "note": "La sesión permanece abierta mientras haya un jugador de PC en ella.",
+    "step1": "Un compañero en PC abre BetterFleet y crea una sesión.",
+    "step2": "En la sala, pulsa «Invitar a jugadores de consola» para copiar un enlace, o te dice el código de sesión.",
+    "step3": "En tu teléfono, abre ese enlace, o ve a betterfleet.fr e introduce el código.",
+    "step4": "Elige un nombre, selecciona tu consola y pulsa Unirse.",
+    "step5": "Mira cómo se llena la sala. Cuando la cuenta atrás llega a cero, zarpa en el juego en el mismo momento que tu tripulación.",
+    "title": "Únete desde tu consola"
+  },
+  "notFound": {
+    "home": "Volver al inicio",
+    "text": "Esta página no existe o se ha movido.",
+    "title": "Página no encontrada"
+  },
   "seo": {
+    "console": {
+      "description": "Cómo los jugadores de Xbox y PlayStation se unen a una alianza de Sea of Thieves desde el teléfono con BetterFleet.",
+      "title": "Unirse desde consola | BetterFleet"
+    },
+    "notFound": {
+      "description": "No se pudo encontrar esta página.",
+      "title": "Página no encontrada | BetterFleet"
+    },
     "lobby": {
       "description": "Únete a la alianza de Sea of Thieves de tu tripulación desde tu teléfono: servidores en vivo, estados de listo y la cuenta atrás sincronizada.",
       "title": "Unirse a la alianza | BetterFleet"
