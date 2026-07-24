@@ -127,7 +127,7 @@
     },
     "presence": {
       "check": "Discord Rich Presence",
-      "description": "Show your session on your Discord profile — lobby size, ready count, and the code for public sessions."
+      "description": "Muestra tu sesión en tu perfil de Discord — tamaño de la sala, jugadores listos y el código de las sesiones públicas."
     },
     "savebar": {
       "cancel": "Descartar los cambios",
@@ -401,7 +401,7 @@
     "run": "Zarpar",
     "statsHint": {
       "dismiss": "Ocultar",
-      "text": "Mejor ventana: {range} ({best}% de las alianzas éxito — ahora mismo: {now}%)",
+      "text": "Mejor ventana: {range} ({best}% de las alianzas exitosas — ahora mismo: {now}%)",
       "textNoNow": "Mejor ventana: {range} ({best}% de las alianzas exitosas)"
     },
     "status": {

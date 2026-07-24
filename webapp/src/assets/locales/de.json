@@ -127,7 +127,7 @@
     },
     "presence": {
       "check": "Discord Rich Presence",
-      "description": "Show your session on your Discord profile — lobby size, ready count, and the code for public sessions."
+      "description": "Zeigt deine Sitzung in deinem Discord-Profil — Lobby-Größe, bereite Spieler und den Code öffentlicher Sitzungen."
     },
     "savebar": {
       "cancel": "Änderungen abbrechen",
