@@ -368,6 +368,7 @@ public class SessionSocket {
                 return;
             }
             player.setMaster(false);
+            player.setGuest(true);
         }
 
         // Refuse connection from an out-of-date client. Web guests carry no app version (they follow
