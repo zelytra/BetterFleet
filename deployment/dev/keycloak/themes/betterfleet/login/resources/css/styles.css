@@ -81,7 +81,7 @@ h1.title {
     }
 }
 
-#kc-form-login, #kc-register-form {
+#kc-form-login, #kc-register-form, #kc-reset-password-form, #kc-passwd-update-form {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -156,4 +156,50 @@ input[type="submit"] {
 
 .subtitle {
     text-align: end;
+}
+
+/* Secondary links (forgot password on login, back to login on reset/register) follow the brand green. */
+.bf-link, #kc-form-options a {
+    color: #32D499;
+    text-decoration: none;
+}
+
+.bf-link:hover, #kc-form-options a:hover {
+    text-decoration: underline;
+}
+
+/* "Forgot password?" sits right-aligned under the password field. */
+.bf-forgot-wrapper {
+    text-align: end;
+    font-size: 14px;
+}
+
+/* Reset-password instruction text (emailInstruction). */
+#kc-info {
+    text-align: center;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 4px;
+}
+
+#kc-info a {
+    color: #32D499;
+    text-decoration: none;
+}
+
+/* "Log out other sessions" checkbox row on the update-password page. */
+.bf-checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Cancel action, when the update runs as an app-initiated action. */
+button.bf-cancel {
+    all: unset;
+    margin-top: 8px;
+    text-align: center;
+    cursor: pointer;
 }
