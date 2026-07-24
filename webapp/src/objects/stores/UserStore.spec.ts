@@ -60,6 +60,7 @@ const CUSTOM = {
   bannerShuffle: true,
   shareStats: false,
   richPresence: false,
+  recapCard: false,
   overlayHotkey: "Alt+Shift+P",
   serverHostName: "wss://custom.example/api/sessions",
 } as const;

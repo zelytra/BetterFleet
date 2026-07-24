@@ -136,6 +136,10 @@
       "check": "Rich Presence di Discord",
       "description": "Mostra la tua sessione sul tuo profilo Discord — dimensione della lobby, giocatori pronti e il codice delle sessioni pubbliche."
     },
+    "recap": {
+      "check": "Scheda alleanza formata",
+      "description": "Mostra una scheda nella lobby quando la tua ciurma si raggruppa su un server, con i tentativi, la dimensione e il tempo impiegato."
+    },
     "savebar": {
       "cancel": "Annulla le modifiche",
       "content": "Aspetta un attimo! Vedo che hai fatto delle modifiche!",

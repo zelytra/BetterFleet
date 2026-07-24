@@ -149,7 +149,9 @@ export function observeConvergence(player: Player, nowMs = Date.now()): void {
     player.countDown !== undefined,
     nowMs,
   );
-  if (fired && server) {
+  // The watchdog still runs (its once-per-convergence state stays honest), but a player who turned
+  // the card off in the settings never sees it (#685). Absent means shown; only an explicit false hides.
+  if (fired && server && player.recapCard !== false) {
     sessionRecap.data = buildRecap(fleet, server, startedAtMs, nowMs);
     sessionRecap.visible = true;
   }

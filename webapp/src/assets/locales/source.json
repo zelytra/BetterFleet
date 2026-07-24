@@ -136,6 +136,10 @@
       "check": "Discord Rich Presence",
       "description": "Show your session on your Discord profile — lobby size, ready count, and the code for public sessions."
     },
+    "recap": {
+      "check": "Alliance-formed card",
+      "description": "Show a card in the lobby when your crew groups up on one server, with the tries, crew size and time it took."
+    },
     "savebar": {
       "cancel": "Cancel modifications",
       "content": "Hold on there! I see you've made some changes!",
