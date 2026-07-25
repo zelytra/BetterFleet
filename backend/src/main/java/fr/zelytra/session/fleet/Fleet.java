@@ -6,6 +6,8 @@ import fr.zelytra.session.server.SotServer;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -29,6 +31,11 @@ public class Fleet {
     // localized pirate name derived from sessionName.
     private String customName;
 
+    // Both collections are read far more often than they are written, and they are touched from
+    // several vert.x event-loop threads: SessionManager's @Lock only covers its own method bodies, so
+    // a broadcast serializing the fleet, or a lock-free iteration such as CLEAR_STATUS, can run while
+    // leaveSession removes a player. A plain ArrayList/HashMap threw ConcurrentModificationException
+    // there (issue #705); concurrent collections make those readers race-free.
     private List<Player> players;
     private final Map<String, SotServer> servers;
     private FleetStats stats;
@@ -39,8 +46,8 @@ public class Fleet {
         this.sessionName = (int) (Math.random() * 100);
         this.isPrivate = true; // sessions are unlisted by default; the master opts into public
         this.banner = 0;
-        this.players = new ArrayList<>();
-        this.servers = new HashMap<>();
+        this.players = new CopyOnWriteArrayList<>();
+        this.servers = new ConcurrentHashMap<>();
         this.stats = new FleetStats(0, 0);
     }
 
@@ -102,7 +109,9 @@ public class Fleet {
     }
 
     public void setPlayers(List<Player> players) {
-        this.players = players;
+        // Copy rather than adopt: keeping the concurrent list is what makes the off-lock readers safe,
+        // and a caller handing us a plain ArrayList would silently undo that.
+        this.players = players == null ? new CopyOnWriteArrayList<>() : new CopyOnWriteArrayList<>(players);
     }
 
     public Map<String, SotServer> getServers() {
