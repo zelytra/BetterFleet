@@ -141,8 +141,8 @@
         "title": "Pourquoi mon application plante et/ou ne se lance pas ?"
       },
       "password": {
-        "content1": "BetterFleet ne permet malheureusement pas de récupérer votre mot de passe. Si cela arrive, vous pouvez nous contacter sur notre Discord et nous pourrons le réinitialiser pour vous. Cependant, nous vous recommandons plutôt de créer un nouveau compte, sauf si tenez absolument à récupérer l'ancien.",
-        "content2": "L'application dispose d'une fonctionnalité \"Mot de passe oublié\", mais nous ne disposons pas encore de l'infrastructure nécessaire pour l'activer. Vous pouvez contribuer au projet via notre page GitHub pour nous aider à la mettre en place.",
+        "content1": "Utilisez le lien « Mot de passe oublié ? » sur l'écran de connexion. Saisissez votre nom d'utilisateur ou votre adresse e-mail, et nous vous envoyons un lien pour en choisir un nouveau.",
+        "content2": "L'e-mail part vers l'adresse utilisée lors de votre inscription : pensez à regarder dans vos spams s'il n'arrive pas. Toujours bloqué ? Demandez-nous sur Discord.",
         "title": "Que faire si j'ai oublié mon mot de passe ?"
       },
       "security": {

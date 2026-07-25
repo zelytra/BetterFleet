@@ -117,8 +117,8 @@
         "title": "La aplicación no se inicia o falla, ¿por qué? (Borde)"
       },
       "password": {
-        "content1": "Si olvidas tu contraseña, la aplicación no te permite recuperarla automáticamente. Puedes contactarnos en nuestro Discord y podremos restablecerlo por ti. Sin embargo, le recomendamos que cree una cuenta nueva, a menos que realmente desee recuperar la antigua.",
-        "content2": "La aplicación tiene una función de \"Olvidé mi contraseña\", pero aún no tenemos la infraestructura para habilitarla. Puedes contribuir al proyecto o donar a través de nuestra página de GitHub para ayudarnos a ponerlo en funcionamiento.",
+        "content1": "Usa el enlace «¿Olvidaste tu contraseña?» en la pantalla de inicio de sesión. Introduce tu nombre de usuario o tu correo electrónico y te enviamos un enlace para elegir una nueva.",
+        "content2": "El correo se envía a la dirección con la que te registraste, así que revisa tu carpeta de spam si no llega. ¿Sigues sin poder entrar? Pregúntanos en Discord.",
         "title": "¿Qué debo hacer si olvido mi contraseña?"
       },
       "security": {

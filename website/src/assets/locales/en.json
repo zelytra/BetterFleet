@@ -117,8 +117,8 @@
         "title": "Why does my application crash and/or does not start ?"
       },
       "password": {
-        "content1": "Unfortunately, BetterFleet cannot recover your lost password. If it happens, you can contact us on our Discord and we will reset it for you. However, we recommend that you create a new account, unless you really want to recover the old one.",
-        "content2": "The application has a \"Forgot password\" feature, but we do not yet have the necessary infrastructure to enable it. You can contribute to the project via our GitHub page to help us set it up.",
+        "content1": "Use the \"Forgot password?\" link on the sign-in screen. Enter your username or your email address, and we send you a link to choose a new one.",
+        "content2": "The email goes to the address you signed up with, so check your spam folder if it does not show up. Still stuck? Ask us on Discord.",
         "title": "What should I do if I forgot my password?"
       },
       "security": {

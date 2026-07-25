@@ -117,8 +117,8 @@
         "title": "Die Anwendung startet nicht bzw. stürzt nicht ab. Warum? (Rand)"
       },
       "password": {
-        "content1": "Wenn Sie Ihr Passwort vergessen, können Sie es über die Anwendung nicht automatisch wiederherstellen. Sie können uns über Discord kontaktieren und wir können es für Sie zurücksetzen. Wir empfehlen Ihnen jedoch, stattdessen ein neues Konto zu erstellen, es sei denn, Sie möchten das alte unbedingt wiederherstellen.",
-        "content2": "Die App verfügt über eine Funktion „Passwort vergessen“, aber wir verfügen noch nicht über die Infrastruktur, um diese zu aktivieren. Sie können zum Projekt beitragen oder über unsere GitHub-Seite spenden, um uns bei der Umsetzung zu helfen.",
+        "content1": "Nutze den Link „Passwort vergessen?“ auf der Anmeldeseite. Gib deinen Benutzernamen oder deine E-Mail-Adresse ein, und wir schicken dir einen Link, um ein neues zu wählen.",
+        "content2": "Die E-Mail geht an die Adresse, mit der du dich registriert hast. Sieh also im Spam-Ordner nach, falls sie nicht ankommt. Kommst du trotzdem nicht weiter? Frag uns auf Discord.",
         "title": "Was soll ich tun, wenn ich mein Passwort vergesse?"
       },
       "security": {
