@@ -112,14 +112,14 @@
     },
     "overlay": {
       "hotkey": {
-        "hint": "Haz clic y pulsa una combinación de teclas. Una sola tecla no funciona: se necesita un modificador (Ctrl, Alt o Mayús).",
-        "invalid": "Este atajo no se puede usar",
-        "label": "Atajo de alternancia",
+        "hint": "Una sola tecla no funciona: se requiere un modificador (Ctrl, Alt o Shift).",
+        "invalid": "Este acceso directo no se puede utilizar",
+        "label": "Alternar acceso directo",
         "recording": "Pulsa una combinación…",
-        "reset": "Restablecer"
+        "reset": "Reset"
       },
-      "toggle": "Mostrar / ocultar la capa",
-      "description": "Muestra la sesión en vivo (servidores y jugadores listos) encima del juego, en modo ventana sin bordes."
+      "toggle": "Show / hide overlay",
+      "description": "Mostrar la sesión en vivo (servidores y estados listos) en la parte superior del juego, en modo de ventana sin bordes."
     },
     "name": {
       "label": "Nombre de usuario",
@@ -133,12 +133,12 @@
       "overlay": "Capa en juego"
     },
     "presence": {
-      "check": "Discord Rich Presence",
-      "description": "Muestra tu sesión en tu perfil de Discord — tamaño de la sala, jugadores listos y el código de las sesiones públicas."
+      "check": "Presencia de Discord Rich",
+      "description": "Muestra tu sesión en tu perfil de Discord: tamaño del vestíbulo, recuento listo y el código para sesiones públicas."
     },
     "recap": {
-      "check": "Tarjeta de alianza formada",
-      "description": "Muestra una tarjeta en la sala cuando tu tripulación se agrupa en un servidor, con los intentos, el tamaño y el tiempo que llevó."
+      "check": "Tarjeta formada por alianza",
+      "description": "Mostrar una tarjeta en el vestíbulo cuando su tripulación se agrupa en un servidor, con los intentos, el tamaño de la tripulación y el tiempo que tomó."
     },
     "savebar": {
       "cancel": "Descartar los cambios",
@@ -183,19 +183,19 @@
     "title": "Crédito"
   },
   "diagnostic": {
-    "banner": "La detección del servidor parece bloqueada — una captura de 20s puede decirnos por qué.",
+    "banner": "La detección del servidor parece atascada — una captura de 20 años puede decirnos por qué.",
     "capture": {
       "capturing": "Capturando…",
       "copied": "Copiado al portapapeles",
       "copy": "Copiar",
-      "description": "Captura los flujos UDP del juego durante ~20s para diagnosticar la detección del servidor (issue #364). Ejecútala una vez en el menú principal y otra en partida, luego copia y comparte cada resultado.",
+      "description": "Captura los flujos UDP del juego para ~20 a la detección del servidor de depuración (problema #364). Ejecute una vez en el menú principal y una vez en el juego, luego copie y comparta cada resultado.",
       "error": "Error: {error}",
-      "inGame": "Capturar (en partida)",
-      "mainMenu": "Capturar (menú principal)",
+      "inGame": "Captura (en juego)",
+      "mainMenu": "Captura (menú principal)",
       "title": "Diagnóstico de detección del servidor"
     },
-    "dismiss": "Ahora no",
-    "prefill": "La detección del servidor quedó en silencio en partida — diagnóstico automático adjunto en los logs.",
+    "dismiss": "No ahora",
+    "prefill": "La detección del servidor permaneció silenciosa en el juego — diagnóstico automático adjunto en los registros.",
     "run": "Ejecutar el diagnóstico"
   },
   "firstLogin": {
@@ -204,7 +204,7 @@
       "title": "Que comience la jornada"
     },
     "description": "Ingrese su gamertag actual para supervisar el buen funcionamiento de la alianza.",
-    "tips": "Este nombre es el que verán tus compañeros en la sesión",
+    "tips": "Este nombre es cómo te verán tus compañeros de equipo en la sesión",
     "title": "¿Cómo te llamas muchacho?"
   },
   "loading": {
@@ -306,7 +306,7 @@
     "countdown": "La investigación comienza en...",
     "id": "ID de sesión",
     "idCopy": "¡Copiado!",
-    "inviteConsole": "Invitar a jugadores de consola",
+    "inviteConsole": "Invitar jugadores de consola",
     "inviteCopied": "¡Enlace copiado!",
     "informations": {
       "success": "Tasa de éxito",
@@ -429,7 +429,7 @@
     },
     "run": "Zarpar",
     "recap": {
-      "dismiss": "Cerrar",
+      "dismiss": "Descartar",
       "duration": "Duración",
       "pirates": "Piratas",
       "title": "¡Alianza formada! ⚓",
@@ -437,7 +437,7 @@
     },
     "statsHint": {
       "dismiss": "Ocultar",
-      "text": "Mejor ventana: {range} ({best}% de las alianzas exitosas — ahora mismo: {now}%)",
+      "text": "Mejor ventana: {range} ({best}% de las alianzas éxito — ahora mismo: {now}%)",
       "textNoNow": "Mejor ventana: {range} ({best}% de las alianzas exitosas)"
     },
     "status": {
@@ -465,7 +465,7 @@
   },
   "whatsnew": {
     "full": "Ver el registro de cambios completo",
-    "offline": "No se pudieron cargar las notas — el registro completo en línea las contiene.",
-    "title": "Novedades de la {version}"
+    "offline": "No se pudieron cargar las notas — el registro de cambios en línea completo los tiene.",
+    "title": "Novedades en {version}"
   }
 }
