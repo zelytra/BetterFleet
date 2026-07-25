@@ -6,9 +6,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @ApplicationScoped
 public class SotServer {
@@ -19,6 +19,8 @@ public class SotServer {
     private String countryCode;
     private String hash;
     private String color;
+    // Concurrent for the same reason as Fleet.players: it is mutated under SessionManager's lock but
+    // iterated and serialized off it, from other event-loop threads (issue #705).
     private List<Player> connectedPlayers;
 
     public SotServer() {
@@ -43,7 +45,7 @@ public class SotServer {
         this.location = location;
         this.countryCode = countryCode;
         this.hash = generateHash();
-        this.connectedPlayers = new ArrayList<>();
+        this.connectedPlayers = new CopyOnWriteArrayList<>();
         this.color = getRandomColor();
     }
 
@@ -172,7 +174,7 @@ public class SotServer {
         clone.countryCode = this.countryCode;
         clone.hash = this.hash;
         clone.color = this.color;
-        clone.connectedPlayers = new ArrayList<>();
+        clone.connectedPlayers = new CopyOnWriteArrayList<>();
         return clone;
     }
 }
