@@ -112,14 +112,14 @@
     },
     "overlay": {
       "hotkey": {
-        "hint": "Cliquez puis appuyez sur une combinaison de touches. Une touche seule ne fonctionne pas : il faut un modificateur (Ctrl, Alt ou Maj).",
+        "hint": "Cliquez, puis pressez sur une combinaison de touche. Une seule touche ne fonctionne pas, un modificateur (Ctrl, Alt ou Shift) est nécessaire.",
         "invalid": "Ce raccourci ne peut pas être utilisé",
-        "label": "Raccourci d'affichage",
-        "recording": "Appuyez sur un raccourci…",
+        "label": "Activer / désactiver le raccourci",
+        "recording": "Appuyez sur une combinaison…",
         "reset": "Réinitialiser"
       },
       "toggle": "Afficher / masquer l'overlay",
-      "description": "Affiche la session en direct (serveurs et joueurs prêts) par-dessus le jeu, en mode fenêtré sans bordure."
+      "description": "Afficher la session en direct (serveurs et états prêts) au-dessus du jeu, en mode fenêtré sans bordures."
     },
     "name": {
       "label": "Pseudonyme",
@@ -133,8 +133,8 @@
       "overlay": "Overlay en jeu"
     },
     "presence": {
-      "check": "Discord Rich Presence",
-      "description": "Affiche ta session sur ton profil Discord — taille du lobby, joueurs prêts, et le code pour les sessions publiques."
+      "check": "Présence Enrichie sur Discord",
+      "description": "Montrez votre session sur votre profil Discord - taille de lobby, nombre de personnes prêtes et le code des sessions publiques."
     },
     "recap": {
       "check": "Carte d'alliance formée",
@@ -156,7 +156,7 @@
     },
     "stats": {
       "check": "Statistiques d'alliance anonymes",
-      "description": "Partage le résultat anonyme de tes sessions (réussite, régions, jamais qui tu es) pour la page publique de statistiques."
+      "description": "Partagez les résultats anonymes de votre session (succès, régions, jamais qui vous êtes) à la page publique des statistiques."
     },
     "subtitle": "Options de préférence",
     "title": "Paramètres"
@@ -183,20 +183,20 @@
     "title": "Crédits"
   },
   "diagnostic": {
-    "banner": "La détection du serveur semble bloquée — une capture de 20s peut nous dire pourquoi.",
+    "banner": "La détection de serveur semble bloquée - un enregistrement de 20s peut nous dire pourquoi.",
     "capture": {
-      "capturing": "Capture en cours…",
-      "copied": "Copié dans le presse-papiers",
+      "capturing": "Enregistrement…",
+      "copied": "Copié dans le presse-papier",
       "copy": "Copier",
-      "description": "Capture les flux UDP du jeu pendant ~20s pour diagnostiquer la détection du serveur (issue #364). Lancez-la une fois dans le menu principal et une fois en jeu, puis copiez et partagez chaque résultat.",
+      "description": "Capture les flux UDP du jeu pour ~20s pour la détection du serveur de débogage (problème #364). Exécutez-la une fois dans le menu principal et une fois dans le jeu, puis copiez et partagez chaque résultat.",
       "error": "Erreur : {error}",
-      "inGame": "Capturer (en jeu)",
-      "mainMenu": "Capturer (menu principal)",
-      "title": "Diagnostic de détection du serveur"
+      "inGame": "Enregistrement (en jeu)",
+      "mainMenu": "Enregistrement (menu principal)",
+      "title": "Diagnostique de la détection de serveur"
     },
     "dismiss": "Pas maintenant",
-    "prefill": "La détection du serveur est restée muette en jeu — diagnostic automatique joint dans les logs.",
-    "run": "Lancer le diagnostic"
+    "prefill": "La détection de serveur est restée silencieuse en jeu - le diagnostic automatique est attaché dans les logs.",
+    "run": "Exécuter le diagnostic"
   },
   "firstLogin": {
     "button": {
@@ -204,7 +204,7 @@
       "title": "Commencer l’aventure"
     },
     "description": "Veuillez saisir votre gamertag actuel afin de veiller au bon déroulement de l'alliance",
-    "tips": "Ce nom est celui que vos coéquipiers verront dans la session",
+    "tips": "Ce nom correspond à la façon dont vos équipiers vous verront pendant la session",
     "title": "Comment tu t'appelles l'ami ?"
   },
   "loading": {
@@ -433,12 +433,12 @@
       "duration": "Durée",
       "pirates": "Pirates",
       "title": "Alliance formée ! ⚓",
-      "tries": "Essais"
+      "tries": "Tentatives"
     },
     "statsHint": {
-      "dismiss": "Masquer",
-      "text": "Meilleur créneau : {range} ({best}% d'alliances réussies — en ce moment : {now}%)",
-      "textNoNow": "Meilleur créneau : {range} ({best}% d'alliances réussies)"
+      "dismiss": "Cacher",
+      "text": "Meilleure fenêtre : {range} ({best}% des alliances réussissent - actuellement {now}%)",
+      "textNoNow": "Meilleure fenêtre : {range} ({best}% des alliances réussissent)"
     },
     "status": {
       "countdown": "Lancement dans",
@@ -464,8 +464,8 @@
     }
   },
   "whatsnew": {
-    "full": "Voir le changelog complet",
-    "offline": "Impossible de charger les notes — le changelog complet en ligne les contient.",
-    "title": "Nouveautés de la {version}"
+    "full": "Voir le journal des modifications complet",
+    "offline": "Échec du chargement des notes - le journal des modifications complet en ligne les a.",
+    "title": "Les nouveautés de {version}"
   }
 }
