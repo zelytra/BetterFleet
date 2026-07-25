@@ -27,6 +27,10 @@ on:
         description: "Language to seed (two-letter code, e.g. it). Read the header before picking anything else."
         required: true
         type: string
+      crowdin_language:
+        description: "Crowdin language id, only if it differs from the code above (e.g. es-ES for es). Leave empty otherwise."
+        required: false
+        type: string
 
 concurrency:
   # Shares the sync's group: a seed racing a sync would upload against a half-downloaded tree.
@@ -84,13 +88,20 @@ jobs:
                exit "$code" ;;
           esac
 
+      # Two different namespaces meet here, and conflating them is what made the first `es` seed fail
+      # with "Language 'es' doesn't exist in the project". The step above works on the FILE, named by
+      # the two-letter code (es.json, via %two_letters_code% in crowdin.yml). This step talks to the
+      # Crowdin API, which wants the project's LANGUAGE ID — and that is a Crowdin-side setting: it is
+      # `it`, `fr` and `de` here, but Spanish is a regional variant (es-ES / es-MX / …) whose id is
+      # not `es`. Pass crowdin_language when the two differ; the file locale is the default because
+      # for every other language they are the same string.
       - name: Send them to Crowdin
         if: steps.patch.outputs.seed == 'true'
         uses: crowdin/github-action@v2
         with:
           command: "upload translations"
           command_args: >-
-            --language=${{ inputs.language }}
+            --language=${{ inputs.crowdin_language || inputs.language }}
             --no-progress
           project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
           token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
