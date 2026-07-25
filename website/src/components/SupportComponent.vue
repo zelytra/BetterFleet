@@ -107,7 +107,11 @@
         <p>{{ t("faq.question.alliance.content3") }}</p>
         <p>{{ t("faq.question.alliance.content4") }}</p>
       </FaqCollapse>
+      <!-- Hidden: this entry says a lost password cannot be recovered, which stopped being true once
+           the self-service email reset went live ("Forgot password?" on the sign-in screen). Kept in
+           place, with its translations, until the copy is rewritten around the new flow. -->
       <FaqCollapse
+        v-if="false"
         id="password"
         url="support"
         :title="t('faq.question.password.title')"
