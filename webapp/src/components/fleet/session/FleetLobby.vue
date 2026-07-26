@@ -108,6 +108,13 @@
         </div>
       </div>
       <div class="actions">
+        <button type="button" class="share" @click="copyRecapShare()">
+          {{
+            displayRecapCopy
+              ? t("session.recap.copied")
+              : t("session.recap.copy")
+          }}
+        </button>
         <button
           type="button"
           class="dismiss"
@@ -309,6 +316,7 @@ import {
   utcHourToLocal,
 } from "@/objects/fleet/AllianceHint.ts";
 import {
+  buildShareText,
   countryFlagEmoji,
   dismissRecap,
   formatClock,
@@ -541,6 +549,30 @@ function copyConsoleInvite() {
   navigator.clipboard.writeText(link);
   displayInviteCopy.value = true;
   setTimeout(() => (displayInviteCopy.value = false), 2000);
+}
+
+// Shareable recap (#685): the win, as one line a crew can drop straight into their Discord. The
+// labels are translated here so the message reads in the language the crew plays in.
+const displayRecapCopy = ref<boolean>(false);
+
+function copyRecapShare() {
+  if (!sessionRecap.data) {
+    return;
+  }
+  navigator.clipboard.writeText(
+    buildShareText(
+      sessionRecap.data,
+      {
+        title: t("session.recap.title"),
+        tries: t("session.recap.tries"),
+        pirates: t("session.recap.pirates"),
+        duration: t("session.recap.duration"),
+      },
+      consoleInviteBase(),
+    ),
+  );
+  displayRecapCopy.value = true;
+  setTimeout(() => (displayRecapCopy.value = false), 2000);
 }
 
 function openContextMenu(event: any, player: Player) {
@@ -848,6 +880,17 @@ function onContextAction(action: string) {
         cursor: pointer;
         border-radius: 5px;
         font-size: 13px;
+
+        &.share {
+          padding: 6px 12px;
+          white-space: nowrap;
+          color: var(--primary);
+          border: 1px solid var(--primary);
+
+          &:hover {
+            background: rgba(50, 212, 153, 0.12);
+          }
+        }
 
         &.dismiss {
           padding: 6px 10px;

@@ -429,6 +429,8 @@
     },
     "run": "Lever l'ancre",
     "recap": {
+      "copied": "Copié !",
+      "copy": "Copier pour Discord",
       "dismiss": "Fermer",
       "duration": "Durée",
       "pirates": "Pirates",

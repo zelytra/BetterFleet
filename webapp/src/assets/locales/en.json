@@ -429,6 +429,8 @@
     },
     "run": "Set sail",
     "recap": {
+      "copied": "Copied!",
+      "copy": "Copy for Discord",
       "dismiss": "Dismiss",
       "duration": "Duration",
       "pirates": "Pirates",

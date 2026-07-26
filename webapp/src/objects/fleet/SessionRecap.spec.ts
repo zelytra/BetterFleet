@@ -3,6 +3,7 @@ import {
   RECAP_DEBOUNCE_MS,
   RecapWatchdog,
   buildRecap,
+  buildShareText,
   convergedServer,
   countryFlagEmoji,
   formatClock,
@@ -135,5 +136,48 @@ describe("countryFlagEmoji", () => {
     expect(countryFlagEmoji("f")).toBe("");
     expect(countryFlagEmoji("fra")).toBe("");
     expect(countryFlagEmoji("f1")).toBe("");
+  });
+});
+
+describe("buildShareText", () => {
+  const labels = {
+    title: "Alliance formed! ⚓",
+    tries: "Tries",
+    pirates: "Pirates",
+    duration: "Duration",
+  };
+
+  it("assembles the crew's win into one pasteable line", () => {
+    expect(
+      buildShareText(
+        { tries: 3, players: 4, durationMs: 165_000, countryCode: "fr" },
+        labels,
+      ),
+    ).toBe("Alliance formed! ⚓ Pirates: 4 · Tries: 3 · Duration: 2:45 🇫🇷");
+  });
+
+  it("drops the flag when the server region never resolved", () => {
+    expect(
+      buildShareText({ tries: 1, players: 2, durationMs: 38_000 }, labels),
+    ).toBe("Alliance formed! ⚓ Pirates: 2 · Tries: 1 · Duration: 0:38");
+  });
+
+  it("appends the site on its own line when one is given", () => {
+    const text = buildShareText(
+      { tries: 1, players: 2, durationMs: 0 },
+      labels,
+      "https://betterfleet.fr",
+    );
+    expect(text.split("\n")).toHaveLength(2);
+    expect(text.endsWith("\nhttps://betterfleet.fr")).toBe(true);
+  });
+
+  it("stays plain text, so it survives being pasted outside Discord", () => {
+    const text = buildShareText(
+      { tries: 2, players: 3, durationMs: 1000, countryCode: "us" },
+      labels,
+      "https://betterfleet.fr",
+    );
+    expect(text).not.toMatch(/[*_`~|]/);
   });
 });

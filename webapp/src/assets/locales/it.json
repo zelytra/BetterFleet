@@ -429,6 +429,8 @@
     },
     "run": "Salpa",
     "recap": {
+      "copied": "Copiato!",
+      "copy": "Copia per Discord",
       "dismiss": "Chiudi",
       "duration": "Durata",
       "pirates": "Pirati",
