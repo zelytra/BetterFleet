@@ -64,7 +64,7 @@ players looking to improve their gaming experience.
 ## 🎨 Figma Design Template
 
 Our app's Figma design template is open source and available for the community!  
-Check it out here: [BetterFleet Branding & Design Application](https://www.figma.com/community/file/1494754219225964925/betterfleet-branding-design-application)
+Check it out here: [BetterFleet Branding & Design Application](https://www.figma.com/community/file/1662910267290444925)
 
 ---
 
