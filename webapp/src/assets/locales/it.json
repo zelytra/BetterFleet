@@ -158,6 +158,10 @@
       "check": "Statistiche anonime delle alleanze",
       "description": "Contribuisci i risultati anonimi delle tue sessioni (successo, regioni, mai chi sei) alla pagina pubblica delle statistiche."
     },
+    "statsHint": {
+      "check": "Suggerimento sull'orario migliore",
+      "description": "Suggerisce le ore in cui le alleanze si formano più spesso, dalle statistiche anonime e nella tua ora locale."
+    },
     "subtitle": "Opzioni di preferenza",
     "title": "Impostazioni"
   },
