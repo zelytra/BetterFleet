@@ -158,6 +158,10 @@
       "check": "Anonymous alliance statistics",
       "description": "Contribute your sessions' anonymous outcomes (success, regions, never who you are) to the public statistics page."
     },
+    "statsHint": {
+      "check": "Best-time hint",
+      "description": "Suggest the hours when alliances form most often, drawn from the anonymous statistics and shown in your local time."
+    },
     "subtitle": "Preference options",
     "title": "Settings"
   },

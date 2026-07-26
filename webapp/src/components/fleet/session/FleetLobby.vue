@@ -158,7 +158,14 @@
           <p v-if="UserStore.player.isReady">{{ t("session.player.ready") }}</p>
           <p v-else>{{ t("session.player.notReady") }}</p>
         </button>
-        <div v-if="statsHint && !statsHintDismissed" class="stats-hint">
+        <div
+          v-if="
+            statsHint &&
+            !statsHintDismissed &&
+            UserStore.player.statsHint !== false
+          "
+          class="stats-hint"
+        >
           <p>
             🕑
             {{
@@ -329,6 +336,10 @@ function runGuidedDiagnostic(): void {
 const statsHint = ref<AllianceHint | null>(null);
 const statsHintDismissed = ref(false);
 onMounted(async () => {
+  // Switched off in the settings: skip the fetch too — this payload feeds nothing else here.
+  if (UserStore.player.statsHint === false) {
+    return;
+  }
   const payload = await fetchAllianceStats();
   statsHint.value = computeHint(
     payload,

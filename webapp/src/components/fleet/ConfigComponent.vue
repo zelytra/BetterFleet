@@ -89,6 +89,20 @@
               </p>
             </div>
           </div>
+          <div class="checkbox-wrapper descriptor">
+            <input v-model="statsHintEnabled" type="checkbox" />
+            <div class="label-wrapper">
+              <p @click="statsHintEnabled = !statsHintEnabled">
+                {{ t("config.statsHint.check") }}
+              </p>
+              <p
+                class="description"
+                @click="statsHintEnabled = !statsHintEnabled"
+              >
+                {{ t("config.statsHint.description") }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </ParameterPart>
@@ -308,6 +322,7 @@ const shuffleBanner = ref<boolean>(false);
 const shareStats = ref<boolean>(true);
 const presenceEnabled = ref<boolean>(true);
 const recapEnabled = ref<boolean>(true);
+const statsHintEnabled = ref<boolean>(true);
 const bannerIndexes = Array.from({ length: BANNER_COUNT }, (_, i) => i);
 const hostName = ref<string>(UserStore.player.serverHostName!);
 const inputLoading = ref<boolean>(false);
@@ -472,6 +487,7 @@ function resetConfig() {
   // Absent means enabled: only an explicit false turns the presence off (#684).
   presenceEnabled.value = UserStore.player.richPresence !== false;
   recapEnabled.value = UserStore.player.recapCard !== false;
+  statsHintEnabled.value = UserStore.player.statsHint !== false;
   inputLoading.value = true;
 }
 
@@ -498,6 +514,7 @@ function onSave() {
   UserStore.player.shareStats = shareStats.value;
   UserStore.player.richPresence = presenceEnabled.value;
   UserStore.player.recapCard = recapEnabled.value;
+  UserStore.player.statsHint = statsHintEnabled.value;
   UserStore.player.serverHostName = hostName.value;
   if (UserStore.player.fleet && UserStore.player.fleet.sessionId) {
     UserStore.player.fleet.updateToSession();
@@ -523,6 +540,8 @@ function isConfigDifferent(): boolean {
   if (presenceEnabled.value != (UserStore.player.richPresence !== false))
     return true;
   if (recapEnabled.value != (UserStore.player.recapCard !== false)) return true;
+  if (statsHintEnabled.value != (UserStore.player.statsHint !== false))
+    return true;
   if (
     boatSizeOptions.value.selectedValue != undefined &&
     UserStore.player.boatSize != boatSizeOptions.value.selectedValue!.id

@@ -73,6 +73,12 @@ export interface Preferences {
    * false hides it. Purely client-side — it never affects the anonymous statistics.
    */
   recapCard?: boolean;
+  /**
+   * The lobby's best-window hint drawn from the alliance statistics (issue #683). Optional: absent
+   * means shown; only an explicit false hides it. Turning it off also skips the stats fetch that
+   * feeds it — nothing else in the lobby needs that payload.
+   */
+  statsHint?: boolean;
 }
 
 export interface ActionPlayer {
