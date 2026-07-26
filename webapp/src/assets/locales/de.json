@@ -429,6 +429,8 @@
     },
     "run": "Segel setzen",
     "recap": {
+      "copied": "Kopiert!",
+      "copy": "Für Discord kopieren",
       "dismiss": "Verwerfen",
       "duration": "Dauer",
       "pirates": "Piraten",

@@ -429,6 +429,8 @@
     },
     "run": "Zarpar",
     "recap": {
+      "copied": "¡Copiado!",
+      "copy": "Copiar para Discord",
       "dismiss": "Descartar",
       "duration": "Duración",
       "pirates": "Piratas",

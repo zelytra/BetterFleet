@@ -102,6 +102,39 @@ export function formatClock(ms: number): string {
   return minutes + ":" + String(seconds).padStart(2, "0");
 }
 
+/** The already-translated labels the share text is assembled from. */
+export interface RecapShareLabels {
+  title: string;
+  tries: string;
+  pirates: string;
+  duration: string;
+}
+
+/**
+ * Builds the one-liner the "copy for Discord" button puts on the clipboard.
+ *
+ * Assembled from labels the caller has already translated, so a crew reads it in the language they
+ * play in, and kept pure so the shape is unit-tested rather than eyeballed. Deliberately plain text:
+ * Discord renders it as typed, and markdown here would leak asterisks anywhere else it is pasted.
+ * The flag is appended only when geolocation resolved the server's region.
+ */
+export function buildShareText(
+  recap: SessionRecap,
+  labels: RecapShareLabels,
+  siteUrl?: string,
+): string {
+  const flag = countryFlagEmoji(recap.countryCode);
+  const parts = [
+    `${labels.pirates}: ${recap.players}`,
+    `${labels.tries}: ${recap.tries}`,
+    `${labels.duration}: ${formatClock(recap.durationMs)}`,
+  ];
+  const head = [labels.title, parts.join(" · "), flag]
+    .filter((piece) => piece.length > 0)
+    .join(" ");
+  return siteUrl ? `${head}\n${siteUrl}` : head;
+}
+
 /** ISO 3166-1 alpha-2 → its flag emoji (regional-indicator pair), or "" when unknown. */
 export function countryFlagEmoji(countryCode?: string): string {
   if (
