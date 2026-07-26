@@ -8,6 +8,16 @@ import StatisticsPage from "@/components/StatisticsPage.vue";
 declare module "vue-router" {
   interface RouteMeta {
     displayInNav: boolean;
+    /**
+     * Shown only in the phone/tablet menu. The desktop nav is for the vitrine; joining a session is
+     * something you do from the device you are holding, and it would be noise next to Home/Support.
+     */
+    displayInMobileNav?: boolean;
+    /**
+     * Translation key for the nav entry. Routes in the desktop nav use their `name` as that key;
+     * this exists for the ones whose name is already taken by code that navigates to them.
+     */
+    navLabel?: string;
   }
 }
 
@@ -55,11 +65,16 @@ export const routes = [
   {
     // Console players join a session lobby from their phone (#682). Lazy: the realtime lobby is
     // dead weight for every marketing visit, so it only loads when someone opens their invite link.
-    path: "/s/:code",
+    //
+    // The code is optional: an invite link carries it, but the guide also tells players to come to
+    // the site and type it in, and /s on its own lands them on the join form with the field empty.
+    path: "/s/:code?",
     name: "session",
     component: () => import("@/components/session/MobileLobby.vue"),
     meta: {
       displayInNav: false,
+      displayInMobileNav: true,
+      navLabel: "nav.joinSession",
     },
   },
   {

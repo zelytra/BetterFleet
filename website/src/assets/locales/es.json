@@ -152,6 +152,7 @@
   },
   "name": "Mejor flota",
   "nav": {
+    "joinSession": "Unirse a una sesión",
     "documentation": "Documentación",
     "home": "bienvenida",
     "support": "Apoyo",

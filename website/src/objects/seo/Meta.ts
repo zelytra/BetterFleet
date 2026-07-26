@@ -37,8 +37,10 @@ const PAGES: Record<
     noindex: true,
   },
   // The console-guest lobby (#682): a personal deep link keyed on a session code — never something a
-  // crawler should index. Keyed by the route pattern, matched via route.matched below.
-  "/s/:code": {
+  // crawler should index. Keyed by the route pattern, matched via route.matched below — the "?" is
+  // part of that pattern since the code became optional, and dropping it here would quietly hand the
+  // lobby back to the crawlers.
+  "/s/:code?": {
     title: "seo.lobby.title",
     description: "seo.lobby.description",
     noindex: true,
