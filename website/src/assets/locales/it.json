@@ -152,6 +152,7 @@
   },
   "name": "BetterFleet",
   "nav": {
+    "joinSession": "Unisciti a una sessione",
     "documentation": "Scopri",
     "home": "Home",
     "support": "Supporto",

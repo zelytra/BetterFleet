@@ -176,6 +176,7 @@
   },
   "name": "BetterFleet",
   "nav": {
+    "joinSession": "Rejoindre une session",
     "documentation": "Découvrir",
     "home": "Accueil",
     "support": "Support",

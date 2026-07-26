@@ -16,6 +16,11 @@
     <p class="note">{{ t("consoleGuide.note") }}</p>
 
     <div class="actions">
+      <!-- Step 3 tells the reader to come to the site and enter their code; this is that screen,
+           one tap away, so they do not have to go hunting for it in the menu. -->
+      <router-link class="btn primary" to="/s">
+        {{ t("nav.joinSession") }}
+      </router-link>
       <a class="btn ghost" href="https://discord.gg/sHPp5CPxf2" target="_blank">
         {{ t("discover.discord.button") }}
       </a>
@@ -104,17 +109,32 @@ const { t } = useI18n();
   .actions {
     display: flex;
     justify-content: center;
+    // Two actions now, and this page is read on phones: let them stack rather than shrink.
+    flex-wrap: wrap;
+    gap: 10px;
     margin-top: 20px;
 
-    .btn.ghost {
+    .btn {
       min-height: 50px;
       padding: 0 24px;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .btn.primary {
+      background: var(--primary);
+      color: #0b241b;
+      border: none;
+    }
+
+    .btn.ghost {
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: var(--primary-text);
-      text-decoration: none;
+      font-weight: 400;
     }
   }
 }

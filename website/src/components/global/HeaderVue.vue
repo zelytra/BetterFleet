@@ -33,13 +33,17 @@
   </header>
   <transition>
     <nav v-if="menuOpen" class="mobile-menu">
+      <!-- Also carries the phone-only entries: joining a session is done from the device in your
+           hand, and the guide tells console players to come here and type their code (#682). -->
       <router-link
-        v-for="route in routes.filter((x) => x.meta.displayInNav)"
+        v-for="route in routes.filter(
+          (x) => x.meta.displayInNav || x.meta.displayInMobileNav,
+        )"
         :key="route.name"
-        :to="route.path"
+        :to="mobileNavTarget(route)"
         @click="menuOpen = false"
       >
-        {{ t(route.name) }}
+        {{ t(route.meta.navLabel ?? route.name) }}
       </router-link>
     </nav>
   </transition>
@@ -61,6 +65,14 @@ const { t } = useI18n();
 // Phone-only full-screen nav (#670): the burger is displayed below $palm, so this never opens on
 // desktop; picking a destination closes it.
 const menuOpen = ref(false);
+
+// A route's `path` is a pattern, not a URL: the session route is "/s/:code?", and linking to that
+// literally would navigate to a path containing a colon. Strip the optional segment so the entry
+// lands on the join form with the code field empty.
+function mobileNavTarget(route: { path: string }): string {
+  const stripped = route.path.replace(/\/:[^/]+\?$/, "");
+  return stripped.length > 0 ? stripped : "/";
+}
 </script>
 
 <style scoped lang="scss">
