@@ -3,9 +3,8 @@
     <!-- Full-screen "set sail" moment: readable from the sofa (#682). -->
     <div v-if="countdownEndsAt" class="countdown">
       <p class="label">{{ t("mobileLobby.countdown.label") }}</p>
-      <p class="value">
-        {{ remaining > 0 ? remaining : t("mobileLobby.countdown.go") }}
-      </p>
+      <p v-if="remaining > 0" class="value">{{ remaining }}</p>
+      <p v-else class="go">{{ t("mobileLobby.countdown.go") }}</p>
     </div>
 
     <!-- Session ended: the app crew left (backend disbanded it) or the link dropped. -->
@@ -510,6 +509,22 @@ function join() {
       font-weight: 800;
       line-height: 1;
       margin: 0;
+    }
+
+    // The "set sail!" phrase is its own element, not a variant of .value: 34vw sizes a single glyph,
+    // and the localised phrase is several words ("Larguez les amarres !"), which at that size ran
+    // 432px wide inside a 375px screen. Still readable from the sofa, but allowed to wrap.
+    .go {
+      color: var(--primary);
+      font-weight: 800;
+      font-size: clamp(30px, 11vw, 60px);
+      line-height: 1.15;
+      max-width: 92vw;
+      padding: 0 16px;
+      margin: 0;
+      box-sizing: border-box;
+      text-align: center;
+      text-wrap: balance;
     }
   }
 }
