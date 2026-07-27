@@ -90,6 +90,31 @@ class AllianceStatsEndpointsTest {
     }
 
     @Test
+    void aRowRecordedUnderTheOldRuleIsCountedByTodaysRule() {
+        // Written before #700, when converged meant "the whole fleet reached one server": three of the
+        // four grouped up, so it was stored as a failure. Today that is an alliance, and the band must
+        // say so rather than repeat what the flag was set to back then.
+        AllianceAttempt legacy = attempt(4, 3);
+        legacy.converged = false; // what the old rule decided, kept on the row as the audit trail
+
+        List<AllianceStatsEndpoints.SizeBand> bands = AllianceStatsEndpoints.bandBreakdown(List.of(legacy));
+        AllianceStatsEndpoints.SizeBand medium = bands.get(1); // 4-6
+        assertEquals(1, medium.attempts());
+        assertEquals(1, medium.converged(), "the stored flag must not decide this any more");
+        assertEquals(1.0, medium.convergenceRate(), 1e-9);
+    }
+
+    @Test
+    void aStoredFlagCannotInventAConvergenceEither() {
+        // The reverse guard: a row whose flag says true but that never grouped anyone stays a failure.
+        AllianceAttempt bogus = attempt(4, 1);
+        bogus.converged = true;
+
+        List<AllianceStatsEndpoints.SizeBand> bands = AllianceStatsEndpoints.bandBreakdown(List.of(bogus));
+        assertEquals(0, bands.get(1).converged());
+    }
+
+    @Test
     void emptyBandsAreStillReportedRatherThanDropped() {
         List<AllianceStatsEndpoints.SizeBand> bands = AllianceStatsEndpoints.bandBreakdown(List.of());
         assertEquals(3, bands.size());

@@ -33,6 +33,25 @@ public class AllianceStatsEndpoints {
      */
     private static final int SHIPS_PER_SERVER = 5;
 
+    /**
+     * Whether an attempt counts as an alliance having formed, decided here rather than read from the
+     * stored {@code converged} flag.
+     * <p>
+     * That flag holds whatever rule was in force the day the row was written: until #700 it meant
+     * "the whole fleet reached one server" ({@code distinctServers == 1}), and since then it means
+     * "at least two met". A search where three players out of four grouped up was therefore recorded
+     * as a failure in June and is a success today — same event, opposite answer, and the older row
+     * keeps its answer for ever. Adding them up gives a percentage that silently changes definition
+     * partway through its own history.
+     * <p>
+     * Deriving it from {@code largestGroup}, which every row has always carried, puts the whole
+     * dashboard on one rule. The column stays written at record time: it is the audit trail of what
+     * was decided back then, and comparing the two is how you measure the gap.
+     */
+    private static boolean converged(AllianceAttempt attempt) {
+        return attempt.largestGroup >= 2;
+    }
+
     @Inject
     AllianceAttemptRepository repository;
 
@@ -71,7 +90,7 @@ public class AllianceStatsEndpoints {
                 .toList();
 
         long total = rows.size();
-        long converged = rows.stream().filter(a -> a.converged).count();
+        long converged = rows.stream().filter(AllianceStatsEndpoints::converged).count();
         double rate = total == 0 ? 0 : (double) converged / total;
         double avgTries = rows.stream().mapToInt(a -> a.tryNumber).average().orElse(0);
         double goalCompletion = averageGoalCompletion(rows);
@@ -86,10 +105,10 @@ public class AllianceStatsEndpoints {
             int hour = t.getHour();
             long[] cell = cells.computeIfAbsent(dow + "-" + hour, k -> new long[2]);
             cell[0]++;
-            if (a.converged) cell[1]++;
+            if (converged(a)) cell[1]++;
             long[] h = byHour.computeIfAbsent(hour, k -> new long[2]);
             h[0]++;
-            if (a.converged) h[1]++;
+            if (converged(a)) h[1]++;
         }
 
         List<HeatCell> heatmap = new ArrayList<>();
@@ -156,7 +175,7 @@ public class AllianceStatsEndpoints {
         List<SizeBand> out = new ArrayList<>();
         bands.forEach((band, list) -> {
             long attempts = list.size();
-            long met = list.stream().filter(a -> a.converged).count();
+            long met = list.stream().filter(AllianceStatsEndpoints::converged).count();
             out.add(new SizeBand(band, attempts, met,
                     attempts == 0 ? 0 : (double) met / attempts,
                     averageGoalCompletion(list)));
