@@ -302,7 +302,8 @@
     "tile": {
       "attempts": "Erfasste Versuche",
       "convergence": "Konvergenzrate",
-      "tries": "Ø Versuche bis zur Konvergenz"
+      "tries": "Ø Versuche bis zur Konvergenz",
+      "goal": "Ziel erreicht"
     },
     "region": {
       "label": "Region des Hosts",
@@ -315,6 +316,12 @@
     },
     "regions": {
       "title": "Woher die Spieler kommen"
+    },
+    "size": {
+      "title": "Nach Suchgröße",
+      "note": "Zwei Schiffe zusammenzubringen wird leichter, je mehr suchen, und eine große Crew will meist fünf davon, nicht zwei. Jede Gruppe wird daran gemessen, was sie tatsächlich erreichen konnte.",
+      "band": "Suchende Spieler",
+      "attempts": "Versuche"
     }
   }
 }

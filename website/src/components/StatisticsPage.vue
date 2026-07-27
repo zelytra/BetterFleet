@@ -99,6 +99,22 @@ const topRegions = computed(() => {
   }));
 });
 
+const percentGoal = computed(() =>
+  stats.value ? Math.round(stats.value.goalCompletion * 100) : 0,
+);
+
+// Per-size rows (#720). Bands with nothing in them are dropped rather than shown as a row of dashes.
+const sizeBands = computed(() =>
+  (stats.value?.bySize ?? [])
+    .filter((b) => b.attempts > 0)
+    .map((b) => ({
+      band: b.band,
+      attempts: b.attempts,
+      convergence: Math.round(b.convergenceRate * 100),
+      goal: Math.round(b.goalCompletion * 100),
+    })),
+);
+
 const hasData = computed(() => (stats.value?.totalAttempts ?? 0) > 0);
 </script>
 
@@ -134,9 +150,35 @@ const hasData = computed(() => (stats.value?.totalAttempts ?? 0) > 0);
           <h2>{{ percentRate }}%</h2>
           <p>{{ t("alliance.tile.convergence") }}</p>
         </div>
+        <div class="tile accent">
+          <h2>{{ percentGoal }}%</h2>
+          <p>{{ t("alliance.tile.goal") }}</p>
+        </div>
         <div class="tile">
           <h2>{{ avgTries }}</h2>
           <p>{{ t("alliance.tile.tries") }}</p>
+        </div>
+      </div>
+
+      <!-- Per search size (#720): "two ships met" is far easier to clear with more boats in the
+           draw, and a big search is usually after five, not two — so one rate over all sizes
+           flatters the large ones. Each band is scored against what it could actually reach. -->
+      <div v-if="sizeBands.length" class="card size-card">
+        <h3>{{ t("alliance.size.title") }}</h3>
+        <p class="muted note">{{ t("alliance.size.note") }}</p>
+        <div class="size-table">
+          <div class="row head">
+            <span>{{ t("alliance.size.band") }}</span>
+            <span>{{ t("alliance.size.attempts") }}</span>
+            <span>{{ t("alliance.tile.convergence") }}</span>
+            <span>{{ t("alliance.tile.goal") }}</span>
+          </div>
+          <div v-for="row in sizeBands" :key="row.band" class="row">
+            <span class="band">{{ row.band }}</span>
+            <span>{{ row.attempts }}</span>
+            <span>{{ row.convergence }}%</span>
+            <span class="goal">{{ row.goal }}%</span>
+          </div>
         </div>
       </div>
 
@@ -296,6 +338,46 @@ header {
 
   h3 {
     margin-bottom: 16px;
+  }
+}
+
+.size-card {
+  .note {
+    margin: -8px 0 16px;
+    font-size: 14px;
+  }
+
+  .size-table {
+    // The four columns stay readable on a phone by scrolling rather than crushing.
+    overflow-x: auto;
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 8px;
+      padding: 10px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      min-width: 380px;
+      font-variant-numeric: tabular-nums;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &.head {
+        font-size: 13px;
+        color: var(--secondary-text);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .band {
+        color: var(--primary-text);
+      }
+
+      .goal {
+        color: var(--primary);
+      }
+    }
   }
 }
 

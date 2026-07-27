@@ -302,7 +302,8 @@
     "tile": {
       "attempts": "Intentos registrados",
       "convergence": "Tasa de convergencia",
-      "tries": "Intentos medios para converger"
+      "tries": "Intentos medios para converger",
+      "goal": "Objetivo alcanzado"
     },
     "region": {
       "label": "Región del propietario",
@@ -315,6 +316,12 @@
     },
     "regions": {
       "title": "De dónde vienen los jugadores"
+    },
+    "size": {
+      "title": "Por tamaño de búsqueda",
+      "note": "Reunir dos barcos es más fácil cuantos más estén buscando, y una tripulación grande suele querer cinco, no dos. Cada franja se puntúa según lo que realmente podía alcanzar.",
+      "band": "Jugadores buscando",
+      "attempts": "Intentos"
     }
   }
 }
