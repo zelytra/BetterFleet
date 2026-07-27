@@ -172,49 +172,63 @@
     "title": "Estadísticas"
   },
   "tutorial": {
-    "end": {
-      "content": "¡Buena velocidad! ¡Que naveges entre los marineros honestos y hacer una fortuna en el mar! Aún más... ¡Cuidado con los mutineros, anhelan el dulce sabor de la nueva riqueza encontrada!",
-      "title": "Una vez que has encontrado el servidor?"
+    "eyebrow": "Guía paso a paso",
+    "title": "Reúne a tu tripulación en un mismo servidor",
+    "lead": "Sea of Thieves coloca cada barco en un servidor al azar. BetterFleet sincroniza a tus tripulaciones para que todos pulséis «Zarpar» en el mismo segundo, y luego te dice quién ha coincidido de verdad.",
+    "whatIsIt": {
+      "title": "¿Qué es un servidor de alianza?",
+      "content": "En Sea of Thieves una alianza es un pacto entre barcos: comparten el botín y navegan como una sola flota. Lo difícil es llevar esos barcos al mismo servidor. El juego os reparte al azar y no ofrece ninguna forma de elegir dónde apareces.",
+      "role": "Eso es lo único que hace BetterFleet. Nunca toca el juego, no da ninguna ventaja y no automatiza nada dentro de él. Coordina el momento en que todos pulsáis «Zarpar» y luego lee tu tráfico de red para deducir en qué servidor ha acabado cada uno."
     },
-    "howTo": {
-      "content": "Para crear una alianza en Mar de los Ladrones, los jugadores deben coordinar sus acciones con precisión. La organización generalmente comienza mucho antes de salir al mar, en un momento en que todos los participantes se pusieron de acuerdo. La clave es sincronizar el momento exacto en el que todo el mundo hace clic en \"Establecer navegación\" en el menú del juego, que potencialmente permite a las diferentes tripulaciones encontrarse en el mismo servidor. Aquí es donde entra en juego BetterFleet. Con el fin de ayudar a esta sincronización, la aplicación ofrece una interfaz en la que los jugadores pueden planificar sus acciones de forma coordinada.",
-      "title": "¿Cómo crear una alianza?"
+    "needs": {
+      "title": "Antes de empezar",
+      "item1": "BetterFleet instalado en Windows y una cuenta gratuita. Cada jugador de PC usa su propia copia.",
+      "item2": "Alguna forma de hablar o al menos de pasaros el código de sesión: voz, Discord, lo que sea.",
+      "item3": "Sea of Thieves abierto y esperando en el menú principal, no ya dentro de una partida."
+    },
+    "steps": {
+      "title": "Formar una alianza, paso a paso"
     },
     "step": {
       "1": {
-        "content": "En primer lugar, usted necesita una cuenta. Al abrir BetterFleet se le pedirá que inicie sesión con sus datos para que pueda acceder a la aplicación.",
-        "title": "Inicie sesión en la aplicación"
+        "title": "Crea una sesión y comparte su código",
+        "content": "Abre BetterFleet, inicia sesión y crea una sesión. Obtienes un código de seis caracteres y te conviertes en el capitán, quien lanza la cuenta atrás. Pasa el código a tus compañeros: lo introducen en su propia aplicación y aparecen en tu sala.",
+        "console": "Los jugadores de consola no instalan nada. Usa «Invitar a jugadores de consola» para copiar un enlace, o diles que abran betterfleet.fr en el móvil e introduzcan el código."
       },
       "2": {
-        "content": "Selecciona 'Crear una sesión' para configurar un nuevo espacio donde podrás invitar a otros jugadores a unirse a tu alianza.",
-        "title": "Creando una sesión"
+        "title": "Todos esperan en la pantalla «Zarpar»",
+        "content": "En el juego, cada uno elige barco y se detiene en la pantalla «Zarpar» sin pulsarla. Durante la búsqueda cada jugador navega solo en su propio barco: os uniréis de verdad cuando estéis en el mismo servidor."
       },
       "3": {
-        "content": "Se generará un ID único para tu sesión. Indica este ID a las personas que quieras invitar y formar parte de la alianza.",
-        "title": "Código de sesión compartido"
+        "title": "Marcaos como listos",
+        "content": "De vuelta en BetterFleet, cada jugador se pone como listo. El capitán ve de un vistazo quién falta, sin tener que pasar lista por voz."
       },
       "4": {
-        "content": "Pide a todos los jugadores que vayan al menú \"Establecer vela\" del juego, donde podrán prepararse para empezar el juego juntos.",
-        "title": "Reuniéndose en el menú 'Levantando anclas'"
+        "title": "El capitán lanza la cuenta atrás",
+        "content": "Cuando todos están listos, el capitán inicia la cuenta atrás. Aparece en todas las pantallas a la vez, con un aviso sonoro para que los jugadores de consola también lo oigan. Al llegar a cero, todos pulsáis «Zarpar» en el mismo segundo: esa simultaneidad es lo que da al emparejamiento la oportunidad de reuniros."
       },
       "5": {
-        "content": "Cada jugador debe entonces cambiar su estado para el comienzo, lo que puede hacer seleccionando 'Listo' en la interfaz de la aplicación.",
-        "title": "Confirmación de preparación"
-      },
-      "6": {
-        "content": "Una vez que todos los jugadores están listos, el host de la sesión inicia una cuenta regresiva en BetterFleet para que todo el mundo haga clic en 'Establecer vela' simultáneamente.",
-        "title": "Iniciando cuenta atrás"
-      },
-      "7": {
-        "content": "Una vez en el juego, tendrás que comprobar si has encontrado un servidor común. BetterFleet agrupará a jugadores que terminaron juntos en la lista. En la posibilidad de no encontrar un servidor, repetir el proceso desde el paso 4 y así sucesivamente.",
-        "title": "Comprobar presencia en un servidor común"
+        "title": "Mira quién ha coincidido",
+        "content": "Mientras carga el juego, BetterFleet deduce el servidor de cada jugador a partir de su tráfico de red y agrupa bajo una misma tarjeta a todos los que han llegado al mismo sitio. Una tripulación repartida en dos tarjetas está en dos servidores distintos.",
+        "again": "¿No estáis todos juntos? Sal de la partida, vuelve a la pantalla «Zarpar» y lanza otra cuenta atrás. No hay que reiniciar nada y la sesión se mantiene."
       }
     },
-    "stepWord": "Escenario",
-    "title": "Empezando con BetterFleet",
-    "whatIsIt": {
-      "content": "Un servidor de alianza es un servidor de juegos donde varias tripulaciones acordaron formar una alianza estratégica y cooperar para su beneficio mutuo. En estos servidores, los jugadores comparten los mismos objetivos, como recolectar tesoros o llevar las misiones a la finalización, y sacude las manos para no atacarse mutuamente. La idea es que todos y cada uno de los miembros se beneficien de las recompensas, por lo tanto optimizando la experiencia de ganancia y juego para todos. Esto crea una envidia donde los jugadores pueden centrarse en el trabajo en equipo y la exploración en lugar de ser competitivos, ofreciendo una aventura más relajada basada en la comunidad.",
-      "title": "¿Qué es un servidor de alianza en Sea Of Thieves?"
+    "shot": {
+      "session": "La sala justo después de crear la sesión: el código que compartir y los compañeros llegando.",
+      "ready": "El estado de cada jugador, para que el capitán sepa cuándo empezar.",
+      "countdown": "La cuenta atrás compartida, en todas las pantallas a la vez.",
+      "grouped": "El resultado: tres jugadores reunidos en un servidor y un cuarto que ha aparecido en otro."
+    },
+    "reality": {
+      "title": "Cuánto se tarda en realidad",
+      "content": "Una sola cuenta atrás rara vez basta, y es normal: decide el emparejamiento, no la aplicación. Las tripulaciones suelen necesitar varios intentos, de unos minutos a casi una hora. Lo que cambia BetterFleet es que cada intento está bien sincronizado y que sabes al instante si ha funcionado.",
+      "tip1": "Las horas tranquilas son más difíciles: menos jugadores significa menos servidores llenándose a la vez. La sala te sugiere las horas que mejor funcionan.",
+      "tip2": "Manteneos en la misma región. Dos jugadores en extremos opuestos del mundo casi nunca coincidirán.",
+      "tip3": "Un servidor admite de cinco a seis barcos. Juntar a dos es rápido; tomar un servidor entero requiere paciencia."
+    },
+    "cta": {
+      "title": "¿Listo para zarpar?",
+      "content": "Descarga BetterFleet para Windows o únete a la sesión de un compañero desde el móvil."
     }
   },
   "mobileLobby": {

@@ -98,3 +98,18 @@ A session action touches both sides of the socket.
 Push a `v*` tag (or run the "Publish" workflow manually). The pipeline resolves the version, runs the
 `verify` test gate, then publishes the Tauri app, backend, and website, and syncs the version back to
 `master`. Confirm secrets and branch protection first — see [workflows.md](workflows.md).
+
+## Retake the website tutorial's screenshots
+
+The four pictures on `/tutorial` are the **real lobby**, captured headlessly from the app's own
+components in its shipped 1260×760 window.
+
+```
+cd webapp && npm run shots
+```
+
+That rewrites `website/src/assets/steps/{session,ready,countdown,grouped}-{fr,en}.webp`. The harness
+lives in [`webapp/tools/lobby-shots/`](../../webapp/tools/lobby-shots/README.md), which documents
+what is stubbed (keycloak, the router, the Tauri game poll) and why. Retake them whenever the lobby
+changes enough that the pictures stop matching the app; the page's own prose is separate, under
+`tutorial.*` in the website locales.

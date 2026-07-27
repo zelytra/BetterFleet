@@ -172,49 +172,63 @@
     "title": "Statistiken"
   },
   "tutorial": {
-    "end": {
-      "content": "Godspeed! Möge du unter ehrlichen Seeleuten segeln und ein Vermögen am Meer machen! Still... Hüte dich vor Mutineern, sie segeln nach der süßen Fahne des neu gefundenen Reichtums!",
-      "title": "Sobald du den Server gefunden hast?"
+    "eyebrow": "Schritt-für-Schritt-Anleitung",
+    "title": "Bring deine Crew auf einen Server",
+    "lead": "Sea of Thieves setzt jedes Schiff auf einen zufälligen Server. BetterFleet bringt eure Crews auf einen Takt, damit ihr alle in derselben Sekunde auf „Leinen los“ klickt, und sagt euch danach, wer tatsächlich zusammen gelandet ist.",
+    "whatIsIt": {
+      "title": "Was ist ein Allianz-Server?",
+      "content": "In Sea of Thieves ist eine Allianz ein Pakt zwischen Schiffen: Sie teilen die Beute und segeln als eine Flotte. Schwierig ist, diese Schiffe überhaupt auf denselben Server zu bekommen. Das Spiel verteilt euch zufällig und bietet keine Möglichkeit, den Server zu wählen.",
+      "role": "Genau das und nichts anderes macht BetterFleet. Es fasst das Spiel nie an, verschafft keinen Vorteil und automatisiert darin nichts. Es koordiniert den Moment, in dem ihr alle „Leinen los“ drückt, und liest anschließend euren Netzwerkverkehr aus, um zu bestimmen, auf welchem Server jeder gelandet ist."
     },
-    "howTo": {
-      "content": "Um eine Allianz im Meer der Diebe zu gründen, müssen die Spieler ihre Aktionen präzise koordinieren. Die Organisation beginnt in der Regel lange bevor sie auf See geht, zu einem Zeitpunkt, an dem sich alle Teilnehmer einig waren. Der Schlüssel ist, den genauen Moment zu synchronisieren, in dem jeder auf \"Segel setzen\" im Spielmenü klickt, die es den verschiedenen Crews ermöglicht, sich auf dem gleichen Server wiederzufinden. Hier kommt die BetterFleet ins Spiel. Um diese Synchronisation zu unterstützen, bietet die Anwendung eine Schnittstelle, auf der Spieler ihre Aktionen koordiniert planen können.",
-      "title": "Wie gründe ich eine Allianz?"
+    "needs": {
+      "title": "Bevor es losgeht",
+      "item1": "BetterFleet unter Windows installiert und ein kostenloses Konto. Jeder PC-Spieler nutzt seine eigene Kopie.",
+      "item2": "Eine Möglichkeit zu sprechen oder zumindest den Sitzungscode weiterzugeben: Voice, Discord, egal was.",
+      "item3": "Sea of Thieves geöffnet und im Hauptmenü wartend, noch nicht in einer Welt."
+    },
+    "steps": {
+      "title": "Eine Allianz bilden, Schritt für Schritt"
     },
     "step": {
       "1": {
-        "content": "Zuallererst benötigen Sie einen Account. Beim Öffnen von BetterFleet werden Sie aufgefordert, sich mit Ihren Daten anzumelden, damit Sie auf die Anwendung zugreifen können.",
-        "title": "In der Anwendung anmelden"
+        "title": "Sitzung erstellen und den Code teilen",
+        "content": "Öffne BetterFleet, melde dich an und erstelle eine Sitzung. Du bekommst einen sechsstelligen Code und wirst Kapitän, also derjenige, der den Countdown startet. Gib den Code an deine Crew weiter: Sie tragen ihn in ihrer eigenen App ein und erscheinen in deiner Lobby.",
+        "console": "Konsolenspieler installieren nichts. Nutze „Konsolenspieler einladen“, um einen Link zu kopieren, oder sag ihnen, sie sollen betterfleet.fr auf dem Handy öffnen und den Code eingeben."
       },
       "2": {
-        "content": "Wähle 'Erstelle eine Sitzung', um einen neuen Raum einzurichten, in dem du andere Spieler zu deiner Allianz einladen kannst.",
-        "title": "Erstellen einer Sitzung"
+        "title": "Alle warten im „Leinen los“-Bildschirm",
+        "content": "Im Spiel wählt jeder ein Schiff und bleibt im „Leinen los“-Bildschirm stehen, ohne zu klicken. Während der Suche segelt jeder allein auf seinem eigenen Schiff — zusammenkommen tut ihr, sobald ihr auf demselben Server seid."
       },
       "3": {
-        "content": "Eine eindeutige ID wird für Ihre Sitzung generiert. Teilen Sie diese ID den Personen mit, die Sie einladen möchten und Teil der Allianz sein möchten.",
-        "title": "Teilen von Sitzungscodes"
+        "title": "Setzt euch auf bereit",
+        "content": "Zurück in BetterFleet setzt sich jeder auf bereit. Der Kapitän sieht auf einen Blick, wer noch fehlt, und muss niemanden über Voice abfragen."
       },
       "4": {
-        "content": "Bitten Sie alle Spieler, zum Menü 'Segel setzen' des Spiels zu gehen, wo sie sich auf den Start des Spiels vorbereiten können.",
-        "title": "Treffen im Menü „Anker heben“."
+        "title": "Der Kapitän startet den Countdown",
+        "content": "Sobald alle bereit sind, startet der Kapitän den Countdown. Er läuft auf allen Bildschirmen gleichzeitig, mit einem Ton, damit auch Konsolenspieler ihn hören. Bei null klicken alle in derselben Sekunde auf „Leinen los“ — genau diese Gleichzeitigkeit gibt dem Matchmaking die Chance, euch zusammenzubringen."
       },
       "5": {
-        "content": "Jeder Spieler muss dann seinen Status für den Start ändern, was er tun kann, indem er \"Ready\" in der Anwendungsoberfläche auswählt.",
-        "title": "Bestätigung der Bereitschaft"
-      },
-      "6": {
-        "content": "Sobald alle Spieler bereit sind, startet der Session-Host einen Countdown auf BetterFleet, so dass jeder gleichzeitig auf 'Segel setzen' klickt.",
-        "title": "Initiiere Countdown"
-      },
-      "7": {
-        "content": "Sobald du im Spiel bist, musst du überprüfen, ob du einen gemeinsamen Server gefunden hast. BetterFleet wird Spieler gruppieren, die in der Liste landeten. Bei der Off-Chance haben Sie keinen Server gefunden, wiederholen Sie den Prozess von Schritt 4 und so weiter.",
-        "title": "Presence-Check auf einem Common Server"
+        "title": "Seht, wer zusammen gelandet ist",
+        "content": "Während das Spiel lädt, ermittelt BetterFleet den Server jedes Spielers aus dessen Netzwerkverkehr und fasst alle, die am selben Ort gelandet sind, unter einer Karte zusammen. Eine Crew auf zwei Karten ist auf zwei verschiedenen Servern.",
+        "again": "Nicht alle zusammen? Verlasst die Welt, geht zurück in den „Leinen los“-Bildschirm und startet einen neuen Countdown. Es muss nichts zurückgesetzt werden, die Sitzung bleibt bestehen."
       }
     },
-    "stepWord": "Schritt",
-    "title": "Anfang auf BetterFleet",
-    "whatIsIt": {
-      "content": "Ein Allianzserver ist ein Spielserver. Mehrere Mannschaften haben sich darauf geeinigt, eine strategische Allianz zu bilden und zum gegenseitigen Nutzen zusammenzuarbeiten. Auf diesen Servern teilen sich die Spieler die gleichen Ziele, wie zum Beispiel das Sammeln von Schätzen oder das Beenden von Quests, und schütteln die Hände darauf, sich nicht gegenseitig anzugreifen. Die Idee ist, dass jedes Mitglied von den Prämien profitiert und damit das Gewinn- und Spielerlebnis für jeden optimiert. Dies schafft einen Freiraum, in dem Spieler sich auf Teamarbeit und Erkundung konzentrieren können, anstatt konkurrenzfähig zu sein und ein entspannteres Community-basiertes Abenteuer zu bieten.",
-      "title": "Was ist ein Allianzserver in Sea Of Thieves?"
+    "shot": {
+      "session": "Die Lobby direkt nach dem Erstellen: der Code zum Teilen und die eintreffende Crew.",
+      "ready": "Der Bereit-Status aller, damit der Kapitän weiß, wann er starten kann.",
+      "countdown": "Der gemeinsame Countdown, gleichzeitig auf allen Bildschirmen.",
+      "grouped": "Das Ergebnis: drei Spieler auf einem Server, ein vierter woanders gelandet."
+    },
+    "reality": {
+      "title": "Wie lange es wirklich dauert",
+      "content": "Ein Countdown reicht selten, und das ist normal: Das Matchmaking entscheidet, nicht die App. Crews brauchen meist mehrere Versuche, von wenigen Minuten bis zu fast einer Stunde. Was BetterFleet ändert: Jeder Versuch ist sauber synchronisiert, und ihr wisst sofort, ob er geklappt hat.",
+      "tip1": "Ruhige Stunden sind schwerer — weniger Spieler heißt weniger Server, die sich gleichzeitig füllen. Die Lobby nennt euch die Zeiten, die erfahrungsgemäß am besten laufen.",
+      "tip2": "Bleibt ungefähr in derselben Region. Zwei Spieler auf gegenüberliegenden Seiten der Welt treffen sich so gut wie nie.",
+      "tip3": "Ein Server fasst fünf bis sechs Schiffe. Zwei von euch zusammenzubringen geht schnell; einen ganzen Server zu belegen braucht Geduld."
+    },
+    "cta": {
+      "title": "Bereit abzulegen?",
+      "content": "Lade BetterFleet für Windows herunter oder tritt der Sitzung eines Crewmitglieds direkt vom Handy aus bei."
     }
   },
   "mobileLobby": {

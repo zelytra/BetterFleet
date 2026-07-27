@@ -172,49 +172,63 @@
     "title": "Statistiche"
   },
   "tutorial": {
-    "end": {
-      "content": "Buon vento! Possa tu navigare tra marinai onesti e accumulare ricchezze in mare! Ma… Attenzione ai traditori, bramano la dolce fragranza della ricchezza appena scoperta!",
-      "title": "Hai trovato il server?"
+    "eyebrow": "Guida passo passo",
+    "title": "Porta la tua ciurma sullo stesso server",
+    "lead": "Sea of Thieves mette ogni nave su un server a caso. BetterFleet sincronizza le vostre ciurme perché clicchiate tutti su «Salpa» nello stesso secondo, poi vi dice chi si è davvero ritrovato insieme.",
+    "whatIsIt": {
+      "title": "Cos'è un server di alleanza?",
+      "content": "In Sea of Thieves un'alleanza è un patto tra navi: dividono il bottino e navigano come un'unica flotta. La parte difficile è portare quelle navi sullo stesso server. Il gioco vi distribuisce a caso e non offre alcun modo di scegliere dove si arriva.",
+      "role": "È l'unica cosa che fa BetterFleet. Non tocca mai il gioco, non dà alcun vantaggio e non automatizza nulla al suo interno. Coordina il momento in cui premete tutti «Salpa», poi legge il traffico di rete per capire su quale server è finito ciascuno."
     },
-    "howTo": {
-      "content": "Per creare un’alleanza in Sea of Thieves, i giocatori devono coordinare le proprie azioni con precisione. L’organizzazione inizia di solito molto prima di salpare, in un momento concordato da tutti i partecipanti. La chiave è sincronizzare l’esatto momento in cui ciascuno clicca su “Salpa” nel menu di gioco, il che permette, potenzialmente, alle diverse ciurme di trovarsi sullo stesso server. Ed è qui che entra in gioco BetterFleet. Per facilitare questa sincronizzazione, l’applicazione offre un’interfaccia che permette ai giocatori di pianificare le proprie azioni in modo coordinato.",
-      "title": "Come creare un'alleanza?"
+    "needs": {
+      "title": "Prima di iniziare",
+      "item1": "BetterFleet installato su Windows e un account gratuito. Ogni giocatore PC usa la propria copia.",
+      "item2": "Un modo per parlarvi o almeno per passarvi il codice della sessione: vocale, Discord, qualsiasi cosa.",
+      "item3": "Sea of Thieves aperto e fermo al menu principale, non già in partita."
+    },
+    "steps": {
+      "title": "Formare un'alleanza, passo dopo passo"
     },
     "step": {
       "1": {
-        "content": "Prima di tutto, avete bisogno di un account. All'apertura di BetterFleet ti verrà chiesto di effettuare il login con i tuoi dati in modo da poter accedere all'applicazione.",
-        "title": "Accedi all'applicazione"
+        "title": "Crea una sessione e condividine il codice",
+        "content": "Apri BetterFleet, accedi e crea una sessione. Ottieni un codice di sei caratteri e diventi il capitano, cioè chi lancia il conto alla rovescia. Passa il codice ai tuoi compagni: lo inseriscono nella loro copia e compaiono nella tua lobby.",
+        "console": "I giocatori console non installano nulla. Usa «Invita giocatori console» per copiare un link, oppure di' loro di aprire betterfleet.fr sul telefono e inserire il codice."
       },
       "2": {
-        "content": "Seleziona ‘Crea una sessione’ per impostare un nuovo spazio dove potrai invitare altri giocatori a unirsi alla tua alleanza.",
-        "title": "Crea una Sessione"
+        "title": "Tutti aspettano alla schermata «Salpa»",
+        "content": "Nel gioco ognuno sceglie una nave e si ferma alla schermata «Salpa» senza cliccarla. Durante la ricerca ciascuno naviga da solo sulla propria barca: vi unirete davvero una volta sullo stesso server."
       },
       "3": {
-        "content": "Per la tua sessione verrà generato un ID univoco. Comunica questo ID alle persone che vuoi invitare a far parte dell’alleanza.",
-        "title": "Condividi l'ID della sessione"
+        "title": "Mettetevi su «pronto»",
+        "content": "Tornati su BetterFleet, ogni giocatore si mette su pronto. Il capitano vede al volo chi manca ancora, senza fare l'appello in vocale."
       },
       "4": {
-        "content": "Invita tutti i giocatori ad aprire il menu ‘Salpa’ del gioco, dove potranno prepararsi per partire insieme.",
-        "title": "Riunitevi nel menu \"Salpa\""
+        "title": "Il capitano lancia il conto alla rovescia",
+        "content": "Quando sono tutti pronti, il capitano avvia il conto alla rovescia. Compare su tutti gli schermi insieme, con un segnale sonoro perché lo sentano anche i giocatori console. A zero, tutti cliccano «Salpa» nello stesso secondo: è questa simultaneità che dà al matchmaking la possibilità di riunirvi."
       },
       "5": {
-        "content": "Ogni giocatore deve quindi cambiare il proprio stato per l’avvio, selezionando ‘Pronto’ nell’interfaccia dell’applicazione.",
-        "title": "Conferma che Tutti siano Pronti"
-      },
-      "6": {
-        "content": "Quando tutti i giocatori sono pronti, l'organizzatore della sessione avvia il conto alla rovescia su BetterFleet, in modo che tutti clicchino su ‘Salpa’ contemporaneamente.",
-        "title": "Avvio del Conto alla Rovescia"
-      },
-      "7": {
-        "content": "Una volta in gioco, dovrai verificare se siete finiti sullo stesso server. BetterFleet raggrupperà nella lista i giocatori che si sono trovati insieme. Nel caso non abbiate trovato un server comune, ripeti il processo a partire dal passo 4 e così via.",
-        "title": "Verifica della Presenza su un Server Comune"
+        "title": "Guarda chi si è ritrovato insieme",
+        "content": "Mentre il gioco carica, BetterFleet ricava il server di ogni giocatore dal suo traffico di rete e raggruppa sotto un'unica scheda tutti quelli arrivati nello stesso posto. Una ciurma divisa su due schede è su due server diversi.",
+        "again": "Non siete tutti insieme? Uscite dalla partita, tornate alla schermata «Salpa» e lanciate un altro conto alla rovescia. Non c'è nulla da reimpostare e la sessione resta com'è."
       }
     },
-    "stepWord": "Passo",
-    "title": "Come iniziare su BetterFleet",
-    "whatIsIt": {
-      "content": "Un server di alleanza è un server di gioco in cui diverse ciurme hanno concordato di formare un’alleanza strategica e cooperare per il reciproco vantaggio. Su questi server, i giocatori condividono gli stessi obiettivi, come raccogliere tesori o completare missioni, e si impegnano a non attaccarsi a vicenda. L’idea è che tutti i membri traggano beneficio dalle ricompense, ottimizzando così il profitto e l’esperienza di gioco per ciascuno. Questo crea un ambiente in cui i giocatori possono concentrarsi sul lavoro di squadra e sull’esplorazione, piuttosto che sulla competizione, offrendo un’avventura più rilassata e basata sulla comunità.",
-      "title": "Cos'è un server dell'alleanza in Sea of Thieves?"
+    "shot": {
+      "session": "La lobby appena creata la sessione: il codice da condividere e i compagni che arrivano.",
+      "ready": "Lo stato di ciascuno, così il capitano sa quando partire.",
+      "countdown": "Il conto alla rovescia condiviso, su tutti gli schermi insieme.",
+      "grouped": "Il risultato: tre giocatori riuniti su un server e un quarto finito altrove."
+    },
+    "reality": {
+      "title": "Quanto tempo ci vuole davvero",
+      "content": "Un solo conto alla rovescia basta di rado, ed è normale: decide il matchmaking, non l'app. Di solito servono più tentativi, da qualche minuto a quasi un'ora. Quello che cambia con BetterFleet è che ogni tentativo è davvero sincronizzato e che sapete subito se ha funzionato.",
+      "tip1": "Le ore tranquille sono più difficili: meno giocatori significa meno server che si riempiono insieme. La lobby vi suggerisce gli orari che funzionano meglio.",
+      "tip2": "Restate più o meno nella stessa regione. Due giocatori agli antipodi non si incontreranno quasi mai.",
+      "tip3": "Un server ospita da cinque a sei navi. Riunirne due è rapido; prendersi un server intero richiede pazienza."
+    },
+    "cta": {
+      "title": "Pronto a salpare?",
+      "content": "Scarica BetterFleet per Windows, oppure unisciti alla sessione di un compagno direttamente dal telefono."
     }
   },
   "mobileLobby": {

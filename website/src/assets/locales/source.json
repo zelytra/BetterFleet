@@ -172,49 +172,63 @@
     "title": "Statistics"
   },
   "tutorial": {
-    "end": {
-      "content": "Godspeed! May you sail amongst honest seamen and make a fortune at sea! Still... Beware of mutineers, they crave the sweet flagrance of newfound richness!",
-      "title": "Once you found the server?"
+    "eyebrow": "Step-by-step guide",
+    "title": "Get your crew onto one server",
+    "lead": "Sea of Thieves drops every ship on a random server. BetterFleet lines your crews up so you all click Set Sail in the same second, then tells you who actually landed together.",
+    "whatIsIt": {
+      "title": "What is an alliance server?",
+      "content": "In Sea of Thieves an alliance is a pact between ships: they share loot and sail as one fleet. The hard part is getting those ships onto the same server to begin with. The game matchmakes you at random and gives you no way to choose where you land.",
+      "role": "That is the only thing BetterFleet does. It never touches the game, gives no in-game advantage and automates nothing inside it. It coordinates the moment you all press Set Sail, then reads your network traffic to work out which server each of you ended up on."
     },
-    "howTo": {
-      "content": "In order to create an alliance in Sea of Thieves, players must coordinate their actions with precision. Organisation generally starts long before putting out to sea, at a time all participants agreed upon. The key is to synchronise the exact moment everyone clicks \"Set sail\" in the game menu, which potentially allows the different crews to find themselves on the same server. This is where BetterFleet comes into play. So as to help this synchronisation along, the application offers an interface on which players can plan their actions in a coordinatied fashion.",
-      "title": "How to create an alliance?"
+    "needs": {
+      "title": "Before you start",
+      "item1": "BetterFleet installed on Windows and a free account. Every PC player runs their own copy.",
+      "item2": "A way to talk or at least to pass the session code around — voice chat, Discord, anything.",
+      "item3": "Sea of Thieves open and waiting at the main menu, not already in a world."
+    },
+    "steps": {
+      "title": "Forming an alliance, step by step"
     },
     "step": {
       "1": {
-        "content": "First and foremost, you need an account. Upon opening BetterFleet you will be asked to log in with your details so you can access the application.",
-        "title": "Log into the Application"
+        "title": "Create a session and share its code",
+        "content": "Open BetterFleet, sign in and create a session. You get a six-character code and become its captain, the one who starts the countdown. Read the code to your crewmates; they enter it in their own copy and appear in your lobby.",
+        "console": "Console players install nothing. Use Invite console players to copy a link, or tell them to open betterfleet.fr on their phone and type the code."
       },
       "2": {
-        "content": "Select 'Create a session' to set up a new space where you will be able to invite other players to join your alliance.",
-        "title": "Create a Session"
+        "title": "Everyone waits at the Set Sail screen",
+        "content": "In the game, each player picks a ship and stops at the Set Sail screen without clicking it. During the search everyone sails alone on their own boat — you join up properly once you are on the same server."
       },
       "3": {
-        "content": "A unique ID will be generated for your session. Communicate this ID to the people you wish to invite and be part of the alliance.",
-        "title": "Share the Session ID"
+        "title": "Mark yourselves ready",
+        "content": "Back in BetterFleet, each player switches to Ready. The captain sees at a glance who is still missing, so nobody has to call the roll over voice."
       },
       "4": {
-        "content": "Ask all players to go to the 'Set sail' menu of the game, where they will be able to prepare to start the game together.",
-        "title": "Meeting in the 'Set Sail' Menu"
+        "title": "The captain starts the countdown",
+        "content": "Once everyone is ready the captain launches the countdown. It runs on every screen at the same time, with a sound cue so console players hear it too. At zero, everybody clicks Set Sail within the same second — that simultaneity is what gives the matchmaker a chance to put you on one server."
       },
       "5": {
-        "content": "Every player must then change their status for the start, which they can do by selecting 'Ready' in the application interface.",
-        "title": "Confirm Everyone is Ready"
-      },
-      "6": {
-        "content": "Once all players are ready, the session host initiates a countdown on BetterFleet so that everyone clicks 'Set sail' simultaneously.",
-        "title": "Initiating Countdown"
-      },
-      "7": {
-        "content": "Once in game, you'll have to check whether you have found a common server. BetterFleet will group players who ended up together in the list. On the off chance you did not find a server, repeat the process from step 4 and so on.",
-        "title": "Presence Check on a Common Server"
+        "title": "See who landed together",
+        "content": "As the game loads, BetterFleet works out each player's server from their network traffic and groups everyone who ended up in the same place under one card. A crew spread over two cards is on two different servers.",
+        "again": "Not all together? Leave the world, return to the Set Sail screen and run another countdown. Nothing needs resetting, and the session stays as it is."
       }
     },
-    "stepWord": "Step",
-    "title": "Beginning on BetterFleet",
-    "whatIsIt": {
-      "content": "An alliance server is a game server where several crews agreed on forming a strategic alliance and cooperating for their mutual benefit. On these servers, players share the same objectives, such as collecting treasures or bringing quests to completion, and shake hands on not attacking each other. The idea is that each and every member benefits from the rewards, therefore optimising profit and gaming experience for everyone. This creates an envrionment where players can focus on teamwork and exploration rather than being competitive, offering a more laid-back community-based adventure.",
-      "title": "What is an alliance server on Sea of Thieves?"
+    "shot": {
+      "session": "The lobby just after a session is created: the code to share, and crewmates arriving.",
+      "ready": "Each player's ready state, so the captain knows when to start.",
+      "countdown": "The shared countdown, running on every screen at once.",
+      "grouped": "The result: three players gathered on one server, a fourth who landed elsewhere."
+    },
+    "reality": {
+      "title": "How long it really takes",
+      "content": "One countdown is rarely enough, and that is normal: the matchmaker decides, not the app. Crews usually need several attempts, anywhere from a few minutes to the better part of an hour. What BetterFleet changes is that every attempt is properly synchronised, and that you know straight away whether it worked.",
+      "tip1": "Quiet hours are harder — fewer players means fewer servers filling at the same time. The lobby suggests the hours that historically work best.",
+      "tip2": "Stay in roughly the same region. Two players on opposite sides of the world will almost never meet.",
+      "tip3": "A server holds five to six ships. Gathering two of you is quick; taking a whole server needs patience."
+    },
+    "cta": {
+      "title": "Ready to sail?",
+      "content": "Download BetterFleet for Windows, or join a crewmate's session straight from your phone."
     }
   },
   "mobileLobby": {
