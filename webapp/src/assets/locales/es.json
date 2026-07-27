@@ -159,8 +159,8 @@
       "description": "Contribuya los resultados anónimos de sus sesiones (éxito, regiones, nunca quién eres) a la página de estadísticas públicas."
     },
     "statsHint": {
-      "check": "Sugerencia del mejor horario",
-      "description": "Sugiere las horas en que las alianzas se forman más a menudo, según las estadísticas anónimas y en tu hora local."
+      "check": "Mejor pista de tiempo",
+      "description": "Sugiere las horas en las que las alianzas se formulan más a menudo, extraídas de las estadísticas anónimas y mostradas en la hora local."
     },
     "subtitle": "Opciones de preferencia",
     "title": "Configuraciones"

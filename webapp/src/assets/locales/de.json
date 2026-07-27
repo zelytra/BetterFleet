@@ -159,8 +159,8 @@
       "description": "Unterstützen Sie die anonymen Ergebnisse Ihrer Sitzungen (Erfolg, Regionen, nie wer Sie sind) auf der öffentlichen Statistikseite."
     },
     "statsHint": {
-      "check": "Hinweis zum besten Zeitfenster",
-      "description": "Schlägt die Stunden vor, in denen Allianzen am häufigsten entstehen, aus den anonymen Statistiken und in deiner Ortszeit."
+      "check": "Aktueller Hinweis",
+      "description": "Schlagen Sie die Stunden vor, in denen sich Allianzen am häufigsten bilden, die aus anonymen Statistiken stammen und in Ihrer lokalen Zeit angezeigt werden."
     },
     "subtitle": "Präferenzoptionen",
     "title": "Einstellungen"

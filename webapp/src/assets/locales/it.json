@@ -159,8 +159,8 @@
       "description": "Contribuisci i risultati anonimi delle tue sessioni (successo, regioni, mai chi sei) alla pagina pubblica delle statistiche."
     },
     "statsHint": {
-      "check": "Suggerimento sull'orario migliore",
-      "description": "Suggerisce le ore in cui le alleanze si formano più spesso, dalle statistiche anonime e nella tua ora locale."
+      "check": "Best-time hint",
+      "description": "Suggest the hours when alliances form most often, drawn from the anonymous statistics and shown in your local time."
     },
     "subtitle": "Opzioni di preferenza",
     "title": "Impostazioni"
@@ -433,8 +433,8 @@
     },
     "run": "Salpa",
     "recap": {
-      "copied": "Copiato!",
-      "copy": "Copia per Discord",
+      "copied": "Copied!",
+      "copy": "Copy for Discord",
       "dismiss": "Chiudi",
       "duration": "Durata",
       "pirates": "Pirati",

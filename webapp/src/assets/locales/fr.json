@@ -159,8 +159,8 @@
       "description": "Partagez les résultats anonymes de votre session (succès, régions, jamais qui vous êtes) à la page publique des statistiques."
     },
     "statsHint": {
-      "check": "Astuce du meilleur créneau",
-      "description": "Suggère les heures où les alliances se forment le plus souvent, d'après les statistiques anonymes et dans ton fuseau horaire."
+      "check": "Best-time hint",
+      "description": "Suggest the hours when alliances form most often, drawn from the anonymous statistics and shown in your local time."
     },
     "subtitle": "Options de préférence",
     "title": "Paramètres"

@@ -183,11 +183,25 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_USER}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
       KC_OVERRIDE: "false"
+      # Pin the heap in absolute terms (issue #711). The image sizes it as a percentage of "available
+      # memory", which the JVM reads from the cgroup limit when there is one and from /proc/meminfo
+      # otherwise. This is an LXC-style Proxmox guest where /proc/meminfo is NOT namespaced: the
+      # container reads the hypervisor's 62 GiB, so the default -XX:MaxRAMPercentage=70 resolved to a
+      # 43 GiB max heap on a 15.6 GiB box. ParallelGC is tuned to grow rather than collect while it
+      # believes memory is free, so it expanded eden until the host ran out — measured at +0.15 GiB/h
+      # with no plateau, 57 MiB of live data behind 7.4 GiB of RSS. Setting JAVA_OPTS_KC_HEAP
+      # replaces the InitialRAMPercentage/MaxRAMPercentage/MinRAMPercentage trio outright, which is
+      # what actually removes the dependency on that bogus reading. Never size this by percentage here.
+      JAVA_OPTS_KC_HEAP: "-Xms512m -Xmx2g -XX:MaxMetaspaceSize=256m"
     logging: *default-logging
     deploy:
       resources:
         limits:
-          memory: 1536M
+          # Backstop only, and deliberately well clear of the 2 GiB heap above. A tight limit here is
+          # its own failure mode: `start --import-realm` runs the kc.sh build augmentation at boot,
+          # and a 2 GiB limit (2026-07-21) OOM-killed the container during startup. The 1536M this
+          # replaces was tighter still — it only ever worked because production had not yet pulled it.
+          memory: 4G
     restart: unless-stopped
 
 # The histeria.fr uplink has a reduced path MTU; Docker's default 1500-byte bridge MTU makes
