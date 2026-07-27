@@ -1,7 +1,18 @@
 <template>
-  <section class="auth-page">
+  <section class="auth-page" :aria-busy="!keycloakStore.isReady">
     <img src="@/assets/icons/full-logo.svg" alt="app logo" />
-    <div v-if="!keycloakStore.isAuthenticated" class="card login-wrapper">
+    <!-- The SSO check is the app's one real wait. Until it answers we cannot know which card to
+         show, and guessing "signed out" flashed the login screen at players who were not. -->
+    <BoatLoader
+      v-if="showLoader"
+      class="card"
+      :label="t('loading.signingIn')"
+      :size="180"
+    />
+    <div
+      v-else-if="keycloakStore.isReady && !keycloakStore.isAuthenticated"
+      class="card login-wrapper"
+    >
       <h1>
         {{ t("login.welcome") }} <strong>{{ t("appName") }}</strong>
       </h1>
@@ -11,7 +22,7 @@
         @on-button-click="authUser"
       />
     </div>
-    <div v-else class="card user-card">
+    <div v-else-if="keycloakStore.isReady" class="card user-card">
       <h1>{{ t("login.succeed") }}</h1>
       <div
         v-if="UserStore.player.username"
@@ -43,12 +54,18 @@
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 import { useI18n } from "vue-i18n";
 import PirateButton from "@/vue/form/PirateButton.vue";
+import BoatLoader from "@/vue/templates/BoatLoader.vue";
 import router from "@/router";
 import { UserStore } from "@/objects/stores/UserStore";
 import { Utils } from "@/objects/utils/Utils";
-import { onMounted, onUnmounted } from "vue";
+import { useDelayedLoading } from "@/objects/utils/DelayedLoading.ts";
+import { computed, onMounted, onUnmounted } from "vue";
 
 const { t } = useI18n();
+
+// A warm SSO check answers in well under the delay, so the usual launch shows no ship at all — the
+// login card is simply there. The ship is for the cold start and the slow network.
+const showLoader = useDelayedLoading(computed(() => !keycloakStore.isReady));
 
 onMounted(() => {
   document.addEventListener("keydown", keyPressEvent);

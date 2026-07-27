@@ -5,7 +5,7 @@
       <h2>{{ t("appName") }}</h2>
     </div>
     <div class="main-content">
-      <img src="@/assets/icons/compass.svg" alt="loading-logo" />
+      <BoatLoader :size="260" />
       <slot />
     </div>
     <div class="tips">
@@ -21,6 +21,7 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+import BoatLoader from "@/vue/templates/BoatLoader.vue";
 
 const { t } = useI18n();
 
@@ -70,10 +71,6 @@ defineEmits<{
     align-items: center;
     flex-direction: column;
     gap: 24px;
-
-    img {
-      width: 50%;
-    }
 
     :slotted(*) {
       font-family: BrushTip, sans-serif;

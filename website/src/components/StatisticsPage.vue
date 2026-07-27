@@ -7,11 +7,18 @@ import {
   fetchRegions,
   RegionCount,
 } from "@/objects/AllianceStats.ts";
+import { useDelayedLoading } from "@/objects/DelayedLoading.ts";
+import BoatLoader from "@/vue/BoatLoader.vue";
+import GlobeLoading from "@/vue/GlobeLoading.vue";
 
-// Lazy: globe.gl bundles three.js, so it stays out of the main bundle and loads only here.
-const GlobeCard = defineAsyncComponent(
-  () => import("@/components/GlobeCard.vue"),
-);
+// Lazy: globe.gl bundles three.js, so it stays out of the main bundle and loads only here. It is
+// ~575 KB gzipped, so on anything but a fast connection the wait is long enough to need saying —
+// but `delay` still keeps the ship off the screen when the chunk comes from cache.
+const GlobeCard = defineAsyncComponent({
+  loader: () => import("@/components/GlobeCard.vue"),
+  loadingComponent: GlobeLoading,
+  delay: 400,
+});
 
 // The public alliance-analytics dashboard (issue #673). Anonymous, aggregated data on how often
 // crews converge onto one server, and when it works best.
@@ -22,6 +29,7 @@ const stats = ref<AllianceStats | null>(null);
 const regions = ref<RegionCount[]>([]);
 const ownerRegion = ref<string>("");
 const loading = ref(true);
+const showLoader = useDelayedLoading(loading);
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const HOURS = Array.from({ length: 24 }, (_, h) => h);
@@ -137,7 +145,15 @@ const hasData = computed(() => (stats.value?.totalAttempts ?? 0) > 0);
       </label>
     </div>
 
-    <p v-if="loading" class="muted">…</p>
+    <!-- The dashboard's own wait. The box is here for as long as the request is, so the page never
+         jumps; the ship inside it waits on `showLoader`, so a warm response — most of them — swaps
+         the figures in silently rather than blinking a ship between two states. The region filter
+         re-runs this, which is what would otherwise put that flicker one click away. -->
+    <div v-if="loading" class="loading" aria-busy="true">
+      <transition name="fade">
+        <BoatLoader v-if="showLoader" :label="t('loading.stats')" :size="150" />
+      </transition>
+    </div>
     <p v-else-if="!hasData" class="muted empty">{{ t("alliance.empty") }}</p>
 
     <template v-else>
@@ -281,6 +297,28 @@ header {
   &.empty {
     padding: 60px 0;
   }
+}
+
+// Held at the height the ship will need, from the first paint: the box exists for the whole request
+// while the ship only appears at 400ms, and a box that grew at that moment would be the very jump
+// the delay is there to avoid.
+.loading {
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// It arrives, it does not pop: an indicator that fades in reads as the page working rather than as
+// something going wrong.
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 200ms ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .tiles {
