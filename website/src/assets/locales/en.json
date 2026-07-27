@@ -229,21 +229,6 @@
     "cta": {
       "title": "Ready to sail?",
       "content": "Download BetterFleet for Windows, or join a crewmate's session straight from your phone."
-    },
-    "ui": {
-      "crew": "The Kraken's Crew",
-      "code": "Session code",
-      "invite": "Invite console players",
-      "waiting": "Waiting for the crew…",
-      "inMenu": "In the game menu",
-      "ready": "Ready",
-      "notReady": "Not ready",
-      "start": "Set sail",
-      "countdown": "The research begins in...",
-      "atZero": "Everyone clicks at zero",
-      "inGame": "Game launched",
-      "server": "Server",
-      "oneShort": "One short — run the countdown again"
     }
   },
   "mobileLobby": {

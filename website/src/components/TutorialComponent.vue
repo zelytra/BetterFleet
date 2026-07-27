@@ -2,14 +2,14 @@
 import { useI18n } from "vue-i18n";
 import SeparatorVue from "@/vue/SeparatorVue.vue";
 import PirateButton from "@/vue/PirateButton.vue";
-import LobbyMockup from "@/vue/tutorial/LobbyMockup.vue";
+import LobbyShot from "@/vue/tutorial/LobbyShot.vue";
 import { AppStore } from "@/objects/stores/appStore.ts";
 import { incrementDownload } from "@/objects/Stats.ts";
 
 const { t } = useI18n();
 
 // Five steps, each paired with the moment of the lobby it belongs to. Step 2 carries no picture on
-// purpose: it happens in Sea of Thieves, not in BetterFleet, and drawing the game here would blur
+// purpose: it happens in Sea of Thieves, not in BetterFleet, and putting the game here would blur
 // the line between what the app does and what the player does.
 const STEPS = [
   { n: 1, shot: "session" as const },
@@ -69,10 +69,12 @@ const STEPS = [
             </div>
           </div>
           <figure v-if="step.shot">
-            <LobbyMockup
-              :variant="step.shot"
-              :label="t('tutorial.shot.' + step.shot)"
-            />
+            <div class="frame">
+              <LobbyShot
+                :variant="step.shot"
+                :label="t('tutorial.shot.' + step.shot)"
+              />
+            </div>
             <figcaption>{{ t("tutorial.shot." + step.shot) }}</figcaption>
           </figure>
         </article>
@@ -283,6 +285,16 @@ const STEPS = [
           font-style: italic;
         }
       }
+
+      // Where the window has room to spare, the screenshots break out of the reading column. They
+      // are of a 1260px-wide app: squeezed into the 850px the text wants, its own labels render
+      // under 10px and the picture stops being one you can read.
+      @media (min-width: 1180px) {
+        figure {
+          margin-left: -100px;
+          margin-right: -100px;
+        }
+      }
     }
   }
 
@@ -388,6 +400,19 @@ const STEPS = [
 
       h3 {
         font-size: 18px;
+      }
+    }
+
+    // The screenshots are of a 1260px-wide window. Scaled into a phone's width the app's own text
+    // stops being readable, so here the frame keeps them near their real size and pans instead —
+    // the picture is the point, and a thumbnail of it teaches nothing.
+    .frame {
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+
+      :deep(.lobby-shot) {
+        width: 720px;
+        max-width: none;
       }
     }
   }

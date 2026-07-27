@@ -229,21 +229,6 @@
     "cta": {
       "title": "Pronto a salpare?",
       "content": "Scarica BetterFleet per Windows, oppure unisciti alla sessione di un compagno direttamente dal telefono."
-    },
-    "ui": {
-      "crew": "La ciurma del Kraken",
-      "code": "ID sessione",
-      "invite": "Invita giocatori console",
-      "waiting": "In attesa della ciurma…",
-      "inMenu": "Nel menu di gioco",
-      "ready": "Pronto",
-      "notReady": "Non pronto",
-      "start": "Salpa",
-      "countdown": "La ricerca inizia tra...",
-      "atZero": "Allo zero, tutti cliccano",
-      "inGame": "Partita avviata",
-      "server": "Server",
-      "oneShort": "Ne manca uno — rilanciate un conto alla rovescia"
     }
   },
   "mobileLobby": {

@@ -229,21 +229,6 @@
     "cta": {
       "title": "¿Listo para zarpar?",
       "content": "Descarga BetterFleet para Windows o únete a la sesión de un compañero desde el móvil."
-    },
-    "ui": {
-      "crew": "La tripulación del Kraken",
-      "code": "ID de sesión",
-      "invite": "Invitar jugadores de consola",
-      "waiting": "Esperando a la tripulación…",
-      "inMenu": "En el menú del juego",
-      "ready": "Listo",
-      "notReady": "No está listo",
-      "start": "Zarpar",
-      "countdown": "La investigación comienza en...",
-      "atZero": "Al llegar a cero, todos hacen clic",
-      "inGame": "Juego lanzado",
-      "server": "Servidor",
-      "oneShort": "Falta uno — lanzad otra cuenta atrás"
     }
   },
   "mobileLobby": {

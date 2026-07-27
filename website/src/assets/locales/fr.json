@@ -260,21 +260,6 @@
     "cta": {
       "title": "Prêt à prendre la mer ?",
       "content": "Téléchargez BetterFleet pour Windows, ou rejoignez la session d'un coéquipier directement depuis votre téléphone."
-    },
-    "ui": {
-      "crew": "L'équipage du Kraken",
-      "code": "Code de session",
-      "invite": "Inviter des joueurs console",
-      "waiting": "En attente de l'équipage…",
-      "inMenu": "Dans les menus du jeu",
-      "ready": "Prêt",
-      "notReady": "Pas prêt",
-      "start": "Lever l'ancre",
-      "countdown": "La recherche commence dans...",
-      "atZero": "À zéro, tout le monde clique",
-      "inGame": "Jeu lancé",
-      "server": "Serveur",
-      "oneShort": "Il en manque un — relancez un décompte"
     }
   },
   "mobileLobby": {

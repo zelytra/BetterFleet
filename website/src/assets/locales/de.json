@@ -229,21 +229,6 @@
     "cta": {
       "title": "Bereit abzulegen?",
       "content": "Lade BetterFleet für Windows herunter oder tritt der Sitzung eines Crewmitglieds direkt vom Handy aus bei."
-    },
-    "ui": {
-      "crew": "Die Crew des Kraken",
-      "code": "Session-ID",
-      "invite": "Lade Konsolenspieler ein",
-      "waiting": "Warten auf die Crew…",
-      "inMenu": "Im Spielmenü",
-      "ready": "Bereit",
-      "notReady": "Nicht bereit",
-      "start": "Segel setzen",
-      "countdown": "Die Forschung beginnt in...",
-      "atZero": "Bei null klicken alle",
-      "inGame": "Spiel gestartet",
-      "server": "Server",
-      "oneShort": "Einer fehlt — startet den Countdown erneut"
     }
   },
   "mobileLobby": {
