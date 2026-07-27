@@ -203,49 +203,78 @@
     "title": "Statistiques"
   },
   "tutorial": {
-    "end": {
-      "content": "Bon vent ! Puissiez-vous voguer auprès d'honnêtes marins et faire fortune en mer ! Mais... Gare aux mutins, ils envient le doux parfum des nouvelles richesses !",
-      "title": "Une fois le serveur trouvé ?"
+    "eyebrow": "Guide pas à pas",
+    "title": "Réunissez votre équipage sur un même serveur",
+    "lead": "Sea of Thieves place chaque navire sur un serveur au hasard. BetterFleet synchronise vos équipages pour que vous cliquiez tous sur « Larguez les amarres » à la même seconde, puis vous dit qui s'est réellement retrouvé ensemble.",
+    "whatIsIt": {
+      "title": "Qu'est-ce qu'un serveur d'alliance ?",
+      "content": "Dans Sea of Thieves, une alliance est un pacte entre navires : ils partagent le butin et naviguent comme une seule flotte. Le difficile, c'est d'amener ces navires sur le même serveur. Le jeu vous répartit au hasard et ne vous laisse aucun moyen de choisir où vous arrivez.",
+      "role": "C'est la seule chose que fait BetterFleet. Il ne touche jamais au jeu, ne donne aucun avantage et n'automatise rien à l'intérieur. Il coordonne le moment où vous appuyez tous sur « Larguez les amarres », puis lit votre trafic réseau pour déterminer sur quel serveur chacun a atterri."
     },
-    "howTo": {
-      "content": "Afin de créer une alliance dans Sea of Thieves, les joueurs doivent coordonner leurs actions avec précision. L'organisation commence généralement bien avant de prendre la mer, à un moment convenu par tous les participants. La clef est de synchroniser le moment précis où chacun clique sur \"Lever l'ancre\" dans les menus du jeu, ce qui permet potentiellement aux différents équipages de se retrouver sur le même serveur. C'est là que BetterFleet entre en jeu. Afin de faciliter cette synchronisation, l'application offre une interface sur laquelle les joueurs peuvent planifier leurs actions de manière coordonnée.",
-      "title": "Comment créer une alliance ?"
+    "needs": {
+      "title": "Avant de commencer",
+      "item1": "BetterFleet installé sur Windows et un compte gratuit. Chaque joueur PC utilise sa propre copie.",
+      "item2": "De quoi se parler, ou au moins se transmettre le code de session : vocal, Discord, peu importe.",
+      "item3": "Sea of Thieves lancé et resté au menu principal, pas déjà en partie."
+    },
+    "steps": {
+      "title": "Former une alliance, étape par étape"
     },
     "step": {
       "1": {
-        "content": "Tout d'abord, vous aurez besoin d'un compte. En ouvrant BetterFleet il vous sera demandé de vous connecter avec vos identifiants afin d'accéder à l'application.",
-        "title": "Connexion à l'Application"
+        "title": "Créez une session et partagez son code",
+        "content": "Ouvrez BetterFleet, connectez-vous et créez une session. Vous obtenez un code de six caractères et devenez le capitaine, celui qui lance le décompte. Communiquez le code à vos coéquipiers : ils le saisissent dans leur propre application et apparaissent dans votre salon.",
+        "console": "Les joueurs console n'installent rien. Utilisez « Inviter des joueurs console » pour copier un lien, ou dites-leur d'ouvrir betterfleet.fr sur leur téléphone et d'y saisir le code."
       },
       "2": {
-        "content": "Sélectionnez 'Créer une session' pour mettre en place un nouvel espace où vous pourrez inviter d'autres joueurs à se joindre à votre alliance.",
-        "title": "Créer une Session"
+        "title": "Tout le monde attend à l'écran « Larguez les amarres »",
+        "content": "Dans le jeu, chacun choisit un navire et s'arrête à l'écran « Larguez les amarres » sans cliquer. Pendant la recherche, chacun navigue seul sur son propre bateau : vous vous rejoindrez une fois sur le même serveur."
       },
       "3": {
-        "content": "Un code unique sera généré pour votre session. Communiquez ce code aux personnes que vous souhaitez inviter à faire partie de l'alliance.",
-        "title": "Partage du Code de Session"
+        "title": "Passez-vous en « prêt »",
+        "content": "De retour dans BetterFleet, chaque joueur se déclare prêt. Le capitaine voit d'un coup d'œil qui manque encore, sans avoir à faire l'appel au vocal."
       },
       "4": {
-        "content": "Demandez à tous les joueurs de se rendre dans le menu 'Lever l'Ancre' du jeu, où ils pourront se préparer à lancer la partie ensemble.",
-        "title": "Rassemblement dans le Menu 'Lever l'Ancre'"
+        "title": "Le capitaine lance le décompte",
+        "content": "Une fois tout le monde prêt, le capitaine démarre le décompte. Il s'affiche sur tous les écrans en même temps, avec un signal sonore pour que les joueurs console l'entendent aussi. À zéro, chacun clique sur « Larguez les amarres » dans la même seconde : c'est cette simultanéité qui donne au matchmaking une chance de vous réunir."
       },
       "5": {
-        "content": "Chaque joueur doit alors changer son statut pour le départ, ce qu'il peut faire en sélectionnant 'Prêt' dans l'interface de l'application.",
-        "title": "Confirmer que Tout le Monde est Prêt"
-      },
-      "6": {
-        "content": "Une fois tous les joueurs prêts, l'hôte de la session initie un compte à rebours sur BetterFleet afin que tout le monde clique sur \"Lever l'Ancre\" simultanément.",
-        "title": "Lancement du Compte à Rebours"
-      },
-      "7": {
-        "content": "Une fois en jeu, il vous reste à vérifier si vous avez trouvé un serveur commun. BetterFleet regroupera dans la liste les joueurs qui sont ensemble. Si vous n'avez pas trouvé de serveur, répétez le processus à partir de l'étape 4 et ainsi de suite.",
-        "title": "Vérifier la Présence sur un Même Serveur"
+        "title": "Voyez qui s'est retrouvé ensemble",
+        "content": "Pendant le chargement, BetterFleet détermine le serveur de chaque joueur à partir de son trafic réseau et regroupe sous une même carte tous ceux qui sont arrivés au même endroit. Un équipage réparti sur deux cartes est sur deux serveurs différents.",
+        "again": "Pas tous ensemble ? Quittez la partie, revenez à l'écran « Larguez les amarres » et relancez un décompte. Rien n'est à réinitialiser, la session reste en place."
       }
     },
-    "stepWord": "Étape",
-    "title": "Débuter sur BetterFleet",
-    "whatIsIt": {
-      "content": "Un serveur alliance est un serveur de jeu où plusieurs équipages ont convenu de former une alliance stratégique en coopérant pour leur bénéfice mutuel. Sur ces serveurs, les joueurs partagent les mêmes objectifs, comme la collecte de trésors ou la complétion de quêtes, et s'accordent pour ne pas s'attaquer les uns les autres. L'idée est que chaque membre profite des récompenses, optimisant les gains et l'expérience de jeu de tous. Cela crée un environnement où les joueurs peuvent se concentrer sur la coopération et l'exploration plutôt que sur la compétition, offrant une aventure communautaire plus détendue.",
-      "title": "Qu'est-ce qu'un serveur alliance sur Sea of Thieves ?"
+    "shot": {
+      "session": "Le salon juste après la création : le code à partager, et les coéquipiers qui arrivent.",
+      "ready": "L'état de préparation de chacun, pour que le capitaine sache quand lancer.",
+      "countdown": "Le décompte partagé, affiché sur tous les écrans en même temps.",
+      "grouped": "Le résultat : trois joueurs réunis sur un serveur, un quatrième arrivé ailleurs."
+    },
+    "reality": {
+      "title": "Le temps que ça prend vraiment",
+      "content": "Un seul décompte suffit rarement, et c'est normal : c'est le matchmaking qui décide, pas l'application. Il faut généralement plusieurs tentatives, de quelques minutes à près d'une heure. Ce que BetterFleet change, c'est que chaque tentative est vraiment synchronisée et que vous savez immédiatement si elle a fonctionné.",
+      "tip1": "Les heures creuses sont plus difficiles : moins de joueurs, donc moins de serveurs qui se remplissent en même temps. Le salon vous indique les créneaux qui marchent le mieux.",
+      "tip2": "Restez dans la même région du monde. Deux joueurs aux antipodes ne se croiseront quasiment jamais.",
+      "tip3": "Un serveur accueille cinq à six navires. Réunir deux d'entre vous est rapide ; prendre un serveur entier demande de la patience."
+    },
+    "cta": {
+      "title": "Prêt à prendre la mer ?",
+      "content": "Téléchargez BetterFleet pour Windows, ou rejoignez la session d'un coéquipier directement depuis votre téléphone."
+    },
+    "ui": {
+      "crew": "L'équipage du Kraken",
+      "code": "Code de session",
+      "invite": "Inviter des joueurs console",
+      "waiting": "En attente de l'équipage…",
+      "inMenu": "Dans les menus du jeu",
+      "ready": "Prêt",
+      "notReady": "Pas prêt",
+      "start": "Lever l'ancre",
+      "countdown": "La recherche commence dans...",
+      "atZero": "À zéro, tout le monde clique",
+      "inGame": "Jeu lancé",
+      "server": "Serveur",
+      "oneShort": "Il en manque un — relancez un décompte"
     }
   },
   "mobileLobby": {
