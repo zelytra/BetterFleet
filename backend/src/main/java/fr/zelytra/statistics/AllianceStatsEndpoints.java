@@ -26,6 +26,13 @@ public class AllianceStatsEndpoints {
     // A cell/region needs at least this many attempts before its rate is trusted in the UI (#673 §6).
     private static final long MIN_SAMPLE = 30;
 
+    /**
+     * The most ships a crew can realistically gather on one server. A Sea of Thieves server holds 5-6
+     * ships, and during a search every player sails alone on their own boat — so this is also the most
+     * players a search can ever land together, however many are looking (issue #720).
+     */
+    private static final int SHIPS_PER_SERVER = 5;
+
     @Inject
     AllianceAttemptRepository repository;
 
@@ -33,10 +40,20 @@ public class AllianceStatsEndpoints {
     public record HeatCell(int dayOfWeek, int hour, long attempts, long converged, double rate) {
     }
 
+    /**
+     * One search-size band. Sizes are not comparable on convergence alone: the criterion is "two
+     * ships met", which a big search clears far more easily than a duo — it has more boats in the
+     * draw — while a big search is usually after five, not two (issue #720). Split them so each band
+     * can be read on its own terms.
+     */
+    public record SizeBand(String band, long attempts, long converged, double convergenceRate,
+                           double goalCompletion) {
+    }
+
     /** The full alliance-analytics payload the dashboard renders. */
     public record AllianceStats(long totalAttempts, long converged, double convergenceRate,
-                                double averageTries, List<HeatCell> heatmap,
-                                List<Integer> bestHours, long minSample) {
+                                double goalCompletion, double averageTries, List<HeatCell> heatmap,
+                                List<Integer> bestHours, long minSample, List<SizeBand> bySize) {
     }
 
     /** Owner-region attempt counts for the globe. */
@@ -57,6 +74,8 @@ public class AllianceStatsEndpoints {
         long converged = rows.stream().filter(a -> a.converged).count();
         double rate = total == 0 ? 0 : (double) converged / total;
         double avgTries = rows.stream().mapToInt(a -> a.tryNumber).average().orElse(0);
+        double goalCompletion = averageGoalCompletion(rows);
+        List<SizeBand> bySize = bandBreakdown(rows);
 
         // Group by (day-of-week, hour) in UTC — [attempts, converged] per cell and per hour.
         Map<String, long[]> cells = new LinkedHashMap<>();
@@ -96,7 +115,53 @@ public class AllianceStatsEndpoints {
             bestHours.sort(Integer::compareTo);
         }
 
-        return Response.ok(new AllianceStats(total, converged, rate, avgTries, heatmap, bestHours, MIN_SAMPLE)).build();
+        return Response.ok(new AllianceStats(total, converged, rate, goalCompletion, avgTries,
+                heatmap, bestHours, MIN_SAMPLE, bySize)).build();
+    }
+
+    /**
+     * How much of what a search was after it actually got, averaged over the attempts.
+     * <p>
+     * The target is the smaller of the crew's size and what a server can hold: a pair is after two
+     * ships, a group of eighteen cannot have more than {@value #SHIPS_PER_SERVER} together however
+     * hard it tries. Scoring each attempt against its own target is what makes a duo and a
+     * server-lock attempt comparable — the plain convergence rate is not, since it asks the same
+     * "did two meet?" question of both (issue #720).
+     */
+    // Package-private so the scoring can be unit-tested directly rather than through the endpoint.
+    static double averageGoalCompletion(List<AllianceAttempt> rows) {
+        return rows.stream()
+                .filter(a -> a.players >= 2) // a lone searcher has nobody to meet; not a failed goal
+                .mapToDouble(a -> {
+                    int target = Math.min(a.players, SHIPS_PER_SERVER);
+                    return Math.min(1.0, (double) a.largestGroup / target);
+                })
+                .average()
+                .orElse(0);
+    }
+
+    /** Groups the attempts into search-size bands, each scored on its own terms. */
+    static List<SizeBand> bandBreakdown(List<AllianceAttempt> rows) {
+        Map<String, List<AllianceAttempt>> bands = new LinkedHashMap<>();
+        for (String band : List.of("2-3", "4-6", "7+")) {
+            bands.put(band, new ArrayList<>());
+        }
+        for (AllianceAttempt a : rows) {
+            if (a.players < 2) {
+                continue; // nothing to converge with
+            }
+            bands.get(a.players <= 3 ? "2-3" : a.players <= 6 ? "4-6" : "7+").add(a);
+        }
+
+        List<SizeBand> out = new ArrayList<>();
+        bands.forEach((band, list) -> {
+            long attempts = list.size();
+            long met = list.stream().filter(a -> a.converged).count();
+            out.add(new SizeBand(band, attempts, met,
+                    attempts == 0 ? 0 : (double) met / attempts,
+                    averageGoalCompletion(list)));
+        });
+        return out;
     }
 
     @GET

@@ -8,7 +8,8 @@
     "tile": {
       "attempts": "Tentatives enregistrées",
       "convergence": "Taux de convergence",
-      "tries": "Essais moy. pour converger"
+      "tries": "Essais moy. pour converger",
+      "goal": "Objectif atteint"
     },
     "region": {
       "label": "Région du proprio",
@@ -21,6 +22,12 @@
     },
     "regions": {
       "title": "D'où viennent les joueurs"
+    },
+    "size": {
+      "title": "Par taille de recherche",
+      "note": "Réunir deux bateaux est d'autant plus facile qu'il y a de chercheurs, et un grand équipage en vise souvent cinq, pas deux. Chaque tranche est notée sur ce qu'elle pouvait réellement atteindre.",
+      "band": "Joueurs en recherche",
+      "attempts": "Tentatives"
     }
   },
   "button": {

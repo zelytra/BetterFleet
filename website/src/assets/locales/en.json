@@ -302,7 +302,8 @@
     "tile": {
       "attempts": "Recorded attempts",
       "convergence": "Convergence rate",
-      "tries": "Avg. tries to converge"
+      "tries": "Avg. tries to converge",
+      "goal": "Goal reached"
     },
     "region": {
       "label": "Owner region",
@@ -315,6 +316,12 @@
     },
     "regions": {
       "title": "Where players come from"
+    },
+    "size": {
+      "title": "By search size",
+      "note": "Two ships meeting is easier the more boats are searching, and a big crew is usually after five of them, not two. Each band is scored against what it could actually reach.",
+      "band": "Players searching",
+      "attempts": "Attempts"
     }
   }
 }

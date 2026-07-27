@@ -302,7 +302,8 @@
     "tile": {
       "attempts": "Tentativi registrati",
       "convergence": "Tasso di convergenza",
-      "tries": "Tentativi medi per convergere"
+      "tries": "Tentativi medi per convergere",
+      "goal": "Obiettivo raggiunto"
     },
     "region": {
       "label": "Regione del proprietario",
@@ -315,6 +316,12 @@
     },
     "regions": {
       "title": "Da dove vengono i giocatori"
+    },
+    "size": {
+      "title": "Per dimensione della ricerca",
+      "note": "Far incontrare due navi è tanto più facile quanti più cercano, e una ciurma numerosa ne vuole di solito cinque, non due. Ogni fascia è valutata su ciò che poteva davvero raggiungere.",
+      "band": "Giocatori in ricerca",
+      "attempts": "Tentativi"
     }
   }
 }
