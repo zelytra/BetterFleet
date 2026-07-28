@@ -2,51 +2,56 @@
   <section class="auth-page" :aria-busy="!keycloakStore.isReady">
     <img src="@/assets/icons/full-logo.svg" alt="app logo" />
     <!-- The SSO check is the app's one real wait. Until it answers we cannot know which card to
-         show, and guessing "signed out" flashed the login screen at players who were not. -->
-    <BoatLoader
-      v-if="showLoader"
-      class="card"
-      :label="t('loading.signingIn')"
-      :size="180"
-    />
-    <div
-      v-else-if="keycloakStore.isReady && !keycloakStore.isAuthenticated"
-      class="card login-wrapper"
-    >
-      <h1>
-        {{ t("login.welcome") }} <strong>{{ t("appName") }}</strong>
-      </h1>
-      <p>{{ t("login.description") }}</p>
-      <PirateButton
-        :label="t('login.loginButton')"
-        @on-button-click="authUser"
+         show, and guessing "signed out" flashed the login screen at players who were not. The three
+         states cross-fade: out then in, so the card is never swapped under the eye in one frame. -->
+    <transition name="swap" mode="out-in">
+      <BoatLoader
+        v-if="showLoader"
+        key="loading"
+        class="card"
+        :label="t('loading.signingIn')"
+        :size="180"
       />
-    </div>
-    <div v-else-if="keycloakStore.isReady" class="card user-card">
-      <h1>{{ t("login.succeed") }}</h1>
       <div
-        v-if="UserStore.player.username"
-        class="user-icon"
-        :style="{ backgroundColor: Utils.generateRandomColor() }"
+        v-else-if="keycloakStore.isReady && !keycloakStore.isAuthenticated"
+        key="login"
+        class="card login-wrapper"
       >
-        <p>
-          {{ UserStore.player.username.charAt(0).toUpperCase() }}
-        </p>
-      </div>
-      <p>
-        {{ t("login.userWelcome") }}
-        <strong>{{ keycloakStore.user.username }}</strong> !
-      </p>
-      <div class="action-wrapper">
+        <h1>
+          {{ t("login.welcome") }} <strong>{{ t("appName") }}</strong>
+        </h1>
+        <p>{{ t("login.description") }}</p>
         <PirateButton
-          :label="t('login.continue')"
-          @on-button-click="leavePage()"
+          :label="t('login.loginButton')"
+          @on-button-click="authUser"
         />
-        <p class="sub-action" @click="keycloakStore.keycloak.logout()">
-          {{ t("login.disconnect") }}
-        </p>
       </div>
-    </div>
+      <div v-else-if="keycloakStore.isReady" key="user" class="card user-card">
+        <h1>{{ t("login.succeed") }}</h1>
+        <div
+          v-if="UserStore.player.username"
+          class="user-icon"
+          :style="{ backgroundColor: Utils.generateRandomColor() }"
+        >
+          <p>
+            {{ UserStore.player.username.charAt(0).toUpperCase() }}
+          </p>
+        </div>
+        <p>
+          {{ t("login.userWelcome") }}
+          <strong>{{ keycloakStore.user.username }}</strong> !
+        </p>
+        <div class="action-wrapper">
+          <PirateButton
+            :label="t('login.continue')"
+            @on-button-click="leavePage()"
+          />
+          <p class="sub-action" @click="keycloakStore.keycloak.logout()">
+            {{ t("login.disconnect") }}
+          </p>
+        </div>
+      </div>
+    </transition>
   </section>
 </template>
 
@@ -93,6 +98,18 @@ function leavePage() {
 </script>
 
 <style scoped lang="scss">
+// Out then in rather than a true cross-fade: the three cards are different sizes, and overlapping
+// them mid-swap reads as two things on screen at once.
+.swap-enter-active,
+.swap-leave-active {
+  transition: opacity 150ms ease;
+}
+
+.swap-enter-from,
+.swap-leave-to {
+  opacity: 0;
+}
+
 section.auth-page {
   position: fixed;
   top: 0;

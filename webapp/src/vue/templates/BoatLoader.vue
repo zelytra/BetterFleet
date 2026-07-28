@@ -148,6 +148,9 @@ withDefaults(
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  // It arrives rather than appearing. Whatever puts it on screen — a v-if, an async component's
+  // loading slot — the fade is here, so the ship never lands in one frame.
+  animation: loader-in 220ms ease-out both;
 
   svg {
     display: block;
@@ -184,6 +187,15 @@ withDefaults(
 // The mastheads have no canvas to hold them back, so they snap.
 .masthead {
   animation: snap calc(var(--sp) * 0.55) ease-in-out infinite;
+}
+
+@keyframes loader-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes heel {

@@ -108,5 +108,17 @@ onUnmounted(() => {
   min-height: 360px;
   display: flex;
   justify-content: center;
+  /* The globe fades in rather than replacing the ship in one frame. An async component swaps its
+     own child, so there is no Transition to hang this on — it belongs on the thing arriving. */
+  animation: globe-in 260ms ease-out both;
+}
+
+@keyframes globe-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>
