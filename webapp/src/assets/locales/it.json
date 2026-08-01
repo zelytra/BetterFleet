@@ -213,7 +213,6 @@
   },
   "loading": {
     "loading": "Caricamento...",
-    "signingIn": "Accesso in corso…",
     "targetGame": "Rilevamento del gioco in corso",
     "targetLoading": "Gioco rilevato. Navi in preparazione.",
     "tips": "Questo processo potrebbe richiedere un po' di tempo, assicurati che il tuo gioco sia avviato"

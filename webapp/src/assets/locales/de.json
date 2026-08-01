@@ -213,7 +213,6 @@
   },
   "loading": {
     "loading": "Wird geladen...",
-    "signingIn": "Anmeldung läuft…",
     "targetGame": "Spielerkennung läuft",
     "targetLoading": "Spiel erkannt. Schiffe in Vorbereitung.",
     "tips": "Dieser Vorgang kann eine Weile dauern. Bitte stellen Sie sicher, dass Ihr Spiel gestartet ist"

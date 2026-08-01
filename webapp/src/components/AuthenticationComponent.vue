@@ -1,19 +1,13 @@
 <template>
   <section class="auth-page" :aria-busy="!keycloakStore.isReady">
     <img src="@/assets/icons/full-logo.svg" alt="app logo" />
-    <!-- The SSO check is the app's one real wait. Until it answers we cannot know which card to
-         show, and guessing "signed out" flashed the login screen at players who were not. The three
-         states cross-fade: out then in, so the card is never swapped under the eye in one frame. -->
+    <!-- The SSO check is the app's one real wait: until it answers we cannot know which card to
+         show, and guessing "signed out" flashed the login screen at players who were not. So the
+         screen stays empty until the check settles, then the two cards swap out-in — never
+         overlapped, so nothing is swapped under the eye in one frame. -->
     <transition name="swap" mode="out-in">
-      <BoatLoader
-        v-if="showLoader"
-        key="loading"
-        class="card"
-        :label="t('loading.signingIn')"
-        :size="180"
-      />
       <div
-        v-else-if="keycloakStore.isReady && !keycloakStore.isAuthenticated"
+        v-if="keycloakStore.isReady && !keycloakStore.isAuthenticated"
         key="login"
         class="card login-wrapper"
       >
@@ -59,18 +53,12 @@
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 import { useI18n } from "vue-i18n";
 import PirateButton from "@/vue/form/PirateButton.vue";
-import BoatLoader from "@/vue/templates/BoatLoader.vue";
 import router from "@/router";
 import { UserStore } from "@/objects/stores/UserStore";
 import { Utils } from "@/objects/utils/Utils";
-import { useDelayedLoading } from "@/objects/utils/DelayedLoading.ts";
-import { computed, onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted } from "vue";
 
 const { t } = useI18n();
-
-// A warm SSO check answers in well under the delay, so the usual launch shows no ship at all — the
-// login card is simply there. The ship is for the cold start and the slow network.
-const showLoader = useDelayedLoading(computed(() => !keycloakStore.isReady));
 
 onMounted(() => {
   document.addEventListener("keydown", keyPressEvent);
@@ -98,7 +86,7 @@ function leavePage() {
 </script>
 
 <style scoped lang="scss">
-// Out then in rather than a true cross-fade: the three cards are different sizes, and overlapping
+// Out then in rather than a true cross-fade: the two cards are different sizes, and overlapping
 // them mid-swap reads as two things on screen at once.
 .swap-enter-active,
 .swap-leave-active {
