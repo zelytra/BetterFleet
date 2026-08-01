@@ -7,11 +7,18 @@ import {
   fetchRegions,
   RegionCount,
 } from "@/objects/AllianceStats.ts";
+import { useDelayedLoading } from "@/objects/DelayedLoading.ts";
+import BoatLoader from "@/vue/BoatLoader.vue";
+import GlobeLoading from "@/vue/GlobeLoading.vue";
 
-// Lazy: globe.gl bundles three.js, so it stays out of the main bundle and loads only here.
-const GlobeCard = defineAsyncComponent(
-  () => import("@/components/GlobeCard.vue"),
-);
+// Lazy: globe.gl bundles three.js, so it stays out of the main bundle and loads only here. It is
+// ~575 KB gzipped, so on anything but a fast connection the wait is long enough to need saying —
+// but `delay` still keeps the ship off the screen when the chunk comes from cache.
+const GlobeCard = defineAsyncComponent({
+  loader: () => import("@/components/GlobeCard.vue"),
+  loadingComponent: GlobeLoading,
+  delay: 400,
+});
 
 // The public alliance-analytics dashboard (issue #673). Anonymous, aggregated data on how often
 // crews converge onto one server, and when it works best.
@@ -22,6 +29,7 @@ const stats = ref<AllianceStats | null>(null);
 const regions = ref<RegionCount[]>([]);
 const ownerRegion = ref<string>("");
 const loading = ref(true);
+const showLoader = useDelayedLoading(loading);
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const HOURS = Array.from({ length: 24 }, (_, h) => h);
@@ -137,95 +145,114 @@ const hasData = computed(() => (stats.value?.totalAttempts ?? 0) > 0);
       </label>
     </div>
 
-    <p v-if="loading" class="muted">…</p>
-    <p v-else-if="!hasData" class="muted empty">{{ t("alliance.empty") }}</p>
+    <!-- The dashboard's own wait. The box is here for as long as the request is, so the page never
+         jumps; the ship inside it waits on `showLoader`, so a warm response — most of them — swaps
+         the figures in silently rather than blinking a ship between two states. The region filter
+         re-runs this, which is what would otherwise put that flicker one click away. -->
+    <div class="swap-area">
+      <transition name="swap">
+        <div v-if="loading" key="loading" class="loading" aria-busy="true">
+          <BoatLoader
+            v-if="showLoader"
+            :label="t('loading.stats')"
+            :size="150"
+          />
+        </div>
+        <p v-else-if="!hasData" key="empty" class="muted empty">
+          {{ t("alliance.empty") }}
+        </p>
 
-    <template v-else>
-      <div class="tiles">
-        <div class="tile">
-          <h2>{{ stats!.totalAttempts }}</h2>
-          <p>{{ t("alliance.tile.attempts") }}</p>
-        </div>
-        <div class="tile accent">
-          <h2>{{ percentRate }}%</h2>
-          <p>{{ t("alliance.tile.convergence") }}</p>
-        </div>
-        <div class="tile accent">
-          <h2>{{ percentGoal }}%</h2>
-          <p>{{ t("alliance.tile.goal") }}</p>
-        </div>
-        <div class="tile">
-          <h2>{{ avgTries }}</h2>
-          <p>{{ t("alliance.tile.tries") }}</p>
-        </div>
-      </div>
+        <div v-else key="content" class="content">
+          <div class="tiles">
+            <div class="tile">
+              <h2>{{ stats!.totalAttempts }}</h2>
+              <p>{{ t("alliance.tile.attempts") }}</p>
+            </div>
+            <div class="tile accent">
+              <h2>{{ percentRate }}%</h2>
+              <p>{{ t("alliance.tile.convergence") }}</p>
+            </div>
+            <div class="tile accent">
+              <h2>{{ percentGoal }}%</h2>
+              <p>{{ t("alliance.tile.goal") }}</p>
+            </div>
+            <div class="tile">
+              <h2>{{ avgTries }}</h2>
+              <p>{{ t("alliance.tile.tries") }}</p>
+            </div>
+          </div>
 
-      <!-- Per search size (#720): "two ships met" is far easier to clear with more boats in the
+          <!-- Per search size (#720): "two ships met" is far easier to clear with more boats in the
            draw, and a big search is usually after five, not two — so one rate over all sizes
            flatters the large ones. Each band is scored against what it could actually reach. -->
-      <div v-if="sizeBands.length" class="card size-card">
-        <h3>{{ t("alliance.size.title") }}</h3>
-        <p class="muted note">{{ t("alliance.size.note") }}</p>
-        <div class="size-table">
-          <div class="row head">
-            <span>{{ t("alliance.size.band") }}</span>
-            <span>{{ t("alliance.size.attempts") }}</span>
-            <span>{{ t("alliance.tile.convergence") }}</span>
-            <span>{{ t("alliance.tile.goal") }}</span>
+          <div v-if="sizeBands.length" class="card size-card">
+            <h3>{{ t("alliance.size.title") }}</h3>
+            <p class="muted note">{{ t("alliance.size.note") }}</p>
+            <div class="size-table">
+              <div class="row head">
+                <span>{{ t("alliance.size.band") }}</span>
+                <span>{{ t("alliance.size.attempts") }}</span>
+                <span>{{ t("alliance.tile.convergence") }}</span>
+                <span>{{ t("alliance.tile.goal") }}</span>
+              </div>
+              <div v-for="row in sizeBands" :key="row.band" class="row">
+                <span class="band">{{ row.band }}</span>
+                <span>{{ row.attempts }}</span>
+                <span>{{ row.convergence }}%</span>
+                <span class="goal">{{ row.goal }}%</span>
+              </div>
+            </div>
           </div>
-          <div v-for="row in sizeBands" :key="row.band" class="row">
-            <span class="band">{{ row.band }}</span>
-            <span>{{ row.attempts }}</span>
-            <span>{{ row.convergence }}%</span>
-            <span class="goal">{{ row.goal }}%</span>
-          </div>
-        </div>
-      </div>
 
-      <div class="best-time">
-        <span class="label">🕑 {{ t("alliance.bestTime") }}</span>
-        <span class="value">{{ bestHoursLabel }}</span>
-      </div>
-
-      <div class="card heatmap-card">
-        <h3>{{ t("alliance.heatmap.title") }}</h3>
-        <div class="heatmap">
-          <div class="hour-axis">
-            <span></span>
-            <span v-for="h in HOURS" :key="h" class="hour-label">
-              {{ h % 3 === 0 ? h : "" }}
-            </span>
+          <div class="best-time">
+            <span class="label">🕑 {{ t("alliance.bestTime") }}</span>
+            <span class="value">{{ bestHoursLabel }}</span>
           </div>
-          <div v-for="(day, di) in DAYS" :key="day" class="heat-row">
-            <span class="day-label">{{ day }}</span>
-            <span
-              v-for="h in HOURS"
-              :key="h"
-              class="heat-cell"
-              :style="cellStyle(di + 1, h)"
-              :title="cellTitle(di + 1, h)"
-            ></span>
+
+          <div class="card heatmap-card">
+            <h3>{{ t("alliance.heatmap.title") }}</h3>
+            <div class="heatmap">
+              <div class="hour-axis">
+                <span></span>
+                <span v-for="h in HOURS" :key="h" class="hour-label">
+                  {{ h % 3 === 0 ? h : "" }}
+                </span>
+              </div>
+              <div v-for="(day, di) in DAYS" :key="day" class="heat-row">
+                <span class="day-label">{{ day }}</span>
+                <span
+                  v-for="h in HOURS"
+                  :key="h"
+                  class="heat-cell"
+                  :style="cellStyle(di + 1, h)"
+                  :title="cellTitle(di + 1, h)"
+                ></span>
+              </div>
+            </div>
+            <div class="legend">
+              <span>{{ t("alliance.heatmap.low") }}</span>
+              <span class="scale"></span>
+              <span>{{ t("alliance.heatmap.high") }}</span>
+            </div>
+          </div>
+
+          <div v-if="topRegions.length" class="card regions-card">
+            <h3>{{ t("alliance.regions.title") }}</h3>
+            <GlobeCard :regions="regions" />
+            <div v-for="r in topRegions" :key="r.region" class="region-row">
+              <span class="region-name">{{ r.region }}</span>
+              <span class="region-bar">
+                <span
+                  class="region-fill"
+                  :style="{ width: r.width + '%' }"
+                ></span>
+              </span>
+              <span class="region-count">{{ r.attempts }}</span>
+            </div>
           </div>
         </div>
-        <div class="legend">
-          <span>{{ t("alliance.heatmap.low") }}</span>
-          <span class="scale"></span>
-          <span>{{ t("alliance.heatmap.high") }}</span>
-        </div>
-      </div>
-
-      <div v-if="topRegions.length" class="card regions-card">
-        <h3>{{ t("alliance.regions.title") }}</h3>
-        <GlobeCard :regions="regions" />
-        <div v-for="r in topRegions" :key="r.region" class="region-row">
-          <span class="region-name">{{ r.region }}</span>
-          <span class="region-bar">
-            <span class="region-fill" :style="{ width: r.width + '%' }"></span>
-          </span>
-          <span class="region-count">{{ r.attempts }}</span>
-        </div>
-      </div>
-    </template>
+      </transition>
+    </div>
   </section>
 </template>
 
@@ -281,6 +308,54 @@ header {
   &.empty {
     padding: 60px 0;
   }
+}
+
+// Held at the height the ship will need, from the first paint: the box exists for the whole request
+// while the ship only appears at 400ms, and a box that grew at that moment would be the very jump
+// the delay is there to avoid.
+.loading {
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// The dashboard's three states — waiting, empty, loaded — cross-fade rather than cut.
+//
+// A true cross-fade, not `mode="out-in"`. Mounting this dashboard costs ~370ms of main thread (168
+// heatmap cells, the tables, the globe's container), and out-in waits for the ship to leave before
+// paying it — measured, that left the page blank for 440ms, which is worse than the cut it replaced.
+// Here the two states share one grid cell, so the ship is still on screen, fading, while the
+// dashboard paints underneath it. The leave is the slower of the two for that reason.
+.swap-area {
+  display: grid;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+.swap-enter-active {
+  transition: opacity 280ms ease;
+}
+
+// On top as it goes, so it fades away to reveal the dashboard rather than showing through its gaps.
+.swap-leave-active {
+  transition: opacity 400ms ease;
+  z-index: 2;
+}
+
+.swap-enter-from,
+.swap-leave-to {
+  opacity: 0;
+}
+
+// The wrapper the transition needs. It carries the column the page used to lay out directly, so the
+// spacing between the dashboard's cards is unchanged.
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
 }
 
 .tiles {

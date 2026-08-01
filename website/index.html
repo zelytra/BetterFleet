@@ -20,6 +20,20 @@
     <meta name="robots" content="index,follow" />
     <meta name="theme-color" content="#32D499" />
 
+    <!--
+      The site is dark and its background is set from the bundled stylesheet, so the first paint —
+      before any of it has arrived — was white. On a phone that is a flash of white before a dark
+      page, which is the one part of the boot a visitor actually feels. No loading indicator here on
+      purpose: the mount usually lands well inside the 400ms an indicator waits before appearing.
+    -->
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #171a21;
+      }
+    </style>
+
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="BetterFleet" />
     <meta

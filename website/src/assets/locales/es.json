@@ -337,5 +337,9 @@
       "band": "Jugadores buscando",
       "attempts": "Intentos"
     }
+  },
+  "loading": {
+    "stats": "Leyendo el cuaderno de bitácora…",
+    "globe": "Desplegando la carta…"
   }
 }
