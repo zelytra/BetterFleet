@@ -43,6 +43,15 @@ public class BetterFleetClient {
         return new ObjectMapper().convertValue(messageReceived.data(), tClass);
     }
 
+    /**
+     * The type of the last message the server sent, or {@code null} if the socket closed without
+     * ever delivering one. Refusal frames (SESSION_NOT_FOUND / CONNECTION_REFUSED / OUTDATED_CLIENT)
+     * carry no data, so tests assert on the type to prove the client was told why it was disconnected.
+     */
+    public MessageType getReceivedType() {
+        return messageReceived == null ? null : messageReceived.messageType();
+    }
+
     public Session getSession() {
         return session;
     }

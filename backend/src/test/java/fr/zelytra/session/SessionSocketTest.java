@@ -288,6 +288,9 @@ class SessionSocketTest {
 
         // The duplicate is refused and its socket closed (latch trips on the refusal/close).
         assertTrue(secondClient.getLatch().await(2, TimeUnit.SECONDS));
+        // The refusal must reach the duplicate before its socket closes (issue #733).
+        assertEquals(MessageType.CONNECTION_REFUSED, secondClient.getReceivedType(),
+                "The duplicate must receive CONNECTION_REFUSED before the close (#733)");
 
         Fleet fleet = sessionManager.getSessions().get(sessionId);
         assertNotNull(fleet, "The original session must survive a duplicate join (issue #436)");
@@ -367,6 +370,10 @@ class SessionSocketTest {
         // The server answers OUTDATED_CLIENT and closes the socket, tripping the latch.
         assertTrue(betterFleetClient.getLatch().await(2, TimeUnit.SECONDS));
 
+        // The refusal must actually reach the client before the close, or the user is disconnected
+        // with no idea they need to update (issue #733).
+        assertEquals(MessageType.OUTDATED_CLIENT, betterFleetClient.getReceivedType(),
+                "The client must be told it is outdated, not silently disconnected (#733)");
         assertTrue(sessionManager.getSessions().isEmpty(), "No session must be created for an outdated client");
     }
 
@@ -385,7 +392,43 @@ class SessionSocketTest {
         // The server answers CONNECTION_REFUSED and closes the socket, tripping the latch.
         assertTrue(client.getLatch().await(2, TimeUnit.SECONDS));
 
+        // The refusal must reach the client before the close, not be lost to the race (issue #733).
+        assertEquals(MessageType.CONNECTION_REFUSED, client.getReceivedType(),
+                "The client must receive CONNECTION_REFUSED, not just a silent close (#733)");
         assertTrue(sessionManager.getSessions().isEmpty(), "No session must be created with an invalid token");
+    }
+
+    @Test
+    void mistypedJoinCode_keepsThePlayerInTheirCurrentSession() throws Exception {
+        // Issue #733, end to end: a player already hosting a session mistypes a join code on a
+        // second socket. The bogus join must be refused with SESSION_NOT_FOUND WITHOUT dropping them
+        // from the session they were in — the exact production symptom (a working session torn down
+        // by a typo, and no message explaining why).
+        String sessionId = createSessionAsMaster("Sailor");
+
+        BetterFleetClient typoClient = new BetterFleetClient();
+        SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
+        String bogus = sessionId + "0"; // a mistyped code — not a real session id
+        URI typoUri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort()
+                + "/sessions/" + socketSecurity.getKey() + "/" + bogus);
+        ContainerProvider.getWebSocketContainer().connectToServer(typoClient, typoUri);
+
+        Player sameAccount = new Player();
+        sameAccount.setUsername("Sailor");
+        sameAccount.setClientVersion(appVersion.get(0));
+        typoClient.sendMessage(MessageType.CONNECT, sameAccount);
+
+        // The bogus join is refused, and the client is told why before the socket closes.
+        assertTrue(typoClient.getLatch().await(2, TimeUnit.SECONDS));
+        assertEquals(MessageType.SESSION_NOT_FOUND, typoClient.getReceivedType(),
+                "A mistyped code must be answered with SESSION_NOT_FOUND, not a silent close (#733)");
+
+        // ...and the session the player was in is untouched.
+        Fleet fleet = sessionManager.getSessions().get(sessionId);
+        assertNotNull(fleet, "A mistyped join code must not disband the session the player was in (#733)");
+        assertNotNull(fleet.getPlayerFromUsername("Sailor"),
+                "A mistyped join code must not evict the player from their current session (#733)");
+        assertEquals(1, fleet.getPlayers().size(), "The player must remain the sole member, untouched");
     }
 
     @Test
