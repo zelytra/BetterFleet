@@ -349,8 +349,7 @@ public class SessionSocket {
         SocketSecurityEntity socketSecurity = SocketSecurityEntity.websocketUser.get(token);
         if (socketSecurity == null || !socketSecurity.isValid()) {
             Log.info("Invalid token, session will be closed");
-            sessionManager.sendDataToPlayer(session, MessageType.CONNECTION_REFUSED, null);
-            session.close();
+            sessionManager.sendThenClose(session, MessageType.CONNECTION_REFUSED, null);
             return;
         }
         SocketSecurityEntity.websocketUser.remove(token);
@@ -363,8 +362,7 @@ public class SessionSocket {
             if (sessionId == null || sessionId.isEmpty()
                     || !sessionId.equalsIgnoreCase(socketSecurity.getBoundSessionId())) {
                 Log.info("Guest token used outside its bound session, connection refused");
-                sessionManager.sendDataToPlayer(session, MessageType.CONNECTION_REFUSED, null);
-                session.close();
+                sessionManager.sendThenClose(session, MessageType.CONNECTION_REFUSED, null);
                 return;
             }
             player.setMaster(false);
@@ -375,12 +373,7 @@ public class SessionSocket {
         // the live site, not a released build), so the allowlist only gates the desktop app.
         if (!guest && (player.getClientVersion() == null || !appVersion.contains(player.getClientVersion()))) {
             Log.warn("[" + player.getUsername() + "] Client is out of date, connection refused (" + player.getClientVersion() + ")");
-            try {
-                sessionManager.sendDataToPlayer(session, MessageType.OUTDATED_CLIENT, null);
-                session.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            sessionManager.sendThenClose(session, MessageType.OUTDATED_CLIENT, null);
             return;
         }
 

@@ -5,15 +5,20 @@ import fr.zelytra.session.fleet.Fleet;
 import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
+import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.statistics.StatisticsEntity;
 import fr.zelytra.statistics.StatisticsRepository;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.oidc.server.OidcWiremockTestResource;
+import jakarta.websocket.RemoteEndpoint;
+import jakarta.websocket.SendHandler;
+import jakarta.websocket.SendResult;
 import jakarta.websocket.Session;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
@@ -323,6 +328,61 @@ public class SessionManagerTest {
         assertNotNull(fleet, "The session must survive a duplicate join (must not be disbanded)");
         assertEquals(1, fleet.getPlayers().size(), "The duplicate must not be added to the fleet");
         assertTrue(fleet.getPlayers().contains(first), "The original member must remain untouched");
+    }
+
+    @Test
+    public void joinSession_MistypedCodeWhileInASession_KeepsPlayerInTheirCurrentSession() {
+        // Issue #733: a player already in a session mistypes a join code — a session id that does
+        // not exist. The failed join must be a no-op: they must NOT be silently dropped from the
+        // session they were in. The bug evicts them before checking the target exists.
+        Session socket = Mockito.mock();
+        when(socket.getId()).thenReturn("1");
+        when(socket.getAsyncRemote()).thenReturn(null); // the SESSION_NOT_FOUND send is a graceful no-op here
+
+        Player player = new Player();
+        player.setUsername("Sailor");
+        player.setSocket(socket);
+
+        String sessionId = sessionManager.createSession();
+        sessionManager.joinSession(sessionId, player);
+        assertTrue(sessionManager.isPlayerInSession(player, sessionId), "Precondition: the player is in a session");
+
+        // The same account mistypes a code: the target session does not exist.
+        Player mistyped = new Player();
+        mistyped.setUsername("Sailor");
+        mistyped.setSocket(socket);
+        Fleet result = sessionManager.joinSession(sessionId + "-typo", mistyped);
+
+        assertNull(result, "Joining a non-existent session must fail");
+        assertNotNull(sessionManager.getFleetFromId(sessionId),
+                "A mistyped join code must not disband the session the player was in (#733)");
+        assertTrue(sessionManager.isPlayerInSession(player, sessionId),
+                "A mistyped join code must not evict the player from their current session (#733)");
+    }
+
+    @Test
+    public void sendThenClose_ClosesTheSocketOnlyAfterTheFrameIsFlushed() throws Exception {
+        // Issue #733: the refusal frame (SESSION_NOT_FOUND / CONNECTION_REFUSED / OUTDATED_CLIENT)
+        // is the last thing the server says before hanging up. It is written on the async remote,
+        // which returns before the frame is on the wire, so closing on the very next line can beat
+        // it — and the client never learns why it was disconnected. The close must wait for the send.
+        Session socket = Mockito.mock();
+        when(socket.getId()).thenReturn("1");
+        when(socket.isOpen()).thenReturn(true);
+        RemoteEndpoint.Async async = Mockito.mock();
+        when(socket.getAsyncRemote()).thenReturn(async);
+
+        ArgumentCaptor<SendHandler> onSent = ArgumentCaptor.forClass(SendHandler.class);
+
+        sessionManager.sendThenClose(socket, MessageType.SESSION_NOT_FOUND, null);
+
+        // The frame has been handed to the async remote, but the socket must NOT be closed yet.
+        Mockito.verify(async).sendText(Mockito.anyString(), onSent.capture());
+        Mockito.verify(socket, Mockito.never()).close();
+
+        // Once the frame is actually flushed, the socket closes — so the client is always told why.
+        onSent.getValue().onResult(new SendResult());
+        Mockito.verify(socket).close();
     }
 
     @Test

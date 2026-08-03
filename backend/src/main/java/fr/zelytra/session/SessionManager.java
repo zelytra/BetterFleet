@@ -141,34 +141,40 @@ public class SessionManager {
             Player existing = currentFleet.getPlayerFromUsername(player.getUsername());
             if (existing != null && existing.getSocket() != null && existing.getSocket().isOpen()) {
                 Log.warn("[" + sessionId + "] " + player.getUsername() + " is already connected to this session, duplicate join refused");
-                sendDataToPlayer(player.getSocket(), MessageType.CONNECTION_REFUSED, null);
-                closeSocketQuietly(player.getSocket());
+                sendThenClose(player.getSocket(), MessageType.CONNECTION_REFUSED, null);
                 return null;
             }
             leaveSession(existing != null ? existing : player);
         } else if (currentFleet != null) {
-            // The account is in a different session; a player can only be in one session at
-            // a time, so leave the previous one before joining the new one.
+            // The account is in a different session. Joining a new one means leaving the old one —
+            // but a player must not lose the session they are in over a code that leads nowhere.
+            // Validate the target BEFORE evicting: a mistyped or expired code is a no-op, never a
+            // silent departure from the session they were in (issue #733).
+            if (getFleetFromId(sessionId) == null) {
+                return rejectMissingSession(player, sessionId);
+            }
             leaveSession(player);
         }
 
         Fleet fleet = getFleetFromId(sessionId);
         if (fleet == null) {
-            sendDataToPlayer(player.getSocket(), MessageType.SESSION_NOT_FOUND, null);
-            try {
-                if (player.getSocket() != null) {
-                    player.getSocket().close();
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            Log.error("[" + sessionId + "] Session doesnt exist for player : " + player.getUsername());
-            return null;
+            return rejectMissingSession(player, sessionId);
         }
         fleet.getPlayers().add(player);
         Log.info("[" + sessionId + "] " + player.getUsername() + " Join the session !");
         publishDirectoryChange();
         return fleet;
+    }
+
+    /**
+     * Refuses a join whose target session does not exist: tells the client with SESSION_NOT_FOUND
+     * and closes the socket only once that frame is delivered (issue #733), then logs. Always
+     * returns {@code null}, so callers can {@code return rejectMissingSession(...)} directly.
+     */
+    private Fleet rejectMissingSession(Player player, String sessionId) {
+        sendThenClose(player.getSocket(), MessageType.SESSION_NOT_FOUND, null);
+        Log.error("[" + sessionId + "] Session doesnt exist for player : " + player.getUsername());
+        return null;
     }
 
     /**
@@ -796,6 +802,35 @@ public class SessionManager {
             if (result.getException() != null) {
                 Log.error("Unable to send message to [" + session.getId() + "]: " + result.getException());
             }
+        });
+    }
+
+    /**
+     * Sends a terminal message to a player and closes their socket <b>only once that frame is on the
+     * wire</b>. Every refusal path (SESSION_NOT_FOUND, CONNECTION_REFUSED, OUTDATED_CLIENT) says one
+     * last thing before hanging up, and {@link #sendDataToPlayer} writes through the async remote —
+     * which returns before the frame is flushed. Closing on the next line races that write and the
+     * client can be disconnected before it ever learns why (issue #733, a regression of #387). So the
+     * close is deferred into the send callback: the frame goes out, then the socket goes away.
+     */
+    public <T> void sendThenClose(Session session, MessageType messageType, T data) {
+        if (session == null) {
+            return;
+        }
+        if (session.getAsyncRemote() == null) {
+            // No async remote to write through; just make sure the socket is not left dangling.
+            Log.error("Failed to get the player socket");
+            closeSocketQuietly(session);
+            return;
+        }
+        String json = formatMessage(messageType, data);
+        session.getAsyncRemote().sendText(json, result -> {
+            if (result.getException() != null) {
+                // The client hung up before the refusal landed. Now that the close is ordered after
+                // the send, a closed channel here just means they left first — WARN, not ERROR (#733).
+                Log.warn("Could not deliver " + messageType + " to [" + session.getId() + "] before close: " + result.getException());
+            }
+            closeSocketQuietly(session);
         });
     }
 
