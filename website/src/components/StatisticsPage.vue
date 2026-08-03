@@ -329,9 +329,17 @@ header {
 // dashboard paints underneath it. The leave is the slower of the two for that reason.
 .swap-area {
   display: grid;
+  // The single overlaid column has to track the container, not the content. Left as the implicit
+  // `auto` track it grew to the dashboard's max-content width (~850px, driven by the globe and the
+  // wide tables) and overflowed every viewport narrower than that — on tablet and phone the tiles,
+  // heatmap and tables spilled off the right edge, clipped with no scrollbar to reach them. The
+  // desktop full width hid it behind the page's own max-width. minmax(0, …) binds the column to the
+  // available width and lets it shrink, so the inner overflow-x:auto scrollers take over as intended.
+  grid-template-columns: minmax(0, 1fr);
 
   > * {
     grid-area: 1 / 1;
+    min-width: 0; // let the overlaid states shrink to the column instead of forcing it wide
   }
 }
 
