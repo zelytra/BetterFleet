@@ -50,6 +50,15 @@ winapi = { version = "0.3.9", features = ["winsock2", "winuser"] }
 # `all` feature — v1 got it transitively, the v2 dependency graph no longer does.
 socket2 = { version = "0.5.6", features = ["all"] }
 
+# x11rb backs the Linux native integration (#731): the Sea of Thieves auto-click (EWMH focus + XTEST
+# synthetic input) and keeping the in-game overlay above the game. Pure-Rust connection, so it adds
+# no libxcb/libX11 link; the XTEST extension needs its matching feature. Already in the tree as a
+# transitive dep of the GTK/wry stack, so this only turns on `xtest` on the shared build. X11-first
+# by design (#350) — Wayland forbids synthetic input from an ordinary client — so it is scoped to
+# Linux and degrades cleanly when no X server is reachable.
+[target.'cfg(target_os = "linux")'.dependencies]
+x11rb = { version = "0.13", features = ["xtest"] }
+
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
 # If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.

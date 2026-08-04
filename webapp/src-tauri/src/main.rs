@@ -37,6 +37,14 @@ mod fetch_informations;
 mod api;
 #[cfg(windows)]
 mod window_interaction;
+// Linux/X11 native integration (#731): the set-sail auto-click, the in-game overlay stacking fix,
+// and the shared X11 plumbing they build on. Gated to Linux — Windows/macOS keep their own paths.
+#[cfg(target_os = "linux")]
+mod overlay_x11;
+#[cfg(target_os = "linux")]
+mod window_interaction_linux;
+#[cfg(target_os = "linux")]
+mod x11_support;
 // Windows-only flow-diagnostic module — same story as fetch_informations above (#725).
 #[cfg_attr(not(windows), allow(dead_code, unused_imports))]
 mod diagnostics;
@@ -66,6 +74,11 @@ lazy_static! {
 
 const DEFAULT_OVERLAY_HOTKEY: &str = "CommandOrControl+Shift+O";
 
+/// Whether the player currently wants the overlay shown (last toggled on via the hotkey). On Linux
+/// the main-window blur handler reads this to keep the overlay floating over the game when
+/// BetterFleet loses focus, without ever resurrecting an overlay the player deliberately hid (#731).
+static OVERLAY_VISIBLE_INTENT: AtomicBool = AtomicBool::new(false);
+
 /// Binds `accelerator` to the overlay show/hide toggle. Fails (with the manager's reason) when the
 /// combo is invalid or already taken system-wide — the caller decides what to keep bound.
 fn register_overlay_toggle(app: &tauri::AppHandle, accelerator: &str) -> Result<(), String> {
@@ -78,8 +91,18 @@ fn register_overlay_toggle(app: &tauri::AppHandle, accelerator: &str) -> Result<
             if let Some(overlay) = handle.get_webview_window("overlay") {
                 if overlay.is_visible().unwrap_or(false) {
                     let _ = overlay.hide();
+                    OVERLAY_VISIBLE_INTENT.store(false, Ordering::SeqCst);
                 } else {
                     let _ = overlay.show();
+                    OVERLAY_VISIBLE_INTENT.store(true, Ordering::SeqCst);
+                    // Linux/X11: re-assert the overlay's stacking so the WM floats it over the game
+                    // and does not hide it while BetterFleet is inactive (#731). No-op elsewhere;
+                    // scoped to leave the solid Windows/macOS overlay behavior untouched.
+                    #[cfg(target_os = "linux")]
+                    {
+                        let _ = overlay.set_always_on_top(true);
+                        overlay_x11::reinforce_overlay_stacking();
+                    }
                 }
             }
         })
@@ -328,6 +351,25 @@ async fn main() {
                     }
                 }
             }
+
+            // Linux/X11: when BetterFleet loses focus (the player clicks into the game) some window
+            // managers drop or hide our always-on-top overlay — exactly when it needs to stay up.
+            // Re-assert it so it keeps floating over the game, but only while it is meant to be
+            // visible so we never resurrect a deliberately-hidden overlay (#731). Windows/macOS keep
+            // the overlay up on their own and are left untouched.
+            #[cfg(target_os = "linux")]
+            if let WindowEvent::Focused(false) = event {
+                if window.label() == "main" {
+                    if let Some(overlay) = window.get_webview_window("overlay") {
+                        let visible = overlay.is_visible().unwrap_or(false);
+                        if visible || OVERLAY_VISIBLE_INTENT.load(Ordering::SeqCst) {
+                            let _ = overlay.show();
+                            let _ = overlay.set_always_on_top(true);
+                            overlay_x11::reinforce_overlay_stacking();
+                        }
+                    }
+                }
+            }
         })
         .manage(api_arc)
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
@@ -436,7 +478,16 @@ fn rise_anchor() -> bool {
     return false;
 }
 
-#[cfg(not(windows))]
+// Linux/X11 port (#731): locate the Sea of Thieves window and click "raise anchor" via XTEST. The
+// command stays OS-agnostic for the frontend — `SessionCountdown.vue` just calls `rise_anchor`.
+#[cfg(target_os = "linux")]
+#[tauri::command]
+fn rise_anchor() -> bool {
+    window_interaction_linux::rise_anchor()
+}
+
+// Other platforms (macOS): no native auto-click yet — the frontend falls back to a manual set-sail.
+#[cfg(not(any(windows, target_os = "linux")))]
 #[tauri::command]
 fn rise_anchor() -> bool {
     false
