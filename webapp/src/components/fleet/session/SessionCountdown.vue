@@ -157,17 +157,12 @@ onBeforeRouteLeave((_to, _from, next) => {
     left: 50%;
     border-radius: 100%;
     transform: translate(-50%, -50%);
-    // This was a radial-gradient under `filter: blur(127px)`. On webkit2gtk (Linux) that blur
+    // The glow was a radial-gradient under `filter: blur(127px)`. On webkit2gtk (Linux) that blur
     // re-rasterized on every countdown tick and pinned the whole screen to ~10fps; WebView2 hid it.
-    // A soft gradient that fades to transparent reads as the same glow at zero per-frame cost —
-    // enlarged (40->55vw/vh) to roughly cover the area the blur used to spread into.
-    background: radial-gradient(
-      circle at 50% 50%,
-      rgba(255, 255, 255, 0.3) 0%,
-      rgba(88, 149, 127, 0.28) 42%,
-      rgba(26, 110, 79, 0.16) 70%,
-      rgba(26, 110, 79, 0) 100%
-    );
+    // Pre-baked to a static image (the identical gradient + gaussian blur) so the look is unchanged
+    // with zero per-frame filter cost.
+    background: url("@/assets/backgrounds/countdown-glow.webp") center / 100%
+      100% no-repeat;
   }
 }
 </style>
