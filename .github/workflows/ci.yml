@@ -205,7 +205,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest] # Add other platforms if needed
+        platform: [windows-latest, ubuntu-latest]
     defaults:
       run:
         working-directory: 'webapp'
@@ -225,20 +225,21 @@ jobs:
 
       - name: Install dependencies on Ubuntu
         if: matrix.platform == 'ubuntu-latest'
+        # webkit2gtk-4.1 + ayatana are the current Tauri v2 packages. libasound2-dev is for rodio
+        # (#671 native countdown audio), which links ALSA at build time.
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf build-essential libssl-dev libgtk-3-dev libasound2-dev
 
       - name: Install Webapp Dependencies
         run: npm ci
 
-      - name: Build Tauri App
-        # v1 tracks Tauri 2 configs (top-level "identifier"); do not pin back to @v0.
-        uses: tauri-apps/tauri-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+      # A compile check on both platforms, not a release build. tauri-action runs from the repo root
+      # and so couldn't find webapp/node_modules on Linux (`vue-tsc: not found`). `npm run` inherits
+      # the job's webapp working-directory, so the frontend build resolves; --no-bundle skips the
+      # installers, so this needs neither the signing keys nor the per-distro bundle config (#727).
+      - name: Build the Tauri app (compile check, no bundle)
+        run: npm run tauri:build -- --no-bundle
 
   # The Rust detection logic (pick_server_flow, the FlowAggregator, the #364/#657 capture fixtures,
   # the port range) has unit tests that never ran in CI — test-tauri only *builds* the app. This runs
