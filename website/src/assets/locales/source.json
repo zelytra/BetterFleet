@@ -305,6 +305,10 @@
     "reports": {
       "title": "Reports — BetterFleet",
       "description": "Bug reports sent from the BetterFleet app."
+    },
+    "download": {
+      "title": "Download BetterFleet",
+      "description": "Download BetterFleet for your platform — the Windows installer today, with a Linux .deb on the way."
     }
   },
   "alliance": {
@@ -341,5 +345,31 @@
   "loading": {
     "stats": "Reading the logs…",
     "globe": "Unrolling the chart…"
+  },
+  "downloadPage": {
+    "title": "Download BetterFleet",
+    "lead": "We picked the download that matches your device — or choose another platform below.",
+    "leadUnknown": "We couldn't tell what you're running. Pick your platform below.",
+    "recommended": "Recommended for your device",
+    "checking": "Checking the latest release…",
+    "viewReleases": "Browse every release on GitHub",
+    "platform": {
+      "windows": {
+        "name": "Windows",
+        "status": "Windows 10 and 11.",
+        "cta": "Download for Windows"
+      },
+      "linux": {
+        "name": "Linux",
+        "status": "Available as a .deb package.",
+        "comingSoon": "On its way — packages aren't published yet. Check back soon, or browse the releases for early builds.",
+        "cta": "Download the .deb",
+        "ctaAppImage": "Download the AppImage"
+      },
+      "macos": {
+        "name": "macOS",
+        "unsupported": "BetterFleet doesn't have a macOS build."
+      }
+    }
   }
 }

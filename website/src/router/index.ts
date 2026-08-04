@@ -63,6 +63,17 @@ export const routes = [
     },
   },
   {
+    // The platform-selection screen (#730): where the site's "Download" CTAs now land instead of
+    // pulling the Windows installer straight away. Lazy: it only matters to a visitor who actually
+    // clicked a download CTA, not to every marketing page load.
+    path: "/download",
+    name: "download",
+    component: () => import("@/components/DownloadPage.vue"),
+    meta: {
+      displayInNav: false,
+    },
+  },
+  {
     // Console players join a session lobby from their phone (#682). Lazy: the realtime lobby is
     // dead weight for every marketing visit, so it only loads when someone opens their invite link.
     //

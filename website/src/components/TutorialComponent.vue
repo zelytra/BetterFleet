@@ -3,8 +3,6 @@ import { useI18n } from "vue-i18n";
 import SeparatorVue from "@/vue/SeparatorVue.vue";
 import PirateButton from "@/vue/PirateButton.vue";
 import LobbyShot from "@/vue/tutorial/LobbyShot.vue";
-import { AppStore } from "@/objects/stores/appStore.ts";
-import { incrementDownload } from "@/objects/Stats.ts";
 
 const { t } = useI18n();
 
@@ -97,17 +95,9 @@ const STEPS = [
       <div class="actions">
         <!-- Same split as the home hero (#670): the installer is Windows-only, so below $lap it
              gives way to the one action a phone can actually take — joining a crew's session. -->
-        <a
-          v-if="AppStore.githubRelease.url"
-          class="download-cta"
-          :href="AppStore.githubRelease.url"
-          target="_blank"
-        >
-          <PirateButton
-            :label="t('button.downloadApp')"
-            @on-button-click="incrementDownload"
-          />
-        </a>
+        <router-link class="download-cta" to="/download">
+          <PirateButton :label="t('button.downloadApp')" />
+        </router-link>
         <router-link class="btn" to="/s">
           {{ t("nav.joinSession") }}
         </router-link>
