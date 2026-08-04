@@ -253,6 +253,118 @@ jobs:
           push: ${{ !inputs.dry_run }}
           tags: ${{ steps.docker-tags.outputs.tags }}
 
+  publish-apt:
+    needs: [resolve-version, publish-tauri]
+    if: ${{ !inputs.dry_run }}
+    name: APT repository
+    runs-on: ubuntu-latest
+    # Add-on to the Windows/Linux/backend/website publishing above, not a gate for it: never let a
+    # missing signing secret (until deployment/apt/README.md's one-time setup is done) or an
+    # unexpected failure here fail the release.
+    continue-on-error: true
+    permissions:
+      contents: write
+    steps:
+      - name: Check required secrets
+        id: gate
+        env:
+          APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
+        run: |
+          if [ -n "${APT_GPG_PRIVATE_KEY}" ]; then
+            echo "configured=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "configured=false" >> "${GITHUB_OUTPUT}"
+            echo "::warning::APT_GPG_PRIVATE_KEY is not set, skipping the APT repo publish. See deployment/apt/README.md to configure it."
+          fi
+
+      - name: Checkout
+        if: steps.gate.outputs.configured == 'true'
+        uses: actions/checkout@v7
+
+      - name: Install reprepro
+        if: steps.gate.outputs.configured == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y reprepro gnupg
+
+      - name: Download the release .deb
+        if: steps.gate.outputs.configured == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p "${RUNNER_TEMP}/deb"
+          gh release download "${{ needs.resolve-version.outputs.tag }}" \
+            --repo "${{ github.repository }}" \
+            --pattern 'BetterFleet_*_amd64.deb' \
+            --dir "${RUNNER_TEMP}/deb"
+
+      - name: Import the signing key
+        if: steps.gate.outputs.configured == 'true'
+        env:
+          APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
+          APT_GPG_PASSPHRASE: ${{ secrets.APT_GPG_PASSPHRASE }}
+        run: |
+          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
+          mkdir -m 700 -p "${GNUPGHOME}"
+          printf '%s\n' "${APT_GPG_PRIVATE_KEY}" | gpg --batch --import
+          printf 'pinentry-mode loopback\n' > "${GNUPGHOME}/gpg.conf"
+          printf 'allow-loopback-pinentry\n' > "${GNUPGHOME}/gpg-agent.conf"
+          gpgconf --kill gpg-agent || true
+
+          # reprepro shells out to `gpg` non-interactively; priming the agent's passphrase cache
+          # here (with a throwaway signature) lets that later call succeed without a prompt. Keys
+          # created without a passphrase (the README's recommendation) skip this — nothing to cache.
+          if [ -n "${APT_GPG_PASSPHRASE}" ]; then
+            KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/{print $5; exit}')
+            printf 'priming the agent\n' | gpg --batch --pinentry-mode loopback \
+              --passphrase "${APT_GPG_PASSPHRASE}" --local-user "${KEY_ID}" \
+              --detach-sign --output /dev/null
+          fi
+
+          echo "GNUPGHOME=${GNUPGHOME}" >> "${GITHUB_ENV}"
+
+      - name: Update and publish the repo
+        if: steps.gate.outputs.configured == 'true'
+        env:
+          REPO_URL: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          TAG: ${{ needs.resolve-version.outputs.tag }}
+        run: |
+          set -euo pipefail
+          WORKTREE="${RUNNER_TEMP}/gh-pages"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git clone --branch gh-pages --single-branch --depth 1 "${REPO_URL}" "${WORKTREE}" 2>/dev/null; then
+            echo "Checked out the existing gh-pages branch."
+          else
+            echo "No gh-pages branch yet — this run creates it."
+            mkdir -p "${WORKTREE}"
+            git -C "${WORKTREE}" init --initial-branch=gh-pages --quiet
+            git -C "${WORKTREE}" remote add origin "${REPO_URL}"
+          fi
+
+          # Pages serves this branch's root through Jekyll by default; the repo is plain static
+          # files, not a Jekyll site, so opt out at the root (publish.sh adds its own inside apt/
+          # too, which matters if REPO_DIR is ever pointed at a Pages root directly instead).
+          touch "${WORKTREE}/.nojekyll"
+
+          DEB_FILE=$(find "${RUNNER_TEMP}/deb" -name 'BetterFleet_*_amd64.deb' | head -n1)
+          if [ -z "${DEB_FILE}" ]; then
+            echo "::error::No BetterFleet_*_amd64.deb release asset found to publish." >&2
+            exit 1
+          fi
+
+          bash deployment/apt/publish.sh "${DEB_FILE}" "${WORKTREE}/apt"
+
+          cd "${WORKTREE}"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "APT repo already up to date, nothing to publish."
+          else
+            git commit -m "apt: publish ${TAG}" --quiet
+            git push origin HEAD:gh-pages
+          fi
+
   sync-version-to-master:
     needs:
       - resolve-version
