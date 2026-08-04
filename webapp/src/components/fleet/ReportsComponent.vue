@@ -163,7 +163,11 @@ async function sendReport() {
   justify-content: center;
   align-items: center;
   gap: 12px;
-  height: 100%;
+  // min-height, not height: the diagnostic panel grows tall once a capture result shows. With a
+  // fixed height + align-items: center the overflowing top is pushed above the scroll origin and
+  // clipped (unreachable); min-height lets .report grow so the .content scroll can reach it.
+  min-height: 100%;
+  box-sizing: border-box;
 
   .report-wrapper {
     display: flex;
