@@ -7,7 +7,7 @@ import { clampBanner } from "@/objects/fleet/Banners.ts";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 import { browserCountry } from "@/objects/utils/BrowserCountry.ts";
-import { info } from "tauri-plugin-log-api";
+import { info } from "@tauri-apps/plugin-log";
 
 export const UserStore = reactive({
   player: {} as Player,

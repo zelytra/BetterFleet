@@ -274,7 +274,7 @@ import InputText from "@/vue/form/InputText.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
 import { inject, onMounted, onUnmounted, ref, watch } from "vue";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 import fr from "@assets/icons/locales/fr.svg";
 import de from "@assets/icons/locales/de.svg";
@@ -304,7 +304,7 @@ import {
 import ParameterPart from "@/vue/templates/ParameterPart.vue";
 import { Utils } from "@/objects/utils/Utils.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
-import { info } from "tauri-plugin-log-api";
+import { info } from "@tauri-apps/plugin-log";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 
 const { t, availableLocales } = useI18n();

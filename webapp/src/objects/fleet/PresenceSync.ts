@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import { Player } from "@/objects/fleet/Player.ts";
 

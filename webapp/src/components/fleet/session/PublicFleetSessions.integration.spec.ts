@@ -2,13 +2,13 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import { createI18n } from "vue-i18n";
 
-vi.mock("@tauri-apps/api/http", async () =>
+vi.mock("@tauri-apps/plugin-http", async () =>
   (await import("@/test/harness/tauri.ts")).httpMock(),
 );
-vi.mock("tauri-plugin-log-api", async () =>
+vi.mock("@tauri-apps/plugin-log", async () =>
   (await import("@/test/harness/tauri.ts")).logMock(),
 );
-vi.mock("@tauri-apps/api/tauri", async () =>
+vi.mock("@tauri-apps/api/core", async () =>
   (await import("@/test/harness/tauri.ts")).invokeMock(),
 );
 vi.mock("@/main.ts", async () =>

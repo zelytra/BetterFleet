@@ -7,10 +7,10 @@ import { createI18n } from "vue-i18n";
 vi.mock("@/objects/utils/HTTPAxios.ts", () => ({
   HTTPAxios: class {
     static updateToken = vi.fn();
-    get = vi.fn().mockResolvedValue({ data: { sessions: [] } });
+    get = vi.fn().mockResolvedValue({ json: async () => ({ sessions: [] }) });
   },
 }));
-vi.mock("tauri-plugin-log-api", () => ({ info: vi.fn(), error: vi.fn() }));
+vi.mock("@tauri-apps/plugin-log", () => ({ info: vi.fn(), error: vi.fn() }));
 
 import PublicSessionBrowser from "@/components/fleet/session/PublicSessionBrowser.vue";
 import { PublicSessionsStore } from "@/objects/fleet/PublicSessionsStore.ts";

@@ -1,9 +1,9 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
-vi.mock("@tauri-apps/api/http", async () =>
+vi.mock("@tauri-apps/plugin-http", async () =>
   (await import("@/test/harness/tauri.ts")).httpMock(),
 );
-vi.mock("tauri-plugin-log-api", async () =>
+vi.mock("@tauri-apps/plugin-log", async () =>
   (await import("@/test/harness/tauri.ts")).logMock(),
 );
 vi.mock("@/main.ts", async () =>

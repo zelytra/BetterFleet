@@ -71,7 +71,7 @@ import { inject, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { BugReport, ReportInterface } from "@/objects/report/Report.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 const { t } = useI18n();
 

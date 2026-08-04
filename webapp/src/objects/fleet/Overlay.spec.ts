@@ -10,13 +10,13 @@ import {
 import { LocalTime } from "@js-joda/core";
 
 // The overlay lives on the Tauri event bus and the Tauri window API; neither exists under vitest.
-vi.mock("@tauri-apps/api/window", async () =>
+vi.mock("@tauri-apps/api/webviewWindow", async () =>
   (await import("@/test/harness/tauri.ts")).windowMock(),
 );
 vi.mock("@tauri-apps/api/event", async () =>
   (await import("@/test/harness/tauri.ts")).eventMock(),
 );
-vi.mock("tauri-plugin-log-api", async () =>
+vi.mock("@tauri-apps/plugin-log", async () =>
   (await import("@/test/harness/tauri.ts")).logMock(),
 );
 vi.mock("@/main.ts", async () =>

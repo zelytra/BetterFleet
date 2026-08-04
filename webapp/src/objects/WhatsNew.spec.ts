@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 
 // The module imports the Tauri http and log bridges, which do not exist under vitest.
-vi.mock("@tauri-apps/api/http", async () =>
+vi.mock("@tauri-apps/plugin-http", async () =>
   (await import("@/test/harness/tauri.ts")).httpMock(),
 );
-vi.mock("tauri-plugin-log-api", async () =>
+vi.mock("@tauri-apps/plugin-log", async () =>
   (await import("@/test/harness/tauri.ts")).logMock(),
 );
 

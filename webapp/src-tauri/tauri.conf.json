@@ -1,116 +1,24 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "BetterFleet",
+  "version": "2.2.2",
+  "identifier": "fr.zelytra",
+  "mainBinaryName": "BetterFleet",
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
-    "devPath": "http://localhost:5173",
-    "distDir": "../dist"
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist"
   },
-  "package": {
-    "productName": "BetterFleet",
-    "version": "2.2.2"
-  },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": true,
-        "execute": true,
-        "sidecar": true,
-        "open": true
-      },
-      "http": {
-        "all": true,
-        "request": true,
-        "scope": [
-          "http://**",
-          "https://**"
-        ]
-      },
-      "window": {
-        "all": false,
-        "show": true,
-        "hide": true,
-        "setFocus": true,
-        "setAlwaysOnTop": true,
-        "startDragging": true
-      },
-      "globalShortcut": {
-        "all": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "fr.zelytra",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": [
-        "nsis",
-        "updater"
-      ],
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": "",
-        "nsis": {
-          "installerIcon": "icons/installer-icon.ico",
-          "sidebarImage": "icons/installer-banner.bmp"
-        }
-      }
-    },
-    "security": {
-      "csp": null,
-      "dangerousRemoteDomainIpcAccess": [
-        {
-          "domain": "localhost",
-          "windows": [
-            "main",
-            "overlay"
-          ],
-          "enableTauriAPI": true
-        }
-      ]
-    },
-    "updater": {
-      "active": true,
-      "endpoints": [
-        "https://github.com/zelytra/BetterFleet/releases/latest/download/latest.json"
-      ],
-      "dialog": true,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE2RDBEMjE0MEIwOTZBQzMKUldURGFna0xGTkxRRnJ1bW0welJxZCtPUmNBZGdoZG9XTC9PL1JSZTBGZjJkWVg3b3NSOVZCZUIK",
-      "windows": {
-        "installMode": "passive"
-      }
-    },
+  "app": {
     "windows": [
       {
         "label": "main",
-        "fullscreen": false,
-        "height": 760,
-        "resizable": true,
         "title": "BetterFleet",
         "width": 1260,
+        "height": 760,
+        "resizable": true,
+        "fullscreen": false,
         "transparent": true,
         "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,CalculateNativeWinOcclusion --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows --autoplay-policy=no-user-gesture-required"
       },
@@ -131,6 +39,59 @@
         "focus": false,
         "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,CalculateNativeWinOcclusion --disable-background-timer-throttling --disable-renderer-backgrounding --disable-backgrounding-occluded-windows --autoplay-policy=no-user-gesture-required"
       }
-    ]
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "createUpdaterArtifacts": "v1Compatible",
+    "category": "DeveloperTool",
+    "copyright": "",
+    "shortDescription": "",
+    "longDescription": "",
+    "resources": [],
+    "externalBin": [],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    },
+    "macOS": {
+      "entitlements": null,
+      "exceptionDomain": "",
+      "frameworks": [],
+      "providerShortName": null,
+      "signingIdentity": null
+    },
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "",
+      "nsis": {
+        "installerIcon": "icons/installer-icon.ico",
+        "sidebarImage": "icons/installer-banner.bmp"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/zelytra/BetterFleet/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE2RDBEMjE0MEIwOTZBQzMKUldURGFna0xGTkxRRnJ1bW0welJxZCtPUmNBZGdoZG9XTC9PL1JSZTBGZjJkWVg3b3NSOVZCZUIK",
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }

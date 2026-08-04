@@ -1,30 +1,37 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+#[cfg(windows)]
 use std::ffi::CString;
 use std::{fs, io, panic};
 use std::io::{BufRead, Cursor};
 use std::path::PathBuf;
+#[cfg(windows)]
 use std::ptr::null_mut;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
+#[cfg(windows)]
 use std::thread::sleep;
 use std::time::Duration;
 use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
 use serde::{Deserialize, Serialize};
-use tauri::{GlobalShortcutManager, Manager, State, WindowEvent};
+use tauri::{Manager, State, WindowEvent};
+use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 use tauri_plugin_log::fern::colors::ColoredLevelConfig;
-use tauri_plugin_log::{LogTarget, RotationStrategy};
+use tauri_plugin_log::{Target, TargetKind, RotationStrategy};
 use tokio::sync::RwLock;
+#[cfg(windows)]
 use winapi::um::winuser::FindWindowA;
 use crate::api::{Api, GameStatus};
+#[cfg(windows)]
 use crate::window_interaction::{click_in_window_proportionally, set_focus_to_window};
 use sysinfo::{Networks, System};
 use std::net::{IpAddr, ToSocketAddrs};
 
 mod fetch_informations;
 mod api;
+#[cfg(windows)]
 mod window_interaction;
 mod diagnostics;
 
@@ -57,9 +64,12 @@ const DEFAULT_OVERLAY_HOTKEY: &str = "CommandOrControl+Shift+O";
 /// combo is invalid or already taken system-wide — the caller decides what to keep bound.
 fn register_overlay_toggle(app: &tauri::AppHandle, accelerator: &str) -> Result<(), String> {
     let handle = app.clone();
-    app.global_shortcut_manager()
-        .register(accelerator, move || {
-            if let Some(overlay) = handle.get_window("overlay") {
+    app.global_shortcut()
+        .on_shortcut(accelerator, move |_app, _shortcut, event| {
+            if event.state != ShortcutState::Pressed {
+                return;
+            }
+            if let Some(overlay) = handle.get_webview_window("overlay") {
                 if overlay.is_visible().unwrap_or(false) {
                     let _ = overlay.hide();
                 } else {
@@ -86,8 +96,9 @@ struct OverlayLayout {
 }
 
 fn overlay_layout_path(app: &tauri::AppHandle) -> Option<PathBuf> {
-    app.path_resolver()
+    app.path()
         .app_config_dir()
+        .ok()
         .map(|dir| dir.join("overlay-layout.json"))
 }
 
@@ -107,7 +118,7 @@ fn layout_is_on_screen(layout: &OverlayLayout, monitors: &[(i32, i32, u32, u32)]
 /// the overlay is still hidden, so the move is never visible. First run (no file) keeps the
 /// tauri.conf.json defaults.
 fn restore_overlay_layout(app: &tauri::AppHandle) {
-    let overlay = match app.get_window("overlay") {
+    let overlay = match app.get_webview_window("overlay") {
         Some(window) => window,
         None => return,
     };
@@ -141,8 +152,8 @@ fn restore_overlay_layout(app: &tauri::AppHandle) {
 
 /// Remembers where the overlay sits right now. Called as the app closes: the live window carries
 /// its geometry the whole session (hidden or shown), so one read at exit is all persistence needs.
-fn save_overlay_layout(overlay: &tauri::Window) {
-    let path = match overlay_layout_path(&overlay.app_handle()) {
+fn save_overlay_layout(overlay: &tauri::WebviewWindow) {
+    let path = match overlay_layout_path(overlay.app_handle()) {
         Some(path) => path,
         None => return,
     };
@@ -283,29 +294,28 @@ async fn main() {
 
     tauri::Builder::default()
         .setup(move |app| {
-            let log_path = app.path_resolver().app_log_dir().unwrap();
+            let log_path = app.path().app_log_dir().unwrap();
             *LOG_PATH.lock().unwrap() = log_path;
 
             // Global hotkey to toggle the in-game overlay (issue #671). Registered in Rust rather
             // than through the JS global-shortcut API, which did not fire reliably. The default
             // binds at startup; the frontend re-binds the player's saved combo right after (#687).
-            if let Err(e) = register_overlay_toggle(&app.handle(), DEFAULT_OVERLAY_HOTKEY) {
+            if let Err(e) = register_overlay_toggle(app.handle(), DEFAULT_OVERLAY_HOTKEY) {
                 error!("Failed to register overlay hotkey: {}", e);
             }
 
             // Reopen the overlay exactly where the player left it last session (#671) — position,
             // size, and therefore screen — while it is still hidden, so the move is never seen.
-            restore_overlay_layout(&app.handle());
+            restore_overlay_layout(app.handle());
 
             Ok(())
         })
-        .on_window_event(|event| {
+        .on_window_event(|window, event| {
             // The overlay is a separate top-level window; closing the main window must take it down
             // with it, otherwise it lingers on screen after the app is gone (issue #671).
-            if let WindowEvent::CloseRequested { .. } = event.event() {
-                let window = event.window();
+            if let WindowEvent::CloseRequested { .. } = event {
                 if window.label() == "main" {
-                    if let Some(overlay) = window.get_window("overlay") {
+                    if let Some(overlay) = window.get_webview_window("overlay") {
                         // Remember where the player parked it before taking it down (#671).
                         save_overlay_layout(&overlay);
                         let _ = overlay.close();
@@ -314,11 +324,15 @@ async fn main() {
             }
         })
         .manage(api_arc)
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_shell::init())
         .plugin(
             tauri_plugin_log::Builder::default().targets([
-                LogTarget::LogDir,
-                LogTarget::Stdout,
-                LogTarget::Webview,
+                Target::new(TargetKind::LogDir { file_name: None }),
+                Target::new(TargetKind::Stdout),
+                Target::new(TargetKind::Webview),
             ])
             .max_file_size(2_000) //Seems 2MB
             .with_colors(ColoredLevelConfig::default())
@@ -390,6 +404,7 @@ async fn get_last_updated_server_ip(api: State<'_, Arc<RwLock<Api>>>) -> Result<
     Ok(total_duration.as_secs())
 }
 
+#[cfg(windows)]
 #[tauri::command]
 fn rise_anchor() -> bool {
     let window_name = "Sea Of Thieves";
@@ -413,6 +428,12 @@ fn rise_anchor() -> bool {
     }
 
     return false;
+}
+
+#[cfg(not(windows))]
+#[tauri::command]
+fn rise_anchor() -> bool {
+    false
 }
 
 #[tauri::command]
@@ -518,6 +539,7 @@ fn get_system_info() -> String {
 /// few seconds and returns a per-flow volume report (also written to the logs), so
 /// the real server flow can be told apart from the Steam Datagram Relay noise.
 /// Purely observational — it does not affect live detection.
+#[cfg(windows)]
 #[tauri::command]
 async fn run_server_diagnostic(
     api: State<'_, Arc<RwLock<Api>>>,
@@ -577,6 +599,16 @@ async fn run_server_diagnostic(
     Ok(report)
 }
 
+#[cfg(not(windows))]
+#[tauri::command]
+async fn run_server_diagnostic(
+    _api: State<'_, Arc<RwLock<Api>>>,
+    _duration_secs: u64,
+    _note: String,
+) -> Result<diagnostics::DiagnosticReport, String> {
+    Err("Server diagnostics are not available on this platform yet.".into())
+}
+
 /// Plays the launch-countdown jingle natively (#671). Webview audio is suspended while the window
 /// is occluded behind the game, so `SessionCountdown` asks Rust instead: rodio opens the default
 /// output device on its own thread, immune to the webview's focus/occlusion/autoplay policies.
@@ -619,7 +651,7 @@ fn set_overlay_hotkey(app_handle: tauri::AppHandle, accelerator: String) -> Resu
         return Ok(());
     }
     register_overlay_toggle(&app_handle, &accelerator)?;
-    if let Err(e) = app_handle.global_shortcut_manager().unregister(&current) {
+    if let Err(e) = app_handle.global_shortcut().unregister(current.as_str()) {
         // The new combo works; a stale extra binding is worth a log line, not a failure.
         error!("[hotkey] failed to unregister {}: {}", *current, e);
     }

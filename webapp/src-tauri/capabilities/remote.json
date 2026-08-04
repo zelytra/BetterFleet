@@ -1,0 +1,23 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "remote-localhost-dev",
+  "description": "Replaces the v1 dangerousRemoteDomainIpcAccess (domain localhost, windows main+overlay, enableTauriAPI). In dev the frontend is served from http://localhost:5173 — a remote origin to Tauri — so the IPC bridge + these permissions are granted to that origin for both windows. Inert in production (same-origin).",
+  "windows": ["main", "overlay"],
+  "local": false,
+  "remote": {
+    "urls": ["http://localhost:*"]
+  },
+  "permissions": [
+    "core:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-set-focus",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-start-dragging",
+    {
+      "identifier": "http:default",
+      "allow": [{ "url": "http://**" }, { "url": "https://**" }]
+    },
+    "log:default"
+  ]
+}

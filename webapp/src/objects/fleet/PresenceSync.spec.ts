@@ -1,13 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
 
 // The module pulls UserStore -> main.ts and the Tauri bridges; the harness stand-ins cut that.
-vi.mock("@tauri-apps/api/tauri", async () =>
+vi.mock("@tauri-apps/api/core", async () =>
   (await import("@/test/harness/tauri.ts")).invokeMock(),
 );
-vi.mock("@tauri-apps/api/http", async () =>
+vi.mock("@tauri-apps/plugin-http", async () =>
   (await import("@/test/harness/tauri.ts")).httpMock(),
 );
-vi.mock("tauri-plugin-log-api", async () =>
+vi.mock("@tauri-apps/plugin-log", async () =>
   (await import("@/test/harness/tauri.ts")).logMock(),
 );
 vi.mock("@/main.ts", async () =>

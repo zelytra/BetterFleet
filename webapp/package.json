@@ -19,15 +19,16 @@
   },
   "dependencies": {
     "@js-joda/core": "^6.1.0",
-    "@tauri-apps/api": "^1.5.2",
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-http": "^2.0.0",
+    "@tauri-apps/plugin-log": "^2.0.0",
     "keycloak-js": "^26.2.4",
-    "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
     "vue": "^3.5.39",
     "vue-i18n": "^11.4.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@tauri-apps/cli": "^1.5.2",
+    "@tauri-apps/cli": "^2.0.0",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vue/test-utils": "^2.4.11",
     "esbuild": "^0.28.1",

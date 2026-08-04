@@ -7,9 +7,9 @@
  *
  * Use from a spec, before importing the code under test:
  *
- *   vi.mock("@tauri-apps/api/http", async () => (await import("@/test/harness/tauri.ts")).httpMock());
- *   vi.mock("tauri-plugin-log-api", async () => (await import("@/test/harness/tauri.ts")).logMock());
- *   vi.mock("@tauri-apps/api/tauri", async () => (await import("@/test/harness/tauri.ts")).invokeMock());
+ *   vi.mock("@tauri-apps/plugin-http", async () => (await import("@/test/harness/tauri.ts")).httpMock());
+ *   vi.mock("@tauri-apps/plugin-log", async () => (await import("@/test/harness/tauri.ts")).logMock());
+ *   vi.mock("@tauri-apps/api/core", async () => (await import("@/test/harness/tauri.ts")).invokeMock());
  *   vi.mock("@/main.ts", async () => (await import("@/test/harness/tauri.ts")).mainMock());
  *   vi.mock("@/objects/stores/LoginStates.ts", async () => (await import("@/test/harness/tauri.ts")).keycloakMock());
  */
@@ -30,11 +30,11 @@ export const rustCalls: { command: string; args: unknown }[] = [];
 export const rustResponses = new Map<string, unknown>();
 
 export function httpMock() {
+  // v2 `@tauri-apps/plugin-http` exposes only a WHATWG-shaped `fetch`; the v1 `ResponseType`/`Body`
+  // helpers are gone. The fake returns a Response-like object (see FakeBackend.fetch).
   return {
-    ResponseType: { JSON: 1, Text: 2, Binary: 3 },
     fetch: (url: string, options?: unknown) =>
       fakeBackend.fetch(url, options as never),
-    Body: { json: (v: unknown) => v },
   };
 }
 
@@ -100,7 +100,7 @@ export function installFakeTransports(): void {
 
 // --- Tauri event bus + window, for the in-game overlay (#671) ------------------------------------
 // The overlay is a second Tauri window fed over `@tauri-apps/api/event`, and toggled through
-// `@tauri-apps/api/window`. Neither exists under vitest, so these are in-memory stand-ins: `emit`
+// `@tauri-apps/api/webviewWindow`. Neither exists under vitest, so these are in-memory stand-ins: `emit`
 // delivers synchronously to every `listen` for that event (so a main->overlay round-trip resolves in
 // one tick), and the recorder lets a test assert what crossed the window boundary.
 
@@ -146,13 +146,14 @@ export function setCurrentWindowLabel(label: string): void {
 
 export function windowMock() {
   return {
-    appWindow: {
+    // v2: the current window comes from getCurrentWebviewWindow(), and getByLabel is async.
+    getCurrentWebviewWindow: () => ({
       get label() {
         return currentWindowLabel;
       },
-    },
+    }),
     WebviewWindow: {
-      getByLabel: (label: string) =>
+      getByLabel: async (label: string) =>
         label === "overlay" ? fakeOverlayWindow : null,
     },
   };
