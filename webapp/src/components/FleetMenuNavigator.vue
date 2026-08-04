@@ -22,7 +22,7 @@ import { LocalKey } from "@/objects/stores/LocalStore.ts";
 import { onUnmounted, watch } from "vue";
 import { Player } from "@/objects/fleet/Player.ts";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { RustSotServer } from "@/objects/fleet/SotServer.ts";
 import { syncGameState } from "@/objects/fleet/GameSync.ts";
 import { observeDetection } from "@/objects/fleet/DetectionWatchdog.ts";

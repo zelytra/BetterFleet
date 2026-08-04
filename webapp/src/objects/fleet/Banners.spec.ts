@@ -40,11 +40,11 @@ describe("clampBanner", () => {
 
 describe("bannerUrl", () => {
   it("points at the template asset", () => {
-    expect(bannerUrl(2)).toBe("/banners/session2.svg");
+    expect(bannerUrl(2)).toBe("/banners/session2.webp");
   });
 
   it("never points at a template that does not exist", () => {
-    expect(bannerUrl(99)).toBe("/banners/session0.svg");
+    expect(bannerUrl(99)).toBe("/banners/session0.webp");
   });
 });
 

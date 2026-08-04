@@ -1,5 +1,5 @@
-import { fetch, ResponseType } from "@tauri-apps/api/http";
-import { error, info } from "tauri-plugin-log-api";
+import { fetch } from "@tauri-apps/plugin-http";
+import { error, info } from "@tauri-apps/plugin-log";
 
 // In-app changelog (#686). The updater ships new versions silently; this decides when a "what's
 // new" is due and turns the GitHub release body into a few readable lines. Pure parts are exported
@@ -61,20 +61,21 @@ export async function fetchReleaseNotes(
         version,
       {
         method: "GET",
-        responseType: ResponseType.JSON,
         // GitHub's API refuses requests without a User-Agent.
         headers: {
           "User-Agent": "BetterFleet",
           Accept: "application/vnd.github+json",
         },
-        timeout: 8,
+        // v2 plugin-http has no `timeout` option; an abort signal caps the wait instead.
+        signal: AbortSignal.timeout(8000),
       },
     );
     if (!response.ok) {
       // GitHub answered but refused (rate limit, missing tag…): name it in the logs instead of
       // failing into the fallback silently — that silence is exactly what made this undebuggable.
-      const reason = (response.data as { message?: string } | undefined)
-        ?.message;
+      const reason = (
+        (await response.json()) as { message?: string } | undefined
+      )?.message;
       error(
         "[WhatsNew] GitHub refused the release notes: HTTP " +
           response.status +
@@ -82,7 +83,8 @@ export async function fetchReleaseNotes(
       );
       return null;
     }
-    const body = (response.data as { body?: string } | undefined)?.body;
+    const body = ((await response.json()) as { body?: string } | undefined)
+      ?.body;
     if (!body) {
       error("[WhatsNew] release v" + version + " has no body");
       return null;

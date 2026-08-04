@@ -18,7 +18,7 @@ import { LocalTime } from "@js-joda/core";
 import { useI18n } from "vue-i18n";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 import { PlayerStates } from "@/objects/fleet/Player.ts";
 import { onBeforeRouteLeave } from "vue-router";
 
@@ -88,7 +88,10 @@ let updateTimer = setInterval(() => {
 
   delta.value = click.minusSeconds(start.second());
   delta.value = delta.value.minusNanos(start.nano());
-}, 5);
+  // 16 ms (~60 fps), not 5 ms (200 Hz): at 200 Hz each tick allocated js-joda LocalTimes and wrote
+  // `delta` faster than webkit2gtk (Linux) can repaint, so callbacks bunched up and the countdown
+  // stuttered. Firing is bounded by network sync, not this interval — 60 fps is smooth and cheap.
+}, 16);
 
 const props = defineProps({
   session: { type: Object as PropType<Fleet>, required: true },
@@ -140,6 +143,10 @@ onBeforeRouteLeave((_to, _from, next) => {
   }
 
   h2 {
+    // Own compositor layer, so the per-tick text repaint doesn't invalidate the blurred
+    // .circle-background layer behind it and force the expensive blur to redraw.
+    will-change: transform;
+
     strong {
       color: var(--primary);
     }
@@ -162,6 +169,11 @@ onBeforeRouteLeave((_to, _from, next) => {
       rgba(26, 110, 79, 0.7) 100%
     );
     filter: blur(127px);
+    // The blur IS the original look. What dropped it to ~10fps on webkit2gtk was re-rasterizing it
+    // every countdown tick: the timer text repainting in the same layer forced the blur to redraw.
+    // will-change promotes this to its own compositor layer so the blurred result is cached once, and
+    // the timer text (promoted too, below) repaints on a separate layer without touching it.
+    will-change: transform;
   }
 }
 </style>

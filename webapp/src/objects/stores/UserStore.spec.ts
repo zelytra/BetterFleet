@@ -3,13 +3,13 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 // UserStore pulls in the whole app chain (Fleet → HTTPAxios, i18n, Keycloak). Mock the Tauri edges
 // so the store can init under vitest. Unlike the shared mainMock (whose i18n is undefined), init()
 // assigns i18n.global.locale.value, so this stub gives it a real-ish i18n.
-vi.mock("@tauri-apps/api/window", async () =>
+vi.mock("@tauri-apps/api/webviewWindow", async () =>
   (await import("@/test/harness/tauri.ts")).windowMock(),
 );
 vi.mock("@tauri-apps/api/event", async () =>
   (await import("@/test/harness/tauri.ts")).eventMock(),
 );
-vi.mock("tauri-plugin-log-api", async () =>
+vi.mock("@tauri-apps/plugin-log", async () =>
   (await import("@/test/harness/tauri.ts")).logMock(),
 );
 vi.mock("@/main.ts", () => ({

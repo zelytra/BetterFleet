@@ -4,13 +4,13 @@ import { createI18n } from "vue-i18n";
 import { LocalTime } from "@js-joda/core";
 
 // OverlayView is fed over the Tauri event bus; stub it (and the window/log bridges it pulls in).
-vi.mock("@tauri-apps/api/window", async () =>
+vi.mock("@tauri-apps/api/webviewWindow", async () =>
   (await import("@/test/harness/tauri.ts")).windowMock(),
 );
 vi.mock("@tauri-apps/api/event", async () =>
   (await import("@/test/harness/tauri.ts")).eventMock(),
 );
-vi.mock("tauri-plugin-log-api", async () =>
+vi.mock("@tauri-apps/plugin-log", async () =>
   (await import("@/test/harness/tauri.ts")).logMock(),
 );
 vi.mock("@/main.ts", async () =>

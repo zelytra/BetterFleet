@@ -1,5 +1,5 @@
 import { HTTPAxios } from "@/objects/utils/HTTPAxios.ts";
-import { info } from "tauri-plugin-log-api";
+import { info } from "@tauri-apps/plugin-log";
 
 // Lobby hint fed by the anonymous alliance statistics (#683). The backend already aggregates
 // every attempt (#673); this turns one GET /stats/alliance into "when is it worth trying" advice
@@ -43,7 +43,10 @@ export async function fetchAllianceStats(): Promise<AllianceStatsPayload | null>
   }
   try {
     const response = await new HTTPAxios("stats/alliance").get();
-    cache = { at: Date.now(), payload: response.data as AllianceStatsPayload };
+    cache = {
+      at: Date.now(),
+      payload: (await response.json()) as AllianceStatsPayload,
+    };
     info("[AllianceHint] stats refreshed");
   } catch {
     cache = { at: Date.now(), payload: null };

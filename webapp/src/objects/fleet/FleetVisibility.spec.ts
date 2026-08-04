@@ -3,9 +3,8 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 // Fleet drags in the Tauri runtime and the app's alert provider through its
 // imports; neither exists under vitest, so they are stubbed down to what these
 // tests touch.
-vi.mock("tauri-plugin-log-api", () => ({ info: vi.fn(), error: vi.fn() }));
-vi.mock("@tauri-apps/api/http", () => ({
-  ResponseType: { JSON: 1 },
+vi.mock("@tauri-apps/plugin-log", () => ({ info: vi.fn(), error: vi.fn() }));
+vi.mock("@tauri-apps/plugin-http", () => ({
   fetch: vi.fn(),
 }));
 vi.mock("@/main.ts", () => ({ alertProvider: { sendAlert: vi.fn() } }));

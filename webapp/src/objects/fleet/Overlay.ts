@@ -1,6 +1,9 @@
-import { appWindow, WebviewWindow } from "@tauri-apps/api/window";
+import {
+  getCurrentWebviewWindow,
+  WebviewWindow,
+} from "@tauri-apps/api/webviewWindow";
 import { emit, listen, UnlistenFn } from "@tauri-apps/api/event";
-import { info, error } from "tauri-plugin-log-api";
+import { info, error } from "@tauri-apps/plugin-log";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 
 // In-game overlay (issue #671). A second, always-on-top Tauri window (label "overlay", declared in
@@ -67,7 +70,7 @@ export interface OverlaySnapshot {
 /** True when the current window is the overlay (so main.ts can route it to the overlay view). */
 export function isOverlayWindow(): boolean {
   try {
-    return appWindow.label === OVERLAY_LABEL;
+    return getCurrentWebviewWindow().label === OVERLAY_LABEL;
   } catch {
     return false;
   }
@@ -176,7 +179,7 @@ export async function onOverlayUpdate(
 
 /** Shows or hides the overlay window. Bound to the settings checkbox (the hotkey lives in Rust). */
 export async function setOverlayVisible(visible: boolean): Promise<void> {
-  const overlay = WebviewWindow.getByLabel(OVERLAY_LABEL);
+  const overlay = await WebviewWindow.getByLabel(OVERLAY_LABEL);
   if (!overlay) {
     error("[Overlay] window not found");
     return;
@@ -195,7 +198,7 @@ export async function setOverlayVisible(visible: boolean): Promise<void> {
 
 /** Current visibility of the overlay window, so the settings checkbox can reflect the real state. */
 export async function isOverlayVisible(): Promise<boolean> {
-  const overlay = WebviewWindow.getByLabel(OVERLAY_LABEL);
+  const overlay = await WebviewWindow.getByLabel(OVERLAY_LABEL);
   try {
     return overlay ? await overlay.isVisible() : false;
   } catch {

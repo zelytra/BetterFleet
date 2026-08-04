@@ -5,9 +5,13 @@ back into the problem.
 
 ## Desktop shell (Tauri)
 
-- **Tauri stays on v1.** The `tauri*` crates must stay v1 and `tauri-action` must stay `@v0`. A v2
-  bump dies with a cryptic `devPath`/config error, not an obvious "wrong version" message. This pin
-  is intentional.
+- **Tauri is on v2** (migrated for the Linux port, #735). Don't reintroduce v1 assumptions: config is
+  the v2 schema (top-level `identifier`/`productName`, `build.frontendDist`/`devUrl`, `plugins.updater`,
+  capabilities instead of `allowlist`), and `tauri-action` is pinned to **`@v1`** — do **not** drop it
+  back to `@v0` (v0 rejects the v2 config with "base config has no bundle identifier").
+- **Updater signing env vars are the v2 names.** CI must export `TAURI_SIGNING_PRIVATE_KEY` /
+  `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (the v1 `TAURI_PRIVATE_KEY` / `TAURI_KEY_PASSWORD` are silently
+  ignored). With the old names the build produces no signature and every client rejects the update.
 - **`cargo test` / `cargo check` on Windows need `BETTERFLEET_TEST_BUILD=1`.** The release build
   embeds a `requireAdministrator` manifest (`webapp/src-tauri/build.rs`); without the env var the
   test binary fails to launch with **OS error 740** (elevation required). Set it and the manifest

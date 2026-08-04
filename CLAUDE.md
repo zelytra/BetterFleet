@@ -20,7 +20,7 @@ The repo is three independent apps plus infra:
 
 | Path | What it is | Stack |
 |---|---|---|
-| `webapp/` | The desktop app itself | Tauri v1 (Rust shell) + Vue 3 + TypeScript + Vite |
+| `webapp/` | The desktop app itself | Tauri v2 (Rust shell) + Vue 3 + TypeScript + Vite |
 | `webapp/src-tauri/` | Native shell: global shortcuts, audio, overlay window, game detection | Rust (edition 2021) |
 | `backend/` | Session/alliance API + SSE + stats | Quarkus (Java 17), Maven (`mvnw` wrapper) |
 | `website/` | Public vitrine + statistics dashboard | Vue 3 + TypeScript + Vite |
@@ -89,8 +89,9 @@ images too) is `deployment/docker-compose.yml`; the app schema seed is `deployme
 
 ## Gotchas (the non-obvious ones)
 
-- **Keep Tauri on v1.** The `tauri*` crates must stay v1 and `tauri-action` must stay `@v0`; a v2
-  bump dies with a cryptic `devPath`/config error. This is deliberate, not stale.
+- **Tauri is on v2** (migrated for the Linux port, #735). `tauri-action` is pinned to `@v1` (not `@v0`),
+  the config is the v2 schema, and updater signing uses `TAURI_SIGNING_PRIVATE_KEY` /
+  `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. Don't reintroduce v1 config shapes or the old key names.
 - **`cargo test`/`cargo check` on Windows need `BETTERFLEET_TEST_BUILD=1`.** The release build embeds
   an admin manifest; without that env var the test binary fails to launch (OS error 740, elevation).
 - **The overlay window freezes when hidden behind the game.** WebView2 throttles occluded/background

@@ -5,23 +5,29 @@ use tokio::sync::RwLock;
 use crate::api::Api;
 use anyhow::{Result, bail};
 use std::time::{Duration, Instant};
+#[cfg(windows)]
 use socket2::{Domain, Protocol, Socket, Type};
 use std::mem::size_of_val;
 use std::net::{IpAddr, SocketAddr};
 use std::net::UdpSocket as StdSocket;
 use tokio::net::UdpSocket;
+#[cfg(windows)]
 use std::os::windows::io::{AsRawSocket, FromRawSocket, IntoRawSocket};
+#[cfg(windows)]
 use std::os::windows::process::CommandExt;
 use std::process::{Command, Stdio};
 use std::ptr::null_mut;
 use netstat2::{get_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo};
+#[cfg(windows)]
 use winapi::shared::minwindef::DWORD;
+#[cfg(windows)]
 use winapi::um::winsock2;
 use crate::api::GameStatus;
 use sysinfo::{System};
 use idna::domain_to_ascii;
 use log::{info, error};
 
+#[cfg(windows)]
 const SIO_RCVALL: DWORD = 0x98000001;
 
 /// Returns true when a remote UDP port falls in the range Sea of Thieves game servers use.
@@ -411,6 +417,7 @@ pub(crate) fn get_udp_connections(target_pid: usize) -> Vec<u16> {
 }
 
 // In this netstat powershell command, we get the UDP endpoints of a process
+#[cfg(windows)]
 pub(crate) fn get_udp_connections_powershell(pid: usize) -> Vec<u16> {
     let ps_script = format!(
         "Get-NetUDPEndpoint -OwningProcess {} | Select-Object -ExpandProperty LocalPort",
@@ -473,6 +480,7 @@ pub fn find_pid_of(process_name: &str) -> Vec<String> {
 }
 
 // Puts a socket into promiscuous mode so that it can receive all packets.
+#[cfg(windows)]
 async fn enter_promiscuous(socket: &mut StdSocket) -> Result<()> {
     let rc = unsafe {
         let in_value: DWORD = 1;
@@ -498,6 +506,7 @@ async fn enter_promiscuous(socket: &mut StdSocket) -> Result<()> {
 }
 
 // Creates a raw socket used to capture packets (disguised as a UdpSocket)
+#[cfg(windows)]
 pub async fn create_raw_socket(socket_addr: SocketAddr) -> Result<UdpSocket> {
     // Specify protocol
     let protocol = Protocol::UDP; // IPPROTO_IP is typically 0

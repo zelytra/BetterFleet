@@ -36,6 +36,17 @@ export interface FakeSession {
   stats: { tryAmount: number; successPrediction: number };
 }
 
+/**
+ * The slice of a WHATWG `Response` the frontend actually reads under v2 `@tauri-apps/plugin-http`
+ * (`.ok`, `.status`, and the async body readers) — the v1 http plugin's `.data` is gone.
+ */
+export interface FakeRestResponse {
+  ok: boolean;
+  status: number;
+  json: () => Promise<unknown>;
+  text: () => Promise<string>;
+}
+
 const MAX_NAME_LENGTH = 40; // SessionNameFilter.MAX_LENGTH
 const BLOCKED = [
   "fuck",
@@ -129,16 +140,22 @@ export class FakeBackend {
 
   // ---------------------------------------------------------------- REST
 
-  fetch = async (
-    url: string,
-    options?: { responseType?: unknown },
-  ): Promise<{ data: unknown }> => {
+  fetch = async (url: string, options?: unknown): Promise<FakeRestResponse> => {
     this.requests.push(url);
+    // v2 plugin-http is WHATWG-fetch-shaped: hand back a minimal Response the callers read with
+    // `await res.json()` / `await res.text()` instead of the v1 `.data`.
+    const respond = (payload: unknown): FakeRestResponse => ({
+      ok: true,
+      status: 200,
+      json: async () => payload,
+      text: async () =>
+        typeof payload === "string" ? payload : JSON.stringify(payload),
+    });
     if (url.endsWith("/public-sessions")) {
-      return { data: this.snapshot() };
+      return respond(this.snapshot());
     }
     if (url.endsWith("/socket/register")) {
-      return { data: "socket-token" };
+      return respond("socket-token");
     }
     void options;
     throw new Error("FakeBackend: unhandled REST path " + url);

@@ -11,8 +11,7 @@ import { clampBanner, resolveHostBanner } from "@/objects/fleet/Banners.ts";
 import { SotServer } from "@/objects/fleet/SotServer.ts";
 import { LocalTime } from "@js-joda/core";
 import { HTTPAxios } from "@/objects/utils/HTTPAxios.ts";
-import { ResponseType } from "@tauri-apps/api/http";
-import { error, info } from "tauri-plugin-log-api";
+import { error, info } from "@tauri-apps/plugin-log";
 
 const { t } = tsi18n.global;
 
@@ -100,14 +99,11 @@ export class Fleet {
     }
 
     await new HTTPAxios("socket/register")
-      .get(ResponseType.Text)
-      .then((response) => {
+      .get()
+      .then(async (response) => {
+        const token = await response.text();
         this.socket = new WebSocket(
-          UserStore.player.serverHostName +
-            "/" +
-            response.data +
-            "/" +
-            sessionId,
+          UserStore.player.serverHostName + "/" + token + "/" + sessionId,
         );
         info("[Fleet.ts] Socket register");
       })

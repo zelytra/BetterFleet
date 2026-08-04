@@ -171,7 +171,13 @@
             :title="t('config.banner.pick', { number: index + 1 })"
             @click="pickBanner(index)"
           >
-            <img :src="bannerUrl(index)" :alt="''" />
+            <img
+              :src="bannerUrl(index)"
+              :alt="''"
+              width="1294"
+              height="57"
+              decoding="async"
+            />
             <span v-if="banner === index && !shuffleBanner" class="check"
               >✓</span
             >
@@ -274,7 +280,7 @@ import InputText from "@/vue/form/InputText.vue";
 import SingleSelect from "@/vue/form/SingleSelect.vue";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
 import { inject, onMounted, onUnmounted, ref, watch } from "vue";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 import fr from "@assets/icons/locales/fr.svg";
 import de from "@assets/icons/locales/de.svg";
@@ -304,7 +310,7 @@ import {
 import ParameterPart from "@/vue/templates/ParameterPart.vue";
 import { Utils } from "@/objects/utils/Utils.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
-import { info } from "tauri-plugin-log-api";
+import { info } from "@tauri-apps/plugin-log";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 
 const { t, availableLocales } = useI18n();
@@ -707,20 +713,26 @@ button {
 
       .banner-choice {
         all: unset;
+        // `all: unset` resets display to inline; as a column-flex item it should blockify and take
+        // the aspect-ratio, but webkit2gtk (Linux) applied that lazily — the strip rendered collapsed
+        // and only grew to size once a hover forced a relayout. Make the block explicit and let the
+        // <img>'s own intrinsic ratio drive the height (webkit computes that eagerly) instead.
+        display: block;
         position: relative;
         cursor: pointer;
         border-radius: 5px;
         overflow: hidden;
         width: 100%;
-        aspect-ratio: 1294 / 57; // the artwork's own, so nothing is cropped
         border: 2px solid transparent;
         box-sizing: border-box;
 
         img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover; // a no-op at this aspect ratio; a guard if the artwork ever changes
           display: block;
+          width: 100%;
+          // Intrinsic ratio drives the height; the width/height attrs on the tag reserve the box
+          // before decode, so it never collapses then grows.
+          height: auto;
+          object-fit: cover;
         }
 
         &:hover {

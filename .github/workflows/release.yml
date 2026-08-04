@@ -140,19 +140,18 @@ jobs:
       - name: Build Tauri app (dry-run, no publish)
         if: ${{ inputs.dry_run }}
         env:
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         run: npm run tauri:build
 
       - name: Build & publish Tauri release
         if: ${{ !inputs.dry_run }}
-        # Pinned to v0: tauri-action v1 assumes a Tauri v2 config (top-level "identifier")
-        # and fails this Tauri v1 project with "base config has no bundle identifier".
-        uses: tauri-apps/tauri-action@v0
+        # v1 tracks Tauri 2 configs (top-level "identifier"); do not pin back to @v0.
+        uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           tagName: v__VERSION__
           releaseName: "BetterFleet v__VERSION__"
