@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "BetterFleet",
+  "app": {
+    "enableGTKAppId": true
+  },
+  "bundle": {
+    "targets": ["deb", "appimage"],
+    "createUpdaterArtifacts": false,
+    "category": "Utility",
+    "linux": {
+      "deb": {
+        "depends": [
+          "libayatana-appindicator3-1",
+          "librsvg2-2"
+        ],
+        "section": "utils"
+      }
+    }
+  }
+}

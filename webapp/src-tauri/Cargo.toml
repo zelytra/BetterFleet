@@ -2,7 +2,7 @@
 name = "better_fleet"
 version = "2.2.2"
 description = "A better fleet creator"
-authors = ["Zelytra", "dadodasyra"]
+authors = ["Zelytra <zelytra@users.noreply.github.com>", "dadodasyra"]
 license = ""
 repository = ""
 default-run = "better_fleet"
