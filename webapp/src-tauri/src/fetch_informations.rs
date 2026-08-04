@@ -5,6 +5,7 @@ use tokio::sync::RwLock;
 use crate::api::Api;
 use anyhow::{Result, bail};
 use std::time::{Duration, Instant};
+#[cfg(windows)]
 use socket2::{Domain, Protocol, Socket, Type};
 use std::mem::size_of_val;
 use std::net::{IpAddr, SocketAddr};

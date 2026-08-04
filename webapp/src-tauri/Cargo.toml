@@ -26,7 +26,6 @@ tauri-plugin-updater = "2"
 tauri-plugin-http = "2"
 tauri-plugin-shell = "2"
 anyhow = "1.0.80"
-socket2 = "0.5.6"
 tokio = { version = "1.43.1", features = ["full"] }
 etherparse = "0.15.0"
 hostname = "0.4.0"
@@ -47,6 +46,9 @@ discord-rich-presence = "0.2.5"
 # has no equivalent here (packet capture is stubbed on Linux — #725), so it stays Windows-only.
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3.9", features = ["winsock2", "winuser"] }
+# socket2 backs only the Windows raw-capture socket (create_raw_socket). Type::RAW is behind its
+# `all` feature — v1 got it transitively, the v2 dependency graph no longer does.
+socket2 = { version = "0.5.6", features = ["all"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

@@ -1,9 +1,13 @@
-/** The app-provided banner templates, served from public/banners/session0..3.svg. */
+/** The app-provided banner templates, served from public/banners/session0..3.webp. */
 export const BANNER_COUNT = 4;
 
-/** The asset a banner index points at. */
+/**
+ * The asset a banner index points at. These were 6 MB SVGs (raster embedded in vector) — fine on
+ * WebView2/Windows, but webkit2gtk (Linux) re-rasterized them on every mount, so the settings picker
+ * flickered from tiny to full size with heavy lag. Flattened to ~100 KB WebP at display resolution.
+ */
 export function bannerUrl(banner: unknown): string {
-  return `/banners/session${clampBanner(banner)}.svg`;
+  return `/banners/session${clampBanner(banner)}.webp`;
 }
 
 /**
