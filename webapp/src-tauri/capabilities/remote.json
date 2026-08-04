@@ -5,7 +5,7 @@
   "windows": ["main", "overlay"],
   "local": false,
   "remote": {
-    "urls": ["http://localhost:*"]
+    "urls": ["http://localhost:*", "http://127.0.0.1:*"]
   },
   "permissions": [
     "core:default",
@@ -16,7 +16,12 @@
     "core:window:allow-start-dragging",
     {
       "identifier": "http:default",
-      "allow": [{ "url": "http://**" }, { "url": "https://**" }]
+      "allow": [
+        { "url": "http://localhost:*/*" },
+        { "url": "http://127.0.0.1:*/*" },
+        { "url": "http://**" },
+        { "url": "https://**" }
+      ]
     },
     "log:default"
   ]
