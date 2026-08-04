@@ -171,7 +171,7 @@
             :title="t('config.banner.pick', { number: index + 1 })"
             @click="pickBanner(index)"
           >
-            <img :src="bannerUrl(index)" :alt="''" />
+            <img :src="bannerUrl(index)" :alt="''" decoding="async" />
             <span v-if="banner === index && !shuffleBanner" class="check"
               >✓</span
             >
