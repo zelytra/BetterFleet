@@ -29,10 +29,16 @@ use crate::window_interaction::{click_in_window_proportionally, set_focus_to_win
 use sysinfo::{Networks, System};
 use std::net::{IpAddr, ToSocketAddrs};
 
+// Windows-only packet-capture module. On Linux the capture is stubbed until the Linux port lands
+// (#725), so most of its imports and helpers are legitimately unused there — suppress that noise on
+// non-Windows rather than cfg-gate every item (all of it stays live on Windows and under the tests).
+#[cfg_attr(not(windows), allow(dead_code, unused_imports))]
 mod fetch_informations;
 mod api;
 #[cfg(windows)]
 mod window_interaction;
+// Windows-only flow-diagnostic module — same story as fetch_informations above (#725).
+#[cfg_attr(not(windows), allow(dead_code, unused_imports))]
 mod diagnostics;
 
 #[cfg(debug_assertions)]

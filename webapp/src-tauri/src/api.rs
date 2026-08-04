@@ -8,6 +8,8 @@ pub struct Api {
     pub server_ip: String,
     pub server_port: u16,
     pub last_updated_server_ip: Instant,
+    // Populated and read only on the Windows capture path; reserved on Linux until the port (#725).
+    #[cfg_attr(not(windows), allow(dead_code))]
     pub main_menu_port: u16,
 }
 
