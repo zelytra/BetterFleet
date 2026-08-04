@@ -143,6 +143,10 @@ onBeforeRouteLeave((_to, _from, next) => {
   }
 
   h2 {
+    // Own compositor layer, so the per-tick text repaint doesn't invalidate the blurred
+    // .circle-background layer behind it and force the expensive blur to redraw.
+    will-change: transform;
+
     strong {
       color: var(--primary);
     }
@@ -152,17 +156,24 @@ onBeforeRouteLeave((_to, _from, next) => {
     position: absolute;
     top: 50%;
     z-index: 99;
-    width: 55vw;
-    height: 55vh;
+    width: 40vw;
+    height: 40vh;
     left: 50%;
     border-radius: 100%;
     transform: translate(-50%, -50%);
-    // The glow was a radial-gradient under `filter: blur(127px)`. On webkit2gtk (Linux) that blur
-    // re-rasterized on every countdown tick and pinned the whole screen to ~10fps; WebView2 hid it.
-    // Pre-baked to a static image (the identical gradient + gaussian blur) so the look is unchanged
-    // with zero per-frame filter cost.
-    background: url("@/assets/backgrounds/countdown-glow.webp") center / 100%
-      100% no-repeat;
+    background: radial-gradient(
+      56.39% 55.75% at 50% 50%,
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(88, 149, 127, 0.7) 73%,
+      rgba(26, 110, 79, 0.7) 100%,
+      rgba(26, 110, 79, 0.7) 100%
+    );
+    filter: blur(127px);
+    // The blur IS the original look. What dropped it to ~10fps on webkit2gtk was re-rasterizing it
+    // every countdown tick: the timer text repainting in the same layer forced the blur to redraw.
+    // will-change promotes this to its own compositor layer so the blurred result is cached once, and
+    // the timer text (promoted too, below) repaints on a separate layer without touching it.
+    will-change: transform;
   }
 }
 </style>
