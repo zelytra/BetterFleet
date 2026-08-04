@@ -11,6 +11,9 @@
         {{ t(route.name) }}
       </router-link>
     </nav>
+    <router-link class="download-cta" to="/download">
+      <PirateButton :label="t('button.download')" />
+    </router-link>
     <button
       class="burger"
       :class="{ open: menuOpen }"
@@ -44,6 +47,7 @@
 
 <script setup lang="ts">
 import { routes } from "@/router";
+import PirateButton from "@/vue/PirateButton.vue";
 import { useI18n } from "vue-i18n";
 import { ref } from "vue";
 
@@ -173,6 +177,10 @@ header {
     }
 
     nav {
+      display: none;
+    }
+
+    .download-cta {
       display: none;
     }
 

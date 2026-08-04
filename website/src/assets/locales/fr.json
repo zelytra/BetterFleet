@@ -187,8 +187,7 @@
     "documentation": "Découvrir",
     "home": "Accueil",
     "support": "Support",
-    "statistics": "Statistiques",
-    "download": "Télécharger"
+    "statistics": "Statistiques"
   },
   "presentation": {
     "content": "Réunir tout votre équipage sur le même serveur Sea of Thieves, c'est souvent laborieux. BetterFleet s'en charge : l'application synchronise le \"Lever l'ancre\" de chacun et vous montre qui s'est retrouvé ensemble — une alliance en quelques minutes plutôt qu'en quelques heures. Gratuit, open source, pensé par des joueurs.",
@@ -398,11 +397,14 @@
         "label": "Flatpak",
         "desc": "Via Flathub, sandboxé"
       },
+      "apt": {
+        "label": "Debian / Ubuntu (APT)"
+      },
       "aur": {
-        "label": "Arch Linux (AUR)",
-        "copy": "Copier",
-        "copied": "Copié !"
-      }
+        "label": "Arch Linux (AUR)"
+      },
+      "copy": "Copier",
+      "copied": "Copié !"
     }
   }
 }

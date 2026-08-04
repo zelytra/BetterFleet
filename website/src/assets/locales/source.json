@@ -156,8 +156,7 @@
     "documentation": "Discover",
     "home": "Home",
     "support": "Support",
-    "statistics": "Statistics",
-    "download": "Download"
+    "statistics": "Statistics"
   },
   "presentation": {
     "content": "Getting your whole crew onto the same Sea of Thieves server is often a hassle. BetterFleet takes care of it: the app syncs everyone's \"Set sail\" click and shows you who ended up together — so an alliance comes together in minutes rather than hours. Free, open source, and made by players.",
@@ -398,11 +397,14 @@
         "label": "Flatpak",
         "desc": "Via Flathub, sandboxed"
       },
+      "apt": {
+        "label": "Debian / Ubuntu (APT)"
+      },
       "aur": {
-        "label": "Arch Linux (AUR)",
-        "copy": "Copy",
-        "copied": "Copied!"
-      }
+        "label": "Arch Linux (AUR)"
+      },
+      "copy": "Copy",
+      "copied": "Copied!"
     }
   }
 }

@@ -15,7 +15,11 @@ import {
 
 // The platform-selection screen (#730). The site's "Download" CTAs land here instead of pulling the
 // Windows installer straight away, so a visitor can pick the build — Windows or Linux — that runs on
-// their machine. Version and asset sizes are read live from the latest GitHub release.
+// their machine. Every tile downloads the matching asset *directly* from the latest GitHub release
+// (its browser_download_url), with the version and size read live from that release. A format that
+// the latest release doesn't carry yet shows a "coming soon" state and turns into a direct download
+// on its own the moment a release includes it — no redirect anywhere. The one link that leaves for
+// github.com is the "browse every release" line at the bottom.
 
 const { t } = useI18n();
 
@@ -40,9 +44,8 @@ const version = computed(() =>
   ),
 );
 
-const AUR_COMMAND = "yay -S betterfleet-bin";
-
-/** Download URL + size for the first asset matching an extension, `{}` when the release has none. */
+// Direct download URL (browser_download_url) + size for the first asset matching an extension. Both
+// undefined when the latest release carries no such asset — the caller renders "coming soon" then.
 function resolve(ext: string): { url?: string; size?: number } {
   const asset = findReleaseAsset(assets.value, [ext]);
   return { url: asset?.url, size: asset?.size || undefined };
@@ -58,15 +61,11 @@ interface DownloadItem {
   id: string;
   label: string;
   desc: string;
-  // A real download link, or the releases page as a resilient fallback so it is never dead.
+  // A direct GitHub asset download; undefined => the release doesn't carry this format yet.
   url?: string;
   size?: number;
-  // Not built yet (#727/#740) — rendered as a muted "coming soon" tile rather than a link.
-  soon: boolean;
 }
 
-// Windows ships both formats. If the API hasn't answered (or an asset is missing) the row still
-// points somewhere real — the manifest URL, then the releases page — so it is never a dead link.
 const windowsRows = computed<DownloadItem[]>(() => {
   const exe = resolve(".exe");
   const msi = resolve(".msi");
@@ -75,23 +74,19 @@ const windowsRows = computed<DownloadItem[]>(() => {
       id: "exe",
       label: t("downloadPage.windows.exe.label"),
       desc: t("downloadPage.windows.exe.desc"),
-      url: exe.url ?? AppStore.githubRelease.url ?? GITHUB_RELEASES_URL,
+      url: exe.url,
       size: exe.size,
-      soon: false,
     },
     {
       id: "msi",
       label: t("downloadPage.windows.msi.label"),
       desc: t("downloadPage.windows.msi.desc"),
-      url: msi.url ?? GITHUB_RELEASES_URL,
+      url: msi.url,
       size: msi.size,
-      soon: false,
     },
   ];
 });
 
-// Linux ships .deb and AppImage; .rpm and Flatpak are not built yet, so they show a "coming soon"
-// tile unless some future release happens to carry them.
 const linuxTiles = computed<DownloadItem[]>(() => {
   const deb = resolve(".deb");
   const rpm = resolve(".rpm");
@@ -102,9 +97,8 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       id: "deb",
       label: t("downloadPage.linux.deb.label"),
       desc: t("downloadPage.linux.deb.desc"),
-      url: deb.url ?? GITHUB_RELEASES_URL,
+      url: deb.url,
       size: deb.size,
-      soon: false,
     },
     {
       id: "rpm",
@@ -112,15 +106,13 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.linux.rpm.desc"),
       url: rpm.url,
       size: rpm.size,
-      soon: !rpm.url,
     },
     {
       id: "appimage",
       label: t("downloadPage.linux.appimage.label"),
       desc: t("downloadPage.linux.appimage.desc"),
-      url: appimage.url ?? GITHUB_RELEASES_URL,
+      url: appimage.url,
       size: appimage.size,
-      soon: false,
     },
     {
       id: "flatpak",
@@ -128,7 +120,6 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.linux.flatpak.desc"),
       url: flatpak.url,
       size: flatpak.size,
-      soon: !flatpak.url,
     },
   ];
 });
@@ -137,13 +128,14 @@ interface Recommended {
   platform: Platform;
   title: string;
   desc: string;
-  url: string;
+  url?: string;
   size?: number;
 }
 
 // The banner mirrors the detected OS's best format: the Windows installer, or the Linux AppImage
 // (the "runs anywhere, no install" option). Null when detection failed — the banner is hidden and
-// the visitor picks from the two columns below.
+// the visitor picks from the two columns below. If that format isn't in the release yet, the button
+// shows "coming soon" like any other tile rather than sending anyone to github.com.
 const recommended = computed<Recommended | null>(() => {
   if (detected === "windows") {
     const exe = resolve(".exe");
@@ -151,7 +143,7 @@ const recommended = computed<Recommended | null>(() => {
       platform: "windows",
       title: t("downloadPage.recommended.windows.title"),
       desc: t("downloadPage.recommended.windows.desc"),
-      url: exe.url ?? AppStore.githubRelease.url ?? GITHUB_RELEASES_URL,
+      url: exe.url,
       size: exe.size,
     };
   }
@@ -161,22 +153,36 @@ const recommended = computed<Recommended | null>(() => {
       platform: "linux",
       title: t("downloadPage.recommended.linux.title"),
       desc: t("downloadPage.recommended.linux.desc"),
-      url: appimage.url ?? GITHUB_RELEASES_URL,
+      url: appimage.url,
       size: appimage.size,
     };
   }
   return null;
 });
 
-const aurCopied = ref(false);
-let aurTimer: number | undefined;
+// Copyable install commands, not downloads — the package repos are being set up (APT #740, AUR).
+const LINUX_COMMANDS = [
+  {
+    id: "apt",
+    labelKey: "downloadPage.linux.apt.label",
+    command: "sudo apt install betterfleet",
+  },
+  {
+    id: "aur",
+    labelKey: "downloadPage.linux.aur.label",
+    command: "yay -S betterfleet-bin",
+  },
+];
 
-async function copyAur() {
+const copiedId = ref<string | null>(null);
+let copyTimer: number | undefined;
+
+async function copyCommand(id: string, command: string) {
   try {
-    await navigator.clipboard.writeText(AUR_COMMAND);
-    aurCopied.value = true;
-    clearTimeout(aurTimer);
-    aurTimer = window.setTimeout(() => (aurCopied.value = false), 2000);
+    await navigator.clipboard.writeText(command);
+    copiedId.value = id;
+    clearTimeout(copyTimer);
+    copyTimer = window.setTimeout(() => (copiedId.value = null), 2000);
   } catch {
     // Clipboard blocked (http origin / permissions): the command is on screen to copy by hand.
   }
@@ -211,14 +217,14 @@ async function copyAur() {
           </p>
         </div>
         <a
+          v-if="recommended.url"
           class="cta"
           :href="recommended.url"
-          target="_blank"
-          rel="noopener"
           @click="incrementDownload"
         >
           <PirateButton :label="t('downloadPage.download')" />
         </a>
+        <span v-else class="cta-soon">{{ t("downloadPage.comingSoon") }}</span>
       </div>
     </article>
 
@@ -233,46 +239,52 @@ async function copyAur() {
           </div>
         </header>
         <div class="rows">
-          <a
-            v-for="row in windowsRows"
-            :key="row.id"
-            class="dl"
-            :href="row.url"
-            target="_blank"
-            rel="noopener"
-            @click="incrementDownload"
-          >
-            <span class="dl-text">
-              <span class="dl-label">{{ row.label }}</span>
-              <span class="dl-desc">{{ row.desc }}</span>
-            </span>
-            <span class="dl-meta">
-              <span v-if="sizeLabel(row.size)" class="dl-size">{{
-                sizeLabel(row.size)
-              }}</span>
-              <svg
-                class="dl-icon"
-                viewBox="0 0 20 20"
-                fill="none"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M4.5 15.5h11"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </span>
-          </a>
+          <template v-for="row in windowsRows" :key="row.id">
+            <a
+              v-if="row.url"
+              class="dl"
+              :href="row.url"
+              @click="incrementDownload"
+            >
+              <span class="dl-text">
+                <span class="dl-label">{{ row.label }}</span>
+                <span class="dl-desc">{{ row.desc }}</span>
+              </span>
+              <span class="dl-meta">
+                <span v-if="sizeLabel(row.size)" class="dl-size">{{
+                  sizeLabel(row.size)
+                }}</span>
+                <svg
+                  class="dl-icon"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M4.5 15.5h11"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </span>
+            </a>
+            <div v-else class="dl soon">
+              <span class="dl-text">
+                <span class="dl-label">{{ row.label }}</span>
+                <span class="dl-desc">{{ row.desc }}</span>
+              </span>
+              <span class="badge">{{ t("downloadPage.comingSoon") }}</span>
+            </div>
+          </template>
         </div>
       </article>
 
@@ -288,11 +300,9 @@ async function copyAur() {
         <div class="tiles">
           <template v-for="tile in linuxTiles" :key="tile.id">
             <a
-              v-if="!tile.soon"
+              v-if="tile.url"
               class="dl tile"
               :href="tile.url"
-              target="_blank"
-              rel="noopener"
               @click="incrementDownload"
             >
               <span class="dl-text">
@@ -336,17 +346,23 @@ async function copyAur() {
           </template>
         </div>
 
-        <!-- Arch: a copy-me command, not a download link. -->
-        <div class="aur">
-          <span class="aur-label">{{ t("downloadPage.linux.aur.label") }}</span>
-          <button type="button" class="aur-cmd" @click="copyAur">
-            <code>{{ AUR_COMMAND }}</code>
-            <span class="aur-copy">{{
-              aurCopied
-                ? t("downloadPage.linux.aur.copied")
-                : t("downloadPage.linux.aur.copy")
-            }}</span>
-          </button>
+        <!-- Install commands to copy, not downloads: the APT (#740) and AUR repos. -->
+        <div class="commands">
+          <div v-for="cmd in LINUX_COMMANDS" :key="cmd.id" class="cmd">
+            <span class="cmd-label">{{ t(cmd.labelKey) }}</span>
+            <button
+              type="button"
+              class="cmd-box"
+              @click="copyCommand(cmd.id, cmd.command)"
+            >
+              <code>{{ cmd.command }}</code>
+              <span class="cmd-copy">{{
+                copiedId === cmd.id
+                  ? t("downloadPage.linux.copied")
+                  : t("downloadPage.linux.copy")
+              }}</span>
+            </button>
+          </div>
         </div>
       </article>
     </div>
@@ -438,6 +454,22 @@ async function copyAur() {
 
   .cta {
     flex: 0 0 auto;
+  }
+
+  // Recommended format not in the release yet: a muted, non-clickable "coming soon" chip in place of
+  // the download button — never a link off to github.com.
+  .cta-soon {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    min-height: 46px;
+    padding: 0 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--warning);
+    border: 1px solid rgba(255, 190, 92, 0.35);
+    background: rgba(255, 190, 92, 0.08);
   }
 }
 
@@ -571,12 +603,19 @@ async function copyAur() {
   }
 }
 
-.aur {
+// The copyable install commands (APT, AUR) — deliberately not styled as downloads.
+.commands {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cmd {
   display: flex;
   flex-direction: column;
   gap: 8px;
 
-  .aur-label {
+  .cmd-label {
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
@@ -584,7 +623,7 @@ async function copyAur() {
     color: var(--secondary-text);
   }
 
-  .aur-cmd {
+  .cmd-box {
     all: unset;
     box-sizing: border-box;
     display: flex;
@@ -601,7 +640,7 @@ async function copyAur() {
     &:hover {
       border-color: rgba(50, 212, 153, 0.5);
 
-      .aur-copy {
+      .cmd-copy {
         color: var(--primary);
       }
     }
@@ -613,7 +652,7 @@ async function copyAur() {
       white-space: nowrap;
     }
 
-    .aur-copy {
+    .cmd-copy {
       flex: 0 0 auto;
       font-size: 12px;
       color: var(--secondary-text);
@@ -658,8 +697,13 @@ async function copyAur() {
     align-items: flex-start;
   }
 
-  .recommended .cta {
+  .recommended .cta,
+  .recommended .cta-soon {
     width: 100%;
+  }
+
+  .recommended .cta-soon {
+    justify-content: center;
   }
 
   .tiles {

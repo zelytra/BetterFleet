@@ -64,13 +64,14 @@ export const routes = [
   },
   {
     // The platform-selection screen (#730): where the site's "Download" CTAs land instead of pulling
-    // the Windows installer straight away. A first-class nav entry so it is reachable on every page,
-    // desktop and mobile alike. Lazy: the screen only matters once someone heads for it.
+    // the Windows installer straight away. Reached from the header's green Download button (and the
+    // home/tutorial CTAs), so it is not a nav-list entry itself. Lazy: it only matters once someone
+    // heads for it.
     path: "/download",
-    name: "nav.download",
+    name: "download",
     component: () => import("@/components/DownloadPage.vue"),
     meta: {
-      displayInNav: true,
+      displayInNav: false,
     },
   },
   {
