@@ -23,10 +23,17 @@ describe("detectPlatform", () => {
 
   it("falls back to the user-agent string when userAgentData is absent", () => {
     stubNavigator({
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    });
+    expect(detectPlatform()).toBe("windows");
+  });
+
+  it("returns null for macOS, which has no build", () => {
+    stubNavigator({
       userAgent:
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15",
     });
-    expect(detectPlatform()).toBe("macos");
+    expect(detectPlatform()).toBeNull();
   });
 
   it("recognises a desktop Linux user agent", () => {
@@ -43,7 +50,7 @@ describe("detectPlatform", () => {
     expect(detectPlatform()).toBeNull();
   });
 
-  it("does not mistake iOS (whose UA says 'like Mac OS X') for desktop macOS", () => {
+  it("does not mistake iOS (whose UA says 'like Mac OS X') for a desktop platform", () => {
     stubNavigator({
       userAgent:
         "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15",

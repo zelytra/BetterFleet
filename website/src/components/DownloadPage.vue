@@ -5,107 +5,182 @@ import PirateButton from "@/vue/PirateButton.vue";
 import PlatformIcon from "@/vue/PlatformIcon.vue";
 import { AppStore } from "@/objects/stores/appStore.ts";
 import { incrementDownload } from "@/objects/Stats.ts";
-import { detectPlatform, Platform } from "@/objects/PlatformDetection.ts";
+import { detectPlatform, type Platform } from "@/objects/PlatformDetection.ts";
 import {
-  fetchLatestReleaseAssets,
+  fetchLatestRelease,
   findReleaseAsset,
   GITHUB_RELEASES_URL,
+  type GithubReleaseAsset,
 } from "@/objects/Github.ts";
 
-// The platform-selection screen (#730). The site's three "Download" CTAs used to link straight to
-// the Windows installer; now that a Linux build is coming (#350), they route here instead, and the
-// actual download link lives on this page so there is somewhere to choose from.
+// The platform-selection screen (#730). The site's "Download" CTAs land here instead of pulling the
+// Windows installer straight away, so a visitor can pick the build — Windows or Linux — that runs on
+// their machine. Version and asset sizes are read live from the latest GitHub release.
 
 const { t } = useI18n();
 
 // Guessed once per visit: the user agent does not change mid-session, so this needs no reactivity.
 const detected = detectPlatform();
 
-const linuxDeb = ref<string>();
-const linuxAppImage = ref<string>();
-const linuxChecked = ref(false);
+const assets = ref<GithubReleaseAsset[]>([]);
+const fetchedVersion = ref("");
 
 onMounted(async () => {
-  // The Windows link comes from AppStore (a backend proxy already fetched at app start, reading the
-  // Tauri updater manifest). Linux has no such proxy yet — the CI/CD issue (#728) that would publish
-  // it hasn't shipped — so its assets are read directly from GitHub's release API here instead.
-  const assets = await fetchLatestReleaseAssets();
-  linuxDeb.value = findReleaseAsset(assets, [".deb"])?.url;
-  linuxAppImage.value = findReleaseAsset(assets, [".appimage"])?.url;
-  linuxChecked.value = true;
+  const release = await fetchLatestRelease();
+  assets.value = release.assets;
+  fetchedVersion.value = release.version;
 });
 
-interface PlatformCard {
-  id: Platform;
-  name: string;
-  status: string;
-  primaryUrl?: string;
-  primaryLabel?: string;
-  secondaryUrl?: string;
-  secondaryLabel?: string;
+// Shown as "v2.4.1": the GitHub tag first, the backend proxy's manifest version second. Either can
+// already carry a leading "v", so it is stripped and the template owns the single prefix.
+const version = computed(() =>
+  (fetchedVersion.value || AppStore.githubRelease.version || "").replace(
+    /^v/i,
+    "",
+  ),
+);
+
+const AUR_COMMAND = "yay -S betterfleet-bin";
+
+/** Download URL + size for the first asset matching an extension, `{}` when the release has none. */
+function resolve(ext: string): { url?: string; size?: number } {
+  const asset = findReleaseAsset(assets.value, [ext]);
+  return { url: asset?.url, size: asset?.size || undefined };
 }
 
-const windowsCard = computed<PlatformCard>(() => {
-  const url = AppStore.githubRelease.url;
-  return {
-    id: "windows",
-    name: t("downloadPage.platform.windows.name"),
-    status: url
-      ? t("downloadPage.platform.windows.status")
-      : t("downloadPage.checking"),
-    primaryUrl: url,
-    primaryLabel: t("downloadPage.platform.windows.cta"),
-  };
+// Human-readable megabytes, e.g. "48 MB" / "48 Mo". Empty until the size is known.
+function sizeLabel(bytes?: number): string {
+  if (!bytes) return "";
+  return `${Math.round(bytes / (1024 * 1024))} ${t("downloadPage.megabytes")}`;
+}
+
+interface DownloadItem {
+  id: string;
+  label: string;
+  desc: string;
+  // A real download link, or the releases page as a resilient fallback so it is never dead.
+  url?: string;
+  size?: number;
+  // Not built yet (#727/#740) — rendered as a muted "coming soon" tile rather than a link.
+  soon: boolean;
+}
+
+// Windows ships both formats. If the API hasn't answered (or an asset is missing) the row still
+// points somewhere real — the manifest URL, then the releases page — so it is never a dead link.
+const windowsRows = computed<DownloadItem[]>(() => {
+  const exe = resolve(".exe");
+  const msi = resolve(".msi");
+  return [
+    {
+      id: "exe",
+      label: t("downloadPage.windows.exe.label"),
+      desc: t("downloadPage.windows.exe.desc"),
+      url: exe.url ?? AppStore.githubRelease.url ?? GITHUB_RELEASES_URL,
+      size: exe.size,
+      soon: false,
+    },
+    {
+      id: "msi",
+      label: t("downloadPage.windows.msi.label"),
+      desc: t("downloadPage.windows.msi.desc"),
+      url: msi.url ?? GITHUB_RELEASES_URL,
+      size: msi.size,
+      soon: false,
+    },
+  ];
 });
 
-const linuxCard = computed<PlatformCard>(() => {
-  if (!linuxChecked.value) {
-    return {
-      id: "linux",
-      name: t("downloadPage.platform.linux.name"),
-      status: t("downloadPage.checking"),
-    };
-  }
-  if (linuxDeb.value || linuxAppImage.value) {
-    // The .deb is the platform decision (#724); the AppImage — if the release carries one too —
-    // is offered as the secondary option rather than dropped.
-    const debIsPrimary = !!linuxDeb.value;
-    return {
-      id: "linux",
-      name: t("downloadPage.platform.linux.name"),
-      status: t("downloadPage.platform.linux.status"),
-      primaryUrl: debIsPrimary ? linuxDeb.value : linuxAppImage.value,
-      primaryLabel: debIsPrimary
-        ? t("downloadPage.platform.linux.cta")
-        : t("downloadPage.platform.linux.ctaAppImage"),
-      secondaryUrl: debIsPrimary ? linuxAppImage.value : undefined,
-      secondaryLabel: debIsPrimary
-        ? t("downloadPage.platform.linux.ctaAppImage")
-        : undefined,
-    };
-  }
-  return {
-    id: "linux",
-    name: t("downloadPage.platform.linux.name"),
-    status: t("downloadPage.platform.linux.comingSoon"),
-  };
+// Linux ships .deb and AppImage; .rpm and Flatpak are not built yet, so they show a "coming soon"
+// tile unless some future release happens to carry them.
+const linuxTiles = computed<DownloadItem[]>(() => {
+  const deb = resolve(".deb");
+  const rpm = resolve(".rpm");
+  const appimage = resolve(".appimage");
+  const flatpak = resolve(".flatpak");
+  return [
+    {
+      id: "deb",
+      label: t("downloadPage.linux.deb.label"),
+      desc: t("downloadPage.linux.deb.desc"),
+      url: deb.url ?? GITHUB_RELEASES_URL,
+      size: deb.size,
+      soon: false,
+    },
+    {
+      id: "rpm",
+      label: t("downloadPage.linux.rpm.label"),
+      desc: t("downloadPage.linux.rpm.desc"),
+      url: rpm.url,
+      size: rpm.size,
+      soon: !rpm.url,
+    },
+    {
+      id: "appimage",
+      label: t("downloadPage.linux.appimage.label"),
+      desc: t("downloadPage.linux.appimage.desc"),
+      url: appimage.url ?? GITHUB_RELEASES_URL,
+      size: appimage.size,
+      soon: false,
+    },
+    {
+      id: "flatpak",
+      label: t("downloadPage.linux.flatpak.label"),
+      desc: t("downloadPage.linux.flatpak.desc"),
+      url: flatpak.url,
+      size: flatpak.size,
+      soon: !flatpak.url,
+    },
+  ];
 });
 
-const macCard = computed<PlatformCard>(() => ({
-  id: "macos",
-  name: t("downloadPage.platform.macos.name"),
-  status: t("downloadPage.platform.macos.unsupported"),
-}));
+interface Recommended {
+  platform: Platform;
+  title: string;
+  desc: string;
+  url: string;
+  size?: number;
+}
 
-const cards = computed<PlatformCard[]>(() => [
-  windowsCard.value,
-  linuxCard.value,
-  macCard.value,
-]);
+// The banner mirrors the detected OS's best format: the Windows installer, or the Linux AppImage
+// (the "runs anywhere, no install" option). Null when detection failed — the banner is hidden and
+// the visitor picks from the two columns below.
+const recommended = computed<Recommended | null>(() => {
+  if (detected === "windows") {
+    const exe = resolve(".exe");
+    return {
+      platform: "windows",
+      title: t("downloadPage.recommended.windows.title"),
+      desc: t("downloadPage.recommended.windows.desc"),
+      url: exe.url ?? AppStore.githubRelease.url ?? GITHUB_RELEASES_URL,
+      size: exe.size,
+    };
+  }
+  if (detected === "linux") {
+    const appimage = resolve(".appimage");
+    return {
+      platform: "linux",
+      title: t("downloadPage.recommended.linux.title"),
+      desc: t("downloadPage.recommended.linux.desc"),
+      url: appimage.url ?? GITHUB_RELEASES_URL,
+      size: appimage.size,
+    };
+  }
+  return null;
+});
 
-const recommended = computed(
-  () => cards.value.find((card) => card.id === detected) ?? null,
-);
+const aurCopied = ref(false);
+let aurTimer: number | undefined;
+
+async function copyAur() {
+  try {
+    await navigator.clipboard.writeText(AUR_COMMAND);
+    aurCopied.value = true;
+    clearTimeout(aurTimer);
+    aurTimer = window.setTimeout(() => (aurCopied.value = false), 2000);
+  } catch {
+    // Clipboard blocked (http origin / permissions): the command is on screen to copy by hand.
+  }
+}
 </script>
 
 <template>
@@ -117,65 +192,167 @@ const recommended = computed(
       </p>
     </header>
 
-    <div v-if="recommended" class="recommended">
-      <p class="tag">{{ t("downloadPage.recommended") }}</p>
+    <!-- Recommended-for-your-system banner, reusing the site's green "the one that matters" callout. -->
+    <article v-if="recommended" class="recommended">
+      <p class="tag">{{ t("downloadPage.recommendedLabel") }}</p>
       <div class="recommended-body">
-        <span class="icon"><PlatformIcon :platform="recommended.id" /></span>
+        <span class="os-icon"
+          ><PlatformIcon :platform="recommended.platform"
+        /></span>
         <div class="info">
-          <h2>{{ recommended.name }}</h2>
-          <p>{{ recommended.status }}</p>
+          <h2>{{ recommended.title }}</h2>
+          <p class="meta">
+            <template v-if="version">v{{ version }} · </template>
+            {{ t("downloadPage.sixtyFourBit") }}
+            <template v-if="sizeLabel(recommended.size)">
+              · {{ sizeLabel(recommended.size) }}</template
+            >
+            · {{ recommended.desc }}
+          </p>
         </div>
         <a
-          v-if="recommended.primaryUrl"
-          class="cta-link"
-          :href="recommended.primaryUrl"
+          class="cta"
+          :href="recommended.url"
           target="_blank"
+          rel="noopener"
           @click="incrementDownload"
         >
-          <PirateButton :label="recommended.primaryLabel" />
+          <PirateButton :label="t('downloadPage.download')" />
         </a>
       </div>
-    </div>
+    </article>
 
-    <div class="platforms">
-      <article
-        v-for="card in cards"
-        :key="card.id"
-        class="platform-card"
-        :class="{ active: card.id === detected }"
-      >
-        <span v-if="card.id === detected" class="tag">
-          {{ t("downloadPage.recommended") }}
-        </span>
-        <span class="icon"><PlatformIcon :platform="card.id" /></span>
-        <h3>{{ card.name }}</h3>
-        <p class="status">{{ card.status }}</p>
-
-        <div class="actions">
+    <div class="columns">
+      <!-- Windows -->
+      <article class="os-card">
+        <header class="os-head">
+          <span class="os-icon"><PlatformIcon platform="windows" /></span>
+          <div>
+            <h3>{{ t("downloadPage.windows.name") }}</h3>
+            <p class="sub">{{ t("downloadPage.windows.editions") }}</p>
+          </div>
+        </header>
+        <div class="rows">
           <a
-            v-if="card.primaryUrl"
-            class="btn primary"
-            :href="card.primaryUrl"
+            v-for="row in windowsRows"
+            :key="row.id"
+            class="dl"
+            :href="row.url"
             target="_blank"
+            rel="noopener"
             @click="incrementDownload"
           >
-            {{ card.primaryLabel }}
+            <span class="dl-text">
+              <span class="dl-label">{{ row.label }}</span>
+              <span class="dl-desc">{{ row.desc }}</span>
+            </span>
+            <span class="dl-meta">
+              <span v-if="sizeLabel(row.size)" class="dl-size">{{
+                sizeLabel(row.size)
+              }}</span>
+              <svg
+                class="dl-icon"
+                viewBox="0 0 20 20"
+                fill="none"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M4.5 15.5h11"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
           </a>
-          <a
-            v-if="card.secondaryUrl"
-            class="btn ghost"
-            :href="card.secondaryUrl"
-            target="_blank"
-            @click="incrementDownload"
-          >
-            {{ card.secondaryLabel }}
-          </a>
+        </div>
+      </article>
+
+      <!-- Linux -->
+      <article class="os-card">
+        <header class="os-head">
+          <span class="os-icon"><PlatformIcon platform="linux" /></span>
+          <div>
+            <h3>{{ t("downloadPage.linux.name") }}</h3>
+            <p class="sub">{{ t("downloadPage.linux.choose") }}</p>
+          </div>
+        </header>
+        <div class="tiles">
+          <template v-for="tile in linuxTiles" :key="tile.id">
+            <a
+              v-if="!tile.soon"
+              class="dl tile"
+              :href="tile.url"
+              target="_blank"
+              rel="noopener"
+              @click="incrementDownload"
+            >
+              <span class="dl-text">
+                <span class="dl-label">{{ tile.label }}</span>
+                <span class="dl-desc">{{ tile.desc }}</span>
+              </span>
+              <span class="dl-meta">
+                <span v-if="sizeLabel(tile.size)" class="dl-size">{{
+                  sizeLabel(tile.size)
+                }}</span>
+                <svg
+                  class="dl-icon"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M4.5 15.5h11"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </span>
+            </a>
+            <div v-else class="dl tile soon">
+              <span class="dl-text">
+                <span class="dl-label">{{ tile.label }}</span>
+                <span class="dl-desc">{{ tile.desc }}</span>
+              </span>
+              <span class="badge">{{ t("downloadPage.comingSoon") }}</span>
+            </div>
+          </template>
+        </div>
+
+        <!-- Arch: a copy-me command, not a download link. -->
+        <div class="aur">
+          <span class="aur-label">{{ t("downloadPage.linux.aur.label") }}</span>
+          <button type="button" class="aur-cmd" @click="copyAur">
+            <code>{{ AUR_COMMAND }}</code>
+            <span class="aur-copy">{{
+              aurCopied
+                ? t("downloadPage.linux.aur.copied")
+                : t("downloadPage.linux.aur.copy")
+            }}</span>
+          </button>
         </div>
       </article>
     </div>
 
     <p class="all-releases">
-      <a :href="GITHUB_RELEASES_URL" target="_blank">
+      <a :href="GITHUB_RELEASES_URL" target="_blank" rel="noopener">
         {{ t("downloadPage.viewReleases") }}
       </a>
     </p>
@@ -184,12 +361,12 @@ const recommended = computed(
 
 <style scoped lang="scss">
 .download-page {
-  max-width: 880px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 56px 24px 80px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
 .hero {
@@ -198,6 +375,7 @@ const recommended = computed(
   h1 {
     font-family: BrushTip, sans-serif;
     font-size: 52px;
+    color: var(--primary);
   }
 
   .lead {
@@ -208,14 +386,26 @@ const recommended = computed(
   }
 }
 
-// The green-tinted callout the site already uses for "the one thing that matters here" (the mobile
-// pc-card on the home hero, the stats dashboard's best-time banner) — reused so the recommended
-// platform reads the same way.
+.tag {
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+// The green-tinted "the one thing that matters here" callout the site already uses (home hero pc-card,
+// the stats best-time banner) — reused so the recommended download reads the same way.
 .recommended {
   background: rgba(50, 212, 153, 0.1);
   border: 1px solid rgba(50, 212, 153, 0.35);
   border-radius: 14px;
   padding: 20px 24px;
+
+  .tag {
+    margin-bottom: 12px;
+  }
 
   .recommended-body {
     display: flex;
@@ -224,107 +414,211 @@ const recommended = computed(
     flex-wrap: wrap;
   }
 
-  .icon {
+  .os-icon {
     flex: 0 0 auto;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     color: var(--primary);
   }
 
   .info {
     flex: 1 1 220px;
+    min-width: 0;
 
     h2 {
       font-size: 22px;
     }
 
-    p {
+    .meta {
       color: var(--secondary-text);
-      margin-top: 2px;
+      margin-top: 4px;
+      line-height: 1.5;
     }
   }
 
-  .cta-link {
+  .cta {
     flex: 0 0 auto;
   }
 }
 
-.tag {
-  display: inline-flex;
-  align-self: flex-start;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  color: var(--primary);
-  margin-bottom: 10px;
-}
-
-.platforms {
+.columns {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 18px;
 }
 
-.platform-card {
+.os-card {
   display: flex;
   flex-direction: column;
+  gap: 16px;
   background: var(--secondary-background);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 14px;
   padding: 22px;
 
-  &.active {
-    border-color: rgba(50, 212, 153, 0.45);
+  .os-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    .os-icon {
+      flex: 0 0 auto;
+      width: 30px;
+      height: 30px;
+      color: var(--primary);
+    }
+
+    h3 {
+      font-size: 18px;
+    }
+
+    .sub {
+      color: var(--secondary-text);
+      font-size: 14px;
+      margin-top: 2px;
+    }
+  }
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+// One shared look for every download affordance — the Windows rows and the Linux tiles.
+.dl {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 58px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+
+  &:hover:not(.soon) {
+    border-color: rgba(50, 212, 153, 0.5);
+    background: rgba(50, 212, 153, 0.08);
+
+    .dl-icon {
+      color: var(--primary);
+    }
   }
 
-  .icon {
-    width: 30px;
-    height: 30px;
-    margin-bottom: 12px;
-  }
-
-  h3 {
-    font-size: 18px;
-  }
-
-  .status {
-    color: var(--secondary-text);
-    margin-top: 6px;
-    line-height: 1.55;
-    flex: 1;
-  }
-
-  .actions {
+  .dl-text {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-top: 18px;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .dl-label {
+    font-size: 15px;
+    color: var(--primary-text);
+  }
+
+  .dl-desc {
+    font-size: 12.5px;
+    color: var(--secondary-text);
+    line-height: 1.35;
+  }
+
+  .dl-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+  }
+
+  .dl-size {
+    font-size: 12px;
+    color: var(--secondary-text);
+    white-space: nowrap;
+  }
+
+  .dl-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--secondary-text);
+  }
+
+  &.soon {
+    cursor: default;
+    opacity: 0.65;
+
+    .badge {
+      flex: 0 0 auto;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: var(--warning);
+      border: 1px solid rgba(255, 190, 92, 0.35);
+      background: rgba(255, 190, 92, 0.08);
+      padding: 3px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
   }
 }
 
-.btn {
-  min-height: 46px;
-  padding: 0 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 15px;
-}
+.aur {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 
-.btn.primary {
-  background: var(--primary);
-  color: #0b241b;
-  border: none;
-}
+  .aur-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--secondary-text);
+  }
 
-.btn.ghost {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--primary-text);
-  font-weight: 400;
+  .aur-cmd {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--primary-background-static);
+    border: 1px solid rgba(50, 212, 153, 0.25);
+    overflow-x: auto;
+
+    &:hover {
+      border-color: rgba(50, 212, 153, 0.5);
+
+      .aur-copy {
+        color: var(--primary);
+      }
+    }
+
+    code {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    .aur-copy {
+      flex: 0 0 auto;
+      font-size: 12px;
+      color: var(--secondary-text);
+    }
+  }
 }
 
 .all-releases {
@@ -342,6 +636,14 @@ const recommended = computed(
   }
 }
 
+// Tablets and phones: the two OS columns stack, and the Linux tiles fall to one per row so nothing
+// gets squeezed.
+@media (max-width: $lap) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: $palm) {
   .download-page {
     padding: 40px 16px 60px;
@@ -354,6 +656,14 @@ const recommended = computed(
   .recommended .recommended-body {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .recommended .cta {
+    width: 100%;
+  }
+
+  .tiles {
+    grid-template-columns: 1fr;
   }
 }
 </style>

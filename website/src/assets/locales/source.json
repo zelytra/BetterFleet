@@ -156,7 +156,8 @@
     "documentation": "Discover",
     "home": "Home",
     "support": "Support",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "download": "Download"
   },
   "presentation": {
     "content": "Getting your whole crew onto the same Sea of Thieves server is often a hassle. BetterFleet takes care of it: the app syncs everyone's \"Set sail\" click and shows you who ended up together — so an alliance comes together in minutes rather than hours. Free, open source, and made by players.",
@@ -308,7 +309,7 @@
     },
     "download": {
       "title": "Download BetterFleet",
-      "description": "Download BetterFleet for your platform — the Windows installer today, with a Linux .deb on the way."
+      "description": "Download BetterFleet for Windows or Linux — pick the installer or package that fits your system."
     }
   },
   "alliance": {
@@ -348,27 +349,59 @@
   },
   "downloadPage": {
     "title": "Download BetterFleet",
-    "lead": "We picked the download that matches your device — or choose another platform below.",
-    "leadUnknown": "We couldn't tell what you're running. Pick your platform below.",
-    "recommended": "Recommended for your device",
-    "checking": "Checking the latest release…",
+    "lead": "We picked the download that fits your system — or choose another below.",
+    "leadUnknown": "We couldn't tell what you're running — pick your platform below.",
+    "recommendedLabel": "Recommended for your system",
+    "download": "Download",
+    "sixtyFourBit": "64-bit",
+    "megabytes": "MB",
+    "comingSoon": "Coming soon",
     "viewReleases": "Browse every release on GitHub",
-    "platform": {
+    "recommended": {
       "windows": {
-        "name": "Windows",
-        "status": "Windows 10 and 11.",
-        "cta": "Download for Windows"
+        "title": "BetterFleet for Windows — Installer",
+        "desc": "Classic installation, automatic updates"
       },
       "linux": {
-        "name": "Linux",
-        "status": "Available as a .deb package.",
-        "comingSoon": "On its way — packages aren't published yet. Check back soon, or browse the releases for early builds.",
-        "cta": "Download the .deb",
-        "ctaAppImage": "Download the AppImage"
+        "title": "BetterFleet for Linux — AppImage",
+        "desc": "Runs on any distribution, no install"
+      }
+    },
+    "windows": {
+      "name": "Windows",
+      "editions": "Windows 10 / 11 · 64-bit",
+      "exe": {
+        "label": ".exe installer",
+        "desc": "Classic installation, automatic updates"
       },
-      "macos": {
-        "name": "macOS",
-        "unsupported": "BetterFleet doesn't have a macOS build."
+      "msi": {
+        "label": ".msi installer",
+        "desc": "Enterprise / silent deployment"
+      }
+    },
+    "linux": {
+      "name": "Linux",
+      "choose": "Choose your distribution",
+      "deb": {
+        "label": ".deb",
+        "desc": "Ubuntu, Debian, Mint, Pop!_OS"
+      },
+      "rpm": {
+        "label": ".rpm",
+        "desc": "Fedora, openSUSE, RHEL"
+      },
+      "appimage": {
+        "label": "AppImage",
+        "desc": "Universal — every distribution"
+      },
+      "flatpak": {
+        "label": "Flatpak",
+        "desc": "Via Flathub, sandboxed"
+      },
+      "aur": {
+        "label": "Arch Linux (AUR)",
+        "copy": "Copy",
+        "copied": "Copied!"
       }
     }
   }

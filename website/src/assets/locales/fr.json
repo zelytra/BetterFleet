@@ -187,7 +187,8 @@
     "documentation": "Découvrir",
     "home": "Accueil",
     "support": "Support",
-    "statistics": "Statistiques"
+    "statistics": "Statistiques",
+    "download": "Télécharger"
   },
   "presentation": {
     "content": "Réunir tout votre équipage sur le même serveur Sea of Thieves, c'est souvent laborieux. BetterFleet s'en charge : l'application synchronise le \"Lever l'ancre\" de chacun et vous montre qui s'est retrouvé ensemble — une alliance en quelques minutes plutôt qu'en quelques heures. Gratuit, open source, pensé par des joueurs.",
@@ -336,10 +337,72 @@
     "reports": {
       "title": "Rapports, BetterFleet",
       "description": "Rapports de bug envoyés depuis l'application BetterFleet."
+    },
+    "download": {
+      "title": "Télécharger BetterFleet",
+      "description": "Téléchargez BetterFleet pour Windows ou Linux — choisissez l'installateur ou le paquet adapté à votre système."
     }
   },
   "loading": {
     "stats": "Lecture du journal de bord…",
     "globe": "Déroulage de la carte…"
+  },
+  "downloadPage": {
+    "title": "Télécharger BetterFleet",
+    "lead": "On a choisi le téléchargement adapté à votre système — ou sélectionnez-en un autre ci-dessous.",
+    "leadUnknown": "Impossible de détecter votre système — choisissez votre plateforme ci-dessous.",
+    "recommendedLabel": "Recommandé pour votre système",
+    "download": "Télécharger",
+    "sixtyFourBit": "64 bits",
+    "megabytes": "Mo",
+    "comingSoon": "Bientôt",
+    "viewReleases": "Voir toutes les versions sur GitHub",
+    "recommended": {
+      "windows": {
+        "title": "BetterFleet pour Windows — Installateur",
+        "desc": "Installation classique, mises à jour auto"
+      },
+      "linux": {
+        "title": "BetterFleet pour Linux — AppImage",
+        "desc": "Fonctionne sur toutes les distributions, sans installation"
+      }
+    },
+    "windows": {
+      "name": "Windows",
+      "editions": "Windows 10 / 11 · 64 bits",
+      "exe": {
+        "label": "Installateur .exe",
+        "desc": "Installation classique, mises à jour auto"
+      },
+      "msi": {
+        "label": "Installateur .msi",
+        "desc": "Déploiement entreprise / silencieux"
+      }
+    },
+    "linux": {
+      "name": "Linux",
+      "choose": "Choisissez votre distribution",
+      "deb": {
+        "label": ".deb",
+        "desc": "Ubuntu, Debian, Mint, Pop!_OS"
+      },
+      "rpm": {
+        "label": ".rpm",
+        "desc": "Fedora, openSUSE, RHEL"
+      },
+      "appimage": {
+        "label": "AppImage",
+        "desc": "Universel — toutes distributions"
+      },
+      "flatpak": {
+        "label": "Flatpak",
+        "desc": "Via Flathub, sandboxé"
+      },
+      "aur": {
+        "label": "Arch Linux (AUR)",
+        "copy": "Copier",
+        "copied": "Copié !"
+      }
+    }
   }
 }
