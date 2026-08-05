@@ -22,6 +22,20 @@ back into the problem.
   in the config). Native audio is played from Rust (`rodio`, embedded mp3) precisely because the
   webview can't be relied on to play sound while occluded. Don't move timer/audio logic back into the
   webview assuming it keeps ticking while covered.
+- **Linux native integration is X11-first, and the overlay needs active stacking help (#731).** The
+  set-sail auto-click (`rise_anchor`) and the overlay float are Linux paths gated to `target_os =
+  "linux"` (`window_interaction_linux.rs`, `overlay_x11.rs`, shared `x11_support.rs`); Windows/macOS
+  are untouched. The click finds the game via EWMH `_NET_CLIENT_LIST` and injects a pointer move +
+  left click with **XTEST** at the same 16:9-letterboxed coordinates as Windows — it reaches a
+  Proton/Wine game (native or through XWayland) but **not a native-Wayland client**, where Wayland
+  forbids synthetic input; `rise_anchor` then returns `false` and the frontend keeps its manual cue.
+  The overlay is a *managed* X11 window, so the WM restacks it below whatever is focused and KWin
+  hides inactive "utility" windows — it appears to vanish the moment the game takes focus. The fix
+  re-asserts `_NET_WM_STATE_ABOVE`/`STICKY`/`SKIP_TASKBAR`/`SKIP_PAGER` on show **and on main-window
+  blur** (`WindowEvent::Focused(false)`); don't drop the blur re-assert thinking `alwaysOnTop` alone
+  holds. A **fullscreen-exclusive** game can still cover it (its layer outranks "above") — borderless
+  / windowed-fullscreen is the workaround. The WebView2 `additionalBrowserArgs` occlusion knob is a
+  no-op on WebKitGTK; the native `rodio` countdown audio already hedges the important cue.
 
 ## Dev vs prod transport
 
