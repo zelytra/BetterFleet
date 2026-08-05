@@ -1,5 +1,9 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "fr.zelytra.betterfleet",
+  "app": {
+    "enableGTKAppId": true
+  },
   "bundle": {
     "targets": ["deb", "appimage"],
     "createUpdaterArtifacts": false,
@@ -10,7 +14,8 @@
           "libayatana-appindicator3-1",
           "librsvg2-2"
         ],
-        "section": "utils"
+        "section": "utils",
+        "desktopTemplate": "betterfleet.desktop.template"
       }
     }
   }
