@@ -12,10 +12,15 @@
       "deb": {
         "depends": [
           "libayatana-appindicator3-1",
-          "librsvg2-2"
+          "librsvg2-2",
+          "libcap2-bin"
         ],
         "section": "utils",
-        "desktopTemplate": "betterfleet.desktop.template"
+        "desktopTemplate": "betterfleet.desktop.template",
+        "files": {
+          "/usr/bin/betterfleet-netcap": "target/release/betterfleet-netcap"
+        },
+        "postInstallScript": "deb/postinst.sh"
       }
     }
   }
