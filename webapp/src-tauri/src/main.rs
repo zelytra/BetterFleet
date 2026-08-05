@@ -307,6 +307,14 @@ fn clear_presence() {
 }
 #[tokio::main]
 async fn main() {
+    // Force the X11 backend (XWayland on a Wayland session). The always-on-top in-game overlay relies
+    // on X11 `_NET_WM_STATE_ABOVE` — native Wayland forbids a client from forcing itself above other
+    // apps — and Proton runs the game under XWayland too, so the app, the overlay and the game share
+    // one X server and the overlay can actually stack over the game. It also renders smoother and lets
+    // the X11 window icon show. Must be set before GTK initialises.
+    #[cfg(target_os = "linux")]
+    std::env::set_var("GDK_BACKEND", "x11");
+
     let api_arc = fetch_informations::init().await.expect("Failed to initialize API");
 
     // Rich Presence stays entirely dormant until a Discord Application ID is provided (#684).
