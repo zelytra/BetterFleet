@@ -1,5 +1,5 @@
 import { HTTPAxios } from "@/objects/utils/HTTPAxios.ts";
-import { info } from "tauri-plugin-log-api";
+import { info } from "@tauri-apps/plugin-log";
 
 export interface ReportInterface {
   message: string;

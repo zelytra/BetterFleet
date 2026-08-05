@@ -1,6 +1,6 @@
 # Frontend (`webapp/`)
 
-A **Vue 3 + TypeScript** UI (`<script setup>`, Composition API, Vite) wrapped in a **Tauri v1** Rust
+A **Vue 3 + TypeScript** UI (`<script setup>`, Composition API, Vite) wrapped in a **Tauri v2** Rust
 shell. The Rust side (`webapp/src-tauri/src/`) does the OS-level work; the Vue side is the UI and all
 the session logic. Entry point: `webapp/src/main.ts`.
 

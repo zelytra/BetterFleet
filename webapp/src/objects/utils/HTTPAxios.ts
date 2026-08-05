@@ -1,6 +1,6 @@
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
-import { fetch, ResponseType } from "@tauri-apps/api/http";
-import { info } from "tauri-plugin-log-api";
+import { fetch } from "@tauri-apps/plugin-http";
+import { info } from "@tauri-apps/plugin-log";
 
 export class HTTPAxios {
   private readonly path: string;
@@ -15,23 +15,26 @@ export class HTTPAxios {
     this.path = path;
   }
 
-  async get(responseType?: ResponseType) {
+  async get() {
     const urlPath = this.url + this.path;
     info("[HTTPAxios.ts][GET] " + urlPath);
+    // v2 plugin-http is WHATWG-fetch-shaped: it returns a standard Response, so callers read the
+    // body with `await res.json()` / `await res.text()` (there is no v1 `responseType`/`.data`).
     return await fetch(urlPath, {
       method: "GET",
       headers: HTTPAxios.header,
-      responseType: responseType ? responseType : ResponseType.JSON,
     });
   }
 
   async post(body: any) {
     const urlPath = this.url + this.path;
     info("[HTTPAxios.ts][POST] " + urlPath);
+    // v2 fetch takes a WHATWG BodyInit: send a JSON string and declare the content type (v1's
+    // `Body.json()` helper is gone).
     return await fetch(urlPath, {
       method: "POST",
-      body: { type: "Json", payload: body },
-      headers: HTTPAxios.header,
+      body: JSON.stringify(body),
+      headers: { ...HTTPAxios.header, "Content-Type": "application/json" },
     });
   }
 

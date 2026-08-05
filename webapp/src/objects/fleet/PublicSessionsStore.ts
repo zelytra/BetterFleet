@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import { error } from "tauri-plugin-log-api";
+import { error } from "@tauri-apps/plugin-log";
 import { HTTPAxios } from "@/objects/utils/HTTPAxios.ts";
 import { PublicSession } from "@/objects/fleet/PublicSessions.ts";
 import {
@@ -56,7 +56,7 @@ async function refresh(): Promise<void> {
   state.loading = true;
   try {
     const response = await new HTTPAxios("public-sessions").get();
-    applySnapshot(response.data);
+    applySnapshot(await response.json());
   } catch {
     /* keep the last known snapshot */
   }

@@ -71,7 +71,7 @@ import { inject, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { BugReport, ReportInterface } from "@/objects/report/Report.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
-import { invoke } from "@tauri-apps/api/tauri";
+import { invoke } from "@tauri-apps/api/core";
 
 const { t } = useI18n();
 
@@ -164,6 +164,12 @@ async function sendReport() {
   align-items: center;
   gap: 12px;
   height: 100%;
+
+  // Each panel keeps its size; if its content (e.g. a long capture result) is taller than the box,
+  // let that box scroll inside itself rather than spilling over the screen.
+  :deep(.template-wrapper) {
+    overflow-y: auto;
+  }
 
   .report-wrapper {
     display: flex;

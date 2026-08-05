@@ -1,0 +1,11 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "overlay-capability",
+  "description": "Always-on-top overlay window: renders from events pushed by main, drags itself via its header, and logs. Least-privilege (no HTTP).",
+  "windows": ["overlay"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "log:default"
+  ]
+}

@@ -2,39 +2,53 @@
 name = "better_fleet"
 version = "2.2.2"
 description = "A better fleet creator"
-authors = ["Zelytra", "dadodasyra"]
+authors = ["Zelytra <zelytra@users.noreply.github.com>", "dadodasyra"]
 license = ""
 repository = ""
 default-run = "better_fleet"
 edition = "2021"
-rust-version = "1.60"
+rust-version = "1.77.2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5.1", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.6.0", features = [ "window-start-dragging", "window-show", "window-set-focus", "window-set-always-on-top", "window-hide", "global-shortcut-all", "http-all", "updater", "shell-all"] }
+# Tauri v2 (migrated for the Linux port, #735). The v1 allowlist features are gone: window ops are
+# core, and global-shortcut / http / shell / updater are plugins (below). Permissions are granted
+# per-window under capabilities/.
+tauri = { version = "2", features = [] }
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-http = "2"
+tauri-plugin-shell = "2"
 anyhow = "1.0.80"
-socket2 = "0.5.6"
 tokio = { version = "1.43.1", features = ["full"] }
-winapi = { version = "0.3.9", features = ["winsock2", "winuser"] }
 etherparse = "0.15.0"
 hostname = "0.4.0"
 sysinfo = "0.30.6"
-netstat2 = "0.9.1"
+netstat2 = "0.11"
 idna = "1.0.3"
 log = "^0.4"
-tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"] }
+tauri-plugin-log = { version = "2", features = ["colored"] }
 lazy_static = "1.4.0"
 # Native audio for the launch-countdown sound (#671): webview audio is suspended when the window is
 # occluded behind the game, native playback is not.
 rodio = "0.20.1"
 # Discord Rich Presence over the local client's IPC (#684) — no bot, no OAuth.
 discord-rich-presence = "0.2.5"
+
+# winapi backs the Windows-only native pieces — the raw promiscuous capture socket in
+# fetch_informations.rs and the Sea of Thieves window focus/click in window_interaction.rs. Linux
+# has no equivalent here (packet capture is stubbed on Linux — #725), so it stays Windows-only.
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3.9", features = ["winsock2", "winuser"] }
+# socket2 backs only the Windows raw-capture socket (create_raw_socket). Type::RAW is behind its
+# `all` feature — v1 got it transitively, the v2 dependency graph no longer does.
+socket2 = { version = "0.5.6", features = ["all"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

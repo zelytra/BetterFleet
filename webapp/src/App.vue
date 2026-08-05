@@ -15,8 +15,8 @@ import LoadingVue from "@/vue/templates/LoadingVue.vue";
 import AlertComponent from "@/vue/alert/AlertComponent.vue";
 import { useI18n } from "vue-i18n";
 import { onMounted } from "vue";
-import { invoke } from "@tauri-apps/api/tauri";
-import { error } from "tauri-plugin-log-api";
+import { invoke } from "@tauri-apps/api/core";
+import { error } from "@tauri-apps/plugin-log";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import { DEFAULT_OVERLAY_HOTKEY } from "@/objects/fleet/Overlay.ts";
 import {

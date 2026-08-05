@@ -15,7 +15,9 @@ use log::error;
 use serde::{Deserialize, Serialize};
 use tokio::net::UdpSocket;
 
-use crate::fetch_informations::{create_raw_socket, get_hostname, is_plausible_sot_port};
+use crate::fetch_informations::{get_hostname, is_plausible_sot_port};
+#[cfg(windows)]
+use crate::fetch_informations::create_raw_socket;
 
 /// One observed UDP conversation between a game-owned local port and a remote peer.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -147,6 +149,7 @@ fn parse_game_flow(bytes: &[u8], game_ports: &HashSet<u16>) -> Option<(u16, Stri
 
 /// Sniffs a single local interface for `duration`, feeding every game-owned UDP
 /// packet into the shared aggregator.
+#[cfg(windows)]
 async fn sniff_interface(
     addr: SocketAddr,
     game_ports: HashSet<u16>,
@@ -189,6 +192,7 @@ async fn sniff_interface(
 /// Sniffs every local interface for `window`, aggregating per-flow UDP stats for
 /// the given game ports, and returns the flows ranked by volume (desc). Shared by
 /// the diagnostic report and by live detection, so both observe traffic identically.
+#[cfg(windows)]
 pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
     let port_set: HashSet<u16> = game_ports.into_iter().collect();
     let aggregator = Arc::new(Mutex::new(FlowAggregator::default()));
@@ -219,6 +223,11 @@ pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowSt
 
     let flows = aggregator.lock().unwrap().take_sorted_flows();
     flows
+}
+
+#[cfg(not(windows))]
+pub async fn capture_flows(_game_ports: Vec<u16>, _window: Duration) -> Vec<FlowStat> {
+    Vec::new()
 }
 
 /// Picks the dominant Sea of Thieves server flow: the highest-volume flow whose

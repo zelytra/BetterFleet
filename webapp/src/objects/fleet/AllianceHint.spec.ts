@@ -2,10 +2,10 @@ import { describe, it, expect, vi } from "vitest";
 
 // Importing the module pulls HTTPAxios -> keycloak -> main.ts, none of which exists under vitest;
 // the harness stand-ins cut that chain (same pattern as every other spec here).
-vi.mock("@tauri-apps/api/http", async () =>
+vi.mock("@tauri-apps/plugin-http", async () =>
   (await import("@/test/harness/tauri.ts")).httpMock(),
 );
-vi.mock("tauri-plugin-log-api", async () =>
+vi.mock("@tauri-apps/plugin-log", async () =>
   (await import("@/test/harness/tauri.ts")).logMock(),
 );
 vi.mock("@/main.ts", async () =>
