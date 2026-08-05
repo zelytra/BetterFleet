@@ -8,7 +8,7 @@ import { error, info } from "@tauri-apps/plugin-log";
 export type WhatsNewDecision = "show" | "adopt-silently" | "none";
 
 /**
- * Fresh install (nothing recorded) adopts the current version silently — there is nothing "new"
+ * Fresh install (nothing recorded) adopts the current version silently: there is nothing "new"
  * to a first-time player. A recorded, different version means an update landed: show the notes.
  */
 export function whatsNewDecision(
@@ -34,7 +34,7 @@ export function simplifyReleaseNotes(body: string): string[] {
           .replace(/^#+\s*/, "")
           .replace(/\*\*([^*]+)\*\*/g, "$1")
           .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-          // The auto-generated bullets end with "by @user in https://…/pull/N" — the modal reader
+          // The auto-generated bullets end with "by @user in https://…/pull/N": the modal reader
           // cares about the change, not the plumbing.
           .replace(/\s+by @[\w-]+ in https?:\/\/\S+$/, "")
           .trimEnd(),
@@ -51,7 +51,7 @@ export function releaseUrl(version: string): string {
   return "https://github.com/zelytra/BetterFleet/releases/tag/v" + version;
 }
 
-/** The release notes for a tag, simplified — or null (missing release, offline, rate-limited). */
+/** The release notes for a tag, simplified, or null (missing release, offline, rate-limited). */
 export async function fetchReleaseNotes(
   version: string,
 ): Promise<string[] | null> {
@@ -72,7 +72,7 @@ export async function fetchReleaseNotes(
     );
     if (!response.ok) {
       // GitHub answered but refused (rate limit, missing tag…): name it in the logs instead of
-      // failing into the fallback silently — that silence is exactly what made this undebuggable.
+      // failing into the fallback silently: that silence is exactly what made this undebuggable.
       const reason = (
         (await response.json()) as { message?: string } | undefined
       )?.message;

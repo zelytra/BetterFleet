@@ -80,7 +80,7 @@ const DEFAULT_OVERLAY_HOTKEY: &str = "CommandOrControl+Shift+O";
 static OVERLAY_VISIBLE_INTENT: AtomicBool = AtomicBool::new(false);
 
 /// Binds `accelerator` to the overlay show/hide toggle. Fails (with the manager's reason) when the
-/// combo is invalid or already taken system-wide — the caller decides what to keep bound.
+/// combo is invalid or already taken system-wide: the caller decides what to keep bound.
 fn register_overlay_toggle(app: &tauri::AppHandle, accelerator: &str) -> Result<(), String> {
     let handle = app.clone();
     app.global_shortcut()
@@ -110,7 +110,7 @@ fn register_overlay_toggle(app: &tauri::AppHandle, accelerator: &str) -> Result<
 }
 
 // The launch-countdown jingle, embedded so native playback needs no bundled resource. Played from
-// Rust because webview audio is suspended while the window sits occluded behind the game (#671) —
+// Rust because webview audio is suspended while the window sits occluded behind the game (#671):
 // native audio answers to no visibility policy.
 static COUNTDOWN_SOUND: &[u8] = include_bytes!("../../src/assets/sounds/countdown.mp3");
 
@@ -131,7 +131,7 @@ fn overlay_layout_path(app: &tauri::AppHandle) -> Option<PathBuf> {
         .map(|dir| dir.join("overlay-layout.json"))
 }
 
-/// True when the saved top-left corner still falls on one of the connected monitors — restoring a
+/// True when the saved top-left corner still falls on one of the connected monitors: restoring a
 /// position from an unplugged screen would reopen the overlay out of sight, undraggable.
 /// Monitors are (x, y, width, height) in physical desktop coordinates.
 fn layout_is_on_screen(layout: &OverlayLayout, monitors: &[(i32, i32, u32, u32)]) -> bool {
@@ -213,7 +213,7 @@ fn save_overlay_layout(overlay: &tauri::WebviewWindow) {
 static SOUND_PLAYING: AtomicBool = AtomicBool::new(false);
 
 // Discord Rich Presence (#684). The BetterFleet application's ID from the Discord developer
-// portal — a public identifier, not a secret. Emptying it puts the whole feature back to sleep:
+// portal: a public identifier, not a secret. Emptying it puts the whole feature back to sleep:
 // no worker, no IPC, commands become no-ops.
 const DISCORD_APP_ID: &str = "1529819901605183561";
 
@@ -341,8 +341,8 @@ async fn main() {
                 error!("Failed to register overlay hotkey: {}", e);
             }
 
-            // Reopen the overlay exactly where the player left it last session (#671) — position,
-            // size, and therefore screen — while it is still hidden, so the move is never seen.
+            // Reopen the overlay exactly where the player left it last session (#671): position,
+            // size, and therefore screen, while it is still hidden, so the move is never seen.
             restore_overlay_layout(app.handle());
 
             Ok(())
@@ -603,7 +603,7 @@ fn get_system_info() -> String {
 /// Diagnostic capture for issue #364. Sniffs the running game's UDP flows for a
 /// few seconds and returns a per-flow volume report (also written to the logs), so
 /// the real server flow can be told apart from the Steam Datagram Relay noise.
-/// Purely observational — it does not affect live detection.
+/// Purely observational: it does not affect live detection.
 #[cfg(windows)]
 #[tauri::command]
 async fn run_server_diagnostic(
@@ -678,8 +678,8 @@ async fn run_server_diagnostic(
 /// is occluded behind the game, so `SessionCountdown` asks Rust instead: rodio opens the default
 /// output device on its own thread, immune to the webview's focus/occlusion/autoplay policies.
 ///
-/// `volume` is 0.0–1.0 (the app's sound level / 100). Returns `false` when the jingle is already
-/// playing — the frontend pokes every tick and this dedup is what makes it loop instead of stack.
+/// `volume` is 0.0-1.0 (the app's sound level / 100). Returns `false` when the jingle is already
+/// playing: the frontend pokes every tick and this dedup is what makes it loop instead of stack.
 #[tauri::command]
 fn play_countdown_sound(volume: f32) -> bool {
     if SOUND_PLAYING.swap(true, Ordering::SeqCst) {
@@ -729,7 +729,7 @@ fn set_overlay_hotkey(app_handle: tauri::AppHandle, accelerator: String) -> Resu
 mod overlay_layout_tests {
     use super::*;
 
-    // A 1080p primary at the origin and a second screen to its LEFT — negative desktop coordinates,
+    // A 1080p primary at the origin and a second screen to its LEFT: negative desktop coordinates,
     // the multi-monitor case that breaks naive "x >= 0" assumptions.
     const MONITORS: &[(i32, i32, u32, u32)] =
         &[(0, 0, 1920, 1080), (-2560, 0, 2560, 1440)];

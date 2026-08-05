@@ -2,7 +2,7 @@
  * The Tauri/Rust side of the harness.
  *
  * The webview's HTTP, logging and `invoke` bridges only exist inside a running Tauri shell, and the
- * Rust layer (game detection) has no browser equivalent at all — so importing anything that touches
+ * Rust layer (game detection) has no browser equivalent at all, so importing anything that touches
  * them explodes under vitest. These are the stand-ins.
  *
  * Use from a spec, before importing the code under test:

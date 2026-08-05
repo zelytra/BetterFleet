@@ -2,8 +2,8 @@
  * An in-memory stand-in for the BetterFleet backend, so the frontend can be driven end to end
  * without a server, a database or the Tauri runtime.
  *
- * It mirrors the real contract rather than the frontend's assumptions about it — that is the whole
- * point: it answers what SessionSocket/SessionDirectoryEndpoints answer, including the refusals.
+ * It mirrors the real contract rather than the frontend's assumptions about it (that is the whole
+ * point): it answers what SessionSocket/SessionDirectoryEndpoints answer, including the refusals.
  * If a test passes here and fails in production, this file is what should be corrected.
  *
  * Covers:
@@ -101,8 +101,8 @@ export class FakeBackend {
   // ---------------------------------------------------------------- directory
 
   /**
-   * What SessionManager.toPublicSession builds. Private sessions are listed — the browser shows
-   * them with a closed padlock — but their code is withheld, so they can only be joined by someone
+   * What SessionManager.toPublicSession builds. Private sessions are listed (the browser shows
+   * them with a closed padlock) but their code is withheld, so they can only be joined by someone
    * who was given it.
    */
   private toPublicSession(session: FakeSession) {
@@ -304,7 +304,7 @@ export class FakeWebSocket {
     fakeBackend.openSocket(this);
     // A real socket opens over the network, i.e. never before the caller has finished assigning
     // its handlers. A microtask here fires onopen inside the same await chain that creates the
-    // socket, so the client's onopen is still null and the CONNECT is silently lost — a race the
+    // socket, so the client's onopen is still null and the CONNECT is silently lost: a race the
     // product does not have. setTimeout puts the open in a later task, like the real thing.
     setTimeout(() => {
       this.readyState = 1;

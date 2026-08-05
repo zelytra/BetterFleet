@@ -1,6 +1,6 @@
 // Stub for "@/router": the real one imports the keycloak store and the authed shell, both of which
-// have import-time side effects. Keeps the shape HeaderComponent reads — routes[1].children, each
-// with its nav icon — so the app's own sidebar renders exactly as it does in the app.
+// have import-time side effects. Keeps the shape HeaderComponent reads (routes[1].children, each
+// with its nav icon) so the app's own sidebar renders exactly as it does in the app.
 import { createRouter, createMemoryHistory } from "vue-router";
 import fleet from "@/assets/icons/navigation.svg";
 import config from "@/assets/icons/config.svg";

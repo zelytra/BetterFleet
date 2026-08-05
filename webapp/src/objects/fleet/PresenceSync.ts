@@ -2,8 +2,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import { Player } from "@/objects/fleet/Player.ts";
 
-// Discord Rich Presence (#684). The frontend owns WHAT to show — the session state it already
-// knows — and Rust owns the IPC. English on purpose: a presence is read by other people, whose
+// Discord Rich Presence (#684). The frontend owns WHAT to show (the session state it already
+// knows) and Rust owns the IPC. English on purpose: a presence is read by other people, whose
 // language the player's setting says nothing about.
 
 export interface PresencePayload {
@@ -14,7 +14,7 @@ export interface PresencePayload {
 
 /**
  * The presence for the current player state, or null when nothing should show (feature off, no
- * session). Private sessions never expose their code — and a fresh fleet is private-by-default
+ * session). Private sessions never expose their code, and a fresh fleet is private-by-default
  * until the first server UPDATE, so a code can never flash early.
  */
 export function buildPresence(
@@ -42,7 +42,7 @@ let joinedAt: number | null = null;
 
 /**
  * Started once by the main window. Every 5s the presence is rebuilt and pushed only when it
- * changed — leaving a session (or turning the setting off) clears it within a tick.
+ * changed: leaving a session (or turning the setting off) clears it within a tick.
  */
 export function startPresenceSync(): void {
   if (timer !== undefined) return;

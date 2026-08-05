@@ -55,7 +55,7 @@ const WHITE = [255, 255, 255];
 describe("serverBarColor", () => {
   it("keeps the title readable on every colour the backend can pick", () => {
     // The reason this module exists. The palette was only ever a 2px border and coloured text; the
-    // title bar puts white on top of it, and raw, 20 of these 24 fail AA — "#32D499" lands at 1.91:1.
+    // title bar puts white on top of it, and raw, 20 of these 24 fail AA: "#32D499" lands at 1.91:1.
     for (const color of PALETTE) {
       const ratio = contrast(rgb(serverBarColor(color)), WHITE);
       expect(

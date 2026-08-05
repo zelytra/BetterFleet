@@ -98,13 +98,13 @@ function server(
 }
 
 switch (shot) {
-  // 1 — the session exists, its code is on the banner, crewmates are arriving.
+  // 1: the session exists, its code is on the banner, crewmates are arriving.
   case "session": {
     fleet.players = [zelytra, ricuju];
     fleet.stats = { tryAmount: 0, successPrediction: 0 };
     break;
   }
-  // 3 — everyone has declared themselves, one player has not.
+  // 3: everyone has declared themselves, one player has not.
   case "ready": {
     zelytra.isReady = true;
     ricuju.isReady = true;
@@ -113,14 +113,14 @@ switch (shot) {
     fleet.stats = { tryAmount: 2, successPrediction: 0 };
     break;
   }
-  // 4 — the shared countdown, over the lobby.
+  // 4: the shared countdown, over the lobby.
   case "countdown": {
     for (const p of [zelytra, ricuju, dadodasyra, hosapuwopa]) p.isReady = true;
     fleet.players = [zelytra, ricuju, dadodasyra, hosapuwopa];
     fleet.stats = { tryAmount: 2, successPrediction: 0 };
     break;
   }
-  // 5 — the result: who landed on which server, and the recap card over the win.
+  // 5: the result: who landed on which server, and the recap card over the win.
   case "grouped": {
     for (const p of [zelytra, ricuju, dadodasyra, hosapuwopa]) {
       p.isReady = true;

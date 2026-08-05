@@ -73,7 +73,7 @@ function soundCalls() {
 }
 
 // The countdown sound went through the webview's Audio element and stayed silent whenever the app
-// sat occluded behind the game (webview audio is suspended). It is played natively by Rust now —
+// sat occluded behind the game (webview audio is suspended). It is played natively by Rust now:
 // these lock the bridge so it can't quietly fall back.
 describe("SessionCountdown native sound (#671)", () => {
   beforeEach(() => {

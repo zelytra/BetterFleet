@@ -20,9 +20,9 @@ export interface FleetActions {
  *  - switching servers leaves the previous one FIRST, so the player is never left in two
  *    servers at once (no duplicate, no ghost in the old server);
  *  - InGame with an EMPTY ip means "in a game, identity not resolved yet": never join anything,
- *    and if a server was joined, leave it — the Rust layer only reports that state after a
+ *    and if a server was joined, leave it: the Rust layer only reports that state after a
  *    server change, so staying on the old card would falsely group the player;
- *  - going back to the menu leaves the server — but leaveServer is only called when a server is
+ *  - going back to the menu leaves the server, but leaveServer is only called when a server is
  *    actually joined (a payload-less LEAVE_SERVER crashes the backend handler).
  */
 export function syncGameState(
@@ -66,7 +66,7 @@ export function syncGameState(
     isServerDetectedOrChanged
   ) {
     // Switching servers: leave the previous one first, otherwise the player ends up
-    // in two servers at once — shown twice and left lingering in the old one.
+    // in two servers at once: shown twice and left lingering in the old one.
     if (
       player.server != undefined &&
       (player.server.ip != rustSotServer.ip ||

@@ -64,22 +64,22 @@ async function refresh(): Promise<void> {
 }
 
 /**
- * Live updates: the backend pushes a fresh snapshot — the list *and* the connected-players count —
+ * Live updates: the backend pushes a fresh snapshot (the list *and* the connected-players count)
  * on every structural change (issue #599), so the list moves as sessions come and go instead of
  * only on Refresh.
  *
  * The stream is an optimisation, not the mechanism. It cannot be relied on: every other backend
- * call goes through Tauri's HTTP plugin — i.e. through Rust — while EventSource is a webview API
+ * call goes through Tauri's HTTP plugin (i.e. through Rust) while EventSource is a webview API
  * and takes a completely different route out of the app (its own CORS, whatever proxy sits in
  * front, no Tauri involvement). That asymmetry is invisible from here and it is exactly what
  * "the list only updates when I press Refresh" looks like. So {@link POLL_INTERVAL_MS} backstops
- * it, and the poll skips itself whenever the stream is doing its job — costing nothing when it
+ * it, and the poll skips itself whenever the stream is doing its job: costing nothing when it
  * works, and keeping the list live when it doesn't.
  */
 function connectStream(): void {
   disconnect();
   const url = import.meta.env.VITE_BACKEND_HOST + "/public-sessions/stream";
-  // EventSource is a webview API — unlike our REST calls, which tunnel through Rust — so from the
+  // EventSource is a webview API (unlike our REST calls, which tunnel through Rust) so from the
   // app's secure origin (https://tauri.localhost on Windows) it cannot open an http:// backend: the
   // webview blocks it as mixed content before a single frame arrives. That is the whole of local dev,
   // where the backend is plain http, and it produced nothing but a recurring console error. Skip the

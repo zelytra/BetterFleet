@@ -69,7 +69,7 @@ describe("the banner a hosted session gets", () => {
 
   it("does not overwrite the settings pick when shuffling", async () => {
     // Shuffle picks a banner for *this* session. Writing it back would silently replace the
-    // template the player chose in Settings — they would find a different one selected there.
+    // template the player chose in Settings: they would find a different one selected there.
     UserStore.player.banner = 1;
     UserStore.player.bannerShuffle = true;
     const fleet = new Fleet();

@@ -39,7 +39,7 @@ function payload(
   };
 }
 
-/** One pooled hour spread over a single weekday — enough for the hour-pooling the hint does. */
+/** One pooled hour spread over a single weekday: enough for the hour-pooling the hint does. */
 function cell(hour: number, attempts: number, converged: number) {
   return {
     dayOfWeek: 1,

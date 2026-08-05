@@ -25,7 +25,7 @@
     </BannerTemplate>
     <ParameterPart :title="t('config.part.general')">
       <!-- One column, two aligned blocks: a grid of equal-width fields, then a left-aligned list
-           of toggles — instead of everything centre-wrapping freely. -->
+           of toggles, instead of everything centre-wrapping freely. -->
       <div class="general-layout">
         <div class="fields">
           <SingleSelect
@@ -122,7 +122,7 @@
           </div>
         </div>
         <!-- Styled after InputText (label above, same field box, cross to reset) so it reads as one
-             of the app's inputs rather than a foreign button — review feedback on #692. -->
+             of the app's inputs rather than a foreign button (review feedback on #692). -->
         <div class="hotkey-field">
           <div class="field-wrapper">
             <label>{{ t("config.overlay.hotkey.label") }}</label>
@@ -338,7 +338,7 @@ const overlayEnabled = ref<boolean>(false);
 watch(overlayEnabled, (visible) => setOverlayVisible(visible));
 
 // Overlay hotkey recorder (#687). Press-to-set: the next modifier+key combo becomes the toggle,
-// applied immediately through Rust — which keeps the previous combo bound if the new one is
+// applied immediately through Rust, which keeps the previous combo bound if the new one is
 // invalid or already taken. Escape cancels, reset returns to the default.
 const recordingHotkey = ref(false);
 const HOTKEY_ALIASES: Record<string, string> = {

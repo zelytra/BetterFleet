@@ -18,7 +18,7 @@ describe("clampBanner", () => {
   });
 
   // The value comes back from localStorage and from the backend, so by the time it is rendered it
-  // is whatever was stored — an out-of-range index would leave a broken image in the list.
+  // is whatever was stored: an out-of-range index would leave a broken image in the list.
   it.each([
     ["out of range", BANNER_COUNT],
     ["negative", -1],

@@ -19,7 +19,7 @@ const REQUEST_EVENT = "overlay:request";
 // Overlay -> main: the local player clicked their ready badge in the overlay.
 const TOGGLE_READY_EVENT = "overlay:toggle-ready";
 
-/** The built-in toggle accelerator, in Tauri syntax — what main.rs binds before any preference. */
+/** The built-in toggle accelerator, in Tauri syntax: what main.rs binds before any preference. */
 export const DEFAULT_OVERLAY_HOTKEY = "CommandOrControl+Shift+O";
 
 /** Human-readable form of an accelerator for the overlay header ("Ctrl+Shift+O"). */
@@ -51,18 +51,18 @@ export interface OverlaySnapshot {
   inSession: boolean;
   /** The local player, always present so the overlay can show their ready state even off a server. */
   me: OverlayPlayer;
-  /** Human-readable toggle combo for the header — follows the player's rebind (#687). */
+  /** Human-readable toggle combo for the header: follows the player's rebind (#687). */
   hotkeyLabel: string;
   servers: OverlayServer[];
   /**
    * Session players no detected server holds yet, local player first. Keeps the whole roster
-   * visible — everyone appears with their ready state even before their server is found.
+   * visible: everyone appears with their ready state even before their server is found.
    */
   unassigned: OverlayPlayer[];
   /**
    * ISO time-of-day at which the launch countdown ends (player.countDown.clickTime), or null when no
    * countdown is running. The overlay ticks its own local timer from this so the display stays smooth
-   * without the main window streaming every frame — and, unlike the app, it plays no sound.
+   * without the main window streaming every frame. Unlike the app, it plays no sound.
    */
   countdownEndsAt: string | null;
 }
@@ -89,7 +89,7 @@ export function computeSnapshot(): OverlaySnapshot {
         (b.connectedPlayers?.length ?? 0) - (a.connectedPlayers?.length ?? 0),
     );
 
-  // Whoever the session knows but no grouping holds — the rest of the roster stays visible too.
+  // Whoever the session knows but no grouping holds: the rest of the roster stays visible too.
   const assigned = new Set(
     populated.flatMap((s) => (s.connectedPlayers ?? []).map((p) => p.username)),
   );

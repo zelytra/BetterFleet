@@ -22,8 +22,8 @@ export interface FleetStatistics {
 
 export interface FleetInterface {
   sessionId: string;
-  // Seed (0-99) for the default pirate name. The backend cannot localize it —
-  // it doesn't know the client's language — so the client renders it.
+  // Seed (0-99) for the default pirate name. The backend cannot localize it
+  // (it doesn't know the client's language) so the client renders it.
   sessionName: string;
   // Master-set free-text name overriding the default. Null/blank when unset.
   customName: string | null;
@@ -90,7 +90,7 @@ export class Fleet {
 
     // Populate the auth header before the authenticated socket register. Without
     // this, creating or joining a session before the periodic token refresh has run
-    // sends an empty Authorization header and the register 401s — the "connection
+    // sends an empty Authorization header and the register 401s: the "connection
     // error" seen on a fast first click that then works on the retry.
     try {
       await HTTPAxios.updateToken();
@@ -319,7 +319,7 @@ export class Fleet {
 
   /**
    * Master-only: lists or unlists the session in the public browser. Nothing is
-   * changed locally — the backend re-checks the master role, then broadcasts the
+   * changed locally: the backend re-checks the master role, then broadcasts the
    * new state to the whole session, so a non-master's forged message is ignored
    * and every client (this one included) settles on the server's answer.
    */
@@ -408,7 +408,7 @@ export class Fleet {
   leaveServer(): void {
     // Drop the local server BEFORE the socket guard: without a fleet session there is nothing to
     // send, but a stale player.server left behind would be auto-rejoined by joinSession's onopen
-    // on the NEXT session — showing the player on a server they left long ago.
+    // on the NEXT session: showing the player on a server they left long ago.
     const server = UserStore.player.server;
     UserStore.player.server = undefined;
     // Nothing joined -> nothing to send. A payload-less LEAVE_SERVER must never go out: the
@@ -439,7 +439,7 @@ export class Fleet {
   }
 
   public static getFormatedStatus(player: Player) {
-    // Fall back to "closed" when a player carries no status — a web console guest (#682) may join
+    // Fall back to "closed" when a player carries no status: a web console guest (#682) may join
     // without one, and reading .toString() off null would crash their whole row (and the list).
     return (player.status ?? "CLOSED")
       .toString()

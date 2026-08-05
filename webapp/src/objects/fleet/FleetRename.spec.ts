@@ -18,7 +18,7 @@ import { WebSocketMessageType } from "@/objects/fleet/WebSocet.ts";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import fr from "@/assets/locales/fr.json";
 
-// Fleet localizes through the standalone tsi18n instance, whose locale is "fr" — so the
+// Fleet localizes through the standalone tsi18n instance, whose locale is "fr", so the
 // default name for a seed is whatever fr.json says, not a string worth hardcoding here.
 const DEFAULT_NAME_FOR_SEED_7 = (fr as any).session.name["7"];
 

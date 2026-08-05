@@ -344,7 +344,7 @@ function runGuidedDiagnostic(): void {
 const statsHint = ref<AllianceHint | null>(null);
 const statsHintDismissed = ref(false);
 onMounted(async () => {
-  // Switched off in the settings: skip the fetch too — this payload feeds nothing else here.
+  // Switched off in the settings: skip the fetch too, since this payload feeds nothing else here.
   if (UserStore.player.statsHint === false) {
     return;
   }
@@ -468,7 +468,7 @@ function cancelRename() {
   isRenaming.value = false;
 }
 
-// Open padlock = listed in the public browser, closed = unlisted — the same
+// Open padlock = listed in the public browser, closed = unlisted: the same
 // language the browser's filter and session rows use.
 const visibilityData = reactive<SingleSelectInterface>({
   data: [
@@ -537,11 +537,11 @@ function copyIdToClipboard(id: string) {
 }
 
 // Invite console players (#682): the public site hosts a phone lobby at /s/<CODE>. Console players
-// open the link, pick a name, and join over the same WebSocket — no app, no account.
+// open the link, pick a name, and join over the same WebSocket: no app, no account.
 const displayInviteCopy = ref<boolean>(false);
 
 // Where the phone lobby lives. The site shares the backend's origin in prod and any self-hosted
-// deploy, so derive it from VITE_BACKEND_HOST rather than hardcoding betterfleet.fr — a self-hosted
+// deploy, so derive it from VITE_BACKEND_HOST rather than hardcoding betterfleet.fr: a self-hosted
 // crew gets their own domain. VITE_WEBSITE_HOST overrides it where the two differ, i.e. local dev,
 // where the site runs on its own port.
 function consoleInviteBase(): string {

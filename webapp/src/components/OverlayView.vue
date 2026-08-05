@@ -15,8 +15,8 @@ import { LocalTime } from "@js-joda/core";
 
 // The in-game overlay window's view (issue #671). It mirrors the live session the way the app does:
 // each server grouping (hash + region flag) with the pirates on it and their ready state, trimmed to
-// usernames and readiness. The local player always gets a row — inside their server grouping when it
-// is known, otherwise a standalone row on top — so they can see and toggle their ready state even
+// usernames and readiness. The local player always gets a row (inside their server grouping when it
+// is known, otherwise a standalone row on top) so they can see and toggle their ready state even
 // before their server is detected. The main window pushes a compact snapshot (including the player's
 // active language) over a Tauri event; this window only listens, translates and renders. Drag it by
 // its header (a Tauri drag region).
@@ -35,7 +35,7 @@ function onSelfReadyClick(): void {
 }
 
 // Launch countdown. The main window streams only the end time; the overlay ticks its own timer so the
-// number stays smooth without every frame crossing the window boundary — and, unlike the app's
+// number stays smooth without every frame crossing the window boundary. Unlike the app's
 // countdown, it plays no sound.
 const countdownText = ref<string | null>(null);
 let countdownTarget: string | null = null;
@@ -71,8 +71,8 @@ function syncCountdown(endsAt: string | null): void {
   countdownTimer = window.setInterval(tick, 50);
 }
 
-// The overlay window is transparent; strip the app's opaque backgrounds — html/body AND #app, which
-// carries the gradient — so only the rounded card shows and the window corners stay see-through.
+// The overlay window is transparent; strip the app's opaque backgrounds (html/body AND #app, which
+// carries the gradient) so only the rounded card shows and the window corners stay see-through.
 let previousBackground = "";
 onMounted(async () => {
   previousBackground = document.body.style.background;
@@ -105,7 +105,7 @@ onUnmounted(() => {
     </header>
 
     <div class="body">
-      <!-- Launch countdown takes over the card while it runs — silent here, the app plays the sound. -->
+      <!-- Launch countdown takes over the card while it runs: silent here, the app plays the sound. -->
       <div
         v-if="countdownText !== null"
         class="countdown"

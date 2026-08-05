@@ -39,7 +39,7 @@ export interface Player extends Preferences {
 
 export interface Preferences {
   lang?: string;
-  /** Lowercase ISO 3166-1 alpha-2 country from the browser locale — the owner flag in the public browser (#672). */
+  /** Lowercase ISO 3166-1 alpha-2 country from the browser locale: the owner flag in the public browser (#672). */
   country?: string;
   soundEnable: boolean;
   soundLevel: number;
@@ -53,14 +53,14 @@ export interface Preferences {
   /** When set, each hosted session gets a random template instead of the fixed pick above. */
   bannerShuffle: boolean;
   /**
-   * Whether this player contributes to the anonymous alliance statistics (issue #673). Opt-out —
+   * Whether this player contributes to the anonymous alliance statistics (issue #673). Opt-out:
    * defaults to true. Travels on CONNECT like every preference; the backend skips recording a
    * session's attempts when one of its masters turned this off.
    */
   shareStats: boolean;
   /**
    * Discord Rich Presence (issue #684). Optional: absent means enabled; only an explicit false
-   * turns it off. Purely client-side — the presence talks to the local Discord over Rust.
+   * turns it off. Purely client-side: the presence talks to the local Discord over Rust.
    */
   richPresence?: boolean;
   /**
@@ -70,13 +70,13 @@ export interface Preferences {
   overlayHotkey?: string;
   /**
    * The "alliance formed" recap card (issue #685). Optional: absent means shown; only an explicit
-   * false hides it. Purely client-side — it never affects the anonymous statistics.
+   * false hides it. Purely client-side: it never affects the anonymous statistics.
    */
   recapCard?: boolean;
   /**
    * The lobby's best-window hint drawn from the alliance statistics (issue #683). Optional: absent
    * means shown; only an explicit false hides it. Turning it off also skips the stats fetch that
-   * feeds it — nothing else in the lobby needs that payload.
+   * feeds it: nothing else in the lobby needs that payload.
    */
   statsHint?: boolean;
 }

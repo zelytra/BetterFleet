@@ -65,7 +65,7 @@ const emits = defineEmits(["join", "code"]);
 const displayName = computed(() => sessionDisplayName(props.session, t));
 
 // The backend withholds a private session's code (SessionManager#toPublicSession), so this row has
-// nothing to join with — hence a separate event rather than "join" with the id it holds. That id is
+// nothing to join with, hence a separate event rather than "join" with the id it holds. That id is
 // the empty string, and an empty id is how a session gets *created*.
 const joinable = computed(() => !props.session.isPrivate);
 

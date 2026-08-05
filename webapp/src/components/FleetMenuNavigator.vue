@@ -10,7 +10,7 @@
     </section>
   </section>
   <!-- What's new (#686): mounted in the authed shell, so it can only appear once the player is
-       past the login screen — never over the auth page. -->
+       past the login screen, never over the auth page. -->
   <WhatsNewModal />
 </template>
 

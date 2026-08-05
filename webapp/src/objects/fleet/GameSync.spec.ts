@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { syncGameState } from "@/objects/fleet/GameSync.ts";
 import { Player, PlayerDevice, PlayerStates } from "@/objects/fleet/Player.ts";
 
-// A spied stand-in for the Fleet — this is where WebSocket messages would be sent,
+// A spied stand-in for the Fleet: this is where WebSocket messages would be sent,
 // so asserting these calls is the client-side equivalent of mocking the socket. The
 // inferred vi.fn() shape is structurally compatible with FleetActions.
 function spyFleet() {
@@ -126,7 +126,7 @@ describe("syncGameState (detection -> join/leave flow)", () => {
 
   it("never sends a leave without a joined server (quitting before the identity resolved)", () => {
     // The player entered a game whose session flow never resolved (ip stayed empty), then quit.
-    // A leaveServer here would go out payload-less and crash the backend handler — the whole
+    // A leaveServer here would go out payload-less and crash the backend handler: the whole
     // reason the guard exists.
     const fleet = spyFleet();
     const player = playerAt(PlayerStates.IN_GAME); // in game, but no server ever joined

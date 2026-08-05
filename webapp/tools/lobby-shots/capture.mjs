@@ -30,7 +30,7 @@ const LANGS = ["fr", "en"];
 // The app's real window: tauri.conf.json ships main at 1260x760, so every shot is the lobby at the
 // size it opens on a player's desktop rather than a size chosen to flatter the picture. The last one
 // gets 80px more because the "alliance formed" card takes that from the side panel, which then
-// scrolls — true of the app, but it reads as a clipped picture rather than as a full window.
+// scrolls (true of the app), but it reads as a clipped picture rather than as a full window.
 const SHOTS = ["session", "ready", "countdown", "grouped"].map((name) => ({
   name,
   w: 1260,
@@ -150,7 +150,7 @@ for (const lang of LANGS) {
       sessionId,
     );
     // Vite compiles on first request and the app's fonts load over the network. A fixed wait is
-    // enough, and it is what keeps the countdown — which is genuinely ticking — at a readable value.
+    // enough, and it is what keeps the countdown (which is genuinely ticking) at a readable value.
     await sleep(shot.name === "countdown" ? 1400 : 2600);
     const { data } = await send(
       "Page.captureScreenshot",
