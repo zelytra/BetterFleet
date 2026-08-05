@@ -30,7 +30,7 @@ use sysinfo::{Networks, System};
 use std::net::{IpAddr, ToSocketAddrs};
 
 // Windows-only packet-capture module. On Linux the capture is stubbed until the Linux port lands
-// (#725), so most of its imports and helpers are legitimately unused there — suppress that noise on
+// (#725), so most of its imports and helpers are legitimately unused there - suppress that noise on
 // non-Windows rather than cfg-gate every item (all of it stays live on Windows and under the tests).
 #[cfg_attr(not(windows), allow(dead_code, unused_imports))]
 mod fetch_informations;
@@ -38,14 +38,14 @@ mod api;
 #[cfg(windows)]
 mod window_interaction;
 // Linux/X11 native integration (#731): the set-sail auto-click, the in-game overlay stacking fix,
-// and the shared X11 plumbing they build on. Gated to Linux — Windows/macOS keep their own paths.
+// and the shared X11 plumbing they build on. Gated to Linux - Windows/macOS keep their own paths.
 #[cfg(target_os = "linux")]
 mod overlay_x11;
 #[cfg(target_os = "linux")]
 mod window_interaction_linux;
 #[cfg(target_os = "linux")]
 mod x11_support;
-// Windows-only flow-diagnostic module — same story as fetch_informations above (#725).
+// Windows-only flow-diagnostic module - same story as fetch_informations above (#725).
 #[cfg_attr(not(windows), allow(dead_code, unused_imports))]
 mod diagnostics;
 
@@ -308,8 +308,8 @@ fn clear_presence() {
 #[tokio::main]
 async fn main() {
     // Force the X11 backend (XWayland on a Wayland session). The always-on-top in-game overlay relies
-    // on X11 `_NET_WM_STATE_ABOVE` — native Wayland forbids a client from forcing itself above other
-    // apps — and Proton runs the game under XWayland too, so the app, the overlay and the game share
+    // on X11 `_NET_WM_STATE_ABOVE` - native Wayland forbids a client from forcing itself above other
+    // apps - and Proton runs the game under XWayland too, so the app, the overlay and the game share
     // one X server and the overlay can actually stack over the game. It also renders smoother and lets
     // the X11 window icon show. Must be set before GTK initialises.
     #[cfg(target_os = "linux")]
@@ -361,7 +361,7 @@ async fn main() {
             }
 
             // Linux/X11: when BetterFleet loses focus (the player clicks into the game) some window
-            // managers drop or hide our always-on-top overlay — exactly when it needs to stay up.
+            // managers drop or hide our always-on-top overlay - exactly when it needs to stay up.
             // Re-assert it so it keeps floating over the game, but only while it is meant to be
             // visible so we never resurrect a deliberately-hidden overlay (#731). Windows/macOS keep
             // the overlay up on their own and are left untouched.
@@ -487,14 +487,14 @@ fn rise_anchor() -> bool {
 }
 
 // Linux/X11 port (#731): locate the Sea of Thieves window and click "raise anchor" via XTEST. The
-// command stays OS-agnostic for the frontend — `SessionCountdown.vue` just calls `rise_anchor`.
+// command stays OS-agnostic for the frontend - `SessionCountdown.vue` just calls `rise_anchor`.
 #[cfg(target_os = "linux")]
 #[tauri::command]
 fn rise_anchor() -> bool {
     window_interaction_linux::rise_anchor()
 }
 
-// Other platforms (macOS): no native auto-click yet — the frontend falls back to a manual set-sail.
+// Other platforms (macOS): no native auto-click yet - the frontend falls back to a manual set-sail.
 #[cfg(not(any(windows, target_os = "linux")))]
 #[tauri::command]
 fn rise_anchor() -> bool {

@@ -38,7 +38,7 @@ export interface FakeSession {
 
 /**
  * The slice of a WHATWG `Response` the frontend actually reads under v2 `@tauri-apps/plugin-http`
- * (`.ok`, `.status`, and the async body readers) — the v1 http plugin's `.data` is gone.
+ * (`.ok`, `.status`, and the async body readers) - the v1 http plugin's `.data` is gone.
  */
 export interface FakeRestResponse {
   ok: boolean;

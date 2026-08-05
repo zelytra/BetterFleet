@@ -36,7 +36,7 @@ const PAGES: Record<
     // robots.txt whether it may index what it already has.
     noindex: true,
   },
-  // The platform-selection screen (#730): real, indexable content — worth ranking for "betterfleet
+  // The platform-selection screen (#730): real, indexable content - worth ranking for "betterfleet
   // linux" and the like once there is a Linux build to point at.
   "/download": {
     title: "seo.download.title",

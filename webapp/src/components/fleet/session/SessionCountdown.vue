@@ -90,7 +90,7 @@ let updateTimer = setInterval(() => {
   delta.value = delta.value.minusNanos(start.nano());
   // 16 ms (~60 fps), not 5 ms (200 Hz): at 200 Hz each tick allocated js-joda LocalTimes and wrote
   // `delta` faster than webkit2gtk (Linux) can repaint, so callbacks bunched up and the countdown
-  // stuttered. Firing is bounded by network sync, not this interval — 60 fps is smooth and cheap.
+  // stuttered. Firing is bounded by network sync, not this interval - 60 fps is smooth and cheap.
 }, 16);
 
 const props = defineProps({

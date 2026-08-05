@@ -714,7 +714,7 @@ button {
       .banner-choice {
         all: unset;
         // `all: unset` resets display to inline; as a column-flex item it should blockify and take
-        // the aspect-ratio, but webkit2gtk (Linux) applied that lazily — the strip rendered collapsed
+        // the aspect-ratio, but webkit2gtk (Linux) applied that lazily - the strip rendered collapsed
         // and only grew to size once a hover forced a relayout. Make the block explicit and let the
         // <img>'s own intrinsic ratio drive the height (webkit computes that eagerly) instead.
         display: block;

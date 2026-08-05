@@ -313,7 +313,7 @@ jobs:
 
           # reprepro shells out to `gpg` non-interactively; priming the agent's passphrase cache
           # here (with a throwaway signature) lets that later call succeed without a prompt. Keys
-          # created without a passphrase (the README's recommendation) skip this — nothing to cache.
+          # created without a passphrase (the README's recommendation) skip this - nothing to cache.
           if [ -n "${APT_GPG_PASSPHRASE}" ]; then
             KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/{print $5; exit}')
             printf 'priming the agent\n' | gpg --batch --pinentry-mode loopback \

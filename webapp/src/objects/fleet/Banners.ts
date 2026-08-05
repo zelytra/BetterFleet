@@ -2,7 +2,7 @@
 export const BANNER_COUNT = 4;
 
 /**
- * The asset a banner index points at. These were 6 MB SVGs (raster embedded in vector) — fine on
+ * The asset a banner index points at. These were 6 MB SVGs (raster embedded in vector) - fine on
  * WebView2/Windows, but webkit2gtk (Linux) re-rasterized them on every mount, so the settings picker
  * flickered from tiny to full size with heavy lag. Flattened to ~100 KB WebP at display resolution.
  */

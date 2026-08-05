@@ -25,7 +25,7 @@ public class GithubRest {
 
     /**
      * The latest release with every attached asset (name, size, direct download URL), fetched
-     * server-side and cached — see {@link GithubLatestReleaseApi}. Feeds the website download page
+     * server-side and cached - see {@link GithubLatestReleaseApi}. Feeds the website download page
      * so it no longer hits {@code api.github.com} per visitor.
      */
     @GET

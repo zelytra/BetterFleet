@@ -3,7 +3,7 @@
 # that falls out of the index in the process (reprepro's includedeb keeps only the newest version
 # of a package in the index; deleteunreferenced then drops the now-orphaned older .deb from disk).
 #
-# Used by .github/workflows/release.yml's publish-apt job, and safe to run by hand — e.g. to test
+# Used by .github/workflows/release.yml's publish-apt job, and safe to run by hand - e.g. to test
 # against a local output directory, or to self-host this repo somewhere other than GitHub Pages:
 #
 #   deployment/apt/publish.sh path/to/BetterFleet_2.3.0_amd64.deb ./deployment/apt/public
@@ -30,10 +30,10 @@ reprepro --basedir "${REPO_DIR}" includedeb "${CODENAME}" "${DEB_PATH}"
 reprepro --basedir "${REPO_DIR}" deleteunreferenced
 
 # The public half of the signing key, for end users to add before trusting the repo (README §
-# "Installing"). Re-exported every run — cheap, and keeps it in sync if the key is ever rotated.
+# "Installing"). Re-exported every run - cheap, and keeps it in sync if the key is ever rotated.
 gpg --armor --export > "${REPO_DIR}/betterfleet-archive-keyring.asc"
 
-# This directory is served as static files (GitHub Pages or otherwise) — never run it through Jekyll.
+# This directory is served as static files (GitHub Pages or otherwise) - never run it through Jekyll.
 touch "${REPO_DIR}/.nojekyll"
 
 echo "APT repo at ${REPO_DIR} updated (codename: ${CODENAME}, package: ${DEB_PATH##*/})"
