@@ -19,8 +19,10 @@ url="https://github.com/zelytra/BetterFleet"
 license=('custom')
 provides=('betterfleet')
 conflicts=('betterfleet')
-# Runtime libraries the Tauri v2 / webkit2gtk-4.1 GUI links against.
-depends=('webkit2gtk-4.1' 'gtk3' 'libayatana-appindicator' 'librsvg')
+install='betterfleet-bin.install'
+# Runtime libraries the Tauri v2 / webkit2gtk-4.1 GUI links against, plus libcap for the setcap
+# that grants the capture helper CAP_NET_RAW in the install scriptlet.
+depends=('webkit2gtk-4.1' 'gtk3' 'libayatana-appindicator' 'librsvg' 'libcap')
 options=('!strip' '!debug')
 source=("https://github.com/zelytra/BetterFleet/releases/download/${pkgver}/BetterFleet_${pkgver}_amd64.deb")
 sha256sums=('SKIP')
@@ -32,9 +34,10 @@ package() {
   bsdtar -xf "BetterFleet_${pkgver}_amd64.deb"
   bsdtar -xf data.tar.* -C "$pkgdir/"
 
-  # The .deb already ships /usr/bin, the .desktop entry and the hicolor icons.
+  # The .deb already ships /usr/bin (the GUI plus the betterfleet-netcap capture helper), the
+  # .desktop entry and the hicolor icons.
   #
-  # Packet capture is deliberately NOT granted here: per #726 the GUI stays unprivileged and a
-  # separate capability-granted helper does the capture. Wire the helper's setcap into a .install
-  # post_install once #726 lands - never setcap the GUI binary itself.
+  # Packet capture stays privilege-separated (#726): the GUI is never granted a capability. The
+  # betterfleet-bin.install post_install/post_upgrade scriptlet setcaps cap_net_raw+ep onto the
+  # betterfleet-netcap helper only.
 }

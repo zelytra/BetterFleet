@@ -1,0 +1,16 @@
+# Grant the capture helper CAP_NET_RAW so Linux server detection works, keeping the GUI
+# unprivileged (#726). Best-effort, mirroring the .deb postinst; libcap provides setcap.
+
+_setcap_helper() {
+    if command -v setcap >/dev/null 2>&1; then
+        setcap cap_net_raw+ep /usr/bin/betterfleet-netcap 2>/dev/null || true
+    fi
+}
+
+post_install() {
+    _setcap_helper
+}
+
+post_upgrade() {
+    _setcap_helper
+}
