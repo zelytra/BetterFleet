@@ -98,6 +98,11 @@ images too) is `deployment/docker-compose.yml`; the app schema seed is `deployme
   windows — timers stall and audio mutes. The fix is `additionalBrowserArgs` in `tauri.conf.json`
   (the `WEBVIEW2_*` env var is ignored by wry). Don't reintroduce timer/audio logic that assumes the
   overlay keeps ticking while covered.
+- **Linux server detection needs `CAP_NET_RAW`.** The UDP capture (`AF_PACKET`, shared by the
+  Help-tab diagnostic and live detection) requires the capability. In dev, run
+  `sudo setcap cap_net_raw+ep webapp/src-tauri/target/debug/better_fleet` and re-apply it after each
+  Rust rebuild; without it the capture logs `EPERM` and finds no server. End users never do this: the
+  packaged app stays unprivileged and a small capture helper receives the capability (issue #726).
 - **SSE looks broken in dev — it isn't.** The webview origin is `https://tauri.localhost` while the
   dev backend is plain `http`, so the browser blocks `EventSource` (mixed content) and the client
   silently falls back to polling `/public-sessions` every 5s. You'll see those GETs loop in dev logs;
