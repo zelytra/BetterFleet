@@ -19,7 +19,7 @@ proxy. Config in `backend/src/main/resources/application.properties`. Everything
 | `session.ip` | Geolocation: `ProxyCheckAPI` (proxycheck.io), `GeoLocationResolver` (runs lookups off the event loop on a dedicated pool) |
 | `reports` | `ReportEndpoints` (`/report`), `ReportEntity` (table `reporting`) — the diagnostic/feedback reports |
 | `statistics` | Two stat systems (see below): daily counters + anonymous alliance analytics |
-| `github` | Self-update proxy: `GithubApi` (fetches Tauri `latest.json` at startup), `GithubRest` (`/github/release/download`) |
+| `github` | Release proxies: `GithubApi` (Tauri `latest.json` at startup → Windows installer URL, `/github/release/download`) and `GithubLatestReleaseApi` (version from the same `latest.json`, then builds the fixed Tauri asset URLs and HEAD-probes each for existence + size; no api.github.com, no token; cached ~5 min → `/github/release/latest`), both exposed by `GithubRest` |
 
 ## Real-time sessions (WebSocket)
 
@@ -84,6 +84,7 @@ Auth model: Keycloak OIDC bearer via `@Authenticated`. **Only `POST /report/send
 | `/report/list/{page}/{amount}` | GET | `ReportEndpoints` | paged reports |
 | `/report/send` | POST | `ReportEndpoints` | persist a report — **`@Authenticated`** |
 | `/github/release/download` | GET | `GithubRest` | latest Windows installer URL |
+| `/github/release/latest` | GET | `GithubRest` | latest release: version + all assets (`name`,`size`,`url`), cached ~5 min |
 | `/stats/online-users` | GET | `StatsEndpoints` | live user count |
 | `/stats/all` | GET | `StatsEndpoints` | summed daily counters |
 | `/stats/download` | POST | `StatsEndpoints` | bump today's download counter |
