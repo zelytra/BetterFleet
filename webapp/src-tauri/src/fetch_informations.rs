@@ -30,12 +30,6 @@ use log::{info, error};
 #[cfg(windows)]
 const SIO_RCVALL: DWORD = 0x98000001;
 
-/// Returns true when a remote UDP port falls in the range Sea of Thieves game servers use.
-/// Extracted as a pure function so the core detection heuristic can be unit-tested.
-pub(crate) fn is_plausible_sot_port(port: u16) -> bool {
-    port >= 30000 && port < 40000
-}
-
 /// Poll interval (in milliseconds) between detection windows, adapted to game state.
 fn dynamic_sleep_ms(status: &GameStatus) -> u64 {
     match status {
@@ -81,7 +75,7 @@ const SERVER_LOST_GRACE_SECS: u64 = 12;
 /// host flow is). Pure so the locking policy is unit-tested deterministically.
 pub(crate) fn update_session_lock(
     locked: Option<(u16, String, u16)>,
-    accumulated: &[crate::diagnostics::FlowStat],
+    accumulated: &[better_fleet::capture::FlowStat],
     min_packets: u32,
 ) -> Option<(u16, String, u16)> {
     let candidate = match crate::diagnostics::pick_session_flow(accumulated, min_packets) {
@@ -123,9 +117,9 @@ pub(crate) fn update_session_lock(
 /// was quarantined at the last connection change: the previous game's flows, still visible while
 /// its socket tears down. New-game flows always carry fresh keys, so they pass untouched.
 pub(crate) fn drop_quarantined(
-    window: &[crate::diagnostics::FlowStat],
+    window: &[better_fleet::capture::FlowStat],
     quarantine: &std::collections::HashSet<(u16, String, u16)>,
-) -> Vec<crate::diagnostics::FlowStat> {
+) -> Vec<better_fleet::capture::FlowStat> {
     window
         .iter()
         .filter(|f| !quarantine.contains(&(f.local_port, f.remote_ip.clone(), f.remote_port)))
@@ -142,7 +136,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
         // packets across the whole session, so a single capture window often misses it; merging
         // windows lets us lock onto it reliably. Reset on leaving the game or when the connection
         // changes.
-        let mut game_flows: std::collections::HashMap<(u16, String, u16), crate::diagnostics::FlowStat> =
+        let mut game_flows: std::collections::HashMap<(u16, String, u16), better_fleet::capture::FlowStat> =
             std::collections::HashMap::new();
         // The game CONNECTION we are accumulating for: (host remote ip, host LOCAL port). The local
         // port (not the host IP) is what identifies a game: consecutive servers very often share
@@ -276,7 +270,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     // the locked session endpoint.
                     let clean_window = drop_quarantined(&window_flows, &quarantine);
                     crate::diagnostics::merge_flows(&mut game_flows, &clean_window);
-                    let accumulated: Vec<crate::diagnostics::FlowStat> =
+                    let accumulated: Vec<better_fleet::capture::FlowStat> =
                         game_flows.values().cloned().collect();
                     locked_session =
                         update_session_lock(locked_session.take(), &accumulated, MIN_SESSION_PACKETS);
@@ -300,7 +294,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     if changed {
                         if ip.is_empty() {
                             info!(
-                                "In game on host {} — resolving the session flow ({} game ports)",
+                                "In game on host {}, resolving the session flow ({} game ports)",
                                 host.remote_ip, port_count
                             );
                         } else {
@@ -344,7 +338,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                             // packets the identity is waiting for and stretch resolution.
                             let clean_window = drop_quarantined(&window_flows, &quarantine);
                             crate::diagnostics::merge_flows(&mut game_flows, &clean_window);
-                            let accumulated: Vec<crate::diagnostics::FlowStat> =
+                            let accumulated: Vec<better_fleet::capture::FlowStat> =
                                 game_flows.values().cloned().collect();
                             locked_session = update_session_lock(
                                 locked_session.take(),
@@ -722,20 +716,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn plausible_sot_ports_are_in_the_expected_range() {
-        // Sea of Thieves game servers live in [30000, 40000)
-        assert!(is_plausible_sot_port(30000));
-        assert!(is_plausible_sot_port(35000));
-        assert!(is_plausible_sot_port(39999));
-
-        assert!(!is_plausible_sot_port(29999));
-        assert!(!is_plausible_sot_port(40000));
-        assert!(!is_plausible_sot_port(0));
-        assert!(!is_plausible_sot_port(3075));
-        assert!(!is_plausible_sot_port(443));
-    }
-
-    #[test]
     fn dynamic_sleep_matches_game_state() {
         assert_eq!(dynamic_sleep_ms(&GameStatus::Closed), 5000);
         assert_eq!(dynamic_sleep_ms(&GameStatus::Started), 3000);
@@ -744,7 +724,9 @@ mod tests {
         assert_eq!(dynamic_sleep_ms(&GameStatus::Unknown), 2000);
     }
 
-    use crate::diagnostics::FlowStat;
+    // FlowStat and the plausibility helper moved to the capture crate (#726); the session-lock and
+    // quarantine tests below build synthetic flows from them.
+    use better_fleet::capture::{is_plausible_sot_port, FlowStat};
 
     fn flow(local: u16, ip: &str, port: u16, packets: u32, inbound: u32, outbound: u32) -> FlowStat {
         FlowStat {
