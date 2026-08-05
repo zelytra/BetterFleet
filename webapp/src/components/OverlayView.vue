@@ -192,7 +192,7 @@ onUnmounted(() => {
 }
 
 /* The app-wide `* { transition: all 300ms }` (style.scss) makes every element chase the window
-   during a resize — the overlay must track it instantly. :deep(*) reaches the row sub-components. */
+   during a resize - the overlay must track it instantly. :deep(*) reaches the row sub-components. */
 .overlay,
 .overlay :deep(*) {
   transition: none !important;

@@ -179,7 +179,7 @@ async function sendReport() {
     gap: 40px;
 
     // A row of PirateButtons (fixed 234x74). The FAQ panel's two buttons had no container layout at
-    // all — each wrapped in an <a>, they fell back to inline anchors: baseline-aligned, with the
+    // all - each wrapped in an <a>, they fell back to inline anchors: baseline-aligned, with the
     // whitespace between the tags as an uneven gap. Shared with the diagnostic panel so both read the
     // same.
     .button-row {

@@ -4,15 +4,15 @@
  * Crowdin fills untranslated strings with the source text on download. So any string that lives in
  * a locale file here but was never uploaded to Crowdin comes back *in English*, and the sync reads
  * as a routine "sync translations" diff while quietly un-translating the app. That is not
- * hypothetical: the first run of this workflow proposed replacing 40 Italian strings with English —
- * "Impostazioni" -> "Settings", "Caricamento..." -> "Loading..." — because the repo's Italian had
+ * hypothetical: the first run of this workflow proposed replacing 40 Italian strings with English -
+ * "Impostazioni" -> "Settings", "Caricamento..." -> "Loading..." - because the repo's Italian had
  * never been uploaded to the project.
  *
  * Compares each locale as committed (git HEAD) against what Crowdin just wrote, using source.json
  * as the definition of English.
  *
  * Deliberately a threshold and not zero: a translator may legitimately decide the English word *is*
- * the translation — "Zwietracht" -> "Discord" was a real fix in this repo — and that is
+ * the translation - "Zwietracht" -> "Discord" was a real fix in this repo - and that is
  * indistinguishable, string by string, from a missing translation. What is distinguishable is
  * scale. A translator changes a handful; a locale absent from Crowdin loses dozens at once.
  */
