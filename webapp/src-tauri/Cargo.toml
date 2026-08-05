@@ -17,6 +17,11 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
+# The Tauri-free capture core (#726): FlowStat, the aggregator/ranking and the Linux AF_PACKET
+# capture, shared with the privilege-separated betterfleet-netcap helper. Re-exported as
+# `better_fleet::capture` by src/lib.rs. The GUI depends on it; it never depends on the GUI, which is
+# what keeps Tauri out of the helper's dependency graph.
+better_fleet_netcap = { path = "netcap" }
 # Tauri v2 (migrated for the Linux port, #735). The v1 allowlist features are gone: window ops are
 # core, and global-shortcut / http / shell / updater are plugins (below). Permissions are granted
 # per-window under capabilities/.
@@ -27,7 +32,6 @@ tauri-plugin-http = "2"
 tauri-plugin-shell = "2"
 anyhow = "1.0.80"
 tokio = { version = "1.43.1", features = ["full"] }
-etherparse = "0.15.0"
 hostname = "0.4.0"
 sysinfo = "0.30.6"
 netstat2 = "0.11"
@@ -43,8 +47,8 @@ discord-rich-presence = "0.2.5"
 
 # winapi backs the Windows-only native pieces - the raw promiscuous capture socket in
 # fetch_informations.rs (WSAIoctl/SIO_RCVALL) and the Sea of Thieves window focus/click in
-# window_interaction.rs. Linux does its packet capture with AF_PACKET instead (socket2, below, #725),
-# so winapi stays Windows-only.
+# window_interaction.rs. Linux does its packet capture with AF_PACKET instead, in the better_fleet_netcap
+# crate (#725, #726), so winapi stays Windows-only.
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3.9", features = ["winsock2", "winuser"] }
 # socket2 backs the raw capture socket on Windows: the promiscuous UDP socket (create_raw_socket).
@@ -60,13 +64,19 @@ socket2 = { version = "0.5.6", features = ["all"] }
 # Linux and degrades cleanly when no X server is reachable.
 [target.'cfg(target_os = "linux")'.dependencies]
 x11rb = { version = "0.13", features = ["xtest"] }
-# socket2 backs the Linux raw capture socket: the AF_PACKET/SOCK_DGRAM sniffer that replaces Windows'
-# promiscuous UDP socket for server detection (#725). Domain::PACKET lives behind the `all` feature,
-# the same one the Windows dependency turns on.
-socket2 = { version = "0.5.6", features = ["all"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
 # If you use cargo directly instead of tauri's cli you can use this feature flag to switch between tauri's `dev` and `build` modes.
 # DO NOT REMOVE!!
 custom-protocol = [ "tauri/custom-protocol" ]
+
+# The capture core and its betterfleet-netcap helper live in a sibling crate so the privileged helper
+# links only the capture code, never Tauri (#726). Making it a workspace member builds the helper
+# binary from this directory (into the shared target dir) and keeps one Cargo.lock for both.
+# default-members lists both the app (".") and netcap so a plain `cargo build`/`check`/`test` from
+# this directory covers the helper and its unit tests too, not just the app. `cargo run` still targets
+# the app via default-run below.
+[workspace]
+members = ["netcap"]
+default-members = [".", "netcap"]

@@ -1,0 +1,27 @@
+[package]
+name = "better_fleet_netcap"
+version = "2.2.2"
+description = "Tauri-free capture core and the privilege-separated betterfleet-netcap helper for BetterFleet server detection"
+edition = "2021"
+rust-version = "1.77.2"
+
+# Kept deliberately clear of the Tauri/GUI stack (#726). This crate and its betterfleet-netcap binary
+# are the only code that touches the raw AF_PACKET capture socket, so the privileged helper stays
+# tiny: it links just the capture core, socket2, etherparse and serde_json. The GUI (the better_fleet
+# package) depends on this crate for the exact same aggregation + ranking; the dependency never flows
+# back the other way, which is what keeps Tauri out of the helper.
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+etherparse = "0.15.0"
+log = "^0.4"
+
+# socket2 backs the Linux AF_PACKET/SOCK_DGRAM capture socket; Domain::PACKET lives behind the `all`
+# feature. Linux-only: there is no AF_PACKET elsewhere, and the non-Linux run_capture is a stub.
+[target.'cfg(target_os = "linux")'.dependencies]
+socket2 = { version = "0.5.6", features = ["all"] }
+
+# The privilege-separated capture helper (#726). It holds CAP_NET_RAW so the GUI does not have to.
+[[bin]]
+name = "betterfleet-netcap"
+path = "src/bin/betterfleet_netcap.rs"

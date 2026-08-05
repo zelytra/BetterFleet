@@ -159,8 +159,8 @@ name = "better_fleet"
 version = "2.2.2"
 dependencies = [
  "anyhow",
+ "better_fleet_netcap",
  "discord-rich-presence",
- "etherparse",
  "hostname",
  "idna 1.1.0",
  "lazy_static",
@@ -181,6 +181,17 @@ dependencies = [
  "tokio",
  "winapi",
  "x11rb",
+]
+
+[[package]]
+name = "better_fleet_netcap"
+version = "2.2.2"
+dependencies = [
+ "etherparse",
+ "log",
+ "serde",
+ "serde_json",
+ "socket2 0.5.10",
 ]
 
 [[package]]
