@@ -42,12 +42,14 @@ rodio = "0.20.1"
 discord-rich-presence = "0.2.5"
 
 # winapi backs the Windows-only native pieces — the raw promiscuous capture socket in
-# fetch_informations.rs and the Sea of Thieves window focus/click in window_interaction.rs. Linux
-# has no equivalent here (packet capture is stubbed on Linux — #725), so it stays Windows-only.
+# fetch_informations.rs (WSAIoctl/SIO_RCVALL) and the Sea of Thieves window focus/click in
+# window_interaction.rs. Linux does its packet capture with AF_PACKET instead (socket2, below, #725),
+# so winapi stays Windows-only.
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3.9", features = ["winsock2", "winuser"] }
-# socket2 backs only the Windows raw-capture socket (create_raw_socket). Type::RAW is behind its
-# `all` feature — v1 got it transitively, the v2 dependency graph no longer does.
+# socket2 backs the raw capture socket on Windows: the promiscuous UDP socket (create_raw_socket).
+# Type::RAW is behind its `all` feature — v1 got it transitively, the v2 dependency graph no longer
+# does. (The Linux port declares socket2 separately below, for Domain::PACKET.)
 socket2 = { version = "0.5.6", features = ["all"] }
 
 # x11rb backs the Linux native integration (#731): the Sea of Thieves auto-click (EWMH focus + XTEST
@@ -58,6 +60,10 @@ socket2 = { version = "0.5.6", features = ["all"] }
 # Linux and degrades cleanly when no X server is reachable.
 [target.'cfg(target_os = "linux")'.dependencies]
 x11rb = { version = "0.13", features = ["xtest"] }
+# socket2 backs the Linux raw capture socket: the AF_PACKET/SOCK_DGRAM sniffer that replaces Windows'
+# promiscuous UDP socket for server detection (#725). Domain::PACKET lives behind the `all` feature,
+# the same one the Windows dependency turns on.
+socket2 = { version = "0.5.6", features = ["all"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

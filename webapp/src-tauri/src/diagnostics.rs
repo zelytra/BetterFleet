@@ -18,6 +18,8 @@ use tokio::net::UdpSocket;
 use crate::fetch_informations::{get_hostname, is_plausible_sot_port};
 #[cfg(windows)]
 use crate::fetch_informations::create_raw_socket;
+#[cfg(target_os = "linux")]
+use socket2::{Domain, Protocol, Socket, Type};
 
 /// One observed UDP conversation between a game-owned local port and a remote peer.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -225,7 +227,90 @@ pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowSt
     flows
 }
 
-#[cfg(not(windows))]
+/// Linux raw-capture backend (#725). A single `AF_PACKET`/`SOCK_DGRAM` socket sees every IP packet
+/// crossing the host in both directions across all interfaces — no per-interface fan-out like the
+/// Windows path — and the kernel strips the link-layer header, so each datagram arrives
+/// network-layer-first and feeds the SAME `parse_game_flow` + `FlowAggregator` the Windows sniff
+/// does. Ranking-by-volume is therefore shared verbatim.
+///
+/// Needs `CAP_NET_RAW`: in dev, run as root or apply `sudo setcap cap_net_raw+ep` to the binary; the
+/// productionised capability grant is issue #726 (out of scope here). A permission failure is logged
+/// and simply yields no flows, so detection degrades to "no server" rather than crashing.
+#[cfg(target_os = "linux")]
+pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
+    let port_set: HashSet<u16> = game_ports.into_iter().collect();
+    // AF_PACKET recv blocks; run the capture on a blocking thread so the detection task's runtime is
+    // never stalled, and await its result — mirroring how the Windows path awaits its sniff tasks.
+    match tokio::task::spawn_blocking(move || capture_af_packet(port_set, window)).await {
+        Ok(flows) => flows,
+        Err(e) => {
+            error!("[capture] AF_PACKET capture thread failed: {e}");
+            Vec::new()
+        }
+    }
+}
+
+/// Blocking AF_PACKET capture loop, split out of [`capture_flows`] so it can run under
+/// `spawn_blocking`.
+#[cfg(target_os = "linux")]
+fn capture_af_packet(game_ports: HashSet<u16>, window: Duration) -> Vec<FlowStat> {
+    use std::mem::MaybeUninit;
+
+    // ETH_P_ALL, in network byte order because AF_PACKET takes its protocol big-endian (== htons).
+    // SOCK_DGRAM (not SOCK_RAW) tells the kernel to strip the link-layer header, so recv() yields the
+    // IP packet directly — exactly what parse_game_flow (from_ip_slice) expects, as on Windows.
+    const ETH_P_ALL: u16 = 0x0003;
+    let protocol = Protocol::from(i32::from(ETH_P_ALL.to_be()));
+    let socket = match Socket::new(Domain::PACKET, Type::DGRAM, Some(protocol)) {
+        Ok(socket) => socket,
+        Err(e) => {
+            error!(
+                "[capture] AF_PACKET socket failed: {e} — needs CAP_NET_RAW (run as root or \
+                 `sudo setcap cap_net_raw+ep` in dev; productionised in #726)"
+            );
+            return Vec::new();
+        }
+    };
+    // A read timeout lets the loop honour the window deadline even when no packet arrives.
+    if let Err(e) = socket.set_read_timeout(Some(Duration::from_millis(200))) {
+        error!("[capture] AF_PACKET set_read_timeout failed: {e}");
+        return Vec::new();
+    }
+
+    let mut aggregator = FlowAggregator::default();
+    // A full IP datagram fits in 64 KiB; one buffer, reused per packet.
+    let mut buf = [MaybeUninit::<u8>::uninit(); 65535];
+    let start = Instant::now();
+    while start.elapsed() < window {
+        match socket.recv(&mut buf) {
+            Ok(0) => {}
+            Ok(len) => {
+                // SAFETY: recv reports `len` bytes written, so the first `len` bytes are initialised;
+                // MaybeUninit<u8> and u8 share layout, so viewing them as `&[u8]` is sound.
+                let data = unsafe { std::slice::from_raw_parts(buf.as_ptr() as *const u8, len) };
+                if let Some((local_port, remote_ip, remote_port, inbound)) =
+                    parse_game_flow(data, &game_ports)
+                {
+                    let t_ms = start.elapsed().as_millis() as u64;
+                    aggregator.observe(local_port, &remote_ip, remote_port, len, inbound, t_ms);
+                }
+            }
+            // Read timeout (SO_RCVTIMEO surfaces as WouldBlock/TimedOut): re-check the deadline.
+            Err(e)
+                if e.kind() == std::io::ErrorKind::WouldBlock
+                    || e.kind() == std::io::ErrorKind::TimedOut => {}
+            Err(e) => {
+                error!("[capture] AF_PACKET recv error: {e}");
+                break;
+            }
+        }
+    }
+    aggregator.take_sorted_flows()
+}
+
+/// macOS (and any other non-Windows, non-Linux target): no capture backend yet, so detection reports
+/// no server. Kept a stub deliberately — the desktop app ships for Windows and Linux.
+#[cfg(not(any(windows, target_os = "linux")))]
 pub async fn capture_flows(_game_ports: Vec<u16>, _window: Duration) -> Vec<FlowStat> {
     Vec::new()
 }

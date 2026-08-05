@@ -166,7 +166,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             std::collections::HashSet::new();
 
         loop {
-            let pid = find_pid_of("SoTGame.exe");
+            let pid = find_game_pids();
 
             // No game process -> closed.
             if pid.is_empty() {
@@ -202,7 +202,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             // Started makes the frontend leave + rejoin the server — a fleet-visible flap from one
             // failed netstat call. Hold the InGame state instead and let the 12s host-silence
             // grace decide, exactly as for a quiet capture window.
-            let udp_ports = get_udp_connections(pid);
+            let udp_ports = game_udp_candidate_ports(pid);
             if udp_ports.is_empty() {
                 if game_connection.is_none() {
                     let mut api_lock = api.write().await;
@@ -414,6 +414,184 @@ pub(crate) fn get_udp_connections(target_pid: usize) -> Vec<u16> {
 
     //Filter out duplicates
     return ports.into_iter().collect::<std::collections::HashSet<u16>>().into_iter().collect();
+}
+
+/// Locates the running Sea of Thieves game process(es), returning their PIDs as strings — the same
+/// shape `find_pid_of` returns, so the detection loop around it is unchanged. This is the platform
+/// seam for "is the game running?".
+///
+/// Windows/macOS: the process is literally `SoTGame.exe`, matched by name.
+#[cfg(not(target_os = "linux"))]
+pub(crate) fn find_game_pids() -> Vec<String> {
+    find_pid_of("SoTGame.exe")
+}
+
+/// Linux under Proton: the game process's `comm` is `CrBrowserMain` and its `exe` is the Wine
+/// loader — only the **command line** carries `…/SotGame.exe` (verified live on Proton Experimental).
+/// So match on `cmd()`, and skip the Unreal CEF helper subprocesses that share the same tree. (#725)
+#[cfg(target_os = "linux")]
+pub(crate) fn find_game_pids() -> Vec<String> {
+    let mut system = System::new_all();
+    system.refresh_all();
+    system
+        .processes()
+        .iter()
+        .filter(|(_, process)| cmd_is_sot_game(process.cmd()))
+        .map(|(pid, _)| pid.to_string())
+        .collect()
+}
+
+/// True when a process command line is the Sea of Thieves game itself and not one of the Unreal CEF
+/// helper subprocesses that live under the same Proton tree. The game's argv contains `SotGame.exe`;
+/// the CEF children carry `UnrealCEFSubProcess.exe` and a `--type=` flag, and everything else in the
+/// tree (`wine`, `python3`, `xalia.exe`, `steam.exe`) never mentions `SotGame.exe`. Pure over the
+/// argv so it is unit-tested. (#725)
+#[cfg(target_os = "linux")]
+pub(crate) fn cmd_is_sot_game(cmd: &[String]) -> bool {
+    let joined = cmd.join(" ").to_lowercase();
+    joined.contains("sotgame.exe")
+        && !joined.contains("unrealcefsubprocess")
+        && !joined.contains("--type=")
+}
+
+/// The candidate UDP ports to sniff for the located game — the platform seam feeding the capture.
+///
+/// Windows/macOS: the game process owns its sockets, so these are just its UDP ports (byte-identical
+/// to the previous direct `get_udp_connections(pid)` call).
+#[cfg(not(target_os = "linux"))]
+pub(crate) fn game_udp_candidate_ports(game_pid: usize) -> Vec<u16> {
+    get_udp_connections(game_pid)
+}
+
+/// Linux under Proton: the ~25 sparse Steam-Datagram-Relay sockets are attributed to the **game**
+/// PID (verified live), but one fd is shared with the wineserver, and other Proton versions may
+/// attribute them differently. So take the UNION of the game's and the resolved wineserver's UDP
+/// ports, deduplicated, and let the volume ranking pick the real server among them. (#725)
+#[cfg(target_os = "linux")]
+pub(crate) fn game_udp_candidate_ports(game_pid: usize) -> Vec<u16> {
+    let mut ports = get_udp_connections(game_pid);
+    match resolve_wineserver_pid(game_pid) {
+        Some(wineserver) => {
+            info!(
+                "[linux] game PID {} -> wineserver PID {}; unioning their UDP candidate ports",
+                game_pid, wineserver
+            );
+            for port in get_udp_connections(wineserver as usize) {
+                if !ports.contains(&port) {
+                    ports.push(port);
+                }
+            }
+        }
+        None => log::warn!(
+            "[linux] no wineserver resolved for game PID {} (is Sea of Thieves running under \
+             Proton?); using the game PID's UDP ports only",
+            game_pid
+        ),
+    }
+    ports
+}
+
+/// A node of the process tree reduced to what wineserver resolution needs. A plain, cloneable value
+/// so [`resolve_wineserver`] stays a pure function unit-tested over a mock process list, with sysinfo
+/// confined to [`resolve_wineserver_pid`]. (#725)
+#[cfg(target_os = "linux")]
+#[derive(Clone, Debug)]
+pub(crate) struct ProcNode {
+    pub pid: u32,
+    pub parent: Option<u32>,
+    pub name: String,
+}
+
+/// Resolves the `wineserver` that owns the emulated network stack for the Sea of Thieves process
+/// `sot_pid`, from the full process map.
+///
+/// Under Proton the wineserver is neither the game nor its parent. Verified live (Proton
+/// Experimental): the game and its wineserver are **direct siblings** — both children of the same
+/// `…─reaper─srt-bwrap─pv-adverb`. So the primary match is "the wineserver sharing the game's
+/// parent". A shared-ancestor walk (closest common ancestor wins) backs it up for Proton layouts
+/// where the pair is not a direct sibling, which also disambiguates several concurrent wineservers.
+/// Pure over `procs` so it is unit-tested deterministically; `None` when no wineserver relates to the
+/// game. (#725)
+#[cfg(target_os = "linux")]
+pub(crate) fn resolve_wineserver(
+    procs: &std::collections::HashMap<u32, ProcNode>,
+    sot_pid: u32,
+) -> Option<u32> {
+    // Primary: the wineserver that is a direct sibling of the game (same parent = pv-adverb). Lowest
+    // PID breaks the (unexpected) tie of two wineservers under one pv-adverb, for determinism.
+    if let Some(game_parent) = procs.get(&sot_pid).and_then(|node| node.parent) {
+        if let Some(pid) = procs
+            .values()
+            .filter(|node| node.name.eq_ignore_ascii_case("wineserver"))
+            .filter(|node| node.parent == Some(game_parent))
+            .map(|node| node.pid)
+            .min()
+        {
+            return Some(pid);
+        }
+    }
+
+    // Fallback: the wineserver whose lowest common ancestor with the game sits DEEPEST in the tree
+    // (closest to the game). `sot_depth` maps each of the game's ancestors to its distance from the
+    // game (0 = the game itself), so a smaller shared-ancestor depth means a tighter relationship.
+    let sot_depth: std::collections::HashMap<u32, usize> = ancestor_chain(procs, sot_pid)
+        .into_iter()
+        .enumerate()
+        .map(|(depth, pid)| (pid, depth))
+        .collect();
+    procs
+        .values()
+        .filter(|node| node.name.eq_ignore_ascii_case("wineserver"))
+        .filter_map(|wineserver| {
+            ancestor_chain(procs, wineserver.pid)
+                .into_iter()
+                .find_map(|ancestor| sot_depth.get(&ancestor).copied())
+                .map(|lca_depth| (lca_depth, wineserver.pid))
+        })
+        .min_by(|a, b| a.0.cmp(&b.0).then(a.1.cmp(&b.1)))
+        .map(|(_, pid)| pid)
+}
+
+/// The ancestor chain of `pid`, closest first: `[pid, parent, grandparent, …]`, stopping at the tree
+/// root (or the first PID missing from the map). A visited set guards against a malformed parent
+/// cycle so the walk always terminates. (#725)
+#[cfg(target_os = "linux")]
+fn ancestor_chain(procs: &std::collections::HashMap<u32, ProcNode>, pid: u32) -> Vec<u32> {
+    let mut chain = Vec::new();
+    let mut seen = std::collections::HashSet::new();
+    let mut current = Some(pid);
+    while let Some(pid) = current {
+        if !seen.insert(pid) {
+            break;
+        }
+        chain.push(pid);
+        current = procs.get(&pid).and_then(|node| node.parent);
+    }
+    chain
+}
+
+/// Builds the process map from sysinfo and resolves the game's wineserver PID. Thin adapter around
+/// the pure [`resolve_wineserver`]; the logic and its tests live on that function. (#725)
+#[cfg(target_os = "linux")]
+fn resolve_wineserver_pid(game_pid: usize) -> Option<u32> {
+    let mut system = System::new_all();
+    system.refresh_all();
+    let procs: std::collections::HashMap<u32, ProcNode> = system
+        .processes()
+        .iter()
+        .map(|(pid, process)| {
+            let pid = pid.as_u32();
+            (
+                pid,
+                ProcNode {
+                    pid,
+                    parent: process.parent().map(|parent| parent.as_u32()),
+                    name: process.name().to_string(),
+                },
+            )
+        })
+        .collect();
+    resolve_wineserver(&procs, game_pid as u32)
 }
 
 // In this netstat powershell command, we get the UDP endpoints of a process
@@ -707,5 +885,145 @@ mod tests {
             None,
             "nothing from the old game may be locked as the new game's session"
         );
+    }
+
+    // Linux game-matching by command line (#725). The game's `comm` is `CrBrowserMain` and its `exe`
+    // is the Wine loader under Proton, so only `cmd()` identifies it — verified against live /proc.
+    #[cfg(target_os = "linux")]
+    mod game_matching {
+        use crate::fetch_informations::cmd_is_sot_game;
+
+        fn cmd(parts: &[&str]) -> Vec<String> {
+            parts.iter().map(|s| s.to_string()).collect()
+        }
+
+        #[test]
+        fn matches_the_game_by_command_line() {
+            // The exact cmd() read from the live game process.
+            assert!(cmd_is_sot_game(&cmd(&[
+                "S:\\common\\Sea of Thieves\\Athena/Binaries/Win64/SotGame.exe"
+            ])));
+        }
+
+        #[test]
+        fn is_case_insensitive() {
+            assert!(cmd_is_sot_game(&cmd(&["/Athena/Binaries/Win64/SOTGAME.EXE"])));
+        }
+
+        #[test]
+        fn rejects_the_unreal_cef_helper_even_when_it_references_the_game() {
+            // The CEF helpers share the Proton tree and carry a --type flag. The exclusions must fire
+            // even if an arg happens to mention the game path, so the guards are load-bearing here.
+            assert!(!cmd_is_sot_game(&cmd(&[
+                "C:\\Sea of Thieves\\Athena\\Binaries\\Win64\\UnrealCEFSubProcess.exe",
+                "--type=renderer",
+                "/prefetch:SotGame.exe",
+            ])));
+        }
+
+        #[test]
+        fn rejects_unrelated_tree_processes_and_empty_argv() {
+            assert!(!cmd_is_sot_game(&cmd(&["C:\\windows\\system32\\xalia.exe"])));
+            assert!(!cmd_is_sot_game(&cmd(&["steam.exe"])));
+            assert!(!cmd_is_sot_game(&cmd(&["python3", "proton", "waitforexitandrun"])));
+            assert!(!cmd_is_sot_game(&cmd(&[])));
+        }
+    }
+
+    // Linux wineserver resolution by shared process-tree ancestor (#725), over a mock process list.
+    #[cfg(target_os = "linux")]
+    mod wineserver_resolution {
+        use crate::fetch_informations::{resolve_wineserver, ProcNode};
+        use std::collections::HashMap;
+
+        fn node(pid: u32, parent: Option<u32>, name: &str) -> (u32, ProcNode) {
+            (
+                pid,
+                ProcNode {
+                    pid,
+                    parent,
+                    name: name.to_string(),
+                },
+            )
+        }
+
+        fn tree(nodes: Vec<(u32, ProcNode)>) -> HashMap<u32, ProcNode> {
+            nodes.into_iter().collect()
+        }
+
+        // The live tree: reaper(3)─srt-bwrap(4)─pv-adverb(5)─{ wineserver(7), SotGame.exe(6),
+        // python3/proton(8), xalia(9) }. Game and wineserver are direct siblings of pv-adverb.
+        fn one_game_tree() -> HashMap<u32, ProcNode> {
+            tree(vec![
+                node(1, None, "systemd"),
+                node(2, Some(1), "steam"),
+                node(3, Some(2), "reaper"),
+                node(4, Some(3), "srt-bwrap"),
+                node(5, Some(4), "pv-adverb"),
+                node(6, Some(5), "CrBrowserMain"), // the SoT game process (comm != SotGame.exe)
+                node(7, Some(5), "wineserver"),    // its wineserver — same parent as the game
+                node(8, Some(5), "python3"),       // proton launcher, decoy sibling
+                node(9, Some(5), "xalia.exe"),     // decoy sibling
+            ])
+        }
+
+        #[test]
+        fn resolves_the_sibling_wineserver_sharing_the_games_parent() {
+            assert_eq!(resolve_wineserver(&one_game_tree(), 6), Some(7));
+        }
+
+        #[test]
+        fn picks_the_right_game_when_several_run() {
+            // A second Proton game under the same steam: its own pv-adverb(50) with game(60) and
+            // wineserver(70). Resolution must not cross the two games' wineservers.
+            let mut procs = one_game_tree();
+            procs.extend(vec![
+                node(30, Some(2), "reaper"),
+                node(40, Some(30), "srt-bwrap"),
+                node(50, Some(40), "pv-adverb"),
+                node(60, Some(50), "CrBrowserMain"),
+                node(70, Some(50), "wineserver"),
+            ]);
+            assert_eq!(resolve_wineserver(&procs, 6), Some(7));
+            assert_eq!(resolve_wineserver(&procs, 60), Some(70));
+        }
+
+        #[test]
+        fn falls_back_to_the_closest_shared_ancestor_when_not_a_direct_sibling() {
+            // A Proton layout where the wineserver is one level off the game's parent: no sibling
+            // match, so the ancestor walk resolves it via the shared pv-adverb(5).
+            let procs = tree(vec![
+                node(1, None, "systemd"),
+                node(4, Some(1), "srt-bwrap"),
+                node(5, Some(4), "pv-adverb"),
+                node(6, Some(5), "CrBrowserMain"), // game: parent 5
+                node(55, Some(5), "wine-wrapper"), // wineserver nested under an extra wrapper
+                node(7, Some(55), "wineserver"),   // parent 55, not the game's parent 5
+            ]);
+            assert_eq!(resolve_wineserver(&procs, 6), Some(7));
+        }
+
+        #[test]
+        fn no_wineserver_yields_none() {
+            let procs = tree(vec![
+                node(1, None, "systemd"),
+                node(5, Some(1), "pv-adverb"),
+                node(6, Some(5), "CrBrowserMain"),
+            ]);
+            assert_eq!(resolve_wineserver(&procs, 6), None);
+        }
+
+        #[test]
+        fn a_parent_cycle_in_the_fallback_does_not_hang() {
+            // Malformed parent links (5 <-> 55) on the fallback path must terminate the walk. The
+            // wineserver is not a sibling of the game, forcing the ancestor walk.
+            let procs = tree(vec![
+                node(6, Some(5), "CrBrowserMain"),
+                node(5, Some(55), "pv-adverb"),
+                node(55, Some(5), "wrapper"), // 5 <-> 55 cycle
+                node(7, Some(55), "wineserver"),
+            ]);
+            assert_eq!(resolve_wineserver(&procs, 6), Some(7));
+        }
     }
 }

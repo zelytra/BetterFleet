@@ -29,9 +29,10 @@ use crate::window_interaction::{click_in_window_proportionally, set_focus_to_win
 use sysinfo::{Networks, System};
 use std::net::{IpAddr, ToSocketAddrs};
 
-// Windows-only packet-capture module. On Linux the capture is stubbed until the Linux port lands
-// (#725), so most of its imports and helpers are legitimately unused there — suppress that noise on
-// non-Windows rather than cfg-gate every item (all of it stays live on Windows and under the tests).
+// Cross-platform game-detection module. Windows sniffs with a promiscuous raw socket, Linux with an
+// AF_PACKET capture (#725); macOS has no capture backend yet. A few Windows-only helpers (PowerShell
+// port enumeration, the raw-socket promiscuous ioctl) are legitimately unused off Windows, so
+// suppress that dead-code/import noise on non-Windows rather than cfg-gate every item.
 #[cfg_attr(not(windows), allow(dead_code, unused_imports))]
 mod fetch_informations;
 mod api;
@@ -45,7 +46,8 @@ mod overlay_x11;
 mod window_interaction_linux;
 #[cfg(target_os = "linux")]
 mod x11_support;
-// Windows-only flow-diagnostic module — same story as fetch_informations above (#725).
+// Flow-diagnostic + capture module — same story as fetch_informations above (#725): real capture on
+// Windows and Linux, a stub on macOS; suppress the off-Windows dead-code/import noise.
 #[cfg_attr(not(windows), allow(dead_code, unused_imports))]
 mod diagnostics;
 
@@ -664,7 +666,59 @@ async fn run_server_diagnostic(
     Ok(report)
 }
 
-#[cfg(not(windows))]
+/// Linux counterpart of the diagnostic capture (#725). Same instrument, wired through the Linux
+/// seams: find the game by command line, take the UNION of the game's and its wineserver's UDP ports,
+/// and AF_PACKET-capture them. There is no PowerShell port source on Linux, and `main_menu_port` is
+/// Windows-only telemetry, so both are left empty. Invaluable for the live-debug pass — it prints the
+/// ranked flows so the real server can be picked out by volume.
+#[cfg(target_os = "linux")]
+#[tauri::command]
+async fn run_server_diagnostic(
+    api: State<'_, Arc<RwLock<Api>>>,
+    duration_secs: u64,
+    note: String,
+) -> Result<diagnostics::DiagnosticReport, String> {
+    let pids = fetch_informations::find_game_pids();
+    let game_pid: usize = match pids.first() {
+        Some(pid) => pid.parse().map_err(|e| format!("invalid pid: {}", e))?,
+        None => return Err("Sea of Thieves (SotGame.exe) is not running.".into()),
+    };
+
+    // Candidate ports = game PID ∪ resolved wineserver PID (see fetch_informations, #725).
+    let ports = fetch_informations::game_udp_candidate_ports(game_pid);
+
+    let game_status = format!("{:?}", api.inner().read().await.game_status);
+
+    let duration = Duration::from_secs(duration_secs.clamp(3, 60));
+    info!(
+        "[diagnostic] starting AF_PACKET capture (note='{}', game PID {}, {} candidate ports, {:?})",
+        note,
+        game_pid,
+        ports.len(),
+        duration
+    );
+
+    let report = diagnostics::run_diagnostic(
+        ports.clone(),
+        duration,
+        note,
+        game_status,
+        0, // main_menu_port: Windows-only telemetry
+        Some(game_pid as u32),
+        ports,
+        Vec::new(), // no PowerShell source on Linux
+    )
+    .await;
+
+    match serde_json::to_string(&report) {
+        Ok(json) => info!("[diagnostic] report: {}", json),
+        Err(e) => error!("[diagnostic] failed to serialize report: {}", e),
+    }
+
+    Ok(report)
+}
+
+#[cfg(not(any(windows, target_os = "linux")))]
 #[tauri::command]
 async fn run_server_diagnostic(
     _api: State<'_, Arc<RwLock<Api>>>,
