@@ -1,0 +1,17 @@
+# reprepro distribution config for the BetterFleet APT repository.
+#
+# This is the source of truth, copied into place by publish.sh before every `reprepro` call — the
+# published repo (on the gh-pages branch) is generated from this file, never hand-edited there.
+#
+# One distro-agnostic "stable" suite: the .deb has no per-Debian/Ubuntu-release dependencies, so
+# there's no need for a codename per distro (bookworm/jammy/...) like upstream Debian/Ubuntu mirrors
+# use. SignWith: yes signs with whatever single secret key is imported into the signing keyring
+# (see ../README.md) — reprepro's default-key behavior.
+
+Origin: BetterFleet
+Label: BetterFleet
+Codename: stable
+Architectures: amd64
+Components: main
+Description: BetterFleet APT repository (sudo apt install betterfleet) — https://github.com/zelytra/BetterFleet
+SignWith: yes

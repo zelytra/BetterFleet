@@ -305,6 +305,10 @@
     "reports": {
       "title": "Reports — BetterFleet",
       "description": "Bug reports sent from the BetterFleet app."
+    },
+    "download": {
+      "title": "Download BetterFleet",
+      "description": "Download BetterFleet for Windows or Linux — pick the installer or package that fits your system."
     }
   },
   "alliance": {
@@ -341,5 +345,66 @@
   "loading": {
     "stats": "Reading the logs…",
     "globe": "Unrolling the chart…"
+  },
+  "downloadPage": {
+    "title": "Download BetterFleet",
+    "lead": "We picked the download that fits your system — or choose another below.",
+    "leadUnknown": "We couldn't tell what you're running — pick your platform below.",
+    "recommendedLabel": "Recommended for your system",
+    "download": "Download",
+    "sixtyFourBit": "64-bit",
+    "megabytes": "MB",
+    "comingSoon": "Coming soon",
+    "viewReleases": "Browse every release on GitHub",
+    "recommended": {
+      "windows": {
+        "title": "BetterFleet for Windows — Installer",
+        "desc": "Classic installation, automatic updates"
+      },
+      "linux": {
+        "title": "BetterFleet for Linux — AppImage",
+        "desc": "Runs on any distribution, no install"
+      }
+    },
+    "windows": {
+      "name": "Windows",
+      "editions": "Windows 10 / 11 · 64-bit",
+      "exe": {
+        "label": ".exe installer",
+        "desc": "Classic installation, automatic updates"
+      },
+      "msi": {
+        "label": ".msi installer",
+        "desc": "Enterprise / silent deployment"
+      }
+    },
+    "linux": {
+      "name": "Linux",
+      "choose": "Choose your distribution",
+      "deb": {
+        "label": ".deb",
+        "desc": "Ubuntu, Debian, Mint, Pop!_OS"
+      },
+      "rpm": {
+        "label": ".rpm",
+        "desc": "Fedora, openSUSE, RHEL"
+      },
+      "appimage": {
+        "label": "AppImage",
+        "desc": "Universal — every distribution"
+      },
+      "flatpak": {
+        "label": "Flatpak",
+        "desc": "Via Flathub, sandboxed"
+      },
+      "apt": {
+        "label": "Debian / Ubuntu (APT)"
+      },
+      "aur": {
+        "label": "Arch Linux (AUR)"
+      },
+      "copy": "Copy",
+      "copied": "Copied!"
+    }
   }
 }
