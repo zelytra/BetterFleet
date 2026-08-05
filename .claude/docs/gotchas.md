@@ -36,6 +36,18 @@ back into the problem.
   holds. A **fullscreen-exclusive** game can still cover it (its layer outranks "above"); borderless
   / windowed-fullscreen is the workaround. The WebView2 `additionalBrowserArgs` occlusion knob is a
   no-op on WebKitGTK; the native `rodio` countdown audio already hedges the important cue.
+- **Linux UDP capture needs `CAP_NET_RAW`, a dev-only manual step until #726.** Server detection
+  sniffs the game's UDP flows through an `AF_PACKET` socket (`diagnostics.rs`, `capture_af_packet`),
+  shared verbatim by both the live detection (`fetch_informations.rs`) and the Help-tab "Lancer une
+  capture" diagnostic through `capture_flows`. That socket requires `CAP_NET_RAW`. In dev, grant it
+  once to the compiled binary with
+  `sudo setcap cap_net_raw+ep webapp/src-tauri/target/debug/better_fleet`, then re-apply it after any
+  Rust rebuild: cargo relinks a fresh binary and the capability stays on the old inode, so it is
+  lost, while a frontend-only reload keeps it. Without the capability the socket fails with `EPERM`;
+  the capture logs the error and returns no flows, so detection degrades to "no server" instead of
+  crashing (the Help-tab report simply shows zero packets). End users never run setcap: the
+  production model (issue #726) keeps the app unprivileged and gives the capability to a small
+  capture helper, granted by the package's post-install.
 
 ## Dev vs prod transport
 
