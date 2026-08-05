@@ -63,6 +63,18 @@ export const routes = [
     },
   },
   {
+    // The platform-selection screen (#730): where the site's "Download" CTAs land instead of pulling
+    // the Windows installer straight away. Reached from the header's green Download button (and the
+    // home/tutorial CTAs), so it is not a nav-list entry itself. Lazy: it only matters once someone
+    // heads for it.
+    path: "/download",
+    name: "download",
+    component: () => import("@/components/DownloadPage.vue"),
+    meta: {
+      displayInNav: false,
+    },
+  },
+  {
     // Console players join a session lobby from their phone (#682). Lazy: the realtime lobby is
     // dead weight for every marketing visit, so it only loads when someone opens their invite link.
     //

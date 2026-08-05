@@ -3,17 +3,9 @@
     <h1>
       {{ t("download.now") }} <span>{{ t("name") }}</span>
     </h1>
-    <a
-      v-if="AppStore.githubRelease.url"
-      class="download-cta"
-      :href="AppStore.githubRelease.url"
-      target="_blank"
-    >
-      <PirateButton
-        :label="t('button.downloadHere')"
-        @on-button-click="incrementDownload"
-      />
-    </a>
+    <router-link class="download-cta" to="/download">
+      <PirateButton :label="t('button.downloadHere')" />
+    </router-link>
     <!-- Phone (#670): a phone cannot run the installer, but hiding the section threw the intent
          away with it. Copying the link lets the visit finish on a PC later. -->
     <div v-if="AppStore.githubRelease.url" class="pc-card">
@@ -29,7 +21,6 @@
 <script setup lang="ts">
 import PirateButton from "@/vue/PirateButton.vue";
 import { AppStore } from "@/objects/stores/appStore.ts";
-import { incrementDownload } from "@/objects/Stats.ts";
 import { useI18n } from "vue-i18n";
 import { ref } from "vue";
 

@@ -11,17 +11,9 @@
         {{ t(route.name) }}
       </router-link>
     </nav>
-    <a
-      v-if="AppStore.githubRelease.url"
-      class="download-cta"
-      :href="AppStore.githubRelease.url"
-      target="_blank"
-    >
-      <PirateButton
-        :label="t('button.download')"
-        @on-button-click="incrementDownload"
-      />
-    </a>
+    <router-link class="download-cta" to="/download">
+      <PirateButton :label="t('button.download')" />
+    </router-link>
     <button
       class="burger"
       :class="{ open: menuOpen }"
@@ -58,8 +50,6 @@ import { routes } from "@/router";
 import PirateButton from "@/vue/PirateButton.vue";
 import { useI18n } from "vue-i18n";
 import { ref } from "vue";
-import { AppStore } from "@/objects/stores/appStore.ts";
-import { incrementDownload } from "@/objects/Stats.ts";
 
 const { t } = useI18n();
 // Phone-only full-screen nav (#670): the burger is displayed below $palm, so this never opens on

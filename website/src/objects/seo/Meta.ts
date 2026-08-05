@@ -36,6 +36,12 @@ const PAGES: Record<
     // robots.txt whether it may index what it already has.
     noindex: true,
   },
+  // The platform-selection screen (#730): real, indexable content — worth ranking for "betterfleet
+  // linux" and the like once there is a Linux build to point at.
+  "/download": {
+    title: "seo.download.title",
+    description: "seo.download.description",
+  },
   // The console-guest lobby (#682): a personal deep link keyed on a session code — never something a
   // crawler should index. Keyed by the route pattern, matched via route.matched below — the "?" is
   // part of that pattern since the code became optional, and dropping it here would quietly hand the

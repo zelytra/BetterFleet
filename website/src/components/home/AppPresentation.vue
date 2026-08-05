@@ -5,17 +5,9 @@
         <span class="pill">⚓ {{ t("presentation.pill") }}</span>
         <h1>{{ t("presentation.title") }}</h1>
         <p>{{ t("presentation.content") }}</p>
-        <a
-          v-if="AppStore.githubRelease.url"
-          class="download-cta"
-          :href="AppStore.githubRelease.url"
-          target="_blank"
-        >
-          <PirateButton
-            :label="t('button.downloadApp')"
-            @on-button-click="incrementDownload"
-          />
-        </a>
+        <router-link class="download-cta" to="/download">
+          <PirateButton :label="t('button.downloadApp')" />
+        </router-link>
         <!-- Phone/tablet: the desktop app can't run here, so point console players at how to join a
              crew's session from their phone (#682) instead of a dead download button. -->
         <div class="mobile-cta">
@@ -47,10 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { AppStore } from "@/objects/stores/appStore.ts";
 import PirateButton from "@/vue/PirateButton.vue";
 import { useI18n } from "vue-i18n";
-import { incrementDownload } from "@/objects/Stats.ts";
 
 const { t } = useI18n();
 </script>
