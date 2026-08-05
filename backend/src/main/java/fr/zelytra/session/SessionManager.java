@@ -59,7 +59,7 @@ public class SessionManager {
 
     // Emits a signal whenever the set of public sessions changes (create / join / leave /
     // visibility / server), so SSE subscribers (the public sessions browser) refresh. Only
-    // structural changes publish here — ready-state spikes do not — which keeps the stream quiet.
+    // structural changes publish here (ready-state spikes do not), which keeps the stream quiet.
     private final BroadcastProcessor<Boolean> directoryChanges = BroadcastProcessor.create();
 
     // Servers whose geolocation is being resolved right now, so a crew all reporting the same
@@ -136,7 +136,7 @@ public class SessionManager {
             // The account is already a member of the very session it is trying to join
             // (e.g. the same account connected from a second device/socket). Refuse the
             // duplicate join and leave the existing members untouched instead of tearing
-            // the fleet down — see issue #436. A lingering ghost (already-closed socket)
+            // the fleet down (see issue #436). A lingering ghost (already-closed socket)
             // is not a real duplicate, so in that case we fall through and replace it.
             Player existing = currentFleet.getPlayerFromUsername(player.getUsername());
             if (existing != null && existing.getSocket() != null && existing.getSocket().isOpen()) {
@@ -146,7 +146,7 @@ public class SessionManager {
             }
             leaveSession(existing != null ? existing : player);
         } else if (currentFleet != null) {
-            // The account is in a different session. Joining a new one means leaving the old one —
+            // The account is in a different session. Joining a new one means leaving the old one,
             // but a player must not lose the session they are in over a code that leads nowhere.
             // Validate the target BEFORE evicting: a mistyped or expired code is a no-op, never a
             // silent departure from the session they were in (issue #733).
@@ -208,8 +208,8 @@ public class SessionManager {
         fleet.getPlayers().removeAll(playerToRemove);
         fleet.getServers().forEach((key, value) -> value.getConnectedPlayers().remove(player));
 
-        // A session exists to get the desktop crew onto one server. Once no app player is left — only
-        // web console guests, or nobody — it has no purpose, so disband it and disconnect any
+        // A session exists to get the desktop crew onto one server. Once no app player is left (only
+        // web console guests, or nobody), it has no purpose, so disband it and disconnect any
         // lingering guests (#682).
         boolean hasAppPlayer = fleet.getPlayers().stream().anyMatch(fleetPlayer -> !fleetPlayer.isGuest());
         if (!hasAppPlayer) {
@@ -362,8 +362,8 @@ public class SessionManager {
      * Returns the shared {@link SotServer} for a client-reported server, registering it on first
      * sight so every fleet shows the same identity (and colour) for it.
      * <p>
-     * Performs <b>no I/O and takes no lock</b>. The geolocation happens off this path — see
-     * {@link #lookupGeo} — so a player joins a server immediately and the location catches up.
+     * Performs <b>no I/O and takes no lock</b>. The geolocation happens off this path (see
+     * {@link #lookupGeo}), so a player joins a server immediately and the location catches up.
      * Location and country code are therefore empty on a first sight; {@link #applyServerGeo}
      * fills them in, which is also when the browser's region flag appears.
      */
@@ -374,14 +374,14 @@ public class SessionManager {
     }
 
     /**
-     * Geolocates a server whose location is still unknown. <b>Blocking — worker threads only</b>,
+     * Geolocates a server whose location is still unknown. <b>Blocking: worker threads only</b>,
      * never an event loop: proxycheck.io regularly takes seconds or times out, and this used to
      * stall the vert.x thread that carried the JOIN_SERVER message.
      * <p>
      * Returns {@link ProxyCheckAPI.Geo#EMPTY} when it cannot be resolved, and <b>caches nothing
      * in that case</b>. A cached failure was permanent: the empty geo was stored under the
      * server's hash, every later join hit that entry, and the server kept neither a location nor
-     * a country code — which is also why its flag never showed up in the browser. Leaving it
+     * a country code, which is also why its flag never showed up in the browser. Leaving it
      * unresolved costs one retry per join instead.
      *
      * @return the resolved geo, or {@link ProxyCheckAPI.Geo#EMPTY} if it could not be resolved
@@ -433,7 +433,7 @@ public class SessionManager {
      * list has to hear about it too.
      * <p>
      * Holds the WRITE lock: no I/O may happen here (the sends are async), and the geolocation must
-     * already be done — see {@link #lookupGeo}.
+     * already be done (see {@link #lookupGeo}).
      */
     @Lock(value = Lock.Type.WRITE, time = 200)
     public void applyServerGeo(String hash, ProxyCheckAPI.Geo geo) {
@@ -454,7 +454,7 @@ public class SessionManager {
     }
 
     /**
-     * Attaches a player to an <b>already-resolved</b> server — callers must go through
+     * Attaches a player to an <b>already-resolved</b> server: callers must go through
      * {@link #resolveSotServer} first. No I/O may happen here: this holds the WRITE lock and must
      * stay microseconds long.
      */
@@ -549,7 +549,7 @@ public class SessionManager {
 
     /**
      * The current directory, mapped to the browser's PublicSession DTO. Private sessions are
-     * listed too — see {@link #toPublicSession} for what "private" withholds.
+     * listed too (see {@link #toPublicSession} for what "private" withholds).
      */
     @Lock(value = Lock.Type.READ, time = 200)
     public List<PublicSession> getPublicSessions() {
@@ -562,7 +562,7 @@ public class SessionManager {
 
     /**
      * What the browser renders: every session plus the global connected-player count, built in one
-     * pass so both ride the same REST response and the same SSE frame — the counter has to move
+     * pass so both ride the same REST response and the same SSE frame: the counter has to move
      * live as players come and go, not only when Refresh is pressed.
      */
     @Lock(value = Lock.Type.READ, time = 200)
@@ -578,11 +578,11 @@ public class SessionManager {
 
     /**
      * SSE-friendly stream: emits the current snapshot on subscription, then a fresh one on every
-     * structural change (create / join / leave / visibility / server) — exactly when either the
+     * structural change (create / join / leave / visibility / server): exactly when either the
      * session list or the connected-player count can move.
      * <p>
      * The overflow strategy is what keeps this stream alive. A subscriber is regularly between
-     * requests — an SSE serializer asks for one event at a time — and {@link BroadcastProcessor}
+     * requests (an SSE serializer asks for one event at a time) and {@link BroadcastProcessor}
      * answers an emission it cannot deliver by <b>terminating that subscriber</b> with a
      * BackPressureFailure. So any player watching the browser had their stream killed the moment
      * anyone else created a session, and their list silently froze until they hit Refresh.
@@ -590,7 +590,7 @@ public class SessionManager {
      * {@code onOverflow} takes unbounded demand from the processor, so it never has "no requests"
      * to complain about, and holds the tick until the subscriber asks again. Keeping only the
      * latest is right here: each item is a full snapshot of the directory, so the newest one
-     * subsumes every tick it replaces — a subscriber that falls behind skips intermediate states
+     * subsumes every tick it replaces: a subscriber that falls behind skips intermediate states
      * rather than accumulating a backlog of stale ones.
      */
     public Multi<PublicSessionsSnapshot> streamPublicSessions() {
@@ -599,16 +599,16 @@ public class SessionManager {
                 directoryChanges
                         .onOverflow().dropPreviousItems()
                         // Transform after the overflow, so the snapshot is built when a subscriber
-                        // actually takes it — dropped ticks cost nothing, and what is delivered is
+                        // actually takes it: dropped ticks cost nothing, and what is delivered is
                         // the directory as it is at that moment, not as it was when the tick fired.
                         .onItem().transform(ignored -> getPublicSessionsSnapshot())
         );
     }
 
     /**
-     * Projects a fleet for the browser. Private sessions are listed like any other — the browser
+     * Projects a fleet for the browser. Private sessions are listed like any other (the browser
      * shows them with a closed padlock, and their crew count is what makes the directory feel
-     * alive — but their <b>session code is withheld</b>: it is the only thing standing between
+     * alive), but their <b>session code is withheld</b>: it is the only thing standing between
      * "private" and "public", since anyone holding the code can join. A private session is
      * therefore joinable only by someone the host gave the code to.
      */
@@ -634,7 +634,7 @@ public class SessionManager {
     /**
      * The country-code flag shown for a session: the session owner's country (issue #672), reported
      * by the client from its browser locale. The detected server's datacenter region was misleading
-     * — a crew on a US host is not a US crew — so the flag now reflects who owns the session, not
+     * (a crew on a US host is not a US crew), so the flag now reflects who owns the session, not
      * where the game server sits. "" when no master has reported a country (e.g. an older client).
      */
     private String ownerRegion(Fleet fleet) {
@@ -645,7 +645,7 @@ public class SessionManager {
                 .orElse("");
     }
 
-    /** The country of the server carrying the most players, or "" — the attempt's server region (#673). */
+    /** The country of the server carrying the most players, or "", the attempt's server region (#673). */
     private String serverRegion(Fleet fleet) {
         return fleet.getServers().values().stream()
                 .max(Comparator.comparingInt(server -> server.getConnectedPlayers().size()))
@@ -657,7 +657,7 @@ public class SessionManager {
     /**
      * Whether this session withholds its attempts from the anonymous statistics (issue #673, the
      * opt-out). The session's masters decide: the only person-adjacent datum in a row is the owner
-     * region — theirs — while everyone else contributes nothing but an anonymous head-count. Pure,
+     * region (theirs), while everyone else contributes nothing but an anonymous head-count. Pure,
      * so the policy is unit-tested next to {@link #buildAttempt}.
      */
     boolean statsWithheld(Fleet fleet) {
@@ -682,7 +682,7 @@ public class SessionManager {
         attempt.distinctServers = distinct;
         attempt.largestGroup = largest;
         // An alliance is formed when at least two players share one server (#685). A lone player is
-        // not a solo alliance; but the whole fleet need not converge onto a single server — a crew
+        // not a solo alliance; but the whole fleet need not converge onto a single server: a crew
         // of 10 that groups 5+5 on two servers has formed alliances, so the biggest grouping decides.
         attempt.converged = largest >= 2;
         attempt.tryNumber = fleet.getStats().getTryAmount();
@@ -690,7 +690,7 @@ public class SessionManager {
     }
 
     /**
-     * Records the outcome of a session's countdown once detection has settled — scheduled by
+     * Records the outcome of a session's countdown once detection has settled, scheduled by
      * {@code SessionSocket} a while after the countdown. Skips silently if the session is gone or
      * nobody resolved onto a server. Anonymous: only the aggregated outcome + coarse regions.
      */
@@ -705,7 +705,7 @@ public class SessionManager {
         }
         AllianceAttempt attempt = buildAttempt(fleet, Instant.now());
         if (attempt.players <= 0) {
-            return; // nobody landed on a detected server yet — not a meaningful data point
+            return; // nobody landed on a detected server yet, not a meaningful data point
         }
         allianceAttemptRepository.persist(attempt);
         Log.info("[" + sessionId + "] Recorded alliance attempt: converged=" + attempt.converged
@@ -754,7 +754,7 @@ public class SessionManager {
             }
 
             // Skip players whose socket is already closed instead of aborting the whole
-            // broadcast — a single dead/ghost socket must not stop the other members from
+            // broadcast: a single dead/ghost socket must not stop the other members from
             // receiving the update (see issue #436).
             if (!player.getSocket().isOpen()) {
                 Log.warn("Skipping closed socket of " + player.getUsername());
@@ -808,7 +808,7 @@ public class SessionManager {
     /**
      * Sends a terminal message to a player and closes their socket <b>only once that frame is on the
      * wire</b>. Every refusal path (SESSION_NOT_FOUND, CONNECTION_REFUSED, OUTDATED_CLIENT) says one
-     * last thing before hanging up, and {@link #sendDataToPlayer} writes through the async remote —
+     * last thing before hanging up, and {@link #sendDataToPlayer} writes through the async remote,
      * which returns before the frame is flushed. Closing on the next line races that write and the
      * client can be disconnected before it ever learns why (issue #733, a regression of #387). So the
      * close is deferred into the send callback: the frame goes out, then the socket goes away.
@@ -827,7 +827,7 @@ public class SessionManager {
         session.getAsyncRemote().sendText(json, result -> {
             if (result.getException() != null) {
                 // The client hung up before the refusal landed. Now that the close is ordered after
-                // the send, a closed channel here just means they left first — WARN, not ERROR (#733).
+                // the send, a closed channel here just means they left first: WARN, not ERROR (#733).
                 Log.warn("Could not deliver " + messageType + " to [" + session.getId() + "] before close: " + result.getException());
             }
             closeSocketQuietly(session);

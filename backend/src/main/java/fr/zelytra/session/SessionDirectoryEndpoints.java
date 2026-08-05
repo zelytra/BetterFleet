@@ -12,7 +12,7 @@ import org.jboss.resteasy.reactive.RestStreamElementType;
 /**
  * Public sessions directory (issue #599): a REST snapshot of every public session plus the global
  * connected-player count, and an SSE stream pushing a fresh snapshot whenever either can have
- * changed — so both the list and the counter stay live without hard polling. Uses a base path
+ * changed, so both the list and the counter stay live without hard polling. Uses a base path
  * outside the WebSocket namespace (/sessions/*).
  */
 @Path("/public-sessions")

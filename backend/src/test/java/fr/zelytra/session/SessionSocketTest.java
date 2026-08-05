@@ -402,13 +402,13 @@ class SessionSocketTest {
     void mistypedJoinCode_keepsThePlayerInTheirCurrentSession() throws Exception {
         // Issue #733, end to end: a player already hosting a session mistypes a join code on a
         // second socket. The bogus join must be refused with SESSION_NOT_FOUND WITHOUT dropping them
-        // from the session they were in — the exact production symptom (a working session torn down
+        // from the session they were in: the exact production symptom (a working session torn down
         // by a typo, and no message explaining why).
         String sessionId = createSessionAsMaster("Sailor");
 
         BetterFleetClient typoClient = new BetterFleetClient();
         SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
-        String bogus = sessionId + "0"; // a mistyped code — not a real session id
+        String bogus = sessionId + "0"; // a mistyped code, not a real session id
         URI typoUri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort()
                 + "/sessions/" + socketSecurity.getKey() + "/" + bogus);
         ContainerProvider.getWebSocketContainer().connectToServer(typoClient, typoUri);
@@ -449,7 +449,7 @@ class SessionSocketTest {
     void payloadLessLeaveServer_isIgnoredInsteadOfKickingThePlayer() throws Exception {
         // A client that quits the game before the server identity resolved sends LEAVE_SERVER with
         // no data (nothing was ever joined). This used to NPE in playerLeaveSotServer, and the
-        // exception reached @OnError which closed the socket — ejecting the player from their whole
+        // exception reached @OnError which closed the socket, ejecting the player from their whole
         // fleet session for merely backing out of a game.
         String sessionId = createSessionAsMaster("Sailor");
 
@@ -482,7 +482,7 @@ class SessionSocketTest {
     void failedGeolocation_isNotCachedSoTheNextJoinRetries() throws Exception {
         // The production bug: a timed-out lookup was cached as an empty geo under the server's hash,
         // so every later join hit that entry and the server stayed location-less for the lifetime of
-        // the process — "some players have no location for their server", forever. The country code
+        // the process: "some players have no location for their server", forever. The country code
         // went the same way, which is why those sessions never grew a flag in the browser either.
         Mockito.when(proxyCheckAPI.resolveGeo(any())).thenReturn(ProxyCheckAPI.Geo.EMPTY); // timing out
         String sessionId = createSessionAsMaster("Sailor");
@@ -491,7 +491,7 @@ class SessionSocketTest {
         awaitCondition(() -> !locationOf(sessionId).isEmpty(), 300); // give the failing lookup time
         assertEquals("", locationOf(sessionId), "A failed lookup cannot invent a location");
 
-        // proxycheck.io comes back, and a later join resolves it — which a cached failure blocked.
+        // proxycheck.io comes back, and a later join resolves it, which a cached failure blocked.
         Mockito.when(proxyCheckAPI.resolveGeo(any()))
                 .thenReturn(new ProxyCheckAPI.Geo("Recovered Land", "fr"));
         joinServer("3.3.3.3", 30101);
@@ -602,7 +602,7 @@ class SessionSocketTest {
     @Test
     void createSession_seedsBannerFromHostPreference() throws Exception {
         // The host's chosen banner (a preference sent on CONNECT) is copied onto the session and
-        // broadcast so every member — and the public browser — renders the same banner.
+        // broadcast so every member (and the public browser) renders the same banner.
         Player host = new Player();
         host.setUsername("Host");
         host.setClientVersion(appVersion.get(0));
@@ -655,21 +655,21 @@ class SessionSocketTest {
         // Reported from production: one player watches the public sessions browser, another creates
         // a public session, and a BackPressureFailure lands in the logs.
         //
-        // A subscriber is regularly between requests — an SSE serializer asks for one event at a
-        // time — and BroadcastProcessor answers an emission it cannot deliver by *terminating that
+        // A subscriber is regularly between requests (an SSE serializer asks for one event at a
+        // time) and BroadcastProcessor answers an emission it cannot deliver by *terminating that
         // subscriber*. So the viewer's stream died the moment anyone else touched a session, and
         // their list silently froze until they pressed Refresh. (The emitting player is unaffected:
         // the failure travels to the subscriber, it does not come back up publishDirectoryChange.)
         //
-        // The demand is the whole point: subscribing with unbounded demand — which the plain
-        // .subscribe().with() in the test above does — never reproduces this. It takes a subscriber
+        // The demand is the whole point: subscribing with unbounded demand (which the plain
+        // .subscribe().with() in the test above does) never reproduces this. It takes a subscriber
         // that stops asking, like the real one.
         AssertSubscriber<PublicSessionsSnapshot> viewer = watchingViewer();
 
         sessionManager.publishDirectoryChange(); // another player changes something, viewer idle
 
         // The failure travels to the subscriber asynchronously, so give it a window to arrive before
-        // concluding that it did not — checking immediately passes even against the broken code.
+        // concluding that it did not: checking immediately passes even against the broken code.
         awaitCondition(() -> viewer.getFailure() != null, 500);
 
         assertNull(viewer.getFailure(),
@@ -681,10 +681,10 @@ class SessionSocketTest {
     @Test
     void directoryStream_aViewerThatFallsBehindCatchesUpOnTheCurrentState() throws Exception {
         // Surviving is not enough: the viewer must converge. The ticks it missed collapse into one,
-        // and the next it takes carries the directory as it is now — each snapshot is the whole
+        // and the next it takes carries the directory as it is now: each snapshot is the whole
         // state, so the newest subsumes the ones it replaced. (This is why the strategy is
         // dropPreviousItems and not drop: drop keeps the stream alive but throws away the *new*
-        // tick, leaving the viewer on a stale list — measured, not assumed.)
+        // tick, leaving the viewer on a stale list: measured, not assumed.)
         AssertSubscriber<PublicSessionsSnapshot> viewer = watchingViewer();
         int seen = viewer.getItems().size();
 
@@ -703,7 +703,7 @@ class SessionSocketTest {
      * currently between requests.
      * <p>
      * Both halves matter. The stream only subscribes to the change feed once demand arrives, so a
-     * viewer that never takes an event never reaches the failing path at all — it just misses ticks.
+     * viewer that never takes an event never reaches the failing path at all: it just misses ticks.
      * And the failure needs demand to have run out. So: take the initial snapshot, take one change,
      * and stop asking. That is exactly what an SSE client does between events.
      */
@@ -719,8 +719,8 @@ class SessionSocketTest {
 
     @Test
     void directory_listsPrivateSessionsButWithholdsTheirCode() throws Exception {
-        // Sessions are private by default. They are still listed — the browser shows them with a
-        // closed padlock and their crew count — but the code is what separates private from public,
+        // Sessions are private by default. They are still listed (the browser shows them with a
+        // closed padlock and their crew count), but the code is what separates private from public,
         // so publishing it would make "private" mean nothing.
         createSessionAsMaster("Host");
 
@@ -913,7 +913,7 @@ class SessionSocketTest {
     /**
      * Waits for a broadcast whose fleet matches. The client keeps only the last message, and the
      * geolocation now lands on its own schedule and broadcasts again, so "the next message" is not
-     * necessarily the one this action caused — wait for the state, don't count messages.
+     * necessarily the one this action caused: wait for the state, don't count messages.
      */
     private Fleet awaitBroadcast(Predicate<Fleet> matches, String expectation) throws Exception {
         long deadline = System.currentTimeMillis() + 5000;

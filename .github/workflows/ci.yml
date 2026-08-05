@@ -242,7 +242,7 @@ jobs:
         run: npm run tauri:build -- --no-bundle
 
   # The Rust detection logic (pick_server_flow, the FlowAggregator, the #364/#657 capture fixtures,
-  # the port range) has unit tests that never ran in CI — test-tauri only *builds* the app. This runs
+  # the port range) has unit tests that never ran in CI: test-tauri only *builds* the app. This runs
   # them. windows-latest because the crate is Windows-only: it captures packets through winsock raw
   # sockets (std::os::windows, winapi), so it does not compile anywhere else.
   tauri-test:
@@ -275,7 +275,7 @@ jobs:
         run: npm ci
 
       # main.rs runs tauri::generate_context!, which embeds the frontend (distDir ../dist) at compile
-      # time — so `cargo test` cannot build the crate until the frontend exists.
+      # time, so `cargo test` cannot build the crate until the frontend exists.
       - name: Build the frontend
         run: npm run build
 

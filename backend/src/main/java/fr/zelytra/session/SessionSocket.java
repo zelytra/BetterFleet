@@ -43,7 +43,7 @@ public class SessionSocket {
     String proxyApiKey;
 
     // How long after a countdown to snapshot the fleet and record the alliance-formation outcome
-    // (issue #673) — long enough for detection to settle. Configurable so tests can shorten it.
+    // (issue #673), long enough for detection to settle. Configurable so tests can shorten it.
     @ConfigProperty(name = "betterfleet.stats.attempt-delay-seconds", defaultValue = "30")
     int attemptDelaySeconds;
 
@@ -139,7 +139,7 @@ public class SessionSocket {
     /**
      * Kicks a player from the requester's fleet. The action is only honored when the caller is
      * resolved from its own socket and holds the master role of that fleet, and the target must
-     * belong to the same fleet — the client is never trusted to assert this itself.
+     * belong to the same fleet: the client is never trusted to assert this itself.
      */
     private void handleKick(Session session, PlayerAction action) {
         Player requester = sessionManager.getPlayerFromSessionId(session.getId());
@@ -191,7 +191,7 @@ public class SessionSocket {
     }
 
     /**
-     * Toggles the session's public/private visibility. Only the fleet master may change it — the
+     * Toggles the session's public/private visibility. Only the fleet master may change it: the
      * client is never trusted to assert this itself (same authorization rules as {@link #handleKick}).
      * A private session stays unlisted and joinable only by its code; a public one becomes eligible
      * for the public sessions directory.
@@ -218,7 +218,7 @@ public class SessionSocket {
     /**
      * Sets (or clears) the session's custom name. Master-only, like the other session-level
      * controls. The name is trimmed and length-capped, and rejected when it trips the content
-     * filter — public names are visible to everyone (issue #604). An empty name clears the custom
+     * filter: public names are visible to everyone (issue #604). An empty name clears the custom
      * name and falls back to the default localized pirate name.
      */
     private void handleRenameSession(Session session, String name) {
@@ -313,7 +313,7 @@ public class SessionSocket {
 
         // Then chase the geolocation off this thread: we are on a vert.x event loop, and
         // proxycheck.io routinely takes seconds or times out. Location and country code are
-        // broadcast when they land — the country code being what the browser's region flag needs.
+        // broadcast when they land: the country code being what the browser's region flag needs.
         if (resolved.getLocation().isEmpty()) {
             geoLocationResolver.resolveAndBroadcast(sotServer);
         }
@@ -324,7 +324,7 @@ public class SessionSocket {
         // Same guard as JOIN_SERVER: a client that never joined a server can still send a
         // payload-less LEAVE_SERVER (seen from clients quitting the game before the server
         // identity resolved). playerLeaveSotServer would NPE on it, and @OnError would then
-        // close the socket — kicking the player out of their fleet for backing out of a game.
+        // close the socket, kicking the player out of their fleet for backing out of a game.
         if (sotServer == null || sotServer.getIp() == null || sotServer.getIp().isEmpty()) {
             Log.warn("Ignoring LEAVE_SERVER without a server payload");
             return;

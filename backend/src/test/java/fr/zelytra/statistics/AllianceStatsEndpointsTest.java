@@ -32,7 +32,7 @@ class AllianceStatsEndpointsTest {
     void aPairAndAServerLockThatBothSucceedScoreTheSame() {
         // Two searching, two met: everything they were after.
         assertEquals(1.0, AllianceStatsEndpoints.averageGoalCompletion(List.of(attempt(2, 2))), 1e-9);
-        // Eighteen searching, five met: also everything they could get — a server holds no more.
+        // Eighteen searching, five met: also everything they could get, a server holds no more.
         assertEquals(1.0, AllianceStatsEndpoints.averageGoalCompletion(List.of(attempt(18, 5))), 1e-9);
     }
 

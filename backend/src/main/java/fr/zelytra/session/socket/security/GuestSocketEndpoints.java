@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.Response;
  * Unauthenticated socket registration for console players joining a session from the web (issue
  * #682). Kept OUT of {@link SocketSecurityEndpoints} on purpose: its class-level {@code @Authenticated}
  * would force a Keycloak login the console player does not have. Here the session code IS the
- * credential — a token is only issued for a session that already exists, and it is bound to that code
+ * credential: a token is only issued for a session that already exists, and it is bound to that code
  * (see {@link SocketSecurityEntity} and the guest branch of the CONNECT handler in SessionSocket), so
  * a guest can neither create a session nor hop to another.
  *

@@ -17,7 +17,7 @@ import java.util.Map;
 
 /**
  * Read-only, anonymous aggregations over {@link AllianceAttempt} for the public statistics
- * dashboard (issue #673). Streams the rows and groups them in memory — fine at this volume; move
+ * dashboard (issue #673). Streams the rows and groups them in memory: fine at this volume; move
  * to SQL GROUP BY if the table ever grows large. Never exposes a raw row, only aggregates.
  */
 @Path("/stats")
@@ -28,7 +28,7 @@ public class AllianceStatsEndpoints {
 
     /**
      * The most ships a crew can realistically gather on one server. A Sea of Thieves server holds 5-6
-     * ships, and during a search every player sails alone on their own boat — so this is also the most
+     * ships, and during a search every player sails alone on their own boat, so this is also the most
      * players a search can ever land together, however many are looking (issue #720).
      */
     private static final int SHIPS_PER_SERVER = 5;
@@ -40,7 +40,7 @@ public class AllianceStatsEndpoints {
      * That flag holds whatever rule was in force the day the row was written: until #700 it meant
      * "the whole fleet reached one server" ({@code distinctServers == 1}), and since then it means
      * "at least two met". A search where three players out of four grouped up was therefore recorded
-     * as a failure in June and is a success today — same event, opposite answer, and the older row
+     * as a failure in June and is a success today: same event, opposite answer, and the older row
      * keeps its answer for ever. Adding them up gives a percentage that silently changes definition
      * partway through its own history.
      * <p>
@@ -61,8 +61,8 @@ public class AllianceStatsEndpoints {
 
     /**
      * One search-size band. Sizes are not comparable on convergence alone: the criterion is "two
-     * ships met", which a big search clears far more easily than a duo — it has more boats in the
-     * draw — while a big search is usually after five, not two (issue #720). Split them so each band
+     * ships met", which a big search clears far more easily than a duo (it has more boats in the
+     * draw), while a big search is usually after five, not two (issue #720). Split them so each band
      * can be read on its own terms.
      */
     public record SizeBand(String band, long attempts, long converged, double convergenceRate,
@@ -96,7 +96,7 @@ public class AllianceStatsEndpoints {
         double goalCompletion = averageGoalCompletion(rows);
         List<SizeBand> bySize = bandBreakdown(rows);
 
-        // Group by (day-of-week, hour) in UTC — [attempts, converged] per cell and per hour.
+        // Group by (day-of-week, hour) in UTC: [attempts, converged] per cell and per hour.
         Map<String, long[]> cells = new LinkedHashMap<>();
         Map<Integer, long[]> byHour = new LinkedHashMap<>();
         for (AllianceAttempt a : rows) {
@@ -144,7 +144,7 @@ public class AllianceStatsEndpoints {
      * The target is the smaller of the crew's size and what a server can hold: a pair is after two
      * ships, a group of eighteen cannot have more than {@value #SHIPS_PER_SERVER} together however
      * hard it tries. Scoring each attempt against its own target is what makes a duo and a
-     * server-lock attempt comparable — the plain convergence rate is not, since it asks the same
+     * server-lock attempt comparable: the plain convergence rate is not, since it asks the same
      * "did two meet?" question of both (issue #720).
      */
     // Package-private so the scoring can be unit-tested directly rather than through the endpoint.

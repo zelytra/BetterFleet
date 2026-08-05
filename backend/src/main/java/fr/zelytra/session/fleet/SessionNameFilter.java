@@ -6,7 +6,7 @@ import java.util.Set;
  * Minimal server-side content guard for user-set session names (issue #604). Session names are
  * public and visible to everyone, so a rename that trips the blocklist is rejected server-side.
  * <p>
- * This is a deliberately small starter list — a production guard should back this with a
+ * This is a deliberately small starter list: a production guard should back this with a
  * maintained multilingual dataset (including slurs) or a moderation service rather than a
  * hardcoded set, and use word-boundary matching to avoid false positives (the Scunthorpe problem).
  */

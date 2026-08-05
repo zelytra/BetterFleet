@@ -71,7 +71,7 @@ for (const dir of LOCALE_DIRS) {
     continue; // this locale is not in the repo; nothing of ours to seed with
   }
 
-  // Crowdin's own download, kept nested — this object is what gets uploaded back.
+  // Crowdin's own download, kept nested: this object is what gets uploaded back.
   const fromCrowdin = JSON.parse(readFileSync(path, "utf8"));
   const flatCrowdin = flatten(fromCrowdin);
 
@@ -101,7 +101,7 @@ for (const dir of LOCALE_DIRS) {
 if (!filled) {
   console.log(`\nCrowdin already has every ${locale} translation this repo has. Nothing to upload.`);
   // 3, not 1: the workflow has to tell "nothing to do" apart from "this script threw". When both were
-  // 1, the first run of this workflow died on EACCES and reported success — upload silently skipped,
+  // 1, the first run of this workflow died on EACCES and reported success: upload silently skipped,
   // job green. A seed that claims to have seeded without seeding is worse than one that fails.
   process.exit(3);
 }

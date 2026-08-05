@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
  * <p>
  * It owns a small dedicated pool rather than the shared managed executor: geolocation is slow and
  * bursty (a whole crew reports the same server at the end of a countdown) and has no business
- * competing with — or being mistaken for — the stats writes.
+ * competing with (or being mistaken for) the stats writes.
  */
 @ApplicationScoped
 public class GeoLocationResolver {
@@ -38,7 +38,7 @@ public class GeoLocationResolver {
 
     /**
      * Looks the server's geolocation up and broadcasts it to every fleet showing that server, and
-     * to the sessions directory — the country code is what the browser draws a region flag from.
+     * to the sessions directory: the country code is what the browser draws a region flag from.
      * Returns immediately; does nothing if it is already known or another lookup is in flight.
      * <p>
      * Both calls go through the {@link SessionManager} bean rather than being inlined here: that is
