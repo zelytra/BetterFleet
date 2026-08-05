@@ -3,7 +3,7 @@
  *
  * This repo's translations predate the Crowdin project. Only the English source was ever uploaded, so
  * strings that arrived here already translated are untranslated as far as Crowdin is concerned, and
- * it hands English back for them on download — which is what `check-untranslation.mjs` refuses. This
+ * it hands English back for them on download - which is what `check-untranslation.mjs` refuses. This
  * is the other half: put the missing translations *into* Crowdin so the sync has something to return.
  *
  * Run AFTER `crowdin download`, so the working tree holds what Crowdin currently has and HEAD holds
@@ -13,17 +13,17 @@
  * That patch-don't-rebuild shape is the whole safety argument. Uploading the repo's file wholesale
  * would depend on how Crowdin merges an upload that collides with an existing translation, which is
  * not something to bet a translator's work on. Handing Crowdin its own values straight back cannot
- * lose anything under any merge semantics — every string Crowdin already has is uploaded exactly as
+ * lose anything under any merge semantics - every string Crowdin already has is uploaded exactly as
  * Crowdin has it. Only the holes carry new content. It also self-corrects: if a translator filled one
  * of the holes ten minutes ago, the download has their version, it is no longer English, and this
  * leaves it alone.
  *
- * (Re-serialising moves integer-like keys — "0", "1", "10" — to the front in numeric order, so the
+ * (Re-serialising moves integer-like keys - "0", "1", "10" - to the front in numeric order, so the
  * file written here is not byte-identical to the download. Crowdin maps by key and this file is never
  * committed, so only the values matter, and every one of those is preserved.)
  *
  * A locale is required, and deliberately so. "Crowdin returned English" and "a translator decided the
- * English word is the translation" are the same thing to this script, and it cannot tell them apart —
+ * English word is the translation" are the same thing to this script, and it cannot tell them apart -
  * de's "Zwietracht" -> "Discord" is a real fix that this would happily revert. Italian is safe
  * because 40 strings reverting at once is a gap, not a decision. Do not reach for a --all flag.
  */
@@ -71,7 +71,7 @@ for (const dir of LOCALE_DIRS) {
     continue; // this locale is not in the repo; nothing of ours to seed with
   }
 
-  // Crowdin's own download, kept nested — this object is what gets uploaded back.
+  // Crowdin's own download, kept nested: this object is what gets uploaded back.
   const fromCrowdin = JSON.parse(readFileSync(path, "utf8"));
   const flatCrowdin = flatten(fromCrowdin);
 
@@ -101,7 +101,7 @@ for (const dir of LOCALE_DIRS) {
 if (!filled) {
   console.log(`\nCrowdin already has every ${locale} translation this repo has. Nothing to upload.`);
   // 3, not 1: the workflow has to tell "nothing to do" apart from "this script threw". When both were
-  // 1, the first run of this workflow died on EACCES and reported success — upload silently skipped,
+  // 1, the first run of this workflow died on EACCES and reported success: upload silently skipped,
   // job green. A seed that claims to have seeded without seeding is worse than one that fails.
   process.exit(3);
 }

@@ -101,7 +101,7 @@ watch(sessionId, () => {
     flex-shrink: 0;
     // On a tall window the cards flex to fill and nothing scrolls; on a short one the panel
     // scrolls rather than silently clipping the Discord card. Safe now that hovering brightens
-    // instead of scaling — a scale grew the card past the column and forced a scrollbar.
+    // instead of scaling - a scale grew the card past the column and forced a scrollbar.
     overflow-y: auto;
     overflow-x: hidden;
   }

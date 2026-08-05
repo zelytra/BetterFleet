@@ -6,10 +6,10 @@ import java.util.List;
  * Read-only projection of a {@link Fleet} for the sessions directory (issue #599). Mirrors the
  * frontend `PublicSession` interface the browser renders.
  *
- * @param directoryId stable, unguessable identity for this row, unrelated to the join code — it is
+ * @param directoryId stable, unguessable identity for this row, unrelated to the join code: it is
  *                    what lets a private session (whose code is withheld) still be keyed and
  *                    animated in the list.
- * @param sessionId   the joinable session code — <b>empty for a private session</b>, whose code is
+ * @param sessionId   the joinable session code, <b>empty for a private session</b>, whose code is
  *                    never published: holding that code is the whole difference between private and
  *                    public, so a private row is shown but cannot be joined from the browser.
  * @param region      ISO 3166-1 alpha-2 country code (lowercase) of the session owner's country,

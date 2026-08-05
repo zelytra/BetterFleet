@@ -20,21 +20,21 @@ export interface GithubLatestRelease {
 const OWNER = "zelytra";
 const REPO = "BetterFleet";
 
-/** The latest release, browsable by a human — the resilient fallback when no asset matches yet. */
+/** The latest release, browsable by a human - the resilient fallback when no asset matches yet. */
 export const GITHUB_RELEASES_URL = `https://github.com/${OWNER}/${REPO}/releases/latest`;
 
 /**
- * The latest release — its version and every attached asset (name, download URL, size) — read from
+ * The latest release - its version and every attached asset (name, download URL, size) - read from
  * the backend's `github/release/latest` proxy.
  *
  * The proxy reads GitHub server-side and caches the result, so the whole download page draws on one
  * shared, cached call instead of every visitor spending their own anonymous GitHub quota (60 req/h
- * per IP, shared behind a NAT) — the rate limit that used to leave asset tiles stuck on "coming
+ * per IP, shared behind a NAT) - the rate limit that used to leave asset tiles stuck on "coming
  * soon" even when the file existed. The shape is GitHub's own: version (leading "v" stripped) plus
  * each asset's name, direct download URL and size, Windows and Linux alike, so a new package
  * (`.rpm`, Flatpak, …) still appears the moment a release carries it.
  *
- * If the proxy is unreachable — offline backend, network error, non-OK status — it falls back to
+ * If the proxy is unreachable - offline backend, network error, non-OK status - it falls back to
  * reading GitHub's public REST API straight from the browser, the original path, so the page keeps
  * working (just without the shared cache). Either source resolves to an empty release on any failure
  * rather than throwing, so every caller's "nothing found" branch doubles as the "not published yet"
@@ -47,7 +47,7 @@ export async function fetchLatestRelease(): Promise<GithubLatestRelease> {
 }
 
 /**
- * The latest release from the backend proxy, or `null` — not an empty release — when the proxy can't
+ * The latest release from the backend proxy, or `null` - not an empty release - when the proxy can't
  * be reached or answers with an error. That `null` is the signal for {@link fetchLatestRelease} to
  * fall back to GitHub; a reachable proxy is authoritative, so its (possibly empty) release is used
  * as-is and a crowd never spills back onto per-visitor GitHub calls in the normal case.

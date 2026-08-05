@@ -1,8 +1,8 @@
 <!--
   The authed shell around the lobby, copied from FleetMenuNavigator's template and styles. The real
   one cannot be mounted here: it polls Tauri for the game state every 400ms and leaves the session on
-  unmount. This keeps its markup — the app's own HeaderComponent, the same .app-section/.content
-  layout — without the native plumbing.
+  unmount. This keeps its markup (the app's own HeaderComponent, the same .app-section/.content
+  layout) without the native plumbing.
 -->
 <template>
   <section class="app-section">

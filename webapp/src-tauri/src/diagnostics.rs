@@ -2,7 +2,7 @@
 // Steam Datagram Relay change). Sniffs the game's UDP flows over a fixed window
 // and reports per-flow packet volume, so the real game-server flow (sustained
 // traffic, remote port 30000-40000) can be told apart from the many sparse SDR
-// relay flows. This is purely additive instrumentation — it never touches the
+// relay flows. This is purely additive instrumentation: it never touches the
 // live detection state, it only observes.
 
 use std::collections::{HashMap, HashSet};
@@ -52,7 +52,7 @@ pub struct DiagnosticReport {
     pub udp_ports_powershell: Vec<u16>,
     pub total_packets: u32,
     pub distinct_flows: usize,
-    /// Flows whose remote port looks like a SoT server, ranked by volume — the
+    /// Flows whose remote port looks like a SoT server, ranked by volume: the
     /// server should stand out here.
     pub top_candidates: Vec<FlowStat>,
     /// Every observed flow, ranked by volume.
@@ -228,8 +228,8 @@ pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowSt
 }
 
 /// Linux raw-capture backend (#725). A single `AF_PACKET`/`SOCK_DGRAM` socket sees every IP packet
-/// crossing the host in both directions across all interfaces — no per-interface fan-out like the
-/// Windows path — and the kernel strips the link-layer header, so each datagram arrives
+/// crossing the host in both directions across all interfaces - no per-interface fan-out like the
+/// Windows path - and the kernel strips the link-layer header, so each datagram arrives
 /// network-layer-first and feeds the SAME `parse_game_flow` + `FlowAggregator` the Windows sniff
 /// does. Ranking-by-volume is therefore shared verbatim.
 ///
@@ -240,7 +240,7 @@ pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowSt
 pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
     let port_set: HashSet<u16> = game_ports.into_iter().collect();
     // AF_PACKET recv blocks; run the capture on a blocking thread so the detection task's runtime is
-    // never stalled, and await its result — mirroring how the Windows path awaits its sniff tasks.
+    // never stalled, and await its result - mirroring how the Windows path awaits its sniff tasks.
     match tokio::task::spawn_blocking(move || capture_af_packet(port_set, window)).await {
         Ok(flows) => flows,
         Err(e) => {
@@ -258,7 +258,7 @@ fn capture_af_packet(game_ports: HashSet<u16>, window: Duration) -> Vec<FlowStat
 
     // ETH_P_ALL, in network byte order because AF_PACKET takes its protocol big-endian (== htons).
     // SOCK_DGRAM (not SOCK_RAW) tells the kernel to strip the link-layer header, so recv() yields the
-    // IP packet directly — exactly what parse_game_flow (from_ip_slice) expects, as on Windows.
+    // IP packet directly - exactly what parse_game_flow (from_ip_slice) expects, as on Windows.
     const ETH_P_ALL: u16 = 0x0003;
     let protocol = Protocol::from(i32::from(ETH_P_ALL.to_be()));
     let socket = match Socket::new(Domain::PACKET, Type::DGRAM, Some(protocol)) {
@@ -309,7 +309,7 @@ fn capture_af_packet(game_ports: HashSet<u16>, window: Duration) -> Vec<FlowStat
 }
 
 /// macOS (and any other non-Windows, non-Linux target): no capture backend yet, so detection reports
-/// no server. Kept a stub deliberately — the desktop app ships for Windows and Linux.
+/// no server. Kept a stub deliberately - the desktop app ships for Windows and Linux.
 #[cfg(not(any(windows, target_os = "linux")))]
 pub async fn capture_flows(_game_ports: Vec<u16>, _window: Duration) -> Vec<FlowStat> {
     Vec::new()
@@ -318,7 +318,7 @@ pub async fn capture_flows(_game_ports: Vec<u16>, _window: Duration) -> Vec<Flow
 /// Picks the dominant Sea of Thieves server flow: the highest-volume flow whose
 /// remote port is in the SoT server range and that carries at least `min_packets`.
 /// Returns None when nothing qualifies (e.g. the main menu, which sends no server
-/// traffic). Volume is the discriminator — the real server pushes sustained traffic
+/// traffic). Volume is the discriminator: the real server pushes sustained traffic
 /// while the many Steam Datagram Relay flows are sparse, even though both can fall
 /// inside the plausible port range.
 pub fn pick_server_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowStat> {
@@ -328,14 +328,14 @@ pub fn pick_server_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowSta
         .max_by(|a, b| a.packets.cmp(&b.packets).then(a.bytes.cmp(&b.bytes)))
 }
 
-/// Picks the per-server session-coordinator flow — the one that identifies WHICH server a
+/// Picks the per-server session-coordinator flow: the one that identifies WHICH server a
 /// player is on. It is the sparse, two-way, plausible-SoT flow that everyone on a world
 /// instance shares, and it is deliberately NOT the busy gameplay flow (that is
 /// [`pick_server_flow`]).
 ///
 /// The busy flow is a per-client connection to an Azure game host whose IP is reused across
 /// different servers (issue #364: several distinct servers all ran on 51.103.72.36), so it
-/// cannot tell servers apart — hashing it merged different servers into one card. The session
+/// cannot tell servers apart: hashing it merged different servers into one card. The session
 /// flow's ip:port instead is identical for everyone on one server (case A: four players on
 /// different ships, one server, all on 20.33.49.115:31260) and differs between servers even on
 /// a shared host (cases B/D). `min_packets` is a small floor that rejects one-off stray packets;
@@ -355,7 +355,7 @@ pub fn pick_session_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowSt
                 && flow.inbound > 0
                 && flow.outbound > 0
                 && host.map_or(true, |h| !std::ptr::eq(*flow, h))
-                // The coordinator is sparse BY DEFINITION — a handful of packets against the
+                // The coordinator is sparse BY DEFINITION: a handful of packets against the
                 // host's hundreds. Any flow within 4x of the host's volume is host-class traffic
                 // (typically the previous server's gameplay flow caught in a window that straddled
                 // a server switch), and locking it would hand the fleet the ambiguous per-client
@@ -366,7 +366,7 @@ pub fn pick_session_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowSt
         // Among the remaining coordinator candidates, the most established one wins. The remote
         // endpoint terminates the ordering: coordinator packets are fixed-size (bytes = 76 x
         // packets across the whole corpus) and the coordinator local socket persists across
-        // servers, so (packets, bytes, local_port) alone can genuinely tie between two remotes —
+        // servers, so (packets, bytes, local_port) alone can genuinely tie between two remotes,
         // and a tie must not fall through to HashMap iteration order, or the locked identity
         // becomes nondeterministic.
         .max_by(|a, b| {
@@ -532,7 +532,7 @@ mod tests {
     }
 
     // The #364 corpus: real in-game captures, each scenario tagged with the in-game ground truth
-    // (sameServer). Every player has two plausible-SoT flows — a busy one (~1000 packets, the game
+    // (sameServer). Every player has two plausible-SoT flows: a busy one (~1000 packets, the game
     // host) and a sparse one (~4-8 packets, the session). Loaded from
     // tests/fixtures/detection-corpus.json.
     #[derive(Deserialize)]
@@ -559,8 +559,8 @@ mod tests {
     }
 
     // The fix for #364: the server a player is on is identified by the session-coordinator flow
-    // (pick_session_flow), not the busy gameplay flow. Across every scenario — same-server and
-    // different-server, including different servers sharing one Azure host — grouping the captures by
+    // (pick_session_flow), not the busy gameplay flow. Across every scenario (same-server and
+    // different-server, including different servers sharing one Azure host), grouping the captures by
     // the session flow's ip:port matches the ground truth exactly. The busy flow cannot: see the next
     // test. This drives the live identity, so it validates the shipped pick_session_flow directly.
     #[test]
@@ -591,7 +591,7 @@ mod tests {
     }
 
     // Why the shipped identity is wrong. #656 hashes the busy flow's IP, and cases B and D are two
-    // players on DIFFERENT servers that share one host IP (51.103.72.36) — so the busy IP merges
+    // players on DIFFERENT servers that share one host IP (51.103.72.36), so the busy IP merges
     // them. This is the false positive #364 was reopened for; the test pins that it is real, and that
     // ip:port would instead over-split the same-server case A.
     #[test]
@@ -686,8 +686,8 @@ mod tests {
     fn a_host_class_residual_is_never_the_session() {
         // Two busy-class flows in one accumulation (a window straddling a server switch: the new
         // host plus the old host's teardown, both bidirectional and in the SoT range). The sparse
-        // guard must reject the residual — locking it would report the ambiguous per-client host
-        // endpoint — and pick the true coordinator when present, or nothing at all.
+        // guard must reject the residual (locking it would report the ambiguous per-client host
+        // endpoint) and pick the true coordinator when present, or nothing at all.
         let residual_only = [
             flow(60445, "51.103.72.36", 30686, 450, 226, 224), // new host (busiest -> excluded)
             flow(55306, "51.103.72.36", 31037, 300, 150, 150), // old host residual: host-class
@@ -731,7 +731,7 @@ mod tests {
     fn merge_flows_accumulates_a_sparse_flow_across_windows() {
         // The busy host is in every window (that is why pick_session_flow is called at all); the
         // coordinator drips one packet per window, alternating direction. No single window has the
-        // coordinator both bidirectional and above the floor, but the accumulation does — the point.
+        // coordinator both bidirectional and above the floor, but the accumulation does, which is the point.
         let mut acc: HashMap<(u16, String, u16), FlowStat> = HashMap::new();
         let host = flow(61390, "51.103.45.67", 30970, 900, 450, 450);
 

@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Pure unit tests for the release assembly.
  * <p>
- * These deliberately avoid the live network path so the suite stays deterministic and offline-safe —
+ * These deliberately avoid the live network path so the suite stays deterministic and offline-safe -
  * mirroring {@link GithubApiTest}. The two seams are mocked as inputs to the static
  * {@link GithubLatestReleaseApi#assembleRelease(String, java.util.function.Function)}: the version
  * stands in for the manifest read, and the size-probe function stands in for the per-asset HEAD, so
@@ -40,7 +40,7 @@ class GithubLatestReleaseApiTest {
             return null;
         });
 
-        // The exact URLs — and therefore the exact Tauri v2 bundle file names — in a fixed order.
+        // The exact URLs - and therefore the exact Tauri v2 bundle file names - in a fixed order.
         assertEquals(List.of(EXE, MSI, DEB, APPIMAGE), probed);
         assertEquals(VERSION, release.version());
         assertTrue(release.assets().isEmpty(), "Nothing present → no assets");
@@ -93,7 +93,7 @@ class GithubLatestReleaseApiTest {
 
     @Test
     void assembleRelease_keepsAPresentAssetEvenWhenItsSizeIsUnknown() {
-        // A 200 with no Content-Length surfaces as size 0 (non-null) — still a real, downloadable
+        // A 200 with no Content-Length surfaces as size 0 (non-null) - still a real, downloadable
         // asset, so it must be kept rather than mistaken for missing.
         LatestRelease release =
                 GithubLatestReleaseApi.assembleRelease(VERSION, url -> url.equals(EXE) ? 0L : null);

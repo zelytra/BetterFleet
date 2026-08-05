@@ -137,7 +137,7 @@ onUnmounted(() => store.disconnect());
     }
   }
 
-  // Rows arrive one after another rather than the whole list landing at once — the list is
+  // Rows arrive one after another rather than the whole list landing at once - the list is
   // refreshed by the SSE, so this fires on the first load and for genuinely new sessions only
   // (keyed rows that are already there are left alone).
   .row-enter-active {

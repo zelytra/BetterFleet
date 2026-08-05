@@ -6,7 +6,7 @@ const BACKGROUND: [number, number, number] = [23, 26, 33];
  *
  * The palette is 25 saturated colours picked at random by the backend, and they were only ever used
  * as a thin border and as coloured text. Filling a bar with them puts white text on top, and at full
- * saturation 20 of the 24 fail WCAG AA against white — "#32D499" lands at 1.91:1, which is a label
+ * saturation 20 of the 24 fail WCAG AA against white: "#32D499" lands at 1.91:1, which is a label
  * you cannot read. Pulling them toward the background darkens every one of them by the same amount,
  * which keeps them all telling apart (the point of the colour) while making white legible on each.
  */
@@ -24,7 +24,7 @@ function parse(hex: string): [number, number, number] | null {
  *
  * Mixed here rather than with CSS `color-mix` or an rgba() overlay: the app ships in a Tauri v1
  * webview, and computing it means the result is one flat hex that renders the same everywhere and can
- * be asserted in a test. Falls back to the raw string when the colour is not a hex the backend sent —
+ * be asserted in a test. Falls back to the raw string when the colour is not a hex the backend sent:
  * it arrives over the socket, so it is whatever a client chose to send.
  */
 export function serverBarColor(color: string): string {

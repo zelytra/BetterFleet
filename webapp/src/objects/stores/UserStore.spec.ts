@@ -29,7 +29,7 @@ import {
   PlayerStates,
 } from "@/objects/fleet/Player.ts";
 
-// The values a brand-new player carries before touching any setting — what App.vue feeds init().
+// The values a brand-new player carries before touching any setting: what App.vue feeds init().
 const DEFAULTS: Player = {
   username: "",
   status: PlayerStates.CLOSED,

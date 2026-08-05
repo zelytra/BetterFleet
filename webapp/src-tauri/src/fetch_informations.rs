@@ -53,7 +53,7 @@ fn dynamic_sleep_ms(status: &GameStatus) -> u64 {
 /// or resolving the session identity takes the better part of a minute.
 const CAPTURE_WINDOW_MS: u64 = 2000;
 /// Minimum packets a plausible-SoT flow must carry within a window to be accepted as the busy
-/// gameplay host — our "in a game" signal AND the guard on the connection identity. The host
+/// gameplay host: our "in a game" signal AND the guard on the connection identity. The host
 /// pushes ~50-90 packets per second (corpus-weakest: 941 pkts/20s ≈ 94 per 2s window) while the
 /// session coordinator peaks around 5-6 packets per window, so 25 sits far above any sparse
 /// burst and far below any real host. It must stay well above the coordinator's burst rate:
@@ -63,7 +63,7 @@ const CAPTURE_WINDOW_MS: u64 = 2000;
 const MIN_SERVER_PACKETS: u32 = 25;
 /// Minimum ACCUMULATED packets for the sparse per-server session flow to be trusted as the server
 /// identity. Unlike the busy host, this flow is only a handful of packets spread across the whole
-/// session, so it is caught across several capture windows (see the accumulator in `init`) — the
+/// session, so it is caught across several capture windows (see the accumulator in `init`), the
 /// floor is low and only rejects one-off stray packets. pick_session_flow also requires it to be
 /// bidirectional. Tunable if in-game validation shows the session resolves too slowly / too eagerly.
 const MIN_SESSION_PACKETS: u32 = 3;
@@ -74,11 +74,11 @@ const SERVER_LOST_GRACE_SECS: u64 = 12;
 /// Decides which session endpoint `(local_port, remote_ip, remote_port)` to report for the CURRENT
 /// game connection, given the flows accumulated so far. Once an endpoint is locked it is sticky:
 /// it only moves to a different candidate when that candidate has accumulated at least TWICE the
-/// locked flow's packets — a genuine early mispick being corrected — never on transient ranking
+/// locked flow's packets (a genuine early mispick being corrected), never on transient ranking
 /// noise. Without the stickiness the reported server (and its card in the fleet) flaps whenever
 /// two sparse flows trade places in the accumulation. A quiet spell (no candidate this cycle)
-/// keeps the lock: the session flow duty-cycles, and identity is not a liveness signal — the busy
-/// host flow is. Pure so the locking policy is unit-tested deterministically.
+/// keeps the lock: the session flow duty-cycles, and identity is not a liveness signal (the busy
+/// host flow is). Pure so the locking policy is unit-tested deterministically.
 pub(crate) fn update_session_lock(
     locked: Option<(u16, String, u16)>,
     accumulated: &[crate::diagnostics::FlowStat],
@@ -120,7 +120,7 @@ pub(crate) fn update_session_lock(
 }
 
 /// Drops from a captured window every flow whose exact (local_port, remote_ip, remote_port) key
-/// was quarantined at the last connection change — the previous game's flows, still visible while
+/// was quarantined at the last connection change: the previous game's flows, still visible while
 /// its socket tears down. New-game flows always carry fresh keys, so they pass untouched.
 pub(crate) fn drop_quarantined(
     window: &[crate::diagnostics::FlowStat],
@@ -145,11 +145,11 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
         let mut game_flows: std::collections::HashMap<(u16, String, u16), crate::diagnostics::FlowStat> =
             std::collections::HashMap::new();
         // The game CONNECTION we are accumulating for: (host remote ip, host LOCAL port). The local
-        // port — not the host IP — is what identifies a game: consecutive servers very often share
+        // port (not the host IP) is what identifies a game: consecutive servers very often share
         // one Azure host IP (the whole #364 story; live testing hit 51.103.72.36 across several
         // distinct servers in a row), but the game opens a fresh socket per server, so a new local
         // port means a new game even on an identical host IP. Keying the reset on the host IP alone
-        // let the previous game's session flow — which had the entire session to accumulate — stay
+        // let the previous game's session flow (which had the entire session to accumulate) stay
         // in the map and outweigh the new server's coordinator forever (stale identity, seen live
         // on 2026-07-21 as two split players still showing one shared card).
         let mut game_connection: Option<(String, u16)> = None;
@@ -199,7 +199,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             // Game process but no UDP sockets -> still launching. UNLESS we are mid-game: an empty
             // list there is almost always a transient socket-table enumeration failure
             // (get_udp_connections returns empty on error too), and regressing the status to
-            // Started makes the frontend leave + rejoin the server — a fleet-visible flap from one
+            // Started makes the frontend leave + rejoin the server: a fleet-visible flap from one
             // failed netstat call. Hold the InGame state instead and let the 12s host-silence
             // grace decide, exactly as for a quiet capture window.
             let udp_ports = game_udp_candidate_ports(pid);
@@ -236,7 +236,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             }
 
             // Sniff every game UDP port for a short window and rank the flows by volume. The busy
-            // plausible-SoT flow is the Azure gameplay host — a reliable "in a game" signal, but its
+            // plausible-SoT flow is the Azure gameplay host: a reliable "in a game" signal, but its
             // IP is reused across different servers, so it is NOT the server identity. The identity is
             // the sparse per-server session flow (issue #364): a handful of packets spread over the
             // whole session, shared by everyone on the world instance. Because a single window often
@@ -250,7 +250,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
 
             match crate::diagnostics::pick_server_flow(&window_flows, MIN_SERVER_PACKETS) {
                 Some(host) => {
-                    // In a game. A new CONNECTION (host ip + local port) means a new game — drop the
+                    // In a game. A new CONNECTION (host ip + local port) means a new game: drop the
                     // old accumulation and lock. Comparing host IPs is not enough: different servers
                     // share one Azure host, and the previous game's session flow would otherwise
                     // out-accumulate the new one forever.
@@ -272,7 +272,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                         game_connection = Some(connection);
                     }
 
-                    // Accumulate this window — minus quarantined old-game flows — then (re)settle
+                    // Accumulate this window (minus quarantined old-game flows) then (re)settle
                     // the locked session endpoint.
                     let clean_window = drop_quarantined(&window_flows, &quarantine);
                     crate::diagnostics::merge_flows(&mut game_flows, &clean_window);
@@ -282,7 +282,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                         update_session_lock(locked_session.take(), &accumulated, MIN_SESSION_PACKETS);
 
                     // Until the session flow resolves, report in-game with NO server rather than the
-                    // ambiguous host IP — the fleet must never group players merely by a shared host.
+                    // ambiguous host IP: the fleet must never group players merely by a shared host.
                     let (ip, port) = match &locked_session {
                         Some((_, ip, port)) => (ip.clone(), *port),
                         None => (String::new(), 0),
@@ -340,7 +340,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                         } else {
                             // Still holding: the game is deemed alive, so the window's packets count.
                             // The session flow drips ~1 packet every 2.5-5s and the host is known to
-                            // gap — discarding host-silent windows would throw away exactly the
+                            // gap: discarding host-silent windows would throw away exactly the
                             // packets the identity is waiting for and stretch resolution.
                             let clean_window = drop_quarantined(&window_flows, &quarantine);
                             crate::diagnostics::merge_flows(&mut game_flows, &clean_window);
@@ -351,7 +351,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                                 &accumulated,
                                 MIN_SESSION_PACKETS,
                             );
-                            // If this very window completed the lock, publish it — the status is
+                            // If this very window completed the lock, publish it: the status is
                             // still InGame under the grace, only the identity was missing.
                             if let Some((_, ip, port)) = &locked_session {
                                 let mut api_lock = api.write().await;
@@ -416,7 +416,7 @@ pub(crate) fn get_udp_connections(target_pid: usize) -> Vec<u16> {
     return ports.into_iter().collect::<std::collections::HashSet<u16>>().into_iter().collect();
 }
 
-/// Locates the running Sea of Thieves game process(es), returning their PIDs as strings — the same
+/// Locates the running Sea of Thieves game process(es), returning their PIDs as strings - the same
 /// shape `find_pid_of` returns, so the detection loop around it is unchanged. This is the platform
 /// seam for "is the game running?".
 ///
@@ -427,7 +427,7 @@ pub(crate) fn find_game_pids() -> Vec<String> {
 }
 
 /// Linux under Proton: the game process's `comm` is `CrBrowserMain` and its `exe` is the Wine
-/// loader — only the **command line** carries `…/SotGame.exe` (verified live on Proton Experimental).
+/// loader - only the **command line** carries `…/SotGame.exe` (verified live on Proton Experimental).
 /// So match on `cmd()`, and skip the Unreal CEF helper subprocesses that share the same tree. (#725)
 #[cfg(target_os = "linux")]
 pub(crate) fn find_game_pids() -> Vec<String> {
@@ -454,7 +454,7 @@ pub(crate) fn cmd_is_sot_game(cmd: &[String]) -> bool {
         && !joined.contains("--type=")
 }
 
-/// The candidate UDP ports to sniff for the located game — the platform seam feeding the capture.
+/// The candidate UDP ports to sniff for the located game - the platform seam feeding the capture.
 ///
 /// Windows/macOS: the game process owns its sockets, so these are just its UDP ports (byte-identical
 /// to the previous direct `get_udp_connections(pid)` call).
@@ -506,7 +506,7 @@ pub(crate) struct ProcNode {
 /// `sot_pid`, from the full process map.
 ///
 /// Under Proton the wineserver is neither the game nor its parent. Verified live (Proton
-/// Experimental): the game and its wineserver are **direct siblings** — both children of the same
+/// Experimental): the game and its wineserver are **direct siblings** - both children of the same
 /// `…─reaper─srt-bwrap─pv-adverb`. So the primary match is "the wineserver sharing the game's
 /// parent". A shared-ancestor walk (closest common ancestor wins) backs it up for Proton layouts
 /// where the pair is not a direct sibling, which also disambiguates several concurrent wineservers.
@@ -776,7 +776,7 @@ mod tests {
     #[test]
     fn no_candidate_keeps_the_current_lock_through_quiet_spells() {
         // The session flow duty-cycles (live capture: active 10s out of 20s). Its silence must not
-        // drop the lock — identity is not liveness.
+        // drop the lock: identity is not liveness.
         let lock = Some((52354, "145.190.66.42".to_string(), 30034));
         let accumulated = [host()];
         assert_eq!(update_session_lock(lock.clone(), &accumulated, 3), lock);
@@ -813,7 +813,7 @@ mod tests {
     fn the_stale_previous_game_session_flow_must_be_cleared_not_outranked() {
         // The live false positive of 2026-07-21: after a server switch on the SAME Azure host, the
         // previous game's session flow (a whole session of accumulation) can never be outranked by
-        // the new server's coordinator within a play session — 2x of hundreds is unreachable at
+        // the new server's coordinator within a play session: 2x of hundreds is unreachable at
         // ~1 packet per 2.5s. This pins WHY the loop must clear the accumulation per CONNECTION
         // (host ip + local port) instead of per host IP: with the stale flow still in the map, the
         // lock stays on the OLD server's endpoint.
@@ -823,7 +823,7 @@ mod tests {
             flow(52354, "145.190.66.42", 30034, 240, 120, 120), // stale: a full session accumulated
             flow(55329, "145.190.66.42", 30099, 8, 4, 4),      // the new server's coordinator
         ];
-        // Without clearing, the stale endpoint wins — the false merge observed live.
+        // Without clearing, the stale endpoint wins: the false merge observed live.
         assert_eq!(
             update_session_lock(stale_lock, &accumulated, 3),
             Some((52354, "145.190.66.42".to_string(), 30034))
@@ -888,7 +888,7 @@ mod tests {
     }
 
     // Linux game-matching by command line (#725). The game's `comm` is `CrBrowserMain` and its `exe`
-    // is the Wine loader under Proton, so only `cmd()` identifies it — verified against live /proc.
+    // is the Wine loader under Proton, so only `cmd()` identifies it - verified against live /proc.
     #[cfg(target_os = "linux")]
     mod game_matching {
         use crate::fetch_informations::cmd_is_sot_game;
@@ -961,7 +961,7 @@ mod tests {
                 node(4, Some(3), "srt-bwrap"),
                 node(5, Some(4), "pv-adverb"),
                 node(6, Some(5), "CrBrowserMain"), // the SoT game process (comm != SotGame.exe)
-                node(7, Some(5), "wineserver"),    // its wineserver — same parent as the game
+                node(7, Some(5), "wineserver"),    // its wineserver - same parent as the game
                 node(8, Some(5), "python3"),       // proton launcher, decoy sibling
                 node(9, Some(5), "xalia.exe"),     // decoy sibling
             ])

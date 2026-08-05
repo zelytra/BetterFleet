@@ -2,13 +2,13 @@
 #
 # This repo was translated before the Crowdin project existed, and the sync only ever uploaded the
 # English source. So Crowdin holds no translation for the strings that arrived here already
-# translated, and fills them with the source text on download — 40 Italian strings came back as
+# translated, and fills them with the source text on download: 40 Italian strings came back as
 # English on the first real sync ("Impostazioni" -> "Settings"), which is what the sync's own check
 # now refuses. Refusing it keeps the app correct but leaves the sync red forever. This is the fix:
 # put the missing translations into Crowdin so there is something to hand back.
 #
 # Run it by hand (Actions > Crowdin seed > Run workflow), one language at a time, and expect to run it
-# roughly never again — once a language is seeded it stays seeded.
+# roughly never again: once a language is seeded it stays seeded.
 #
 # The language input has no default and no "all" option on purpose. This uploads exactly the strings
 # where Crowdin returned English and the repo has a translation, and nothing can tell that apart from
@@ -48,7 +48,7 @@ jobs:
 
       # Download first, so what gets uploaded is Crowdin's own current content with only the holes
       # patched. Rebuilding the file from the repo instead would depend on how Crowdin merges an
-      # upload that collides with an existing translation — not something to bet a translator's work
+      # upload that collides with an existing translation, not something to bet a translator's work
       # on. This also self-corrects: a string a translator filled an hour ago comes back translated,
       # so it is no longer a hole and gets left alone.
       - name: Read what Crowdin has today
@@ -61,7 +61,7 @@ jobs:
         env:
           # The inputs above only reach the action's own built-in commands. Everything here goes
           # through `command:`, i.e. the raw CLI, which reads its credentials from these two
-          # variables — without them it fails with "Required option api_token is missing".
+          # variables: without them it fails with "Required option api_token is missing".
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
@@ -82,8 +82,8 @@ jobs:
             0) echo "seed=true"  >> "$GITHUB_OUTPUT" ;;
             3) echo "seed=false" >> "$GITHUB_OUTPUT" ;;
             # Anything else is the script falling over, and it has to fail the job rather than skip the
-            # upload quietly. The first run of this workflow did exactly that — EACCES, no upload,
-            # green tick — because a crash and a clean no-op were the same signal.
+            # upload quietly. The first run of this workflow did exactly that (EACCES, no upload,
+            # green tick) because a crash and a clean no-op were the same signal.
             *) echo "::error::the seed script exited $code — see above. Nothing was uploaded."
                exit "$code" ;;
           esac
@@ -91,7 +91,7 @@ jobs:
       # Two different namespaces meet here, and conflating them is what made the first `es` seed fail
       # with "Language 'es' doesn't exist in the project". The step above works on the FILE, named by
       # the two-letter code (es.json, via %two_letters_code% in crowdin.yml). This step talks to the
-      # Crowdin API, which wants the project's LANGUAGE ID — and that is a Crowdin-side setting: it is
+      # Crowdin API, which wants the project's LANGUAGE ID, and that is a Crowdin-side setting: it is
       # `it`, `fr` and `de` here, but Spanish is a regional variant (es-ES / es-MX / …) whose id is
       # not `es`. Pass crowdin_language when the two differ; the file locale is the default because
       # for every other language they are the same string.

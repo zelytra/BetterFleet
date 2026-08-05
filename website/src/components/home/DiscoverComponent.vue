@@ -204,7 +204,7 @@ section {
     display: none;
   }
 
-  // Below $lap — phones and tablets (#670): the tabbed board (35px tabs hiding two thirds of the
+  // Below $lap, phones and tablets (#670): the tabbed board (35px tabs hiding two thirds of the
   // content, inside a fixed 1200px section) becomes three stacked cards, everything visible.
   // Capped at 560px so tablets keep a readable line length.
   @media (max-width: $lap) {

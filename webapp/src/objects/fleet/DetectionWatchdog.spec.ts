@@ -5,7 +5,7 @@ import {
 } from "@/objects/fleet/DetectionWatchdog.ts";
 import { PlayerStates } from "@/objects/fleet/Player.ts";
 
-// The guided-diagnostic offer (#688) must fire once, late, and never mid-countdown — these pin the
+// The guided-diagnostic offer (#688) must fire once, late, and never mid-countdown: these pin the
 // timing rules of the pure watchdog.
 
 const T0 = 1_000_000;

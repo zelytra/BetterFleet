@@ -6,7 +6,7 @@ A signed APT repo for BetterFleet, so Debian/Ubuntu/derivatives users get:
 sudo apt install betterfleet
 ```
 
-instead of a manual `.deb` download. Sibling to `deployment/aur/` (the Arch side of #740) — see that
+instead of a manual `.deb` download. Sibling to `deployment/aur/` (the Arch side of #740): see that
 directory's README for the AUR package. Both repackage the same release artifact: the `.deb` built
 by the Linux leg of `publish-tauri` in `.github/workflows/release.yml` (#727/#739 bundle it,
 #728/#737 publish it).
@@ -18,10 +18,10 @@ static files on **GitHub Pages**, served from the `gh-pages` branch under `/apt/
 picked over aptly for this: one config file (`conf/distributions`), no daemon/state beyond the repo
 directory itself, and `includedeb` + `deleteunreferenced` is exactly the "add the new version, drop
 the old blob" operation a release needs. GitHub Pages was picked over attaching a repo tree to each
-release because APT needs one stable URL to poll — release assets are per-tag and don't give you
+release because APT needs one stable URL to poll: release assets are per-tag and don't give you
 that.
 
-One distro-agnostic suite (`stable`, `amd64` only) — the app has no per-Debian/Ubuntu-release
+One distro-agnostic suite (`stable`, `amd64` only): the app has no per-Debian/Ubuntu-release
 dependency, so there's no need to mirror upstream's per-codename structure.
 
 ## Repo structure
@@ -34,7 +34,7 @@ deployment/apt/
 ```
 
 The *published* repo (reprepro's `db/`, `dists/`, `pool/`, plus the exported public key) is
-generated output — it lives only on the `gh-pages` branch, never in `master`/feature branches, and
+generated output: it lives only on the `gh-pages` branch, never in `master`/feature branches, and
 is never hand-edited there. `publish.sh` regenerates `conf/distributions` on that branch from this
 directory on every run, so this file is always the one to edit.
 
@@ -54,17 +54,17 @@ directory on every run, so this file is always the one to edit.
 **Guarded, on purpose**: the whole job is `continue-on-error: true` and every real step is skipped
 if `APT_GPG_PRIVATE_KEY` isn't set (a warning is logged instead). Nothing here is in
 `sync-version-to-master`'s `needs`, so this job cannot hold up or fail the Windows/Linux/backend/
-website publish steps — either because the secret isn't configured yet, or because of an
+website publish steps: either because the secret isn't configured yet, or because of an
 unexpected failure once it is.
 
-## Secrets this needs (not yet configured — nothing is invented/guessed here)
+## Secrets this needs (not yet configured; nothing is invented/guessed here)
 
 | Secret | Required | What |
 |---|---|---|
 | `APT_GPG_PRIVATE_KEY` | Yes, to turn this on | ASCII-armored private key the repo's `Release` file is signed with |
 | `APT_GPG_PASSPHRASE` | Only if the key has one | Passphrase for the key above |
 
-Until `APT_GPG_PRIVATE_KEY` is set, `publish-apt` runs and no-ops on every release — the AUR package
+Until `APT_GPG_PRIVATE_KEY` is set, `publish-apt` runs and no-ops on every release: the AUR package
 and Windows/Linux downloads are unaffected either way.
 
 ### Generate the key
@@ -91,19 +91,19 @@ Paste `apt-private.asc`'s contents into a repo secret named `APT_GPG_PRIVATE_KEY
 (Settings → Secrets and variables → Actions), then delete the local file. If you gave the key a
 passphrase instead of `%no-protection`, also add `APT_GPG_PASSPHRASE`.
 
-The key expires in 2 years (`Expire-Date: 2y`) — past that, signing fails until it's rotated
+The key expires in 2 years (`Expire-Date: 2y`); past that, signing fails until it's rotated
 (regenerate, update the secret, and the next release re-publishes the new publish key automatically).
 
 ### Enable GitHub Pages (one-time, and only after the secret is set)
 
 The `gh-pages` branch doesn't exist until the first successful `publish-apt` run creates it, and
-GitHub's branch picker only lists branches that already exist — so, in order:
+GitHub's branch picker only lists branches that already exist, so in order:
 
 1. Add `APT_GPG_PRIVATE_KEY` (and `APT_GPG_PASSPHRASE` if applicable) as above.
 2. Cut the next release. `publish-apt` creates and pushes `gh-pages`.
 3. Settings → Pages → Source: "Deploy from a branch" → Branch: `gh-pages`, folder `/ (root)`.
 
-After that, every future release just pushes to `gh-pages` and Pages redeploys on its own — no
+After that, every future release just pushes to `gh-pages` and Pages redeploys on its own: no
 further manual steps.
 
 ## Installing (end users)
@@ -123,7 +123,7 @@ sudo apt update
 sudo apt install betterfleet
 ```
 
-`apt upgrade` picks up new releases from then on — no reinstalling the key or repo entry.
+`apt upgrade` picks up new releases from then on: no reinstalling the key or repo entry.
 
 ## Status
 
@@ -135,10 +135,10 @@ actually works. Until then `publish-apt` runs harmlessly as a no-op on every rel
 
 Same model as the AUR package (see `deployment/aur/README.md`): packet capture needs a capability
 granted to a separate helper (#726), not the GUI. Nothing about repackaging the `.deb` here changes
-that — the postinst behavior is whatever ships inside the `.deb` itself.
+that: the postinst behavior is whatever ships inside the `.deb` itself.
 
 ## Non-goals (here)
 
-- `.rpm` / COPR (Fedora) — optional item on #740, not attempted.
-- arm64 — the release only builds `amd64`; nothing to publish for other architectures yet.
-- Wiring the website download screen to show this command — #730, out of scope for this change.
+- `.rpm` / COPR (Fedora): optional item on #740, not attempted.
+- arm64: the release only builds `amd64`; nothing to publish for other architectures yet.
+- Wiring the website download screen to show this command (#730), out of scope for this change.

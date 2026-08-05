@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * <p>
  * These deliberately avoid constructing {@link GithubApi} (whose constructor performs a live
  * network call to GitHub) so the suite stays deterministic and offline-safe. The real parsing
- * logic — including the {@code nsis.zip -> exe} rewrite — is exercised through the static
+ * logic (including the {@code nsis.zip -> exe} rewrite) is exercised through the static
  * {@link GithubApi#parseGithubRelease(String)} helper.
  */
 class GithubApiTest {

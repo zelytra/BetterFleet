@@ -77,7 +77,7 @@ section {
     gap: 70px;
 
     .card {
-      // Never wider than the viewport minus the page's breathing room — the parchment SVG scales.
+      // Never wider than the viewport minus the page's breathing room: the parchment SVG scales.
       width: min(350px, calc(100vw - 40px));
       height: 190px;
       display: flex;
@@ -104,8 +104,8 @@ section {
   }
 }
 
-// Below $lap — phones and tablets (#670): three 190px parchment cards (needing ~1200px side by
-// side) become one compact three-column band; the numbers stay the information, the title goes —
+// Below $lap, phones and tablets (#670): three 190px parchment cards (needing ~1200px side by
+// side) become one compact three-column band; the numbers stay the information, the title goes:
 // a strip of counters explains itself. Capped at 560px so tablet widths don't stretch it thin.
 @media (max-width: $lap) {
   section {
@@ -137,7 +137,7 @@ section {
         gap: 4px;
         padding: 2px 4px;
 
-        // .card.important is more specific than the plain background: none above — without this
+        // .card.important is more specific than the plain background: none above. Without this
         // the online-players column keeps its green parchment inside the flat band.
         &.important {
           background: none;

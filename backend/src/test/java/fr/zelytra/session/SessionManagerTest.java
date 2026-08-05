@@ -332,7 +332,7 @@ public class SessionManagerTest {
 
     @Test
     public void joinSession_MistypedCodeWhileInASession_KeepsPlayerInTheirCurrentSession() {
-        // Issue #733: a player already in a session mistypes a join code — a session id that does
+        // Issue #733: a player already in a session mistypes a join code, a session id that does
         // not exist. The failed join must be a no-op: they must NOT be silently dropped from the
         // session they were in. The bug evicts them before checking the target exists.
         Session socket = Mockito.mock();
@@ -365,7 +365,7 @@ public class SessionManagerTest {
         // Issue #733: the refusal frame (SESSION_NOT_FOUND / CONNECTION_REFUSED / OUTDATED_CLIENT)
         // is the last thing the server says before hanging up. It is written on the async remote,
         // which returns before the frame is on the wire, so closing on the very next line can beat
-        // it — and the client never learns why it was disconnected. The close must wait for the send.
+        // it, and the client never learns why it was disconnected. The close must wait for the send.
         Session socket = Mockito.mock();
         when(socket.getId()).thenReturn("1");
         when(socket.isOpen()).thenReturn(true);
@@ -380,7 +380,7 @@ public class SessionManagerTest {
         Mockito.verify(async).sendText(Mockito.anyString(), onSent.capture());
         Mockito.verify(socket, Mockito.never()).close();
 
-        // Once the frame is actually flushed, the socket closes — so the client is always told why.
+        // Once the frame is actually flushed, the socket closes, so the client is always told why.
         onSent.getValue().onResult(new SendResult());
         Mockito.verify(socket).close();
     }

@@ -51,8 +51,8 @@ section {
     display: none;
   }
 
-  // Below $lap — phones and tablets (#670): three huge centred desktop columns (whose 200px gaps
-  // and clipped paragraphs never fit here) become titled icon-left cards — full copy kept, a
+  // Below $lap, phones and tablets (#670): three huge centred desktop columns (whose 200px gaps
+  // and clipped paragraphs never fit here) become titled icon-left cards: full copy kept, a
   // third of the height. Capped at 560px so tablets keep a readable line length.
   @media (max-width: $lap) {
     flex-direction: column;

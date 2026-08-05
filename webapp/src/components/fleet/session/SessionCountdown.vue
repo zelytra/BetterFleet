@@ -90,7 +90,7 @@ let updateTimer = setInterval(() => {
   delta.value = delta.value.minusNanos(start.nano());
   // 16 ms (~60 fps), not 5 ms (200 Hz): at 200 Hz each tick allocated js-joda LocalTimes and wrote
   // `delta` faster than webkit2gtk (Linux) can repaint, so callbacks bunched up and the countdown
-  // stuttered. Firing is bounded by network sync, not this interval — 60 fps is smooth and cheap.
+  // stuttered. Firing is bounded by network sync, not this interval - 60 fps is smooth and cheap.
 }, 16);
 
 const props = defineProps({
@@ -124,7 +124,7 @@ onBeforeRouteLeave((_to, _from, next) => {
   height: 100%;
   background: var(--primary-background);
   // A full-screen takeover that never said where it stacks. Positioned and last in the DOM, it
-  // covers everything unpositioned — which is why this always looked right. But a sibling subtree
+  // covers everything unpositioned - which is why this always looked right. But a sibling subtree
   // carrying a z-index of its own paints above it whatever the DOM order says, and .visibility has
   // z-index: 1 (FleetLobby.vue) so its open list can escape the rows underneath. The select won, and
   // the countdown drew behind it.

@@ -3,7 +3,7 @@
     <img src="@/assets/icons/full-logo.svg" alt="app logo" />
     <!-- The SSO check is the app's one real wait: until it answers we cannot know which card to
          show, and guessing "signed out" flashed the login screen at players who were not. So the
-         screen stays empty until the check settles, then the two cards swap out-in — never
+         screen stays empty until the check settles, then the two cards swap out-in: never
          overlapped, so nothing is swapped under the eye in one frame. -->
     <transition name="swap" mode="out-in">
       <div

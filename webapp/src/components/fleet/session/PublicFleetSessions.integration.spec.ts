@@ -140,7 +140,7 @@ describe("public sessions browser, against a fake backend", () => {
     await wrapper.find(".session-row").trigger("click");
     await settle();
 
-    // The row is the natural gesture — you can see the session you want. It stayed inert instead, and
+    // The row is the natural gesture: you can see the session you want. It stayed inert instead, and
     // the way in was a separate button elsewhere on the screen.
     expect(wrapper.text()).toContain(fr.session.choice.modal.title);
   });
@@ -159,7 +159,7 @@ describe("public sessions browser, against a fake backend", () => {
     await settle();
 
     // The backend withholds a private session's code, so the row holds "". Joining "" is how a
-    // session gets *created* — clicking one private row would have opened a brand new session and
+    // session gets *created*: clicking one private row would have opened a brand new session and
     // dropped the player into it.
     expect(fakeBackend.sessions.size).toBe(before);
     expect(session.sessionId).toBeFalsy();
@@ -259,7 +259,7 @@ describe("public sessions browser, against a fake backend", () => {
 
   it("explains a refused join instead of putting REFUSED on screen", async () => {
     // The backend refuses exactly one thing: this account is already in this session on a live
-    // socket — the "je me fais refused" of a second window.
+    // socket (the "je me fais refused" of a second window).
     fakeBackend.addSession({
       sessionId: "42B69X",
       customName: "Busy",

@@ -1,11 +1,11 @@
 # Crowdin synchronisation.
 #
 # This workflow *is* the configuration. It used to live in the Crowdin web UI, where nobody on the
-# team could see it, review it, or remember what had been clicked — so it is spelled out here
+# team could see it, review it, or remember what had been clicked, so it is spelled out here
 # instead, in the order it happens:
 #
 #   1. push the English source (source.json) to Crowdin
-#   2. machine-translate German, Spanish and Italian — and NOT French, which stays human-only
+#   2. machine-translate German, Spanish and Italian, and NOT French, which stays human-only
 #   3. pull every translation back
 #   4. rewrite en.json as a byte-for-byte copy of the English source
 #   5. open a PR with whatever changed
@@ -20,11 +20,11 @@
 #     and the result looks random.
 #
 # Secrets: CROWDIN_PROJECT_ID and CROWDIN_PERSONAL_TOKEN (Crowdin > Account Settings > API), plus
-# RELEASE_PAT, which does both git halves here — it needs Contents: write (to create the branch,
+# RELEASE_PAT, which does both git halves here; it needs Contents: write (to create the branch,
 # which a ruleset forbids GITHUB_TOKEN from doing) and Pull requests: write (to open the PR, which
 # this repo forbids GITHUB_TOKEN from doing, and which also gets CI to run on it).
 #
-# Variable: CROWDIN_MT_ENGINE_ID — the machine-translation engine to use, from
+# Variable: CROWDIN_MT_ENGINE_ID, the machine-translation engine to use, from
 # Crowdin > Resources > Machine Translation. Leave it unset and step 2 is skipped, which is safe:
 # translations then simply wait for a human.
 
@@ -75,19 +75,19 @@ jobs:
         env:
           # The inputs above only reach the action own built-in commands. Everything here goes
           # through `command:`, i.e. the raw CLI, which reads its credentials from these two
-          # variables — without them it fails with "Required option api_token is missing".
+          # variables: without them it fails with "Required option api_token is missing".
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
       # French is deliberately absent from the language list: it is the one language the team
       # writes by hand, and a machine draft sitting in Crowdin marked "translated" is worse than an
-      # empty string — it hides the work still to do.
+      # empty string: it hides the work still to do.
       #
       # These are Crowdin LANGUAGE IDS, not the two-letter codes the locale files are named after.
-      # They match for de and it; Spanish does NOT — the project holds it as a regional variant
+      # They match for de and it; Spanish does NOT: the project holds it as a regional variant
       # (es-ES / es-MX / …), so `--language=es` is rejected with "Language 'es' doesn't exist in the
       # project", which the seed workflow hit for real. This step is skipped today (no
-      # CROWDIN_MT_ENGINE_ID set), so the wrong id is inert — correct the `es` line below before
+      # CROWDIN_MT_ENGINE_ID set), so the wrong id is inert: correct the `es` line below before
       # setting that variable, or the first machine-translation run fails here.
       - name: Machine-translate everything except French
         if: vars.CROWDIN_MT_ENGINE_ID != ''
@@ -106,7 +106,7 @@ jobs:
         env:
           # The inputs above only reach the action own built-in commands. Everything here goes
           # through `command:`, i.e. the raw CLI, which reads its credentials from these two
-          # variables — without them it fails with "Required option api_token is missing".
+          # variables: without them it fails with "Required option api_token is missing".
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
@@ -120,11 +120,11 @@ jobs:
         env:
           # The inputs above only reach the action own built-in commands. Everything here goes
           # through `command:`, i.e. the raw CLI, which reads its credentials from these two
-          # variables — without them it fails with "Required option api_token is missing".
+          # variables: without them it fails with "Required option api_token is missing".
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
-      # English is the source language, so Crowdin never hands back an en.json — it would be
+      # English is the source language, so Crowdin never hands back an en.json: it would be
       # translating English into English. The app still imports one, so it is copied here. This is
       # also the backstop if the project's source language is ever wrong: en.json cannot drift.
       - name: Keep en.json a copy of the English source
@@ -132,7 +132,7 @@ jobs:
           cp webapp/src/assets/locales/source.json webapp/src/assets/locales/en.json
           cp website/src/assets/locales/source.json website/src/assets/locales/en.json
 
-      # Fails fast, before the branch is even pushed, on a locale Crowdin hands back broken — that
+      # Fails fast, before the branch is even pushed, on a locale Crowdin hands back broken: that
       # takes the app down on boot. CI on the PR would catch it too, now that RELEASE_PAT opens it,
       # but a sync that stops here says what went wrong far more plainly than a build failure on a
       # PR full of translation diffs.
@@ -166,17 +166,17 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B chore/crowdin-translations
           git commit -am "chore(i18n): sync translations from Crowdin"
-          # Uses the checkout's credentials, i.e. RELEASE_PAT — see the checkout step.
+          # Uses the checkout's credentials, i.e. RELEASE_PAT (see the checkout step).
           git push --force origin chore/crowdin-translations
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       # RELEASE_PAT rather than GITHUB_TOKEN, and it matters twice over: this repo has "Allow GitHub
       # Actions to create and approve pull requests" turned off, so GITHUB_TOKEN cannot open a PR at
-      # all — and even where it can, GitHub refuses to let a PR it opened trigger CI, which would
+      # all, and even where it can, GitHub refuses to let a PR it opened trigger CI, which would
       # leave every translation PR unchecked.
       #
-      # Still continue-on-error: a PR that fails to open is an inconvenience — the branch is pushed
-      # and the compare link is printed — whereas failing the job would read as the sync itself
+      # Still continue-on-error: a PR that fails to open is an inconvenience (the branch is pushed
+      # and the compare link is printed) whereas failing the job would read as the sync itself
       # having broken.
       - name: Open the PR
         if: steps.push.outputs.changed == 'true'

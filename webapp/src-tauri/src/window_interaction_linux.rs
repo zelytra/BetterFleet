@@ -26,7 +26,7 @@ use x11rb::protocol::xtest::ConnectionExt as _;
 /// touch more tolerant than Win32 `FindWindowA`'s exact "Sea Of Thieves".
 const SOT_WINDOW_NEEDLE: &str = "sea of thieves";
 
-/// The "Raise anchor" button as a proportion of the game's forced-16:9 reference of 1920x1080 — the
+/// The "Raise anchor" button as a proportion of the game's forced-16:9 reference of 1920x1080 - the
 /// exact values the Windows path uses (700, 750), so both platforms click the same spot. Kept here
 /// rather than shared so each OS module stays self-contained, the way detection/diagnostics already
 /// are.
@@ -45,7 +45,7 @@ pub(crate) fn rise_anchor() -> bool {
         None => return false,
     };
 
-    // XTEST is what actually injects the click — bail with a clear log if the server lacks it, rather
+    // XTEST is what actually injects the click - bail with a clear log if the server lacks it, rather
     // than failing obscurely at the first `xtest_fake_input`.
     match ctx
         .conn
@@ -92,7 +92,7 @@ pub(crate) fn rise_anchor() -> bool {
 }
 
 /// Asks the window manager to activate (raise + focus) the game window via the EWMH
-/// `_NET_ACTIVE_WINDOW` client message — the X11 counterpart of Win32 `SetForegroundWindow`.
+/// `_NET_ACTIVE_WINDOW` client message - the X11 counterpart of Win32 `SetForegroundWindow`.
 fn focus_window(ctx: &X11Context, window: Window) -> Result<(), Box<dyn Error>> {
     let atom = ctx
         .intern(b"_NET_ACTIVE_WINDOW", false)
@@ -143,7 +143,7 @@ fn click_in_window_proportionally(
     Ok(())
 }
 
-/// Pure letterbox math, split out so it can be unit-tested without an X server — the one part of the
+/// Pure letterbox math, split out so it can be unit-tested without an X server - the one part of the
 /// auto-click that CI can verify. Given the game window's pixel size and a proportional point on the
 /// forced-16:9 content, returns that point's pixel offset *inside the window*, black bars already
 /// accounted for. Identical to the Windows path's inline computation.

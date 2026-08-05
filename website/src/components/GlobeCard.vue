@@ -6,12 +6,12 @@ import countriesTopo from "world-atlas/countries-110m.json";
 import { RegionCount } from "@/objects/AllianceStats.ts";
 import { COUNTRY_CENTROIDS } from "@/objects/CountryCentroids.ts";
 
-// A flat dark texture for the globe, inline — avoids an external earth image and a dependency on
+// A flat dark texture for the globe, inline: avoids an external earth image and a dependency on
 // three's types. It's a 2x2 SVG rect in the app's dark tone, stretched over the sphere.
 const DARK_GLOBE_TEXTURE =
   "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='2'%20height='2'%3E%3Crect%20width='2'%20height='2'%20fill='%2318202c'/%3E%3C/svg%3E";
 
-// Country outlines, bundled locally (world-atlas 110m — coarse enough to stay ~100 KB, and it only
+// Country outlines, bundled locally (world-atlas 110m, coarse enough to stay ~100 KB, and it only
 // loads with this lazy chunk). Converted from topojson once at module load; drawn as flat polygons
 // slightly above the sphere so continents and borders actually read on the dark globe.
 const topo = countriesTopo as any;
@@ -20,7 +20,7 @@ const COUNTRY_SHAPES = (feature(topo, topo.objects.countries) as any)
 
 // The 3D user-region globe (issue #673). Lazy-loaded (globe.gl bundles three.js) so it never
 // weighs down the rest of the site. Renders one bar per region at its country centroid, its height
-// scaled by the number of attempts — an anonymous, country-level heatmap of where players are.
+// scaled by the number of attempts: an anonymous, country-level heatmap of where players are.
 
 const props = defineProps<{ regions: RegionCount[] }>();
 const container = ref<HTMLElement | null>(null);
@@ -109,7 +109,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   /* The globe fades in rather than replacing the ship in one frame. An async component swaps its
-     own child, so there is no Transition to hang this on — it belongs on the thing arriving. */
+     own child, so there is no Transition to hang this on: it belongs on the thing arriving. */
   animation: globe-in 260ms ease-out both;
 }
 

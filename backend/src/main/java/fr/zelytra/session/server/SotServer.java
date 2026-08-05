@@ -56,7 +56,7 @@ public class SotServer {
         // endpoint, while their busy gameplay flow is a per-client connection to an Azure host whose
         // IP is REUSED across different servers (issue #364: several distinct servers ran on
         // 51.103.72.36). Hashing that host IP (the previous behaviour) merged different servers into
-        // one card — the false positive #364 was reopened for. The session endpoint is instead shared
+        // one card: the false positive #364 was reopened for. The session endpoint is instead shared
         // across ships on one server (case A: four players on different ships, one server, all on
         // 20.33.49.115:31260) and differs between servers even on a shared host. The client detects
         // and reports it (fetch_informations.rs / pick_session_flow). The port is part of the

@@ -15,7 +15,7 @@ class SotServerTest {
     /**
      * #364 case A: four players on DIFFERENT ships but the same server all report the one session
      * endpoint everyone on a world instance shares (20.33.49.115:31260). They must resolve to a
-     * single server — that is what makes the alliance show as one card.
+     * single server: that is what makes the alliance show as one card.
      */
     @Test
     void oneSessionEndpointIsOneServerForEveryoneOnIt() {
@@ -32,7 +32,7 @@ class SotServerTest {
     @Test
     void differentServersOnOneAzureHostAreDifferentServers() {
         // #364 cases B/D: two players on DIFFERENT servers that happen to share one Azure game host
-        // (51.103.72.36). Their session endpoints differ, so they must NOT merge into one card —
+        // (51.103.72.36). Their session endpoints differ, so they must NOT merge into one card:
         // this is the false positive #364 was reopened for.
         assertNotEquals(
                 new SotServer("20.157.18.137", 30735).generateHash(),

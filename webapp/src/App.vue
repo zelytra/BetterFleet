@@ -43,7 +43,7 @@ onMounted(() => {
     bannerShuffle: false,
     shareStats: true,
   });
-  // Rebind the overlay toggle to the player's saved combo (#687) — Rust bound the default at boot.
+  // Rebind the overlay toggle to the player's saved combo (#687): Rust bound the default at boot.
   if (
     UserStore.player.overlayHotkey &&
     UserStore.player.overlayHotkey !== DEFAULT_OVERLAY_HOTKEY

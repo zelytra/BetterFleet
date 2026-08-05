@@ -14,15 +14,15 @@ export interface HeatCell {
 
 /**
  * One search-size band (issue #720). A duo and an eighteen-strong search are not comparable on
- * convergence alone — "two ships met" is far easier to clear with more boats in the draw, and a big
- * search is usually after five, not two — so each band is reported on its own terms.
+ * convergence alone ("two ships met" is far easier to clear with more boats in the draw, and a big
+ * search is usually after five, not two), so each band is reported on its own terms.
  */
 export interface SizeBand {
   band: string; // "2-3" | "4-6" | "7+"
   attempts: number;
   converged: number;
-  convergenceRate: number; // converged / attempts — "an alliance formed at all"
-  goalCompletion: number; // 0..1 — how much of what the search was after it actually got
+  convergenceRate: number; // converged / attempts: "an alliance formed at all"
+  goalCompletion: number; // 0..1: how much of what the search was after it actually got
 }
 
 export interface AllianceStats {
