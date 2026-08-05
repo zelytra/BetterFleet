@@ -90,7 +90,7 @@ export const routes = [
     },
   },
   {
-    // How a console player joins a session — the mobile CTA points here (#682).
+    // How a console player joins a session: the mobile CTA points here (#682).
     path: "/console",
     name: "console",
     component: () => import("@/components/ConsoleGuidePage.vue"),
@@ -99,7 +99,7 @@ export const routes = [
     },
   },
   {
-    // Catch-all 404 — must stay last so it only matches when nothing else did.
+    // Catch-all 404: must stay last so it only matches when nothing else did.
     path: "/:pathMatch(.*)*",
     name: "not-found",
     component: () => import("@/components/NotFoundPage.vue"),
@@ -119,7 +119,7 @@ export const router = createRouter({
     if (savedPosition) {
       return savedPosition;
     }
-    // Anchored links are left alone — the FAQ's "copy link" button hands out /support#eac, and the
+    // Anchored links are left alone: the FAQ's "copy link" button hands out /support#eac, and the
     // target question opens itself on arrival. Forcing the top here would land nowhere near it.
     //
     // Whether the jump to the element itself lands could not be verified: the view renders inside a

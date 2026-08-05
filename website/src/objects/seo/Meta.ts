@@ -8,7 +8,7 @@ const SHIPPED = ["en", "fr", "de", "es", "it"];
 /**
  * Per-route title, description and canonical.
  *
- * All four routes shipped the same title — "BetterFleet" — and the same description, so nothing but
+ * All four routes shipped the same title ("BetterFleet") and the same description, so nothing but
  * the home page could rank for what it is actually about: a search for "sea of thieves same server
  * tutorial" had no page here to match, because every page claimed to be the same one.
  *
@@ -42,8 +42,8 @@ const PAGES: Record<
     title: "seo.download.title",
     description: "seo.download.description",
   },
-  // The console-guest lobby (#682): a personal deep link keyed on a session code — never something a
-  // crawler should index. Keyed by the route pattern, matched via route.matched below — the "?" is
+  // The console-guest lobby (#682): a personal deep link keyed on a session code, never something a
+  // crawler should index. Keyed by the route pattern, matched via route.matched below: the "?" is
   // part of that pattern since the code became optional, and dropping it here would quietly hand the
   // lobby back to the crawlers.
   "/s/:code?": {
@@ -51,7 +51,7 @@ const PAGES: Record<
     description: "seo.lobby.description",
     noindex: true,
   },
-  // How a console player joins — real, indexable content (#682).
+  // How a console player joins: real, indexable content (#682).
   "/console": {
     title: "seo.console.title",
     description: "seo.console.description",
@@ -64,7 +64,7 @@ const PAGES: Record<
   },
 };
 
-/** name="x" or property="x" — Open Graph uses property, everything else uses name. */
+/** name="x" or property="x": Open Graph uses property, everything else uses name. */
 function setMeta(kind: "name" | "property", key: string, content: string) {
   const selector = `meta[${kind}="${key}"]`;
   let el = document.head.querySelector<HTMLMetaElement>(selector);
@@ -108,7 +108,7 @@ export function applyRouteMeta(
   document.title = title;
   // AppStore.init() sets lang straight from navigator.language.substring(0, 2), whatever that is. A
   // visitor with a Japanese browser gets lang="ja" on a page vue-i18n has just fallen back to
-  // English for — which tells a search engine to file English copy as Japanese. Claim only a
+  // English for, which tells a search engine to file English copy as Japanese. Claim only a
   // language we actually have, and otherwise say what the reader is really getting.
   document.documentElement.setAttribute(
     "lang",

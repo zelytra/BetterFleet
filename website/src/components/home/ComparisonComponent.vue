@@ -1,7 +1,7 @@
 <template>
   <section>
     <h1>{{ t("comparison.title") }}</h1>
-    <!-- Phone (#670): the chart is an image — shrunk to a phone its labels are unreadable. The
+    <!-- Phone (#670): the chart is an image, shrunk to a phone its labels are unreadable. The
          same comparison as a native table costs no zoom; the chart stays for desktop. -->
     <div class="compare-table">
       <div class="c-row head">
@@ -105,7 +105,7 @@ section {
     display: none;
   }
 
-  // Below $lap — phones and tablets (#670): the chart is an image and its labels stop being
+  // Below $lap, phones and tablets (#670): the chart is an image and its labels stop being
   // readable, so a native ✓/✗ table (capped at 560px) carries the same data; the text stays,
   // centred and stacked.
   @media (max-width: $lap) {

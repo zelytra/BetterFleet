@@ -13,14 +13,14 @@ import { onScopeDispose, ref, Ref, watch } from "vue";
  *
  * So the indicator waits, and once it has committed, it stays:
  *
- *  - `delay` — nothing is shown for this long. Under ~0.1s a result reads as instantaneous and needs
+ *  - `delay`: nothing is shown for this long. Under ~0.1s a result reads as instantaneous and needs
  *    no feedback at all; up to ~1s the user is still following their own train of thought and does
  *    not yet doubt the click (Nielsen's response-time limits). 400ms sits between the two: past the
  *    point where "instant" stops being believable, well before the point where silence worries.
- *  - `minDuration` — once shown, it holds for this long even if the work is already done. Below
+ *  - `minDuration`: once shown, it holds for this long even if the work is already done. Below
  *    roughly this, an appearance is a blink rather than an event.
  *
- * Worst case — work that finishes just after the delay elapses — the indicator holds the screen for
+ * Worst case (work that finishes just after the delay elapses), the indicator holds the screen for
  * `delay + minDuration`, which is why the two together stay under the 1s flow limit.
  *
  * @param busy   whether the work is in flight
@@ -58,7 +58,7 @@ export function useDelayedLoading(
         return;
       }
       if (!visible.value) {
-        return; // finished inside the delay — the user never knew there was a wait
+        return; // finished inside the delay: the user never knew there was a wait
       }
       const left = minDuration - (Date.now() - shownAt);
       if (left <= 0) {

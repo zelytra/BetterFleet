@@ -32,7 +32,7 @@ const applyMeta = () =>
 // names is the one on screen.
 router.afterEach(applyMeta);
 
-// AppStore.init() picks the locale from navigator.language, and it runs from a component — i.e.
+// AppStore.init() picks the locale from navigator.language, and it runs from a component, i.e.
 // after the first navigation has already fired. Without this, the first page a visitor lands on
 // always got the English title no matter where they are, which is most of the traffic and the whole
 // point of translating them.

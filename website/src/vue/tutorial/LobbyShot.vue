@@ -5,8 +5,8 @@ import { useI18n } from "vue-i18n";
 /**
  * A screenshot of the application's session lobby at one moment of the alliance flow.
  *
- * The four pictures are captured from the real app — the actual components, styles and translations,
- * in its shipped 1260x760 window — by a headless render of the lobby fed a fabricated session.
+ * The four pictures are captured from the real app (the actual components, styles and translations,
+ * in its shipped 1260x760 window) by a headless render of the lobby fed a fabricated session.
  * Reaching those states for real would take four accounts, a running backend and some luck; what the
  * visitor sees is nonetheless the app itself, not a drawing of it. `npm run shots` from `webapp/`
  * retakes them all: see `webapp/tools/lobby-shots/README.md`.

@@ -92,8 +92,8 @@ section {
   }
 }
 
-// Below $lap — phones and tablets (#670): the desktop pitch (giant headline + installer button)
-// makes no sense on a device that cannot run the installer — it becomes one card that keeps the
+// Below $lap, phones and tablets (#670): the desktop pitch (giant headline + installer button)
+// makes no sense on a device that cannot run the installer. It becomes one card that keeps the
 // intent: take the link with you, install on PC tonight.
 @media (max-width: $lap) {
   section {
