@@ -2,7 +2,7 @@
 
 The four screenshots on the website's Discover page (`/tutorial`) are captured from here.
 
-They are pictures of the **real lobby** — the app's own components, styles, fonts and translations,
+They are pictures of the **real lobby**: the app's own components, styles, fonts and translations,
 in its shipped 1260×760 window. Only the session behind them is fabricated: reaching "three players
 converged on one server, a fourth elsewhere" for real takes four accounts, a running backend and
 some luck, and it cannot be re-staged the next time the lobby changes.
@@ -36,7 +36,7 @@ palette).
 
 ## When to retake them
 
-Whenever the lobby's layout or wording changes enough that the pictures stop matching the app — a
+Whenever the lobby's layout or wording changes enough that the pictures stop matching the app: a
 renamed control, a new element in the banner or the side panel, a restyle. The page's own text lives
 in `website/src/assets/locales/*.json` under `tutorial.*` and is not affected.
 

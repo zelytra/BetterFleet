@@ -38,23 +38,23 @@ lazy_static = "1.4.0"
 # Native audio for the launch-countdown sound (#671): webview audio is suspended when the window is
 # occluded behind the game, native playback is not.
 rodio = "0.20.1"
-# Discord Rich Presence over the local client's IPC (#684) — no bot, no OAuth.
+# Discord Rich Presence over the local client's IPC (#684): no bot, no OAuth.
 discord-rich-presence = "0.2.5"
 
-# winapi backs the Windows-only native pieces — the raw promiscuous capture socket in
+# winapi backs the Windows-only native pieces - the raw promiscuous capture socket in
 # fetch_informations.rs and the Sea of Thieves window focus/click in window_interaction.rs. Linux
-# has no equivalent here (packet capture is stubbed on Linux — #725), so it stays Windows-only.
+# has no equivalent here (packet capture is stubbed on Linux - #725), so it stays Windows-only.
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3.9", features = ["winsock2", "winuser"] }
 # socket2 backs only the Windows raw-capture socket (create_raw_socket). Type::RAW is behind its
-# `all` feature — v1 got it transitively, the v2 dependency graph no longer does.
+# `all` feature - v1 got it transitively, the v2 dependency graph no longer does.
 socket2 = { version = "0.5.6", features = ["all"] }
 
 # x11rb backs the Linux native integration (#731): the Sea of Thieves auto-click (EWMH focus + XTEST
 # synthetic input) and keeping the in-game overlay above the game. Pure-Rust connection, so it adds
 # no libxcb/libX11 link; the XTEST extension needs its matching feature. Already in the tree as a
 # transitive dep of the GTK/wry stack, so this only turns on `xtest` on the shared build. X11-first
-# by design (#350) — Wayland forbids synthetic input from an ordinary client — so it is scoped to
+# by design (#350) - Wayland forbids synthetic input from an ordinary client - so it is scoped to
 # Linux and degrades cleanly when no X server is reachable.
 [target.'cfg(target_os = "linux")'.dependencies]
 x11rb = { version = "0.13", features = ["xtest"] }

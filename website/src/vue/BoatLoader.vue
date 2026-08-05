@@ -2,7 +2,7 @@
 /**
  * The app's loading indicator: the BetterFleet ship, under sail.
  *
- * The logo is the same drawing as `assets/icons/logo.svg`, split into the parts that move — the hull
+ * The logo is the same drawing as `assets/icons/logo.svg`, split into the parts that move: the hull
  * and its rig heel together, each sail fills on its own beat, and the two mastheads snap ahead of the
  * canvas. The waves stay put, so the ship reads as sailing rather than the whole picture wobbling.
  *
@@ -148,8 +148,8 @@ withDefaults(
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  // It arrives rather than appearing. Whatever puts it on screen — a v-if, an async component's
-  // loading slot — the fade is here, so the ship never lands in one frame.
+  // It arrives rather than appearing. Whatever puts it on screen (a v-if, an async component's
+  // loading slot), the fade is here, so the ship never lands in one frame.
   animation: loader-in 220ms ease-out both;
 
   svg {
@@ -164,7 +164,7 @@ withDefaults(
   }
 }
 
-// Every moving part sets its own origin inline, in the 512 viewBox's coordinates — which is what
+// Every moving part sets its own origin inline, in the 512 viewBox's coordinates, which is what
 // transform-box: view-box makes those numbers mean, at any rendered size.
 .rig,
 .sail,

@@ -23,13 +23,13 @@ export interface AllianceStatsPayload {
   minSample: number;
 }
 
-/** What the lobby renders: a local-time window, its rate, and — when trustworthy — the current rate. */
+/** What the lobby renders: a local-time window, its rate, and (when trustworthy) the current rate. */
 export interface AllianceHint {
   /** e.g. "05:00–08:00", already converted to the player's local time. */
   localRange: string;
   /** Convergence rate of the best window, 0-100 rounded. */
   bestRate: number;
-  /** Convergence rate of the current hour (all days pooled), 0-100 — null below the min sample. */
+  /** Convergence rate of the current hour (all days pooled), 0-100: null below the min sample. */
   nowRate: number | null;
 }
 

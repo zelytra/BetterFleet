@@ -5,7 +5,7 @@ import { BoatSize } from "@/objects/fleet/Player.ts";
 describe("boatIcon", () => {
   it("draws each ship differently", () => {
     // The point of the feature. A copy-paste that pointed two sizes at one file would break nothing
-    // visible — the icon would just quietly stop meaning anything.
+    // visible: the icon would just quietly stop meaning anything.
     const ships = [BoatSize.SLOOP, BoatSize.BRIGANTINE, BoatSize.GALLEON].map(
       boatIcon,
     );

@@ -40,7 +40,7 @@ public class ProxyCheckAPITest {
     public void parseLocation_missingFields_keepsThePresentOnesInsteadOfBlanking() {
         // Datacenter/Azure IPs (SoT game servers) often omit some geo fields. The
         // present ones must still be returned instead of the whole location coming back
-        // empty — the old getString() threw on the missing "continent"/"city" and
+        // empty: the old getString() threw on the missing "continent"/"city" and
         // blanked everything (regression seen after issue #364's detection fix).
         String json = "{"
                 + "\"status\":\"ok\","

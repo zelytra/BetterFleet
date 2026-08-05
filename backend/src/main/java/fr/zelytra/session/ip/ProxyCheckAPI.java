@@ -131,7 +131,7 @@ public class ProxyCheckAPI {
         // proxycheck.io only returns the fields it actually has for an IP, and datacenter
         // ranges (Azure/Microsoft SoT servers) often omit some of them. Use optString and
         // keep whatever is present, instead of getString which THROWS on a missing field and
-        // used to blank the whole location (the `!= null` guards never fired — getString
+        // used to blank the whole location (the `!= null` guards never fired: getString
         // never returns null).
         JSONObject ipJsonObject = json.optJSONObject(ip);
         if (ipJsonObject == null) {

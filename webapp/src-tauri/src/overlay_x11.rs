@@ -1,21 +1,21 @@
 //! Keeps the in-game overlay floating above the game on Linux/X11 (#731).
 //!
 //! Tauri already flags the overlay window always-on-top / skip-taskbar through GTK, but that is not
-//! enough under X11: a normal *managed* window is restacked below whatever is focused, and — the bug
-//! the maintainer hit — KWin (and other WMs) will **hide a window while its application is inactive**
+//! enough under X11: a normal *managed* window is restacked below whatever is focused, and - the bug
+//! the maintainer hit - KWin (and other WMs) will **hide a window while its application is inactive**
 //! once it looks like a helper/utility window. So the moment the player clicks into the game, the
 //! overlay drops or vanishes, which defeats its entire purpose.
 //!
 //! There is no BetterFleet code hiding it (no client blur/hide listener, no native `Focused` handler
-//! did this before #731) — it is purely the window manager. The fix is to re-assert, straight to the
+//! did this before #731) - it is purely the window manager. The fix is to re-assert, straight to the
 //! X server, the EWMH states that tell the WM to keep it up:
 //!
-//! - `_NET_WM_STATE_ABOVE`   — float above ordinary windows,
-//! - `_NET_WM_STATE_STICKY`  — show on every workspace,
-//! - `_NET_WM_STATE_SKIP_TASKBAR` / `_NET_WM_STATE_SKIP_PAGER` — stay out of the taskbar/pager.
+//! - `_NET_WM_STATE_ABOVE`   - float above ordinary windows,
+//! - `_NET_WM_STATE_STICKY`  - show on every workspace,
+//! - `_NET_WM_STATE_SKIP_TASKBAR` / `_NET_WM_STATE_SKIP_PAGER` - stay out of the taskbar/pager.
 //!
 //! None of these disable input, so the overlay's ready-toggle keeps working (unlike switching the
-//! window to a dock/notification *type*, which some WMs make click-through — deliberately avoided
+//! window to a dock/notification *type*, which some WMs make click-through - deliberately avoided
 //! here; see the PR notes for that stronger lever and the fullscreen-exclusive caveat).
 //!
 //! Re-applied whenever the overlay is shown and whenever the main window loses focus (wired in

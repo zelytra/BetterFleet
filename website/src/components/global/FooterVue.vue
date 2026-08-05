@@ -205,7 +205,7 @@ footer {
     display: none;
   }
 
-  // Below $lap — phones and tablets (#670): the three parchment columns carry ~1000px of footer;
+  // Below $lap, phones and tablets (#670): the three parchment columns carry ~1000px of footer;
   // the compact block above (logo, tap-sized link grid, folded disclaimer) replaces them wholesale.
   // Inner pieces cap at 560px so tablets don't stretch them thin.
   @media (max-width: $lap) {

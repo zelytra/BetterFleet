@@ -15,7 +15,7 @@
 <script setup lang="ts">
 defineProps({
   /**
-   * Overrides the default artwork — the lobby passes its session's chosen banner (issue #602).
+   * Overrides the default artwork: the lobby passes its session's chosen banner (issue #602).
    * Optional, so every other page keeps the standard one without knowing this exists.
    */
   background: { type: String, required: false, default: "" },

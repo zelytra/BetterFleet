@@ -14,11 +14,11 @@ import {
 } from "@/objects/Github.ts";
 
 // The platform-selection screen (#730). The site's "Download" CTAs land here instead of pulling the
-// Windows installer straight away, so a visitor can pick the build — Windows or Linux — that runs on
+// Windows installer straight away, so a visitor can pick the build - Windows or Linux - that runs on
 // their machine. Every tile downloads the matching asset *directly* from the latest GitHub release
 // (its browser_download_url), with the version and size read live from that release. A format that
 // the latest release doesn't carry yet shows a "coming soon" state and turns into a direct download
-// on its own the moment a release includes it — no redirect anywhere. The one link that leaves for
+// on its own the moment a release includes it - no redirect anywhere. The one link that leaves for
 // github.com is the "browse every release" line at the bottom.
 
 const { t } = useI18n();
@@ -45,7 +45,7 @@ const version = computed(() =>
 );
 
 // Direct download URL (browser_download_url) + size for the first asset matching an extension. Both
-// undefined when the latest release carries no such asset — the caller renders "coming soon" then.
+// undefined when the latest release carries no such asset - the caller renders "coming soon" then.
 function resolve(ext: string): { url?: string; size?: number } {
   const asset = findReleaseAsset(assets.value, [ext]);
   return { url: asset?.url, size: asset?.size || undefined };
@@ -133,7 +133,7 @@ interface Recommended {
 }
 
 // The banner mirrors the detected OS's best format: the Windows installer, or the Linux AppImage
-// (the "runs anywhere, no install" option). Null when detection failed — the banner is hidden and
+// (the "runs anywhere, no install" option). Null when detection failed - the banner is hidden and
 // the visitor picks from the two columns below. If that format isn't in the release yet, the button
 // shows "coming soon" like any other tile rather than sending anyone to github.com.
 const recommended = computed<Recommended | null>(() => {
@@ -160,7 +160,7 @@ const recommended = computed<Recommended | null>(() => {
   return null;
 });
 
-// Copyable install commands, not downloads — the package repos are being set up (APT #740, AUR).
+// Copyable install commands, not downloads - the package repos are being set up (APT #740, AUR).
 const LINUX_COMMANDS = [
   {
     id: "apt",
@@ -412,7 +412,7 @@ async function copyCommand(id: string, command: string) {
 }
 
 // The green-tinted "the one thing that matters here" callout the site already uses (home hero pc-card,
-// the stats best-time banner) — reused so the recommended download reads the same way.
+// the stats best-time banner) - reused so the recommended download reads the same way.
 .recommended {
   background: rgba(50, 212, 153, 0.1);
   border: 1px solid rgba(50, 212, 153, 0.35);
@@ -457,7 +457,7 @@ async function copyCommand(id: string, command: string) {
   }
 
   // Recommended format not in the release yet: a muted, non-clickable "coming soon" chip in place of
-  // the download button — never a link off to github.com.
+  // the download button - never a link off to github.com.
   .cta-soon {
     flex: 0 0 auto;
     display: inline-flex;
@@ -524,7 +524,7 @@ async function copyCommand(id: string, command: string) {
   gap: 10px;
 }
 
-// One shared look for every download affordance — the Windows rows and the Linux tiles.
+// One shared look for every download affordance - the Windows rows and the Linux tiles.
 .dl {
   display: flex;
   align-items: center;
@@ -603,7 +603,7 @@ async function copyCommand(id: string, command: string) {
   }
 }
 
-// The copyable install commands (APT, AUR) — deliberately not styled as downloads.
+// The copyable install commands (APT, AUR) - deliberately not styled as downloads.
 .commands {
   display: flex;
   flex-direction: column;

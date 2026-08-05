@@ -25,7 +25,7 @@
     </BannerTemplate>
     <ParameterPart :title="t('config.part.general')">
       <!-- One column, two aligned blocks: a grid of equal-width fields, then a left-aligned list
-           of toggles — instead of everything centre-wrapping freely. -->
+           of toggles, instead of everything centre-wrapping freely. -->
       <div class="general-layout">
         <div class="fields">
           <SingleSelect
@@ -122,7 +122,7 @@
           </div>
         </div>
         <!-- Styled after InputText (label above, same field box, cross to reset) so it reads as one
-             of the app's inputs rather than a foreign button — review feedback on #692. -->
+             of the app's inputs rather than a foreign button (review feedback on #692). -->
         <div class="hotkey-field">
           <div class="field-wrapper">
             <label>{{ t("config.overlay.hotkey.label") }}</label>
@@ -338,7 +338,7 @@ const overlayEnabled = ref<boolean>(false);
 watch(overlayEnabled, (visible) => setOverlayVisible(visible));
 
 // Overlay hotkey recorder (#687). Press-to-set: the next modifier+key combo becomes the toggle,
-// applied immediately through Rust — which keeps the previous combo bound if the new one is
+// applied immediately through Rust, which keeps the previous combo bound if the new one is
 // invalid or already taken. Escape cancels, reset returns to the default.
 const recordingHotkey = ref(false);
 const HOTKEY_ALIASES: Record<string, string> = {
@@ -702,7 +702,7 @@ button {
 
     // Stacked full-width strips rather than a row of cards, because that is the shape these
     // actually are: 1294x57, 22.7:1. Squeezed into a 132x74 card, `cover` showed 7.9% of the
-    // banner — a sliver of its middle. Three of them still read, since their sliver carries their
+    // banner - a sliver of its middle. Three of them still read, since their sliver carries their
     // colour; the fourth is the panel's own colour and looked like an empty box. This previews the
     // whole banner, at the shape it is used in the sessions list.
     .banner-picker {
@@ -714,7 +714,7 @@ button {
       .banner-choice {
         all: unset;
         // `all: unset` resets display to inline; as a column-flex item it should blockify and take
-        // the aspect-ratio, but webkit2gtk (Linux) applied that lazily — the strip rendered collapsed
+        // the aspect-ratio, but webkit2gtk (Linux) applied that lazily - the strip rendered collapsed
         // and only grew to size once a hover forced a relayout. Make the block explicit and let the
         // <img>'s own intrinsic ratio drive the height (webkit computes that eagerly) instead.
         display: block;
@@ -749,7 +749,7 @@ button {
           border-color: var(--primary);
         }
 
-        // Shuffle overrides the fixed pick, so nothing is "the" template while it is on — showing
+        // Shuffle overrides the fixed pick, so nothing is "the" template while it is on - showing
         // one still checked would promise a banner that never arrives.
         &.dimmed img {
           opacity: 0.4;
@@ -876,7 +876,7 @@ button {
 }
 
 // Overlay hotkey recorder (#687), dressed exactly like InputText (same wrapper metrics, same
-// cross-to-reset) so it reads as one of the app's inputs — review feedback on #692. Top level:
+// cross-to-reset) so it reads as one of the app's inputs - review feedback on #692. Top level:
 // nested inside another section's selector it silently never applies, which is exactly how the
 // first cut shipped browser-default buttons.
 // Full-width column so the overlay toggle and the hotkey field share the section's left edge,

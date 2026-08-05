@@ -115,7 +115,7 @@ section {
     display: none;
   }
 
-  // Below $lap the hero is the touch design (#670) — tablets included: pill, centred column,
+  // Below $lap the hero is the touch design (#670), tablets included: pill, centred column,
   // actions a phone or tablet can take, and the app screenshot framed as decoration. The desktop
   // pair of 50% columns and its installer CTA never made sense this narrow.
   @media (max-width: $lap) {

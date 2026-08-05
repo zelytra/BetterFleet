@@ -157,8 +157,8 @@ header {
   display: none;
 }
 
-// Below $lap — phones AND tablets (#670): the desktop-squeezed header (wrapped 22px links + the
-// 78px "try the app" banner) becomes a 56px sticky bar — real logo, burger, nothing else. The
+// Below $lap, phones AND tablets (#670): the desktop-squeezed header (wrapped 22px links + the
+// 78px "try the app" banner) becomes a 56px sticky bar: real logo, burger, nothing else. The
 // download button goes with it: these devices cannot install the Windows app, the hero says so.
 @media (max-width: $lap) {
   header {

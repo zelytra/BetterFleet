@@ -32,7 +32,7 @@ describe("convergedServer", () => {
   });
 
   it("still converges while a third player is detecting", () => {
-    // Two share the server; the third is on no server yet — the alliance is formed all the same.
+    // Two share the server; the third is on no server yet: the alliance is formed all the same.
     const withEmpty = serversOf(server([]), server(["a", "b"], "us"));
     expect(convergedServer(withEmpty)?.countryCode).toBe("us");
   });
@@ -96,7 +96,7 @@ describe("buildRecap", () => {
   it("snapshots tries, the converged-server head count, duration and region", () => {
     const fleet = {
       stats: { tryAmount: 3 },
-      // Three in the fleet, but only two landed on the server — the third is still detecting.
+      // Three in the fleet, but only two landed on the server: the third is still detecting.
       players: [player("a"), player("b"), player("c")],
     } as unknown as Fleet;
     const recap = buildRecap(fleet, server(["a", "b"], "fr"), 1_000, 121_000);

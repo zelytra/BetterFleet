@@ -344,7 +344,7 @@ function runGuidedDiagnostic(): void {
 const statsHint = ref<AllianceHint | null>(null);
 const statsHintDismissed = ref(false);
 onMounted(async () => {
-  // Switched off in the settings: skip the fetch too — this payload feeds nothing else here.
+  // Switched off in the settings: skip the fetch too, since this payload feeds nothing else here.
   if (UserStore.player.statsHint === false) {
     return;
   }
@@ -468,7 +468,7 @@ function cancelRename() {
   isRenaming.value = false;
 }
 
-// Open padlock = listed in the public browser, closed = unlisted — the same
+// Open padlock = listed in the public browser, closed = unlisted: the same
 // language the browser's filter and session rows use.
 const visibilityData = reactive<SingleSelectInterface>({
   data: [
@@ -537,11 +537,11 @@ function copyIdToClipboard(id: string) {
 }
 
 // Invite console players (#682): the public site hosts a phone lobby at /s/<CODE>. Console players
-// open the link, pick a name, and join over the same WebSocket — no app, no account.
+// open the link, pick a name, and join over the same WebSocket: no app, no account.
 const displayInviteCopy = ref<boolean>(false);
 
 // Where the phone lobby lives. The site shares the backend's origin in prod and any self-hosted
-// deploy, so derive it from VITE_BACKEND_HOST rather than hardcoding betterfleet.fr — a self-hosted
+// deploy, so derive it from VITE_BACKEND_HOST rather than hardcoding betterfleet.fr: a self-hosted
 // crew gets their own domain. VITE_WEBSITE_HOST overrides it where the two differ, i.e. local dev,
 // where the site runs on its own port.
 function consoleInviteBase(): string {
@@ -650,7 +650,7 @@ function onContextAction(action: string) {
   display: flex;
   flex-direction: column;
 
-  // The session banner keeps its full 120px however tight the column gets — it must never fold to
+  // The session banner keeps its full 120px however tight the column gets - it must never fold to
   // make room for the detection strip; the lobby content below yields that space instead.
   :deep(.header-wrapper) {
     flex-shrink: 0;
@@ -680,7 +680,7 @@ function onContextAction(action: string) {
       min-height: 40px; // the name and the input are the same height, so nothing jumps
 
       // A 40-char name is wider than a narrow window leaves, and the reserved lane only stops it
-      // from starting under the select — this is what stops it from spilling into it.
+      // from starting under the select - this is what stops it from spilling into it.
       > p {
         overflow: hidden;
         text-overflow: ellipsis;
@@ -915,7 +915,7 @@ function onContextAction(action: string) {
     margin-top: 12px;
     // Fills whatever is left under the banner (and the detection strip, when it shows) and scrolls
     // inside itself. A fixed height here didn't count the strip, so the column overflowed and flex
-    // folded the banner above to make room — this pane gives the room instead.
+    // folded the banner above to make room - this pane gives the room instead.
     flex: 1;
     min-height: 0;
     display: flex;
@@ -935,7 +935,7 @@ function onContextAction(action: string) {
       width: 100%;
 
       // The servers live in this wrapper, so the player-table's own gap sits *around* the group,
-      // not between the cards inside it — without this they stacked flush and touched.
+      // not between the cards inside it - without this they stacked flush and touched.
       .server-list {
         display: flex;
         flex-direction: column;
@@ -949,7 +949,7 @@ function onContextAction(action: string) {
 
     .lobby-details {
       width: 10%;
-      // 170 fitted this column in French only by luck — 8px to spare — and German overflowed it by
+      // 170 fitted this column in French only by luck - 8px to spare - and German overflowed it by
       // 16 the moment the visibility select joined, because every label here wraps in a column this
       // narrow. 20px more costs the player table nothing it notices and buys German 21px of slack.
       min-width: 190px;
@@ -1030,8 +1030,8 @@ function onContextAction(action: string) {
 
         .top-content {
           // The window is resizable with no minimum height and this panel clips its overflow, so on
-          // a short enough window the Leave button — the one control a player must always be able to
-          // reach — silently drops below the fold. That predates the visibility select. Now the
+          // a short enough window the Leave button - the one control a player must always be able to
+          // reach - silently drops below the fold. That predates the visibility select. Now the
           // information area gives way and scrolls instead, and Leave stays put. It does not scroll
           // at the app's default size: measured, 492px of content in 451px was this select's doing
           // and is what the compacting above buys back.
@@ -1080,7 +1080,7 @@ function onContextAction(action: string) {
           // the two of them cost 73, which is what pushed the Leave button out of a panel that
           // clips. A padlock reading Publique/Privée carries itself here, next to Auto set sails;
           // the name and the sentence are on the tooltip. 51px, and the height does not move
-          // between locales — the field is fixed-height, whereas a "Öffentliche Sitzung" label
+          // between locales - the field is fixed-height, whereas a "Öffentliche Sitzung" label
           // would have wrapped and put us back over.
           .visibility {
             display: flex;
@@ -1093,7 +1093,7 @@ function onContextAction(action: string) {
             z-index: 1;
 
             // SingleSelect carries a 250px floor sized for the settings form. This rail is 170px,
-            // so the field would run straight out of a panel that clips its overflow — the select
+            // so the field would run straight out of a panel that clips its overflow - the select
             // has to be allowed to shrink to the space it actually has.
             :deep(.input-wrapper),
             :deep(.dropdown) {

@@ -94,7 +94,7 @@ const STEPS = [
       <p>{{ t("tutorial.cta.content") }}</p>
       <div class="actions">
         <!-- Same split as the home hero (#670): the installer is Windows-only, so below $lap it
-             gives way to the one action a phone can actually take — joining a crew's session. -->
+             gives way to the one action a phone can actually take: joining a crew's session. -->
         <router-link class="download-cta" to="/download">
           <PirateButton :label="t('button.downloadApp')" />
         </router-link>
@@ -122,7 +122,7 @@ const STEPS = [
       opacity: 0.55;
       // The page's own art, kept from the previous design: a 4:1 panorama, which is the shape of
       // this hero band, where the home page's portrait background would have to be cropped. The
-      // veil on top is not decoration — it is a bright sunset, and the eyebrow is a thin green on it.
+      // veil on top is not decoration: it is a bright sunset, and the eyebrow is a thin green on it.
       background:
         linear-gradient(180deg, rgba(10, 12, 16, 0.5), rgba(10, 12, 16, 0.3)),
         url("@assets/backgrounds/tutorial.png") no-repeat 50% 50%;
@@ -394,7 +394,7 @@ const STEPS = [
     }
 
     // The screenshots are of a 1260px-wide window. Scaled into a phone's width the app's own text
-    // stops being readable, so here the frame keeps them near their real size and pans instead —
+    // stops being readable, so here the frame keeps them near their real size and pans instead:
     // the picture is the point, and a thumbnail of it teaches nothing.
     .frame {
       overflow-x: auto;

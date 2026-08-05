@@ -45,7 +45,7 @@ public class GuestSocketEndpointsTest {
     @Test
     void guestPathNeedsNoAuth() {
         // The whole point of the guest path: unlike /socket/register (401 without a valid Keycloak
-        // bearer), it is public — the session code is the credential. An unknown code is a 404, never
+        // bearer), it is public: the session code is the credential. An unknown code is a 404, never
         // a 401.
         RestAssured.given()
                 .when()

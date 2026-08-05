@@ -4,7 +4,7 @@
  *
  * Prefers the region subtag of the locale (`en-US` → `us`, `pt-BR` → `br`). For a bare locale it
  * falls back to a language→country guess: most language codes happen to match their country
- * (`fr` → `fr`), but some don't — notably English, which has no country, so it defaults to `gb`
+ * (`fr` → `fr`), but some don't: notably English, which has no country, so it defaults to `gb`
  * rather than render a broken flag. Returns "" when nothing sensible can be derived.
  */
 export function browserCountry(

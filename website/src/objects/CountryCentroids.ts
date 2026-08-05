@@ -1,6 +1,6 @@
 // Approximate country centroids [lat, lng] for placing region markers on the globe (issue #673).
 // Keys are lowercase ISO 3166-1 alpha-2. Not exhaustive: unknown codes are simply skipped on the
-// globe — extend this list as new regions show up in the data.
+// globe. Extend this list as new regions show up in the data.
 export const COUNTRY_CENTROIDS: Record<string, [number, number]> = {
   fr: [46.6, 2.2],
   gb: [54.0, -2.0],

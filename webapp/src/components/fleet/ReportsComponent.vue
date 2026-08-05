@@ -77,7 +77,7 @@ const { t } = useI18n();
 
 // A bug message is plain text in a Postgres `text` column, so the cap is only there to keep a stray
 // paste sane. Room for a player's note plus two pasted diagnostic captures (each a few KB of
-// pretty-printed JSON) — 500 filled up the moment one capture was pasted in.
+// pretty-printed JSON): 500 filled up the moment one capture was pasted in.
 const MESSAGE_MAX_LENGTH = 15000;
 
 const reportMessage = ref("");
@@ -88,7 +88,7 @@ const route = useRoute();
 
 // Guided diagnostic (#688): arriving from the lobby banner runs the capture immediately and
 // pre-fills the message. The Rust side logs the full report, so sending the bug report attaches it
-// through the logs — the 500-character message never has to carry the JSON.
+// through the logs: the 500-character message never has to carry the JSON.
 onMounted(() => {
   if (route.query.diagnostic === "auto") {
     if (!reportMessage.value) {
@@ -179,7 +179,7 @@ async function sendReport() {
     gap: 40px;
 
     // A row of PirateButtons (fixed 234x74). The FAQ panel's two buttons had no container layout at
-    // all — each wrapped in an <a>, they fell back to inline anchors: baseline-aligned, with the
+    // all - each wrapped in an <a>, they fell back to inline anchors: baseline-aligned, with the
     // whitespace between the tags as an uneven gap. Shared with the diagnostic panel so both read the
     // same.
     .button-row {

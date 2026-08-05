@@ -109,7 +109,7 @@ describe("OverlayView (#671)", () => {
     expect(w.find(".lobby").exists()).toBe(true);
     expect(w.text()).toContain("Me");
     expect(w.text()).toContain("Waiting");
-    // Both rows carry a status badge — the roster is never a bare name list.
+    // Both rows carry a status badge: the roster is never a bare name list.
     expect(w.findAll(".lobby .status")).toHaveLength(2);
   });
 

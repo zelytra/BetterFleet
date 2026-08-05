@@ -11,7 +11,7 @@ import {
 
 // "What's new" after an auto-update (#686). Self-contained: mounted once in App.vue, it decides
 // from the recorded last-seen version whether anything is due, fetches the release notes (plain
-// link fallback), and records the version once the player closes it — so it shows once.
+// link fallback), and records the version once the player closes it, so it shows once.
 
 const { t } = useI18n();
 
@@ -35,7 +35,7 @@ onMounted(async () => {
   open.value = true;
 });
 
-// Closing — the X, a click outside, Esc — marks the version as seen for good.
+// Closing (the X, a click outside, Esc) marks the version as seen for good.
 watch(open, (isOpen, wasOpen) => {
   if (wasOpen && !isOpen) {
     lastSeen.value = version;

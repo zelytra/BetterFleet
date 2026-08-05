@@ -9,8 +9,8 @@ import java.time.Instant;
 
 /**
  * One anonymized alliance-formation attempt (issue #673): the outcome of a single countdown, once
- * detection has settled. Deliberately carries <b>no identifiers</b> — no username, account, IP or
- * session id — so each row is a standalone event with nothing to trace back to a person. Raw rows
+ * detection has settled. Deliberately carries <b>no identifiers</b> (no username, account, IP or
+ * session id), so each row is a standalone event with nothing to trace back to a person. Raw rows
  * (rather than pre-aggregated buckets) keep every future analysis open: re-aggregate by any
  * dimension, cross-tab owner region against server region, feed the regions globe.
  */
@@ -34,7 +34,7 @@ public class AllianceAttempt extends PanacheEntity {
     @Column(name = "players")
     public int players;
 
-    /** How many distinct servers the fleet landed on — 1 means it converged. */
+    /** How many distinct servers the fleet landed on: 1 means it converged. */
     @Column(name = "distinct_servers")
     public int distinctServers;
 

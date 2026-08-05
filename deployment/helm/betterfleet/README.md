@@ -106,12 +106,12 @@ them explicitly only when the public hostname differs from the ingress host.
 
 The backend's OIDC `auth-server-url` resolves to `${KEYCLOAK_HOST}/realms/Betterfleet`,
 so `publicUrls.keycloak` **must** be the address at which end users authenticate
-(the token issuer) — that is why it points at the public `/auth` URL rather than
+(the token issuer): that is why it points at the public `/auth` URL rather than
 the in-cluster Service.
 
 ## WebSockets & long timeouts
 
-Traefik upgrades WebSocket connections (`/api/sessions/...`) automatically — no
+Traefik upgrades WebSocket connections (`/api/sessions/...`) automatically: no
 annotation needed. However, the original nginx used **7-day** read/send timeouts,
 and Traefik's request/idle timeouts live on the **entrypoint** (static config),
 not on the Ingress object. On k3s, raise them by applying a `HelmChartConfig`
@@ -180,9 +180,9 @@ was terminated by an external/host proxy. To enable it:
 `/opt/keycloak/data/import`; `start --import-realm` applies it on boot. The
 `${MICROSOFT_CLIENT_ID}` / `${MICROSOFT_CLIENT_SECRET}` placeholders inside are
 substituted by Keycloak from the container environment (sourced from the Secret)
-at import time — exactly as in docker-compose.
+at import time, exactly as in docker-compose.
 
-### Custom login theme (NOT shipped by default) — build a derived image
+### Custom login theme (NOT shipped by default): build a derived image
 
 The realm sets `"loginTheme": "betterfleet"`. The theme
 (`deployment/keycloak/themes/betterfleet/`) contains **binary TTF fonts**, which
@@ -284,7 +284,7 @@ Storage note: `persistence.storageClass: null` uses the cluster default
   if you depend on them.
 - `PGDATA` is set to the `pgdata` sub-directory of the mounted volume to keep
   `initdb` happy on volumes that pre-create `lost+found`.
-- The published host ports from compose (2600–2604) are **not** exposed; traffic
+- The published host ports from compose (2600-2604) are **not** exposed; traffic
   enters exclusively through the Ingress. Use `kubectl port-forward` for direct
   DB/Keycloak access during debugging.
 

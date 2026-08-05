@@ -20,7 +20,7 @@ export const keycloakStore = reactive({
    * Whether the SSO check has settled, either way.
    *
    * `isAuthenticated` starts false and only becomes true once keycloak has answered, so on its own
-   * it cannot tell "signed out" from "we have not asked yet" — which is why the login screen used to
+   * it cannot tell "signed out" from "we have not asked yet", which is why the login screen used to
    * flash at players who were already signed in. The auth screen waits on this instead.
    */
   isReady: false,
@@ -42,7 +42,7 @@ export const keycloakStore = reactive({
           });
         }
       })
-      // A self-hosted or unreachable keycloak rejects here. The answer is still "not signed in" —
+      // A self-hosted or unreachable keycloak rejects here. The answer is still "not signed in",
       // and the screen has to move on regardless, or an offline player waits on a ship forever.
       .catch(() => (this.isAuthenticated = false))
       .finally(() => (this.isReady = true));

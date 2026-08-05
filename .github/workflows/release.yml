@@ -313,7 +313,7 @@ jobs:
 
           # reprepro shells out to `gpg` non-interactively; priming the agent's passphrase cache
           # here (with a throwaway signature) lets that later call succeed without a prompt. Keys
-          # created without a passphrase (the README's recommendation) skip this — nothing to cache.
+          # created without a passphrase (the README's recommendation) skip this - nothing to cache.
           if [ -n "${APT_GPG_PASSPHRASE}" ]; then
             KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/{print $5; exit}')
             printf 'priming the agent\n' | gpg --batch --pinentry-mode loopback \
@@ -384,7 +384,7 @@ jobs:
           # Push to the protected master branch authenticated as an admin, which bypasses the
           # "require a pull request" rule (enforce_admins is off). Set a RELEASE_PAT secret to a
           # fine-grained PAT (Contents: read/write on this repo) owned by an admin. Falls back to
-          # GITHUB_TOKEN when the secret is absent — the push then simply warns instead of syncing.
+          # GITHUB_TOKEN when the secret is absent: the push then simply warns instead of syncing.
           token: ${{ secrets.RELEASE_PAT || secrets.GITHUB_TOKEN }}
 
       - name: setup node
@@ -420,7 +420,7 @@ jobs:
 
           # Pushing to master requires github-actions[bot] to be on the bypass list of master's
           # branch protection AND its ruleset. If the push is rejected, warn and exit 0 so this
-          # trailing sync never fails an otherwise-successful release — the version is already
+          # trailing sync never fails an otherwise-successful release: the version is already
           # correct in every published artifact.
           if git push origin HEAD:master; then
             echo "Pushed version bump to master."

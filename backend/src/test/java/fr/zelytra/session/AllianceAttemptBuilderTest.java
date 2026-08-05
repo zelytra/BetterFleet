@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Unit test of the anonymized attempt outcome (issue #673). buildAttempt is pure — it only reads the
- * fleet — so it needs no Quarkus context.
+ * Unit test of the anonymized attempt outcome (issue #673). buildAttempt is pure (it only reads the
+ * fleet), so it needs no Quarkus context.
  */
 class AllianceAttemptBuilderTest {
 
@@ -55,7 +55,7 @@ class AllianceAttemptBuilderTest {
 
     @Test
     void aGroupFormingOnOneOfTwoServersStillConverges() {
-        // A crew of ten split 5+5 across two servers has formed alliances — the whole fleet need not
+        // A crew of ten split 5+5 across two servers has formed alliances: the whole fleet need not
         // land on a single server (#685). The biggest grouping decides.
         Fleet fleet = new Fleet();
         fleet.getPlayers().add(player("Host", true, "de"));
@@ -86,7 +86,7 @@ class AllianceAttemptBuilderTest {
 
     @Test
     void aSoloPlayerOnOneServerIsNotAFormedAlliance() {
-        // distinctServers == 1, but a lone pirate is not an alliance — forming one solo makes no
+        // distinctServers == 1, but a lone pirate is not an alliance: forming one solo makes no
         // sense (#685).
         Fleet fleet = new Fleet();
         fleet.getPlayers().add(player("Host", true, "fr"));

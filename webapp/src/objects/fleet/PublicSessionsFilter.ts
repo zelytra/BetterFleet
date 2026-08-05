@@ -10,7 +10,7 @@ export type SessionFilter = "all" | "public" | "private";
  *
  * The search runs on the name as {@link sessionDisplayName} renders it, never on the raw field: a
  * default-named session carries a numeric seed there, so searching the raw field could only be
- * matched by typing a number the player never sees — which is why searching by name found nothing.
+ * matched by typing a number the player never sees, which is why searching by name found nothing.
  * `displayName` is injectable so filtering and sorting stay testable without an i18n instance.
  */
 export function applyFilter(

@@ -4,8 +4,8 @@ import type { Player } from "@/objects/fleet/Player.ts";
 import type { SotServer } from "@/objects/fleet/SotServer.ts";
 import type { Fleet } from "@/objects/fleet/Fleet.ts";
 
-// Shareable session recap (#685). When an alliance forms — two or more players group onto one
-// server — a dismissable card celebrates it (the biggest group, if the fleet split across servers).
+// Shareable session recap (#685). When an alliance forms (two or more players group onto one
+// server) a dismissable card celebrates it (the biggest group, if the fleet split across servers).
 // The decision logic is pure and fed the fleet state, so the "once per convergence, debounced, not
 // mid-countdown" rules are unit-testable without timers, exactly like the detection watchdog (#688).
 
@@ -13,9 +13,9 @@ import type { Fleet } from "@/objects/fleet/Fleet.ts";
 export const RECAP_DEBOUNCE_MS = 4000;
 
 /**
- * The server the alliance formed on — the **biggest** grouping, when it holds two or more players
+ * The server the alliance formed on: the **biggest** grouping, when it holds two or more players
  * (#685). A lone player is not a solo alliance; but the whole fleet need not land on one server, so a
- * crew split 5+5 across two servers still counts — the largest group is the one the card celebrates.
+ * crew split 5+5 across two servers still counts: the largest group is the one the card celebrates.
  * Mirrors the backend's `largestGroup >= 2`.
  */
 export function convergedServer(
@@ -86,8 +86,8 @@ export function buildRecap(
 ): SessionRecap {
   return {
     tries: Math.max(0, fleet.stats?.tryAmount ?? 0),
-    // The head-count on the converged server, matching the backend's — not the whole fleet, since a
-    // straggler may still be detecting.
+    // The head-count on the converged server, matching the backend's (not the whole fleet, since a
+    // straggler may still be detecting).
     players: server.connectedPlayers.length,
     durationMs: Math.max(0, nowMs - startedAtMs),
     countryCode: server.countryCode || undefined,
@@ -159,7 +159,7 @@ export const sessionRecap = reactive({
 });
 
 const watchdog = new RecapWatchdog();
-// When this client first sees itself in a session — the honest client-side start of "duration".
+// When this client first sees itself in a session: the honest client-side start of "duration".
 let startedAtMs: number | null = null;
 
 /** Called from the game poll: one observation per tick, off the live fleet state. */
@@ -197,8 +197,8 @@ export function dismissRecap(): void {
 // --- Dev-only preview handle (removed from production builds) -------------------------------------
 // Staging a real convergence (a crew of two landing on one server) to see the card is a hassle, so a
 // dev build exposes it on the console. Open the lobby, then call it:
-//   betterfleet.recap.show()                       — sample card (4 pirates, 2 tries, 2:45, 🇫🇷)
-//   betterfleet.recap.show(3, 1, 40, "us")         — your own numbers (players, tries, seconds, cc)
+//   betterfleet.recap.show()                       : sample card (4 pirates, 2 tries, 2:45, 🇫🇷)
+//   betterfleet.recap.show(3, 1, 40, "us")         : your own numbers (players, tries, seconds, cc)
 if (import.meta.env.DEV && typeof window !== "undefined") {
   const scope = window as unknown as { betterfleet?: Record<string, unknown> };
   scope.betterfleet = {

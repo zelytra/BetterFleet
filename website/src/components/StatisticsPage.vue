@@ -12,7 +12,7 @@ import BoatLoader from "@/vue/BoatLoader.vue";
 import GlobeLoading from "@/vue/GlobeLoading.vue";
 
 // Lazy: globe.gl bundles three.js, so it stays out of the main bundle and loads only here. It is
-// ~575 KB gzipped, so on anything but a fast connection the wait is long enough to need saying —
+// ~575 KB gzipped, so on anything but a fast connection the wait is long enough to need saying,
 // but `delay` still keeps the ship off the screen when the chunk comes from cache.
 const GlobeCard = defineAsyncComponent({
   loader: () => import("@/components/GlobeCard.vue"),
@@ -146,7 +146,7 @@ const hasData = computed(() => (stats.value?.totalAttempts ?? 0) > 0);
     </div>
 
     <!-- The dashboard's own wait. The box is here for as long as the request is, so the page never
-         jumps; the ship inside it waits on `showLoader`, so a warm response — most of them — swaps
+         jumps; the ship inside it waits on `showLoader`, so a warm response (most of them) swaps
          the figures in silently rather than blinking a ship between two states. The region filter
          re-runs this, which is what would otherwise put that flicker one click away. -->
     <div class="swap-area">
@@ -183,7 +183,7 @@ const hasData = computed(() => (stats.value?.totalAttempts ?? 0) > 0);
           </div>
 
           <!-- Per search size (#720): "two ships met" is far easier to clear with more boats in the
-           draw, and a big search is usually after five, not two — so one rate over all sizes
+           draw, and a big search is usually after five, not two, so one rate over all sizes
            flatters the large ones. Each band is scored against what it could actually reach. -->
           <div v-if="sizeBands.length" class="card size-card">
             <h3>{{ t("alliance.size.title") }}</h3>
@@ -320,18 +320,18 @@ header {
   justify-content: center;
 }
 
-// The dashboard's three states — waiting, empty, loaded — cross-fade rather than cut.
+// The dashboard's three states (waiting, empty, loaded) cross-fade rather than cut.
 //
 // A true cross-fade, not `mode="out-in"`. Mounting this dashboard costs ~370ms of main thread (168
 // heatmap cells, the tables, the globe's container), and out-in waits for the ship to leave before
-// paying it — measured, that left the page blank for 440ms, which is worse than the cut it replaced.
+// paying it (measured, that left the page blank for 440ms), which is worse than the cut it replaced.
 // Here the two states share one grid cell, so the ship is still on screen, fading, while the
 // dashboard paints underneath it. The leave is the slower of the two for that reason.
 .swap-area {
   display: grid;
   // The single overlaid column has to track the container, not the content. Left as the implicit
   // `auto` track it grew to the dashboard's max-content width (~850px, driven by the globe and the
-  // wide tables) and overflowed every viewport narrower than that — on tablet and phone the tiles,
+  // wide tables) and overflowed every viewport narrower than that: on tablet and phone the tiles,
   // heatmap and tables spilled off the right edge, clipped with no scrollbar to reach them. The
   // desktop full width hid it behind the page's own max-width. minmax(0, …) binds the column to the
   // available width and lets it shrink, so the inner overflow-x:auto scrollers take over as intended.

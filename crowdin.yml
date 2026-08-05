@@ -1,4 +1,4 @@
-# Crowdin file mapping. The rest of the setup — what gets machine-translated and what does not —
+# Crowdin file mapping. The rest of the setup (what gets machine-translated and what does not)
 # lives in .github/workflows/crowdin.yml, on purpose: it is the part nobody could ever see when it
 # was buried in the Crowdin web UI.
 #
@@ -6,13 +6,13 @@
 #
 #   source.json  is the English original. It is the only file anyone edits by hand, and it is what
 #                Crowdin translates from. The Crowdin project's source language must therefore be
-#                English — that single setting is the one thing that cannot live in this repo (see
+#                English: that single setting is the one thing that cannot live in this repo (see
 #                the workflow's header for where to click).
 #
 #   en.json      is a copy of source.json, written by the workflow. It is NOT a Crowdin
 #                translation: translating English into English is not a thing, and letting Crowdin
 #                near it is how it ends up machine-translated from itself. Hence the exclusion
-#                below. Do not edit it — edit source.json.
+#                below. Do not edit it: edit source.json.
 #
 #   fr/de/es/it  come back from Crowdin. French is human-only (see the workflow); the others are
 #                machine-translated first and corrected by translators afterwards.

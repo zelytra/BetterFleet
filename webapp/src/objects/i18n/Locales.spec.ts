@@ -10,8 +10,8 @@ import italian from "@/assets/locales/it.json";
 /**
  * Guards the locale files against the way i18n actually breaks here: silently.
  *
- * A key that doesn't resolve renders as its own path — "session.connectedPlayers" sitting in the
- * UI where a label should be — and nothing fails. We shipped exactly that: a second "player" key in
+ * A key that doesn't resolve renders as its own path ("session.connectedPlayers" sitting in the
+ * UI where a label should be) and nothing fails. We shipped exactly that: a second "player" key in
  * the session block quietly won (in JSON the last duplicate does), taking the label with it, and it
  * survived because nothing could see it.
  *
@@ -19,7 +19,7 @@ import italian from "@/assets/locales/it.json";
  * locale. Part of #603.
  */
 
-// Vite reads the sources at transform time, which keeps this free of node builtins — the app has no
+// Vite reads the sources at transform time, which keeps this free of node builtins: the app has no
 // @types/node, and vue-tsc typechecks the specs.
 const sources = import.meta.glob("@/**/*.{vue,ts}", {
   query: "?raw",
@@ -53,7 +53,7 @@ const keysOf: Record<string, Set<string>> = Object.fromEntries(
   LOCALE_NAMES.map((name) => [name, flatten(locales[name])]),
 );
 
-// t("a.b") / $t('a.b'). A key built by concatenation — t("session.name." + seed) — has a data
+// t("a.b") / $t('a.b'). A key built by concatenation (t("session.name." + seed)) has a data
 // suffix, so its prefix is what gets checked instead.
 const LITERAL_KEY = /\$?\bt\(\s*["']([a-zA-Z][\w.]*)["']\s*[),]/g;
 const DYNAMIC_PREFIX = /\$?\bt\(\s*["']([a-zA-Z][\w.]*\.)["']\s*\+/g;

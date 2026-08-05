@@ -4,7 +4,7 @@
   their logs, and robots.txt disallows it.
 
   No <lastmod>: a date here has to be true to be worth anything, and nothing updates this file when
-  the pages change. A stale lastmod is worse than none — it teaches a crawler to distrust the rest.
+  the pages change. A stale lastmod is worse than none - it teaches a crawler to distrust the rest.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>

@@ -23,7 +23,7 @@ pub(crate) struct X11Context {
 }
 
 /// Opens the X11 display named by `$DISPLAY`. Returns `None` (with a log line) when there is no
-/// reachable X server — e.g. a pure-Wayland session with no XWayland — so callers fall back
+/// reachable X server - e.g. a pure-Wayland session with no XWayland - so callers fall back
 /// gracefully rather than erroring.
 pub(crate) fn connect() -> Option<X11Context> {
     match x11rb::connect(None) {
@@ -53,8 +53,8 @@ impl X11Context {
     }
 
     /// Finds a top-level window whose title (or `WM_CLASS`) contains `needle`, which must already be
-    /// lowercase. Prefers EWMH's `_NET_CLIENT_LIST` — the true client windows, independent of how the
-    /// WM reparents them — and falls back to a depth-bounded tree walk for non-EWMH window managers.
+    /// lowercase. Prefers EWMH's `_NET_CLIENT_LIST` - the true client windows, independent of how the
+    /// WM reparents them - and falls back to a depth-bounded tree walk for non-EWMH window managers.
     pub fn find_window_by_title(&self, needle: &str) -> Option<Window> {
         if let Some(window) = self.find_in_client_list(needle) {
             return Some(window);

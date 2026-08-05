@@ -2,7 +2,7 @@ import { reactive } from "vue";
 import { Player, PlayerStates } from "@/objects/fleet/Player.ts";
 
 // Guided diagnostic (#688). When the player is in game and server detection stays silent past a
-// threshold, the lobby offers — once — to run the #364 capture. The decision logic is a pure class
+// threshold, the lobby offers (once) to run the #364 capture. The decision logic is a pure class
 // fed by the existing 400ms game poll, so the timing rules are unit-testable without timers.
 
 /** How long detection may stay silent in game before the offer shows. */
@@ -14,7 +14,7 @@ export class DetectionWatchdog {
 
   /**
    * Feeds one observation; returns true exactly once per continuous in-game period, when the
-   * threshold is crossed. A countdown delays the offer instead of consuming it — interrupting the
+   * threshold is crossed. A countdown delays the offer instead of consuming it: interrupting the
    * launch ritual with a diagnostic banner would be worse than waiting.
    */
   observe(
@@ -88,8 +88,8 @@ export function dismissDetectionPrompt(): void {
 // which is awkward to stage on purpose. In a dev build these expose it on the browser console (open
 // the dev webview's devtools). You must be in a session lobby for the banner to have somewhere to
 // render:
-//   betterfleet.detection.offer()             — show the banner right now
-//   betterfleet.detection.simulateStuck()     — feed the watchdog "in game, no server" so the offer
+//   betterfleet.detection.offer()             : show the banner right now
+//   betterfleet.detection.simulateStuck()     : feed the watchdog "in game, no server" so the offer
 //                                               fires through the real 60s path; pass false to stop
 if (import.meta.env.DEV && typeof window !== "undefined") {
   const scope = window as unknown as { betterfleet?: Record<string, unknown> };
