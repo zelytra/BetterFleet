@@ -372,10 +372,6 @@
       "exe": {
         "label": "Installateur .exe",
         "desc": "Installation classique, mises à jour auto"
-      },
-      "msi": {
-        "label": "Installateur .msi",
-        "desc": "Déploiement entreprise / silencieux"
       }
     },
     "linux": {
