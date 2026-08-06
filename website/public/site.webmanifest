@@ -1,0 +1,14 @@
+{
+  "name": "BetterFleet",
+  "short_name": "BetterFleet",
+  "description": "Get your Sea of Thieves crew on the same server.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#171a21",
+  "theme_color": "#32D499",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
