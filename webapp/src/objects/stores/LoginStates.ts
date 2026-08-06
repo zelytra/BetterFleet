@@ -19,6 +19,9 @@ const initOptions: KeycloakConfig = {
 export const keycloakStore = reactive({
   keycloak: new Keycloak(initOptions),
   isAuthenticated: false,
+  // Linux only (#740): true while the system browser is open for the loopback login, so the auth
+  // screen can tell the player to finish in their browser instead of showing a dead login button.
+  awaitingBrowser: false,
   /**
    * Whether the SSO check has settled, either way.
    *
@@ -60,10 +63,7 @@ export const keycloakStore = reactive({
   },
   loginUser(redirectionUrl: string) {
     if (isLinux()) {
-      if (this.isAuthenticated && this.keycloak.authenticated) return;
-      LinuxAuth.login()
-        .then((tokens) => this.applyTokensLinux(tokens))
-        .catch((e) => logError(`Linux OIDC login failed: ${e}`));
+      void this.loginLinux();
       return;
     }
     if (
@@ -101,6 +101,25 @@ export const keycloakStore = reactive({
       logError(`Linux OIDC restore failed: ${e}`);
     } finally {
       this.isReady = true;
+    }
+  },
+  async loginLinux() {
+    if (this.isAuthenticated && this.keycloak.authenticated) return;
+    // Already signed in from another launch? Restore silently (persisted refresh token) rather than
+    // reopening the browser for a player who is effectively still connected.
+    const restored = await LinuxAuth.restore();
+    if (restored) {
+      this.applyTokensLinux(restored);
+      return;
+    }
+    this.awaitingBrowser = true;
+    try {
+      const tokens = await LinuxAuth.login();
+      this.applyTokensLinux(tokens);
+    } catch (e) {
+      logError(`Linux OIDC login failed: ${e}`);
+    } finally {
+      this.awaitingBrowser = false;
     }
   },
   applyTokensLinux(tokens: LinuxAuth.OidcTokens) {

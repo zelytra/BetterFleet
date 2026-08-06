@@ -7,7 +7,19 @@
          overlapped, so nothing is swapped under the eye in one frame. -->
     <transition name="swap" mode="out-in">
       <div
-        v-if="keycloakStore.isReady && !keycloakStore.isAuthenticated"
+        v-if="keycloakStore.awaitingBrowser"
+        key="browser"
+        class="card browser-wrapper"
+      >
+        <div class="spinner" aria-hidden="true"></div>
+        <h1>{{ t("login.browser.title") }}</h1>
+        <p>{{ t("login.browser.message") }}</p>
+        <p class="sub-action" @click="cancelBrowser()">
+          {{ t("login.browser.cancel") }}
+        </p>
+      </div>
+      <div
+        v-else-if="keycloakStore.isReady && !keycloakStore.isAuthenticated"
         key="login"
         class="card login-wrapper"
       >
@@ -80,6 +92,12 @@ function authUser() {
   }
 }
 
+function cancelBrowser() {
+  // Reopening the flow after a half-finished attempt would clash on the loopback port, so a reload is
+  // the clean reset: it kills the pending login and its local server, then re-runs the silent restore.
+  window.location.reload();
+}
+
 function leavePage() {
   router.push("/fleet/session");
 }
@@ -96,6 +114,12 @@ function leavePage() {
 .swap-enter-from,
 .swap-leave-to {
   opacity: 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 section.auth-page {
@@ -147,6 +171,37 @@ section.auth-page {
       p {
         text-align: center;
         max-width: 80%;
+      }
+    }
+
+    &.browser-wrapper {
+      width: 520px;
+      gap: 24px;
+
+      .spinner {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 4px solid rgba(50, 212, 153, 0.18);
+        border-top-color: var(--primary);
+        animation: spin 0.8s linear infinite;
+      }
+
+      h1 {
+        font-family: BrushTip, sans-serif;
+        font-size: 34px;
+      }
+
+      p {
+        text-align: center;
+        max-width: 82%;
+        color: var(--secondary-text);
+      }
+
+      .sub-action {
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: underline;
       }
     }
 
