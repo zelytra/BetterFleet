@@ -3,8 +3,8 @@
 Onboarding notes for anyone (human or agent) touching this repository. BetterFleet is a free,
 open-source companion app for *Sea of Thieves* that helps a crew land on the **same server**: it
 reads the game's live status, shares each player's server and ready state across the alliance, and
-fires a synchronized "set sail" so everyone clicks at once. Windows-only desktop app, self-hostable
-backend, public statistics site.
+fires a synchronized "set sail" so everyone clicks at once. Windows and Linux desktop app,
+self-hostable backend, public statistics site.
 
 This file is loaded automatically by Claude Code (and read by other agents). Keep it accurate as
 the project evolves, and keep it free of machine-specific paths or secrets.
@@ -98,11 +98,12 @@ images too) is `deployment/docker-compose.yml`; the app schema seed is `deployme
   windows: timers stall and audio mutes. The fix is `additionalBrowserArgs` in `tauri.conf.json`
   (the `WEBVIEW2_*` env var is ignored by wry). Don't reintroduce timer/audio logic that assumes the
   overlay keeps ticking while covered.
-- **Linux server detection needs `CAP_NET_RAW`.** The UDP capture (`AF_PACKET`, shared by the
-  Help-tab diagnostic and live detection) requires the capability. In dev, run
-  `sudo setcap cap_net_raw+ep webapp/src-tauri/target/debug/better_fleet` and re-apply it after each
-  Rust rebuild; without it the capture logs `EPERM` and finds no server. End users never do this: the
-  packaged app stays unprivileged and a small capture helper receives the capability (issue #726).
+- **Linux server detection needs `CAP_NET_RAW`, isolated in a helper (#726).** The `AF_PACKET` UDP
+  capture runs in a tiny Tauri-free binary, `betterfleet-netcap`, so the GUI stays unprivileged (it
+  falls back to in-process capture when the helper is missing or uncapped). `npm run tauri:dev`
+  builds and `setcap`s it for you; the `.deb` post-install and AUR `.install` do it at install time,
+  so end users never run setcap. Under Proton the game spreads its UDP sockets across ~100
+  `sotgame.exe` task PIDs plus `wineserver`, so candidate ports are unioned across all of them (#725).
 - **SSE looks broken in dev: it isn't.** The webview origin is `https://tauri.localhost` while the
   dev backend is plain `http`, so the browser blocks `EventSource` (mixed content) and the client
   silently falls back to polling `/public-sessions` every 5s. You'll see those GETs loop in dev logs;

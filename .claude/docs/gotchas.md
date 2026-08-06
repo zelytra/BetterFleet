@@ -36,18 +36,30 @@ back into the problem.
   holds. A **fullscreen-exclusive** game can still cover it (its layer outranks "above"); borderless
   / windowed-fullscreen is the workaround. The WebView2 `additionalBrowserArgs` occlusion knob is a
   no-op on WebKitGTK; the native `rodio` countdown audio already hedges the important cue.
-- **Linux UDP capture needs `CAP_NET_RAW`, a dev-only manual step until #726.** Server detection
-  sniffs the game's UDP flows through an `AF_PACKET` socket (`diagnostics.rs`, `capture_af_packet`),
-  shared verbatim by both the live detection (`fetch_informations.rs`) and the Help-tab "Lancer une
-  capture" diagnostic through `capture_flows`. That socket requires `CAP_NET_RAW`. In dev, grant it
-  once to the compiled binary with
-  `sudo setcap cap_net_raw+ep webapp/src-tauri/target/debug/better_fleet`, then re-apply it after any
-  Rust rebuild: cargo relinks a fresh binary and the capability stays on the old inode, so it is
-  lost, while a frontend-only reload keeps it. Without the capability the socket fails with `EPERM`;
-  the capture logs the error and returns no flows, so detection degrades to "no server" instead of
-  crashing (the Help-tab report simply shows zero packets). End users never run setcap: the
-  production model (issue #726) keeps the app unprivileged and gives the capability to a small
-  capture helper, granted by the package's post-install.
+- **Linux UDP capture needs `CAP_NET_RAW`, isolated in the `betterfleet-netcap` helper (#726).**
+  Server detection sniffs the game's UDP flows through an `AF_PACKET` socket (`diagnostics.rs`,
+  `capture_af_packet`), shared verbatim by live detection (`fetch_informations.rs`) and the Help-tab
+  "Lancer une capture" diagnostic through `capture_flows`. Because that socket needs `CAP_NET_RAW`,
+  the capture runs in a **separate Tauri-free binary** (`betterfleet-netcap`, crate
+  `better_fleet_netcap`) rather than the GUI: the app stays unprivileged, `capture_flows` shells out
+  to the helper, and it falls back to an in-process capture when the helper is absent or uncapped.
+  **Dev**: `npm run tauri:dev` builds the helper and `setcap cap_net_raw+ep`s it via
+  `webapp/scripts/netcap-dev.mjs` (it calls `sudo`, so a passwordless setcap rule keeps startup
+  non-interactive; a failed setcap is non-fatal, leaving the in-process fallback). **Packaged**: the
+  `.deb` post-install and the AUR `.install` setcap the helper, so end users never touch it. Without
+  the capability the socket fails `EPERM`, the capture returns no flows, and detection degrades to
+  "no server" instead of crashing (the Help-tab report shows zero packets).
+- **Proton spreads the game's UDP sockets, so candidate ports are unioned (#725).** Under Proton the
+  ~100 `sotgame.exe` "task" PIDs share one command line but only one owns the UDP sockets, and
+  `wineserver` (a sibling process) can own others. Detection resolves every game task PID plus
+  `wineserver` and unions their UDP ports in a single socket scan; reading only the first PID
+  intermittently missed the real server port. The pure union step is unit-tested
+  (`fetch_informations.rs`, `udp_ports_owned_by`).
+- **The `AppImage` build can't hold a file capability, so detection needs the `.deb` or AUR install.**
+  A file capability lives in an on-disk binary's extended attributes; the AppImage runs from a
+  self-mounted image, so `setcap` has nothing to pin to and the helper never receives `CAP_NET_RAW`.
+  Detection therefore only works from the `.deb`/AUR packages. Separately, `linuxdeploy`'s strip step
+  fails on Arch/CachyOS, so the AppImage is built with `NO_STRIP=true` (set in `release.yml`).
 
 ## Dev vs prod transport
 

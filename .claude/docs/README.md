@@ -22,7 +22,7 @@ Code). These files are the depth behind it.
 
 BetterFleet helps a *Sea of Thieves* crew land on the **same server**. Three apps:
 
-- **`webapp/`**: the Windows desktop app. A **Tauri v1** Rust shell (game detection, global
+- **`webapp/`**: the Windows and Linux desktop app. A **Tauri v2** Rust shell (game detection, global
   hotkey, overlay window, native audio) wrapping a **Vue 3 + TypeScript** UI.
 - **`backend/`**: a **Quarkus** (Java 17) service. Real-time alliance sessions over **WebSocket**,
   plus REST for public sessions, anonymous statistics, diagnostic reports, and a GitHub release
