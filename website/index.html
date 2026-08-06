@@ -21,6 +21,23 @@
     <meta name="theme-color" content="#32D499" />
 
     <!--
+      Home-screen / PWA install. iOS ignores the SVG favicon for the touch icon, so without a PNG
+      apple-touch-icon it draws its own fallback (a "B" on black). Ship a proper 180px icon, plus a
+      manifest so Android and desktop installs get the icon and a standalone launch too.
+      apple-mobile-web-app-capable opens it fullscreen from the home screen; drop that line to keep
+      the Safari chrome instead.
+    -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="BetterFleet" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <!--
       The site is dark and its background is set from the bundled stylesheet, so the first paint
       (before any of it has arrived) was white. On a phone that is a flash of white before a dark
       page, which is the one part of the boot a visitor actually feels. No loading indicator here on
