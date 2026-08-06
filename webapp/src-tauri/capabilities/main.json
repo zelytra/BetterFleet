@@ -18,6 +18,8 @@
         { "url": "https://**" }
       ]
     },
-    "log:default"
+    "log:default",
+    "shell:allow-open",
+    "oauth:default"
   ]
 }
