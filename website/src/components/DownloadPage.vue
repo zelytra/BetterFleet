@@ -28,11 +28,20 @@ const detected = detectPlatform();
 
 const assets = ref<GithubReleaseAsset[]>([]);
 const fetchedVersion = ref("");
+// True until the release fetch settles. While it holds, a tile whose asset isn't in `assets` yet is
+// still *loading*, not missing - it shows a spinner rather than "coming soon", so a format the release
+// does carry never flashes "coming soon" on its way in. Only once this clears does an absent asset
+// mean the format genuinely isn't published.
+const loading = ref(true);
 
 onMounted(async () => {
-  const release = await fetchLatestRelease();
-  assets.value = release.assets;
-  fetchedVersion.value = release.version;
+  try {
+    const release = await fetchLatestRelease();
+    assets.value = release.assets;
+    fetchedVersion.value = release.version;
+  } finally {
+    loading.value = false;
+  }
 });
 
 // Shown as "v2.4.1": the GitHub tag first, the backend proxy's manifest version second. Either can
@@ -216,6 +225,15 @@ async function copyCommand(id: string, command: string) {
         >
           <PirateButton :label="t('downloadPage.download')" />
         </a>
+        <span
+          v-else-if="loading"
+          class="cta-loading"
+          role="status"
+          :aria-label="t('downloadPage.loading')"
+          aria-busy="true"
+        >
+          <span class="spinner" aria-hidden="true"></span>
+        </span>
         <span v-else class="cta-soon">{{ t("downloadPage.comingSoon") }}</span>
       </div>
     </article>
@@ -269,6 +287,22 @@ async function copyCommand(id: string, command: string) {
                 </svg>
               </span>
             </a>
+            <div
+              v-else-if="loading"
+              class="dl loading"
+              role="status"
+              :aria-label="t('downloadPage.loading')"
+              aria-busy="true"
+            >
+              <span class="dl-text">
+                <span class="dl-label">{{ row.label }}</span>
+                <span class="dl-desc">{{ row.desc }}</span>
+              </span>
+              <span class="dl-meta">
+                <span class="spinner spinner-sm" aria-hidden="true"></span>
+                <span class="spinner" aria-hidden="true"></span>
+              </span>
+            </div>
             <div v-else class="dl soon">
               <span class="dl-text">
                 <span class="dl-label">{{ row.label }}</span>
@@ -328,6 +362,22 @@ async function copyCommand(id: string, command: string) {
                 </svg>
               </span>
             </a>
+            <div
+              v-else-if="loading"
+              class="dl tile loading"
+              role="status"
+              :aria-label="t('downloadPage.loading')"
+              aria-busy="true"
+            >
+              <span class="dl-text">
+                <span class="dl-label">{{ tile.label }}</span>
+                <span class="dl-desc">{{ tile.desc }}</span>
+              </span>
+              <span class="dl-meta">
+                <span class="spinner spinner-sm" aria-hidden="true"></span>
+                <span class="spinner" aria-hidden="true"></span>
+              </span>
+            </div>
             <div v-else class="dl tile soon">
               <span class="dl-text">
                 <span class="dl-label">{{ tile.label }}</span>
@@ -448,6 +498,17 @@ async function copyCommand(id: string, command: string) {
     flex: 0 0 auto;
   }
 
+  // Release still loading: a spinner sits where the download button will land, holding its height so
+  // the banner doesn't jump when the real button (or the "coming soon" chip) resolves.
+  .cta-loading {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    min-width: 46px;
+  }
+
   // Recommended format not in the release yet: a muted, non-clickable "coming soon" chip in place of
   // the download button - never a link off to github.com.
   .cta-soon {
@@ -529,13 +590,19 @@ async function copyCommand(id: string, command: string) {
   border: 1px solid rgba(255, 255, 255, 0.07);
   cursor: pointer;
 
-  &:hover:not(.soon) {
+  &:hover:not(.soon):not(.loading) {
     border-color: rgba(50, 212, 153, 0.5);
     background: rgba(50, 212, 153, 0.08);
 
     .dl-icon {
       color: var(--primary);
     }
+  }
+
+  // Still fetching the release: not a link, so it neither invites a click nor dims like "coming soon"
+  // - the tile just holds its shape while the spinners in its meta slot turn.
+  &.loading {
+    cursor: default;
   }
 
   .dl-text {
@@ -592,6 +659,41 @@ async function copyCommand(id: string, command: string) {
       border-radius: 999px;
       white-space: nowrap;
     }
+  }
+}
+
+// A small, CSS-only "still loading" spinner: the site's green accent ring turning against a faint
+// track. It stands in for a download affordance (a tile's size + icon, the banner's button) while the
+// latest release is being fetched, so nothing shows "coming soon" until we actually know it's absent.
+.spinner {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(50, 212, 153, 0.25);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spinner-spin 0.7s linear infinite;
+
+  // Matches the size-text slot in a tile's meta row, so the two spinners echo the size + icon they
+  // stand in for rather than reading as one oversized ring.
+  &.spinner-sm {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@keyframes spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Reduced motion: keep it turning (a frozen ring reads as a hang, not a wait) but slow it right down
+// so it no longer sweeps.
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 1.6s;
   }
 }
 
@@ -690,7 +792,8 @@ async function copyCommand(id: string, command: string) {
   }
 
   .recommended .cta,
-  .recommended .cta-soon {
+  .recommended .cta-soon,
+  .recommended .cta-loading {
     width: 100%;
   }
 
