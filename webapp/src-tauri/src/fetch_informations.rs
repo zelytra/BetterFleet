@@ -498,7 +498,8 @@ pub(crate) fn game_udp_candidate_ports(game_pids: &[usize]) -> Vec<u16> {
 
 /// The distinct UDP local ports owned by any PID in `target_pids`, from a single socket-table scan.
 /// Batching matters: the game exposes dozens of task PIDs, and scanning per PID would walk the whole
-/// socket table dozens of times every cycle.
+/// socket table dozens of times every cycle. The pure ownership filter is split out (and tested) as
+/// [`udp_ports_owned_by`].
 #[cfg(target_os = "linux")]
 fn udp_ports_for_pids(target_pids: &std::collections::HashSet<u32>) -> Vec<u16> {
     let af_flags = AddressFamilyFlags::IPV4 | AddressFamilyFlags::IPV6;
@@ -509,15 +510,33 @@ fn udp_ports_for_pids(target_pids: &std::collections::HashSet<u32>) -> Vec<u16> 
             return Vec::new();
         }
     };
+    let sockets: Vec<(u16, Vec<u32>)> = sockets_info
+        .into_iter()
+        .filter_map(|si| match si.protocol_socket_info {
+            ProtocolSocketInfo::Udp(udp_si) => Some((udp_si.local_port, si.associated_pids)),
+            _ => None,
+        })
+        .collect();
+    udp_ports_owned_by(&sockets, target_pids)
+}
+
+/// The distinct local ports among `sockets` (each a `(local_port, owning PIDs)` pair) owned by any
+/// PID in `target_pids`, sorted for determinism. Pure, so the union-across-task-PIDs behaviour that
+/// fixed the Proton candidate-port flapping (#725) is unit-tested without touching the socket table.
+#[cfg(target_os = "linux")]
+fn udp_ports_owned_by(
+    sockets: &[(u16, Vec<u32>)],
+    target_pids: &std::collections::HashSet<u32>,
+) -> Vec<u16> {
     let mut ports: std::collections::HashSet<u16> = std::collections::HashSet::new();
-    for si in sockets_info {
-        if let ProtocolSocketInfo::Udp(udp_si) = &si.protocol_socket_info {
-            if si.associated_pids.iter().any(|pid| target_pids.contains(pid)) {
-                ports.insert(udp_si.local_port);
-            }
+    for (local_port, owning_pids) in sockets {
+        if owning_pids.iter().any(|pid| target_pids.contains(pid)) {
+            ports.insert(*local_port);
         }
     }
-    ports.into_iter().collect()
+    let mut ports: Vec<u16> = ports.into_iter().collect();
+    ports.sort_unstable();
+    ports
 }
 
 /// A node of the process tree reduced to what wineserver resolution needs. A plain, cloneable value
@@ -944,6 +963,42 @@ mod tests {
             assert!(!cmd_is_sot_game(&cmd(&["steam.exe"])));
             assert!(!cmd_is_sot_game(&cmd(&["python3", "proton", "waitforexitandrun"])));
             assert!(!cmd_is_sot_game(&cmd(&[])));
+        }
+    }
+
+    // Linux candidate-port selection (#725): unioning UDP ports across all game task PIDs, the fix
+    // for the single-PID flapping under Proton. The socket-table I/O lives in udp_ports_for_pids;
+    // this covers the pure ownership filter it delegates to.
+    #[cfg(target_os = "linux")]
+    mod candidate_ports {
+        use crate::fetch_informations::udp_ports_owned_by;
+        use std::collections::HashSet;
+
+        fn pids(list: &[u32]) -> HashSet<u32> {
+            list.iter().copied().collect()
+        }
+
+        #[test]
+        fn a_single_wrong_task_pid_misses_the_server_port_but_the_union_catches_it() {
+            // Many task PIDs share the SotGame.exe cmdline; only PID 11500 owns the server socket.
+            // Targeting one of the other tasks finds nothing (the old bug); unioning all the task
+            // PIDs plus the wineserver finds the server port and the wineserver-owned port.
+            let sockets = vec![
+                (59230u16, vec![11500u32]),
+                (65001, vec![11483]),
+                (137, vec![999]),
+            ];
+            assert!(udp_ports_owned_by(&sockets, &pids(&[11842])).is_empty());
+            assert_eq!(
+                udp_ports_owned_by(&sockets, &pids(&[11842, 11500, 11483])),
+                vec![59230, 65001]
+            );
+        }
+
+        #[test]
+        fn a_socket_shared_between_the_game_and_wineserver_is_counted_once() {
+            let sockets = vec![(40000u16, vec![11500u32, 11483u32])];
+            assert_eq!(udp_ports_owned_by(&sockets, &pids(&[11500, 11483])), vec![40000]);
         }
     }
 
