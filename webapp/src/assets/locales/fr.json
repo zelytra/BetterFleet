@@ -109,7 +109,7 @@
     "macro": {
       "check": "Lancement assisté",
       "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte",
-      "linuxUnavailable": "Non disponible sur Linux : Wayland bloque le clic automatique, vous devez cliquer vous-même sur \"Lever l'ancre\"."
+      "linuxUnavailable": "Not available on Linux — Wayland blocks the automatic click, so you must click \"Set sail\" yourself."
     },
     "overlay": {
       "hotkey": {
@@ -321,8 +321,8 @@
     },
     "leave": "Quitter la session",
     "linuxAutoclick": {
-      "banner": "Le lancement assisté n'est pas disponible sur Linux : Wayland bloque le clic automatique. Cliquez vous-même sur \"Lever l'ancre\" à la fin du décompte.",
-      "dismiss": "Fermer"
+      "banner": "Assisted launch is not available on Linux — Wayland blocks the automatic click. Click \"Set sail\" yourself when the countdown reaches zero.",
+      "dismiss": "Dismiss"
     },
     "name": {
       "0": "Le Navire Fantôme",
