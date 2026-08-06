@@ -108,7 +108,8 @@
     },
     "macro": {
       "check": "Sitzungsmakro aktivieren/deaktivieren",
-      "description": "Ausführung eines automatischen Klicks am Ende des Countdowns"
+      "description": "Ausführung eines automatischen Klicks am Ende des Countdowns",
+      "linuxUnavailable": "Not available on Linux — Wayland blocks the automatic click, so you must click \"Set sail\" yourself."
     },
     "overlay": {
       "hotkey": {
@@ -319,6 +320,10 @@
       "tryNumber": "Anzahl der Versuche"
     },
     "leave": "Verlassen Sie die Sitzung",
+    "linuxAutoclick": {
+      "banner": "Assisted launch is not available on Linux — Wayland blocks the automatic click. Click \"Set sail\" yourself when the countdown reaches zero.",
+      "dismiss": "Dismiss"
+    },
     "name": {
       "0": "Geisterschiff",
       "1": "Versteckter Schatz",

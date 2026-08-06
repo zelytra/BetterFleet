@@ -108,7 +108,8 @@
     },
     "macro": {
       "check": "Assisted launch",
-      "description": "Automatically clicks on \"Set sail\" at the end of the countdown"
+      "description": "Automatically clicks on \"Set sail\" at the end of the countdown",
+      "linuxUnavailable": "Not available on Linux — Wayland blocks the automatic click, so you must click \"Set sail\" yourself."
     },
     "overlay": {
       "hotkey": {
@@ -319,6 +320,10 @@
       "tryNumber": "Number of tries"
     },
     "leave": "Leave the session",
+    "linuxAutoclick": {
+      "banner": "Assisted launch is not available on Linux — Wayland blocks the automatic click. Click \"Set sail\" yourself when the countdown reaches zero.",
+      "dismiss": "Dismiss"
+    },
     "name": {
       "0": "The Ghost Ship",
       "1": "The Hidden Treasure",

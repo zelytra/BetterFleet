@@ -42,14 +42,29 @@
           />
         </div>
         <div class="toggles">
-          <div class="checkbox-wrapper descriptor">
-            <input v-model="activeMacro" type="checkbox" />
+          <div
+            :class="{
+              'checkbox-wrapper': true,
+              descriptor: true,
+              disabled: macroLinuxDisabled,
+            }"
+          >
+            <input
+              v-model="activeMacro"
+              type="checkbox"
+              :disabled="macroLinuxDisabled"
+            />
             <div class="label-wrapper">
-              <p @click="activeMacro = !activeMacro">
+              <p @click="toggleMacro()">
                 {{ t("config.macro.check") }}
               </p>
-              <p class="description" @click="activeMacro = !activeMacro">
+              <p class="description" @click="toggleMacro()">
                 {{ t("config.macro.description") }}
+              </p>
+              <!-- Wayland blocks the synthetic click the macro relies on (KDE/GNOME alike), so the
+                   toggle is locked on Linux instead of offering a setting that can never fire. -->
+              <p v-if="macroLinuxDisabled" class="description linux-note">
+                {{ t("config.macro.linuxUnavailable") }}
               </p>
             </div>
           </div>
@@ -312,6 +327,7 @@ import { Utils } from "@/objects/utils/Utils.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
 import { info } from "@tauri-apps/plugin-log";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
+import { isLinux } from "@/objects/utils/platform.ts";
 
 const { t, availableLocales } = useI18n();
 const alerts = inject<AlertProvider>("alertProvider");
@@ -323,6 +339,10 @@ const devMode = ref<boolean>(false);
 const volume = ref<number>(50);
 const activeSound = ref<boolean>(true);
 const activeMacro = ref<boolean>(true);
+// Wayland blocks the synthetic click XTEST relies on, so the macro can never fire on Linux (KDE and
+// GNOME alike) - the toggle is locked rather than offering a setting that silently does nothing.
+// The user agent does not change mid-session, so this is read once rather than on every render.
+const macroLinuxDisabled = isLinux();
 const banner = ref<number>(0);
 const shuffleBanner = ref<boolean>(false);
 const shareStats = ref<boolean>(true);
@@ -495,6 +515,11 @@ function resetConfig() {
   recapEnabled.value = UserStore.player.recapCard !== false;
   statsHintEnabled.value = UserStore.player.statsHint !== false;
   inputLoading.value = true;
+}
+
+function toggleMacro(): void {
+  if (macroLinuxDisabled) return;
+  activeMacro.value = !activeMacro.value;
 }
 
 /**
@@ -797,13 +822,31 @@ button {
       align-items: start;
     }
 
+    // Locked on Linux (the raise-anchor macro): dims the whole row and swaps the pointer for the
+    // labels, which otherwise toggle the checkbox on click same as the box itself.
+    &.disabled {
+      opacity: 0.6;
+
+      .label-wrapper p {
+        cursor: not-allowed;
+      }
+    }
+
     .label-wrapper {
       display: flex;
       flex-direction: column;
+
+      p {
+        cursor: pointer;
+      }
     }
 
     p.description {
       color: var(--secondary-text);
+    }
+
+    p.linux-note {
+      color: var(--warning);
     }
   }
 
@@ -834,6 +877,10 @@ button {
       &:before {
         transform: scale(1);
       }
+    }
+
+    &:disabled {
+      cursor: not-allowed;
     }
   }
 

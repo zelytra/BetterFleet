@@ -22,4 +22,6 @@ export enum LocalKey {
   USER_STORE = "user-store",
   // Last app version whose "what's new" the player saw (#686).
   LAST_SEEN_VERSION = "last-seen-version",
+  // The Linux raise-anchor notice in the lobby, dismissed for good once closed.
+  LINUX_AUTOCLICK_BANNER_DISMISSED = "linux-autoclick-banner-dismissed",
 }

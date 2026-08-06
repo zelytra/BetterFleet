@@ -108,7 +108,8 @@
     },
     "macro": {
       "check": "Lancement assisté",
-      "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte"
+      "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte",
+      "linuxUnavailable": "Non disponible sur Linux : Wayland bloque le clic automatique, vous devez cliquer vous-même sur \"Lever l'ancre\"."
     },
     "overlay": {
       "hotkey": {
@@ -319,6 +320,10 @@
       "tryNumber": "Nombre d'essais"
     },
     "leave": "Quitter la session",
+    "linuxAutoclick": {
+      "banner": "Le lancement assisté n'est pas disponible sur Linux : Wayland bloque le clic automatique. Cliquez vous-même sur \"Lever l'ancre\" à la fin du décompte.",
+      "dismiss": "Fermer"
+    },
     "name": {
       "0": "Le Navire Fantôme",
       "1": "Le Trésor Caché",
