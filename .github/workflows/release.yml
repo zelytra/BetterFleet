@@ -392,6 +392,99 @@ jobs:
             git push origin HEAD:gh-pages
           fi
 
+  publish-arch:
+    needs: [resolve-version, publish-tauri]
+    # Every release, RC included: a direct pacman package (`sudo pacman -U <url>`) is the Arch/CachyOS
+    # counterpart of the .deb. Unlike the AUR publish below it is safe on pre-releases (nobody's
+    # `paru -S` picks it up by surprise). Add-on, never a gate on the rest of the release (#740).
+    if: ${{ !inputs.dry_run }}
+    name: Arch package
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      contents: write
+    # makepkg only runs on Arch; base-devel already carries makepkg, fakeroot, sudo and bsdtar.
+    container:
+      image: archlinux:base-devel
+    steps:
+      - name: Install git and gh
+        run: pacman -Sy --noconfirm --needed git github-cli
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download the release .deb
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p "${RUNNER_TEMP}/deb"
+          gh release download "${{ needs.resolve-version.outputs.tag }}" \
+            --repo "${{ github.repository }}" \
+            --pattern 'BetterFleet_*_amd64.deb' \
+            --dir "${RUNNER_TEMP}/deb"
+
+      - name: Build the pacman package from the .deb
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.resolve-version.outputs.version }}"
+          # pacman pkgver forbids '-'; map the semver pre-release dash to '.' (2.3.0-rc.1 -> 2.3.0.rc.1).
+          PKGVER="${VERSION//-/.}"
+
+          DEB=$(find "${RUNNER_TEMP}/deb" -name 'BetterFleet_*_amd64.deb' | head -n1)
+          if [ -z "${DEB}" ]; then
+            echo "::error::No BetterFleet_*_amd64.deb release asset found to repackage." >&2
+            exit 1
+          fi
+          DEBNAME=$(basename "${DEB}")
+
+          BUILD="${RUNNER_TEMP}/arch"
+          mkdir -p "${BUILD}"
+          cp "${DEB}" "${BUILD}/"
+          cp deployment/aur/betterfleet-bin/betterfleet-bin.install "${BUILD}/"
+
+          # A -bin PKGBUILD that just unpacks this build's .deb (kept in step with the AUR template in
+          # deployment/aur/betterfleet-bin/; there the source is the release URL, here the local file).
+          cat > "${BUILD}/PKGBUILD" <<'PKGBUILD_EOF'
+          pkgname=betterfleet-bin
+          pkgver=__PKGVER__
+          pkgrel=1
+          pkgdesc="Companion app for Sea of Thieves that lands your crew on the same server (prebuilt)"
+          arch=('x86_64')
+          url="https://github.com/zelytra/BetterFleet"
+          license=('custom')
+          provides=('betterfleet')
+          conflicts=('betterfleet')
+          install='betterfleet-bin.install'
+          depends=('webkit2gtk-4.1' 'gtk3' 'libayatana-appindicator' 'librsvg' 'libcap')
+          options=('!strip' '!debug')
+          source=('__DEBNAME__')
+          sha256sums=('SKIP')
+          package() {
+            bsdtar -xf "${srcdir}/__DEBNAME__"
+            bsdtar -xf data.tar.* -C "${pkgdir}/"
+          }
+          PKGBUILD_EOF
+          sed -i "s/__PKGVER__/${PKGVER}/; s/__DEBNAME__/${DEBNAME}/g" "${BUILD}/PKGBUILD"
+
+          # makepkg refuses to run as root; build as a throwaway unprivileged user. --nodeps: repackaging
+          # a .deb needs none of the runtime libs on the runner (they stay recorded for the user's pacman).
+          useradd -m builder
+          chown -R builder "${BUILD}"
+          sudo -u builder bash -c "cd '${BUILD}' && makepkg -f --nodeps --noconfirm"
+
+      - name: Upload the pacman package to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          PKG=$(find "${RUNNER_TEMP}/arch" -maxdepth 1 -name 'betterfleet-bin-*.pkg.tar.zst' | head -n1)
+          if [ -z "${PKG}" ]; then
+            echo "::error::makepkg produced no .pkg.tar.zst." >&2
+            exit 1
+          fi
+          gh release upload "${{ needs.resolve-version.outputs.tag }}" "${PKG}" \
+            --repo "${{ github.repository }}" --clobber
+
   sync-version-to-master:
     needs:
       - resolve-version
