@@ -372,10 +372,6 @@
       "exe": {
         "label": ".exe installer",
         "desc": "Classic installation, automatic updates"
-      },
-      "msi": {
-        "label": ".msi installer",
-        "desc": "Enterprise / silent deployment"
       }
     },
     "linux": {

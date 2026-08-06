@@ -45,7 +45,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "msi"],
+    "targets": ["nsis"],
     "createUpdaterArtifacts": "v1Compatible",
     "category": "DeveloperTool",
     "copyright": "",

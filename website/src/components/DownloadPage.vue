@@ -68,7 +68,6 @@ interface DownloadItem {
 
 const windowsRows = computed<DownloadItem[]>(() => {
   const exe = resolve(".exe");
-  const msi = resolve(".msi");
   return [
     {
       id: "exe",
@@ -76,13 +75,6 @@ const windowsRows = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.windows.exe.desc"),
       url: exe.url,
       size: exe.size,
-    },
-    {
-      id: "msi",
-      label: t("downloadPage.windows.msi.label"),
-      desc: t("downloadPage.windows.msi.desc"),
-      url: msi.url,
-      size: msi.size,
     },
   ];
 });
