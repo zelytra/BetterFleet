@@ -108,7 +108,8 @@
     },
     "macro": {
       "check": "Avvio assistito",
-      "description": "Clicca automaticamente su \"Salpa\" alla fine del conto alla rovescia"
+      "description": "Clicca automaticamente su \"Salpa\" alla fine del conto alla rovescia",
+      "linuxUnavailable": "Not available on Linux — Wayland blocks the automatic click, so you must click \"Set sail\" yourself."
     },
     "overlay": {
       "hotkey": {
@@ -319,6 +320,10 @@
       "tryNumber": "Numero di tentativi"
     },
     "leave": "Lascia la sessione",
+    "linuxAutoclick": {
+      "banner": "Assisted launch is not available on Linux — Wayland blocks the automatic click. Click \"Set sail\" yourself when the countdown reaches zero.",
+      "dismiss": "Dismiss"
+    },
     "name": {
       "0": "La Nave Fantasma",
       "1": "Il Tesoro Nascosto",

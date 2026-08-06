@@ -108,7 +108,8 @@
     },
     "macro": {
       "check": "Activar/Desactivar macro de sesión",
-      "description": "Ejecución de un clic automático al final de la cuenta atrás."
+      "description": "Ejecución de un clic automático al final de la cuenta atrás.",
+      "linuxUnavailable": "Not available on Linux — Wayland blocks the automatic click, so you must click \"Set sail\" yourself."
     },
     "overlay": {
       "hotkey": {
@@ -319,6 +320,10 @@
       "tryNumber": "Número de intentos"
     },
     "leave": "abandonar la sesión",
+    "linuxAutoclick": {
+      "banner": "Assisted launch is not available on Linux — Wayland blocks the automatic click. Click \"Set sail\" yourself when the countdown reaches zero.",
+      "dismiss": "Dismiss"
+    },
     "name": {
       "0": "Barco fantasma",
       "1": "Tesoro escondido",

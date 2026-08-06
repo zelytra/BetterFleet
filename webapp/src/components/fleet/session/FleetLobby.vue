@@ -125,6 +125,16 @@
         </button>
       </div>
     </div>
+    <!-- Linux raise-anchor notice: Wayland blocks the synthetic click the macro relies on, so it
+         never fires there regardless of the setting. Shown once per install; dismissing it
+         persists via localStorage so it does not come back every session. -->
+    <NoticeBanner
+      v-if="showLinuxAutoclickNotice"
+      :close-label="t('session.linuxAutoclick.dismiss')"
+      @close="dismissLinuxAutoclickNotice"
+    >
+      {{ t("session.linuxAutoclick.banner") }}
+    </NoticeBanner>
     <div class="lobby-content">
       <div class="player-table">
         <div v-if="computedSession.servers.size > 0" class="server-list">
@@ -329,8 +339,25 @@ import {
   formatClock,
   sessionRecap,
 } from "@/objects/fleet/SessionRecap.ts";
+import NoticeBanner from "@/vue/templates/NoticeBanner.vue";
+import { isLinux } from "@/objects/utils/platform.ts";
+import LocalStore, { LocalKey } from "@/objects/stores/LocalStore.ts";
 
 const { t } = useI18n();
+
+// Linux raise-anchor notice (Wayland blocks the synthetic click the macro needs, see
+// platform.ts): told once per install rather than every time the lobby mounts, so the dismissal
+// has to outlive the component - localStorage, not a plain ref.
+const linuxAutoclickBannerDismissed = LocalStore(
+  LocalKey.LINUX_AUTOCLICK_BANNER_DISMISSED,
+  false,
+);
+const showLinuxAutoclickNotice = computed(
+  () => isLinux() && !linuxAutoclickBannerDismissed.value,
+);
+function dismissLinuxAutoclickNotice(): void {
+  linuxAutoclickBannerDismissed.value = true;
+}
 
 // Guided diagnostic (#688): the banner's action lands on the Reports page, which auto-runs the
 // capture and pre-fills the message; sending stays the player's call.
