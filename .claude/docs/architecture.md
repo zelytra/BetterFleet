@@ -15,7 +15,7 @@ instant, maximizing the chance the matchmaker puts them together.
 ┌─────────────────────────┐        WebSocket  /sessions/{token}/{sessionId}
 │  webapp/  (desktop app)  │◀──────────── real-time session state ───────────┐
 │                          │                                                 │
-│  Tauri v1 (Rust shell)   │        REST  /public-sessions, /stats, /report  │
+│  Tauri v2 (Rust shell)   │        REST  /public-sessions, /stats, /report  │
 │   • game detection       │◀──────────── + SSE /public-sessions/stream ─────┤
 │   • global hotkey        │                                                 │
 │   • overlay window       │                                          ┌──────▼───────┐
@@ -34,7 +34,7 @@ instant, maximizing the chance the matchmaker puts them together.
 └─────────────────────────┘
 ```
 
-- **`webapp/`**: the Windows desktop app. A **Tauri v1** Rust shell does the OS-level work (detect
+- **`webapp/`**: the Windows and Linux desktop app. A **Tauri v2** Rust shell does the OS-level work (detect
   the game's server, register a global hotkey, own a borderless overlay window, play the countdown
   jingle natively) and wraps a **Vue 3 + TypeScript** UI. See [frontend.md](frontend.md).
 - **`backend/`**: a **Quarkus** (Java 17) service. Sessions run over **WebSocket**; REST serves the

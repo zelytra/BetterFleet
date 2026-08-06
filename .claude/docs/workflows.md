@@ -9,7 +9,7 @@ Commands are run from inside each module's directory unless noted. Frontend modu
 - **JDK 17**: the Quarkus backend (uses the bundled `./mvnw` wrapper, so no system Maven needed).
 - **Rust** + the Tauri v2 toolchain: only to build/run the desktop shell.
 - **Docker**: the local backing services (Postgres, Keycloak).
-- The desktop app is **Windows-only**; the backend and website build on any OS.
+- The desktop app targets **Windows and Linux**; the backend and website build on any OS.
 
 ## Per-module commands
 
