@@ -28,6 +28,7 @@ jobs:
     outputs:
       version: ${{ steps.resolve.outputs.version }}
       tag: ${{ steps.resolve.outputs.tag }}
+      prerelease: ${{ steps.resolve.outputs.prerelease }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -58,6 +59,15 @@ jobs:
 
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "tag=v${VERSION}" >> "${GITHUB_OUTPUT}"
+
+          # A pre-release tag carries a semver pre-release suffix (v2.3.0-rc.1). Everything downstream
+          # keys off this to keep an RC out of "latest": no updater latest.json, no Docker :latest, no
+          # APT publish, no version bump on master.
+          if [[ "${VERSION}" == *-* ]]; then
+            echo "prerelease=true" >> "${GITHUB_OUTPUT}"
+          else
+            echo "prerelease=false" >> "${GITHUB_OUTPUT}"
+          fi
 
   verify:
     name: Verify (build & test) before publishing
@@ -145,6 +155,10 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          # linuxdeploy's strip step aborts the AppImage bundling on some hosts; skipping strip keeps
+          # both the .deb and the AppImage building. A failed AppImage would otherwise abort the whole
+          # publish, and with it the .deb we actually need.
+          NO_STRIP: "true"
         run: npm run tauri:build
 
       - name: Build & publish Tauri release
@@ -155,6 +169,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+          # linuxdeploy's strip step aborts the AppImage bundling on some hosts; skipping strip keeps
+          # both the .deb and the AppImage building. A failed AppImage would otherwise abort the whole
+          # publish, and with it the .deb we actually need.
+          NO_STRIP: "true"
         with:
           # tauri-action runs from the repo root; point it at the app so its frontend build resolves
           # webapp/node_modules (otherwise `vue-tsc` isn't found on the Linux runner).
@@ -163,7 +181,9 @@ jobs:
           releaseName: "BetterFleet v__VERSION__"
           releaseBody: "See the assets to download this version and install."
           releaseDraft: false
-          prerelease: false
+          # A pre-release tag (v2.3.0-rc.1) publishes a GitHub pre-release: not "latest", so the
+          # updater (which reads releases/latest) never serves it to installed apps.
+          prerelease: ${{ needs.resolve-version.outputs.prerelease == 'true' }}
 
   publish-backend:
     needs: [resolve-version, verify]
@@ -196,7 +216,10 @@ jobs:
       - name: Set Docker tags
         id: docker-tags
         run: |
-          if [ "${{ github.ref_type }}" = "tag" ]; then
+          if [ "${{ needs.resolve-version.outputs.prerelease }}" = "true" ]; then
+            # A pre-release tags the RC image only, never overwriting the production :latest.
+            echo "tags=zelytra/better-fleet-backend:${{ needs.resolve-version.outputs.tag }}" >> "${GITHUB_OUTPUT}"
+          elif [ "${{ github.ref_type }}" = "tag" ]; then
             echo "tags=zelytra/better-fleet-backend:latest,zelytra/better-fleet-backend:${{ needs.resolve-version.outputs.tag }}" >> "${GITHUB_OUTPUT}"
           else
             echo "tags=zelytra/better-fleet-backend:latest" >> "${GITHUB_OUTPUT}"
@@ -240,7 +263,10 @@ jobs:
       - name: Set Docker tags
         id: docker-tags
         run: |
-          if [ "${{ github.ref_type }}" = "tag" ]; then
+          if [ "${{ needs.resolve-version.outputs.prerelease }}" = "true" ]; then
+            # A pre-release tags the RC image only, never overwriting the production :latest.
+            echo "tags=zelytra/better-fleet-website:${{ needs.resolve-version.outputs.tag }}" >> "${GITHUB_OUTPUT}"
+          elif [ "${{ github.ref_type }}" = "tag" ]; then
             echo "tags=zelytra/better-fleet-website:latest,zelytra/better-fleet-website:${{ needs.resolve-version.outputs.tag }}" >> "${GITHUB_OUTPUT}"
           else
             echo "tags=zelytra/better-fleet-website:latest" >> "${GITHUB_OUTPUT}"
@@ -255,7 +281,8 @@ jobs:
 
   publish-apt:
     needs: [resolve-version, publish-tauri]
-    if: ${{ !inputs.dry_run }}
+    # Never publish a pre-release RC to the APT repo, or `apt upgrade` would hand it to everyone.
+    if: ${{ !inputs.dry_run && needs.resolve-version.outputs.prerelease != 'true' }}
     name: APT repository
     runs-on: ubuntu-latest
     # Add-on to the Windows/Linux/backend/website publishing above, not a gate for it: never let a
@@ -371,7 +398,8 @@ jobs:
       - publish-tauri
       - publish-backend
       - publish-website
-    if: github.ref_type == 'tag'
+    # A pre-release must not bump the version on master; only a real release syncs it.
+    if: ${{ github.ref_type == 'tag' && needs.resolve-version.outputs.prerelease != 'true' }}
     name: Sync version to master
     runs-on: ubuntu-latest
     permissions:
