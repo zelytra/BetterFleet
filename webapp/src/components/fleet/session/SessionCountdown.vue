@@ -20,6 +20,7 @@ import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import { invoke } from "@tauri-apps/api/core";
 import { PlayerStates } from "@/objects/fleet/Player.ts";
+import { isLinux } from "@/objects/utils/platform.ts";
 import { onBeforeRouteLeave } from "vue-router";
 
 const delta = ref<LocalTime>(LocalTime.now());
@@ -59,7 +60,10 @@ let updateTimer = setInterval(() => {
           });
           break;
         }
-        if (UserStore.player.macroEnable) {
+        // No auto-click on Linux: Wayland (KDE/GNOME) blocks the synthetic click rise_anchor
+        // performs, and the first attempt pops a permission prompt that stalls the search. The
+        // setting is locked and a lobby notice tells Linux players to click "Set sail" themselves.
+        if (UserStore.player.macroEnable && !isLinux()) {
           invoke("rise_anchor");
         }
         break;
