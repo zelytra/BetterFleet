@@ -25,6 +25,7 @@
     },
     "log:default",
     "shell:allow-open",
-    "oauth:default"
+    "oauth:allow-start",
+    "oauth:allow-cancel"
   ]
 }
