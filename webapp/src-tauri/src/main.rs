@@ -679,13 +679,15 @@ async fn run_server_diagnostic(
     note: String,
 ) -> Result<diagnostics::DiagnosticReport, String> {
     let pids = fetch_informations::find_game_pids();
-    let game_pid: usize = match pids.first() {
-        Some(pid) => pid.parse().map_err(|e| format!("invalid pid: {}", e))?,
+    let game_pids: Vec<usize> = pids.iter().filter_map(|p| p.parse::<usize>().ok()).collect();
+    let game_pid: usize = match game_pids.first() {
+        Some(&pid) => pid,
         None => return Err("Sea of Thieves (SotGame.exe) is not running.".into()),
     };
 
-    // Candidate ports = game PID ∪ resolved wineserver PID (see fetch_informations, #725).
-    let ports = fetch_informations::game_udp_candidate_ports(game_pid);
+    // Candidate ports = union of every game task PID and the resolved wineserver (see
+    // fetch_informations, #725).
+    let ports = fetch_informations::game_udp_candidate_ports(&game_pids);
 
     let game_status = format!("{:?}", api.inner().read().await.game_status);
 
