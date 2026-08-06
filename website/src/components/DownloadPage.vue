@@ -299,7 +299,6 @@ async function copyCommand(id: string, command: string) {
                 <span class="dl-desc">{{ row.desc }}</span>
               </span>
               <span class="dl-meta">
-                <span class="spinner spinner-sm" aria-hidden="true"></span>
                 <span class="spinner" aria-hidden="true"></span>
               </span>
             </div>
@@ -374,7 +373,6 @@ async function copyCommand(id: string, command: string) {
                 <span class="dl-desc">{{ tile.desc }}</span>
               </span>
               <span class="dl-meta">
-                <span class="spinner spinner-sm" aria-hidden="true"></span>
                 <span class="spinner" aria-hidden="true"></span>
               </span>
             </div>
@@ -600,7 +598,7 @@ async function copyCommand(id: string, command: string) {
   }
 
   // Still fetching the release: not a link, so it neither invites a click nor dims like "coming soon"
-  // - the tile just holds its shape while the spinners in its meta slot turn.
+  // - the tile just holds its shape while the single spinner in its meta slot turns.
   &.loading {
     cursor: default;
   }
@@ -663,8 +661,9 @@ async function copyCommand(id: string, command: string) {
 }
 
 // A small, CSS-only "still loading" spinner: the site's green accent ring turning against a faint
-// track. It stands in for a download affordance (a tile's size + icon, the banner's button) while the
-// latest release is being fetched, so nothing shows "coming soon" until we actually know it's absent.
+// track. One spinner stands in for a whole download affordance - a tile's size and button together,
+// or the banner's button - while the latest release is fetched, so nothing shows "coming soon" until
+// we actually know the format is absent.
 .spinner {
   display: inline-block;
   flex: 0 0 auto;
@@ -674,13 +673,6 @@ async function copyCommand(id: string, command: string) {
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spinner-spin 0.7s linear infinite;
-
-  // Matches the size-text slot in a tile's meta row, so the two spinners echo the size + icon they
-  // stand in for rather than reading as one oversized ring.
-  &.spinner-sm {
-    width: 14px;
-    height: 14px;
-  }
 }
 
 @keyframes spinner-spin {
