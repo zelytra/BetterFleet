@@ -160,10 +160,10 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             std::collections::HashSet::new();
 
         loop {
-            let pid = find_game_pids();
+            let pids = find_game_pids();
 
             // No game process -> closed.
-            if pid.is_empty() {
+            if pids.is_empty() {
                 let mut api_lock = api.write().await;
                 if api_lock.game_status != GameStatus::Closed {
                     api_lock.game_status = GameStatus::Closed;
@@ -181,10 +181,17 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                 continue;
             }
 
-            let pid: usize = match pid[0].parse() {
-                Ok(pid) => pid,
-                Err(e) => {
-                    error!("Could not parse game PID: {}", e);
+            // Sea of Thieves under Proton exposes many task PIDs that share the SotGame.exe command
+            // line, and only one owns the UDP sockets. Parse them all and let
+            // game_udp_candidate_ports union their ports, so the candidate set stays stable and
+            // complete instead of flapping with whichever PID sysinfo listed first this cycle. `pid`
+            // keeps the first, only for the log lines below.
+            let game_pids: Vec<usize> =
+                pids.iter().filter_map(|p| p.parse::<usize>().ok()).collect();
+            let pid: usize = match game_pids.first() {
+                Some(&pid) => pid,
+                None => {
+                    error!("Could not parse any game PID from {:?}", pids);
                     tokio::time::sleep(Duration::from_secs(2)).await;
                     continue;
                 }
@@ -196,7 +203,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             // Started makes the frontend leave + rejoin the server: a fleet-visible flap from one
             // failed netstat call. Hold the InGame state instead and let the 12s host-silence
             // grace decide, exactly as for a quiet capture window.
-            let udp_ports = game_udp_candidate_ports(pid);
+            let udp_ports = game_udp_candidate_ports(&game_pids);
             if udp_ports.is_empty() {
                 if game_connection.is_none() {
                     let mut api_lock = api.write().await;
@@ -450,39 +457,67 @@ pub(crate) fn cmd_is_sot_game(cmd: &[String]) -> bool {
 
 /// The candidate UDP ports to sniff for the located game - the platform seam feeding the capture.
 ///
-/// Windows/macOS: the game process owns its sockets, so these are just its UDP ports (byte-identical
-/// to the previous direct `get_udp_connections(pid)` call).
+/// Windows/macOS: the game is one process that owns its sockets, so this is just the union of the
+/// located PID(s)' UDP ports (one PID in practice).
 #[cfg(not(target_os = "linux"))]
-pub(crate) fn game_udp_candidate_ports(game_pid: usize) -> Vec<u16> {
-    get_udp_connections(game_pid)
+pub(crate) fn game_udp_candidate_ports(game_pids: &[usize]) -> Vec<u16> {
+    let mut ports: std::collections::HashSet<u16> = std::collections::HashSet::new();
+    for &pid in game_pids {
+        ports.extend(get_udp_connections(pid));
+    }
+    ports.into_iter().collect()
 }
 
-/// Linux under Proton: the ~25 sparse Steam-Datagram-Relay sockets are attributed to the **game**
-/// PID (verified live), but one fd is shared with the wineserver, and other Proton versions may
-/// attribute them differently. So take the UNION of the game's and the resolved wineserver's UDP
-/// ports, deduplicated, and let the volume ranking pick the real server among them. (#725)
+/// Linux under Proton: Sea of Thieves exposes many task PIDs that share the SotGame.exe command
+/// line, and only one owns the sparse Steam-Datagram-Relay UDP sockets (one fd is even shared with
+/// the wineserver). Which PID that is varies between cycles, so union the UDP ports of ALL the game
+/// task PIDs and the resolved wineserver, from a single socket-table scan, and let the volume
+/// ranking pick the real server among them. Picking one PID made the candidate set flap between the
+/// real ports and empty, stalling detection and false-triggering "left the game". (#725)
 #[cfg(target_os = "linux")]
-pub(crate) fn game_udp_candidate_ports(game_pid: usize) -> Vec<u16> {
-    let mut ports = get_udp_connections(game_pid);
-    match resolve_wineserver_pid(game_pid) {
+pub(crate) fn game_udp_candidate_ports(game_pids: &[usize]) -> Vec<u16> {
+    let mut targets: std::collections::HashSet<u32> =
+        game_pids.iter().map(|&pid| pid as u32).collect();
+    match game_pids.first().and_then(|&pid| resolve_wineserver_pid(pid)) {
         Some(wineserver) => {
             info!(
-                "[linux] game PID {} -> wineserver PID {}; unioning their UDP candidate ports",
-                game_pid, wineserver
+                "[linux] {} game task PID(s) -> wineserver PID {}; unioning their UDP candidate ports",
+                game_pids.len(),
+                wineserver
             );
-            for port in get_udp_connections(wineserver as usize) {
-                if !ports.contains(&port) {
-                    ports.push(port);
-                }
-            }
+            targets.insert(wineserver);
         }
         None => log::warn!(
-            "[linux] no wineserver resolved for game PID {} (is Sea of Thieves running under \
-             Proton?); using the game PID's UDP ports only",
-            game_pid
+            "[linux] no wineserver resolved for {} game task PID(s) (is Sea of Thieves running \
+             under Proton?); using the game PIDs' UDP ports only",
+            game_pids.len()
         ),
     }
-    ports
+    udp_ports_for_pids(&targets)
+}
+
+/// The distinct UDP local ports owned by any PID in `target_pids`, from a single socket-table scan.
+/// Batching matters: the game exposes dozens of task PIDs, and scanning per PID would walk the whole
+/// socket table dozens of times every cycle.
+#[cfg(target_os = "linux")]
+fn udp_ports_for_pids(target_pids: &std::collections::HashSet<u32>) -> Vec<u16> {
+    let af_flags = AddressFamilyFlags::IPV4 | AddressFamilyFlags::IPV6;
+    let sockets_info = match get_sockets_info(af_flags, ProtocolFlags::UDP) {
+        Ok(info) => info,
+        Err(e) => {
+            error!("Failed to get socket information: {}", e);
+            return Vec::new();
+        }
+    };
+    let mut ports: std::collections::HashSet<u16> = std::collections::HashSet::new();
+    for si in sockets_info {
+        if let ProtocolSocketInfo::Udp(udp_si) = &si.protocol_socket_info {
+            if si.associated_pids.iter().any(|pid| target_pids.contains(pid)) {
+                ports.insert(udp_si.local_port);
+            }
+        }
+    }
+    ports.into_iter().collect()
 }
 
 /// A node of the process tree reduced to what wineserver resolution needs. A plain, cloneable value
