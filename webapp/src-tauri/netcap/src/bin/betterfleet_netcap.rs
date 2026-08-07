@@ -55,11 +55,13 @@ fn main() {
 }
 
 /// Parses a comma-separated port list, ignoring blank entries. Returns None if any entry is not a
-/// valid u16, so a malformed argument fails cleanly rather than silently dropping ports.
+/// valid UDP port in 1-65535 - a non-number, an out-of-range value, or 0 - so a malformed argument
+/// fails cleanly rather than silently dropping ports. This is the only argument parsing at what is a
+/// CAP_NET_RAW trust boundary, so it rejects the whole list on any bad entry instead of guessing.
 fn parse_ports(arg: &str) -> Option<Vec<u16>> {
     arg.split(',')
         .filter(|s| !s.trim().is_empty())
-        .map(|s| s.trim().parse::<u16>().ok())
+        .map(|s| s.trim().parse::<u16>().ok().filter(|&port| port != 0))
         .collect()
 }
 
@@ -69,4 +71,64 @@ fn fail(message: &str) -> ! {
     println!("[]");
     eprintln!("betterfleet-netcap: {message}");
     std::process::exit(2);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_ports;
+
+    #[test]
+    fn parses_a_valid_list() {
+        assert_eq!(parse_ports("59639,51485"), Some(vec![59639, 51485]));
+    }
+
+    #[test]
+    fn accepts_the_port_range_bounds() {
+        assert_eq!(parse_ports("1"), Some(vec![1]));
+        assert_eq!(parse_ports("65535"), Some(vec![65535]));
+    }
+
+    #[test]
+    fn trims_surrounding_whitespace() {
+        assert_eq!(parse_ports("  59639 ,\t51485 "), Some(vec![59639, 51485]));
+    }
+
+    #[test]
+    fn ignores_blank_entries_and_a_trailing_comma() {
+        assert_eq!(parse_ports("8080,"), Some(vec![8080]));
+        assert_eq!(parse_ports("8080,,9090"), Some(vec![8080, 9090]));
+    }
+
+    #[test]
+    fn an_empty_or_all_blank_argument_yields_an_empty_list() {
+        // parse_ports only parses; main() is what treats an empty list as "no ports" and fails.
+        assert_eq!(parse_ports(""), Some(vec![]));
+        assert_eq!(parse_ports("   "), Some(vec![]));
+    }
+
+    #[test]
+    fn keeps_duplicates_verbatim() {
+        // Deduplication is a separate concern; the parser must not silently drop repeats.
+        assert_eq!(parse_ports("8080,8080"), Some(vec![8080, 8080]));
+    }
+
+    #[test]
+    fn rejects_non_numeric_entries() {
+        assert_eq!(parse_ports("a,b"), None);
+        assert_eq!(parse_ports("8080,nope"), None);
+    }
+
+    #[test]
+    fn rejects_out_of_range_values() {
+        // 65536 overflows u16, so the whole list is rejected rather than silently truncated.
+        assert_eq!(parse_ports("65536"), None);
+    }
+
+    #[test]
+    fn rejects_port_zero() {
+        // 0 parses as a u16 but is not a usable UDP port; reject it so a bogus 0 never reaches the
+        // capture socket, and reject the whole list if a 0 is mixed in with real ports.
+        assert_eq!(parse_ports("0"), None);
+        assert_eq!(parse_ports("8080,0"), None);
+    }
 }

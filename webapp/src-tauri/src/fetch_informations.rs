@@ -432,8 +432,9 @@ pub(crate) fn find_game_pids() -> Vec<String> {
 /// So match on `cmd()`, and skip the Unreal CEF helper subprocesses that share the same tree. (#725)
 #[cfg(target_os = "linux")]
 pub(crate) fn find_game_pids() -> Vec<String> {
-    let mut system = System::new_all();
-    system.refresh_all();
+    // System::new_all() already refreshes everything, so the old refresh_all() call right here was a
+    // second full /proc scan for nothing. This runs every detection cycle, so it doubled the cost.
+    let system = System::new_all();
     system
         .processes()
         .iter()
@@ -480,7 +481,9 @@ pub(crate) fn game_udp_candidate_ports(game_pids: &[usize]) -> Vec<u16> {
         game_pids.iter().map(|&pid| pid as u32).collect();
     match game_pids.first().and_then(|&pid| resolve_wineserver_pid(pid)) {
         Some(wineserver) => {
-            info!(
+            // debug!, not info!: this runs on every detection cycle, so at info it flooded the logs
+            // (which, combined with the tiny rotation size, spun out hundreds of files per session).
+            log::debug!(
                 "[linux] {} game task PID(s) -> wineserver PID {}; unioning their UDP candidate ports",
                 game_pids.len(),
                 wineserver
@@ -622,8 +625,9 @@ fn ancestor_chain(procs: &std::collections::HashMap<u32, ProcNode>, pid: u32) ->
 /// the pure [`resolve_wineserver`]; the logic and its tests live on that function. (#725)
 #[cfg(target_os = "linux")]
 fn resolve_wineserver_pid(game_pid: usize) -> Option<u32> {
-    let mut system = System::new_all();
-    system.refresh_all();
+    // new_all() already refreshed everything; the extra refresh_all() was a redundant second /proc
+    // scan on the per-cycle path (see find_game_pids).
+    let system = System::new_all();
     let procs: std::collections::HashMap<u32, ProcNode> = system
         .processes()
         .iter()
