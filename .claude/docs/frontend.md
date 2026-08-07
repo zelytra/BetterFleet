@@ -4,9 +4,12 @@ A **Vue 3 + TypeScript** UI (`<script setup>`, Composition API, Vite) wrapped in
 shell. The Rust side (`webapp/src-tauri/src/`) does the OS-level work; the Vue side is the UI and all
 the session logic. Entry point: `webapp/src/main.ts`.
 
-> This describes the code on `master`, which now includes the 2.2.0 wave: the in-app "what's new"
-> modal (#686), the configurable overlay hotkey (#687), the guided-diagnostic detection watchdog
-> (#688), the Rich Presence sync (#684), and the lobby alliance hint (#683).
+> This describes the code on `master`, which now includes the 2.3.0 wave: the full Linux desktop port
+> (system-browser loopback sign-in in `LinuxAuth.ts`, the `betterfleet-netcap` capture helper, the
+> X11 overlay/set-sail paths, and `.deb`/`.rpm`/pacman packaging), on top of the 2.2.0 features still
+> present: the in-app "what's new" modal (#686), the configurable overlay hotkey (#687), the
+> guided-diagnostic detection watchdog (#688), the Rich Presence sync (#684), and the lobby alliance
+> hint (#683).
 
 ## Bootstrap
 
@@ -44,7 +47,8 @@ when Keycloak isn't authenticated; `meta.displayInNav` drives the nav bar.
   `WebSocketMessageType` enum. The actual client is in `Fleet.ts`, not here; easy to mis-cite.
 - **`Player.ts`**: `interface Player extends Preferences` + enums `PlayerStates`
   (CLOSED/STARTED/MAIN_MENU/IN_GAME), `PlayerDevice`, `BoatSize`. `Preferences` = lang, country,
-  sound, macro, banner, bannerShuffle, shareStats, richPresence, overlayHotkey.
+  soundEnable, soundLevel, macroEnable, banner, bannerShuffle, shareStats, richPresence,
+  overlayHotkey, recapCard, statsHint.
 - **`Overlay.ts`**: the in-game overlay (#671). `OverlaySnapshot`/`OverlayServer`/`OverlayPlayer`
   types, `isOverlayWindow()`, `computeSnapshot()` (builds the compact snapshot from `UserStore`),
   `startOverlayBroadcaster()` (main window emits `overlay:update` every 1s), `onOverlayUpdate()`
@@ -75,9 +79,10 @@ when Keycloak isn't authenticated; `meta.displayInNav` drives the nav bar.
 ### report/, i18n/, utils/
 - **`report/Report.ts`**: `BugReport.sendReport()` = REST `POST report/send`.
 - **`i18n/index.ts`**: the second i18n instance `tsi18n`, for `.ts` files outside components.
-- **`utils/HTTPAxios.ts`**: **not axios.** Wraps the **Tauri http plugin** (`@tauri-apps/api/http`
-  `fetch`), base url `VITE_BACKEND_HOST`, static `Authorization` header + `updateToken()`. This is
-  the guaranteed REST path (goes through Rust).
+- **`utils/HTTPAxios.ts`**: **not axios.** Wraps the **Tauri http plugin** (`@tauri-apps/plugin-http`
+  `fetch`; Tauri v2 renamed the v1 `@tauri-apps/api/http` specifier), base url `VITE_BACKEND_HOST`,
+  static `Authorization` header + `updateToken()`. This is the guaranteed REST path (goes through
+  Rust).
 - `utils/Utils.ts` (`parseRustPlayerStatus`), `utils/BrowserCountry.ts` (#672), `utils/LangIcons.ts`.
 
 ## The Tauri bridge (JS `invoke` ↔ Rust)
@@ -98,9 +103,14 @@ nine of them:
 
 `get_game_status`, `get_server_ip`, `get_server_port`, `get_last_updated_server_ip` exist but are
 bundled into `get_game_object`. Native logic lives in `api.rs` / `fetch_informations.rs` (detection),
-`diagnostics.rs` (UDP capture), `window_interaction.rs` (focus/click). The overlay toggle is a
-`CommandOrControl+Shift+O` global shortcut by default, re-bindable via `set_overlay_hotkey` (#687),
-registered in `main.rs` `setup()`.
+`diagnostics.rs` (UDP capture), and `window_interaction.rs` (focus/click, Windows), all declared as
+modules in `main.rs`. The Linux port adds three more `main.rs` modules: `window_interaction_linux.rs`
+(the EWMH + XTEST set-sail click) plus `overlay_x11.rs` and the shared `x11_support.rs` (managed
+overlay stacking). `lib.rs` is a deliberately thin library face that only re-exports the capture
+crate as `better_fleet::capture`, so the GUI and the privilege-separated `betterfleet-netcap` helper
+share one copy of the `AF_PACKET` capture/ranking code; that code is the sibling `better_fleet_netcap`
+crate (`webapp/src-tauri/netcap/`). The overlay toggle is a `CommandOrControl+Shift+O` global
+shortcut by default, re-bindable via `set_overlay_hotkey` (#687), registered in `main.rs` `setup()`.
 
 **Overlay snapshot event bus** (Tauri `emit`/`listen`, defined in `Overlay.ts`, consumed in
 `OverlayView.vue`): `overlay:update` (main → overlay, the snapshot, every 1s + on request),
@@ -163,8 +173,10 @@ Vitest. Specs drive the app end-to-end without a Tauri shell or a server. The **
 mock factories with `vi.mock(...)` at the **top of the spec, before importing the code under test**
 (importing any module that pulls the `@/main.ts` chain first will break the mocks).
 
-- **`tauri.ts`**: `httpMock()` (`@tauri-apps/api/http`), `logMock()` (`tauri-plugin-log-api`),
-  `invokeMock()` (`@tauri-apps/api/tauri`: records `rustCalls`, answers from `rustResponses`),
+- **`tauri.ts`**: `httpMock()` (`@tauri-apps/plugin-http`), `logMock()` (`@tauri-apps/plugin-log`),
+  `invokeMock()` (`@tauri-apps/api/core`: records `rustCalls`, answers from `rustResponses`) (all
+  three are the Tauri v2 specifiers; v1's `@tauri-apps/api/http`, `tauri-plugin-log-api` and
+  `@tauri-apps/api/tauri` no longer resolve),
   `mainMock()` (stubs `@/main.ts` with a fake `alertProvider`), `keycloakMock()` (static token),
   `eventMock()` / `windowMock()` (in-memory Tauri event bus + window/overlay stubs).
   `installFakeTransports()` (in `beforeEach`) swaps global `WebSocket`/`EventSource` for the fakes.

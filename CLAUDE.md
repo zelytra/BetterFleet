@@ -101,8 +101,8 @@ images too) is `deployment/docker-compose.yml`; the app schema seed is `deployme
 - **Linux server detection needs `CAP_NET_RAW`, isolated in a helper (#726).** The `AF_PACKET` UDP
   capture runs in a tiny Tauri-free binary, `betterfleet-netcap`, so the GUI stays unprivileged (it
   falls back to in-process capture when the helper is missing or uncapped). `npm run tauri:dev`
-  builds and `setcap`s it for you; the `.deb` post-install and AUR `.install` do it at install time,
-  so end users never run setcap. Under Proton the game spreads its UDP sockets across ~100
+  builds and `setcap`s it for you; the `.deb` post-install and the pacman package's `.install` do it
+  at install time, so end users never run setcap. Under Proton the game spreads its UDP sockets across ~100
   `sotgame.exe` task PIDs plus `wineserver`, so candidate ports are unioned across all of them (#725).
 - **SSE looks broken in dev: it isn't.** The webview origin is `https://tauri.localhost` while the
   dev backend is plain `http`, so the browser blocks `EventSource` (mixed content) and the client
