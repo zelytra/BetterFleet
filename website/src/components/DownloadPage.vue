@@ -53,11 +53,12 @@ const version = computed(() =>
   ),
 );
 
-// Direct download URL (browser_download_url) + size for the first asset matching an extension. Both
-// undefined when the latest release carries no such asset - the caller renders "coming soon" then.
-function resolve(ext: string): { url?: string; size?: number } {
+// Direct download URL (browser_download_url), size and real file name for the first asset matching an
+// extension. All undefined when the latest release carries no such asset - the caller renders "coming
+// soon" then. The `name` is what a copyable install command is built from, so it stays a real filename.
+function resolve(ext: string): { url?: string; size?: number; name?: string } {
   const asset = findReleaseAsset(assets.value, [ext]);
-  return { url: asset?.url, size: asset?.size || undefined };
+  return { url: asset?.url, size: asset?.size || undefined, name: asset?.name };
 }
 
 // Human-readable megabytes, e.g. "48 MB" / "48 Mo". Empty until the size is known.
@@ -73,6 +74,10 @@ interface DownloadItem {
   // A direct GitHub asset download; undefined => the release doesn't carry this format yet.
   url?: string;
   size?: number;
+  // The command to run *after* downloading this package (e.g. `sudo pacman -U ./…`), built from the
+  // resolved asset's real filename. Undefined when this format has no such step, or isn't published
+  // yet - so it renders only alongside a real, present download.
+  command?: string;
 }
 
 const windowsRows = computed<DownloadItem[]>(() => {
@@ -91,8 +96,10 @@ const windowsRows = computed<DownloadItem[]>(() => {
 const linuxTiles = computed<DownloadItem[]>(() => {
   const deb = resolve(".deb");
   const rpm = resolve(".rpm");
-  const appimage = resolve(".appimage");
   const flatpak = resolve(".flatpak");
+  // The pacman package: `betterfleet-bin-<version>-x86_64.pkg.tar.zst`. Matched on the full
+  // `.pkg.tar.zst` suffix rather than a bare `.zst` so nothing else in the release can stand in for it.
+  const arch = resolve(".pkg.tar.zst");
   return [
     {
       id: "deb",
@@ -100,6 +107,8 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.linux.deb.desc"),
       url: deb.url,
       size: deb.size,
+      // Install the downloaded .deb (leading `./` so apt treats it as a file, not a repo name).
+      command: deb.name ? `sudo apt install ./${deb.name}` : undefined,
     },
     {
       id: "rpm",
@@ -109,18 +118,20 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       size: rpm.size,
     },
     {
-      id: "appimage",
-      label: t("downloadPage.linux.appimage.label"),
-      desc: t("downloadPage.linux.appimage.desc"),
-      url: appimage.url,
-      size: appimage.size,
-    },
-    {
       id: "flatpak",
       label: t("downloadPage.linux.flatpak.label"),
       desc: t("downloadPage.linux.flatpak.desc"),
       url: flatpak.url,
       size: flatpak.size,
+    },
+    {
+      id: "arch",
+      label: t("downloadPage.linux.arch.label"),
+      desc: t("downloadPage.linux.arch.desc"),
+      url: arch.url,
+      size: arch.size,
+      // Install the downloaded package file directly with pacman.
+      command: arch.name ? `sudo pacman -U ./${arch.name}` : undefined,
     },
   ];
 });
@@ -133,10 +144,10 @@ interface Recommended {
   size?: number;
 }
 
-// The banner mirrors the detected OS's best format: the Windows installer, or the Linux AppImage
-// (the "runs anywhere, no install" option). Null when detection failed - the banner is hidden and
-// the visitor picks from the two columns below. If that format isn't in the release yet, the button
-// shows "coming soon" like any other tile rather than sending anyone to github.com.
+// The banner mirrors the detected OS's best single download - and only Windows has one (the installer).
+// It's null for Linux just as for failed detection: no single package fits every distribution
+// (Debian/Fedora/Arch diverge), so a Linux visitor gets no banner and picks from the tiles below. When
+// the .exe isn't in the release yet, the button shows "coming soon" rather than linking to github.com.
 const recommended = computed<Recommended | null>(() => {
   if (detected === "windows") {
     const exe = resolve(".exe");
@@ -148,37 +159,26 @@ const recommended = computed<Recommended | null>(() => {
       size: exe.size,
     };
   }
-  if (detected === "linux") {
-    const appimage = resolve(".appimage");
-    return {
-      platform: "linux",
-      title: t("downloadPage.recommended.linux.title"),
-      desc: t("downloadPage.recommended.linux.desc"),
-      url: appimage.url,
-      size: appimage.size,
-    };
-  }
   return null;
 });
 
-// Copyable install commands, not downloads - the package repos are being set up (APT #740, AUR).
-const LINUX_COMMANDS = [
-  {
-    id: "apt",
-    labelKey: "downloadPage.linux.apt.label",
-    command: "sudo apt install betterfleet",
-  },
-  {
-    id: "aur",
-    labelKey: "downloadPage.linux.aur.label",
-    command: "yay -S betterfleet-bin",
-  },
-];
+// The intro line under the title. Windows gets the "we picked one for you" copy the banner backs up;
+// Linux is detected but has no single recommended package, so it gets a "pick your distribution's
+// package below" prompt instead of implying a pick was made; anything else is the couldn't-detect line.
+const leadText = computed(() => {
+  if (detected === "windows") return t("downloadPage.lead");
+  if (detected === "linux") return t("downloadPage.leadLinux");
+  return t("downloadPage.leadUnknown");
+});
 
+// Per-package install commands (the .deb and Arch tiles): each tile carries its own `command`, copied
+// to the clipboard on click. `copiedId` drives the brief "Copied!" acknowledgement on the tile just
+// used. Only the direct-file commands live here - the hosted APT repo and the AUR aren't published yet.
 const copiedId = ref<string | null>(null);
 let copyTimer: number | undefined;
 
-async function copyCommand(id: string, command: string) {
+async function copyCommand(id: string, command?: string) {
+  if (!command) return;
   try {
     await navigator.clipboard.writeText(command);
     copiedId.value = id;
@@ -195,7 +195,7 @@ async function copyCommand(id: string, command: string) {
     <header class="hero">
       <h1>{{ t("downloadPage.title") }}</h1>
       <p class="lead">
-        {{ detected ? t("downloadPage.lead") : t("downloadPage.leadUnknown") }}
+        {{ leadText }}
       </p>
     </header>
 
@@ -311,6 +311,26 @@ async function copyCommand(id: string, command: string) {
             </div>
           </template>
         </div>
+        <p class="update-note">
+          <svg
+            class="note-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <polyline points="23 4 23 10 17 10" />
+            <polyline points="1 20 1 14 7 14" />
+            <path
+              d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+            />
+          </svg>
+          <span>{{ t("downloadPage.windows.updates") }}</span>
+        </p>
       </article>
 
       <!-- Linux -->
@@ -324,86 +344,109 @@ async function copyCommand(id: string, command: string) {
         </header>
         <div class="tiles">
           <template v-for="tile in linuxTiles" :key="tile.id">
-            <a
-              v-if="tile.url"
-              class="dl tile"
-              :href="tile.url"
-              @click="incrementDownload"
-            >
-              <span class="dl-text">
-                <span class="dl-label">{{ tile.label }}</span>
-                <span class="dl-desc">{{ tile.desc }}</span>
-              </span>
-              <span class="dl-meta">
-                <span v-if="sizeLabel(tile.size)" class="dl-size">{{
-                  sizeLabel(tile.size)
+            <div class="tile-cell">
+              <a
+                v-if="tile.url"
+                class="dl tile"
+                :href="tile.url"
+                @click="incrementDownload"
+              >
+                <span class="dl-text">
+                  <span class="dl-label">{{ tile.label }}</span>
+                  <span class="dl-desc">{{ tile.desc }}</span>
+                </span>
+                <span class="dl-meta">
+                  <span v-if="sizeLabel(tile.size)" class="dl-size">{{
+                    sizeLabel(tile.size)
+                  }}</span>
+                  <svg
+                    class="dl-icon"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M4.5 15.5h11"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </span>
+              </a>
+              <div
+                v-else-if="loading"
+                class="dl tile loading"
+                role="status"
+                :aria-label="t('downloadPage.loading')"
+                aria-busy="true"
+              >
+                <span class="dl-text">
+                  <span class="dl-label">{{ tile.label }}</span>
+                  <span class="dl-desc">{{ tile.desc }}</span>
+                </span>
+                <span class="dl-meta">
+                  <span class="spinner" aria-hidden="true"></span>
+                </span>
+              </div>
+              <div v-else class="dl tile soon">
+                <span class="dl-text">
+                  <span class="dl-label">{{ tile.label }}</span>
+                  <span class="dl-desc">{{ tile.desc }}</span>
+                </span>
+                <span class="badge">{{ t("downloadPage.comingSoon") }}</span>
+              </div>
+
+              <!-- The command to run after downloading this package. Rendered only when the release
+                   actually carries the file, so its name (and the command) are real; click anywhere on
+                   the strip to copy it. -->
+              <button
+                v-if="tile.url && tile.command"
+                type="button"
+                class="tile-cmd"
+                :aria-label="
+                  copiedId === tile.id
+                    ? t('downloadPage.linux.copied')
+                    : t('downloadPage.linux.copyCommand')
+                "
+                @click="copyCommand(tile.id, tile.command)"
+              >
+                <code>{{ tile.command }}</code>
+                <span class="tile-cmd-copy" aria-hidden="true">{{
+                  copiedId === tile.id
+                    ? t("downloadPage.linux.copied")
+                    : t("downloadPage.linux.copy")
                 }}</span>
-                <svg
-                  class="dl-icon"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8"
-                    stroke="currentColor"
-                    stroke-width="1.6"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M4.5 15.5h11"
-                    stroke="currentColor"
-                    stroke-width="1.6"
-                    stroke-linecap="round"
-                  />
-                </svg>
-              </span>
-            </a>
-            <div
-              v-else-if="loading"
-              class="dl tile loading"
-              role="status"
-              :aria-label="t('downloadPage.loading')"
-              aria-busy="true"
-            >
-              <span class="dl-text">
-                <span class="dl-label">{{ tile.label }}</span>
-                <span class="dl-desc">{{ tile.desc }}</span>
-              </span>
-              <span class="dl-meta">
-                <span class="spinner" aria-hidden="true"></span>
-              </span>
-            </div>
-            <div v-else class="dl tile soon">
-              <span class="dl-text">
-                <span class="dl-label">{{ tile.label }}</span>
-                <span class="dl-desc">{{ tile.desc }}</span>
-              </span>
-              <span class="badge">{{ t("downloadPage.comingSoon") }}</span>
+              </button>
             </div>
           </template>
         </div>
-
-        <!-- Install commands to copy, not downloads: the APT (#740) and AUR repos. -->
-        <div class="commands">
-          <div v-for="cmd in LINUX_COMMANDS" :key="cmd.id" class="cmd">
-            <span class="cmd-label">{{ t(cmd.labelKey) }}</span>
-            <button
-              type="button"
-              class="cmd-box"
-              @click="copyCommand(cmd.id, cmd.command)"
-            >
-              <code>{{ cmd.command }}</code>
-              <span class="cmd-copy">{{
-                copiedId === cmd.id
-                  ? t("downloadPage.linux.copied")
-                  : t("downloadPage.linux.copy")
-              }}</span>
-            </button>
-          </div>
-        </div>
+        <p class="update-note">
+          <svg
+            class="note-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+          <span>{{ t("downloadPage.linux.updates") }}</span>
+        </p>
       </article>
     </div>
 
@@ -572,7 +615,29 @@ async function copyCommand(id: string, command: string) {
 .tiles {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: start;
   gap: 10px;
+}
+
+// A quiet footnote under each OS's downloads saying how that platform updates - Windows updates
+// itself, Linux is a manual re-download. Kept deliberately light (muted text, a small accent glyph,
+// no card or border) so it reads as a hint below the tiles, never a second banner. Static content, so
+// it adds no layout shift as the release resolves.
+.update-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--secondary-text);
+
+  .note-icon {
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    margin-top: 1px;
+    color: var(--primary);
+  }
 }
 
 // One shared look for every download affordance - the Windows rows and the Linux tiles.
@@ -689,60 +754,57 @@ async function copyCommand(id: string, command: string) {
   }
 }
 
-// The copyable install commands (APT, AUR) - deliberately not styled as downloads.
-.commands {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.cmd {
+// Each Linux tile is a small vertical stack: the download tile, and - for the packages that ship one -
+// a copyable install command beneath it. `align-items: start` on the grid keeps a stack without a
+// command from stretching to a taller neighbour's height, so no tile grows blank space.
+.tile-cell {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
+}
 
-  .cmd-label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    color: var(--secondary-text);
+// The command to paste after downloading a native package (.deb, Arch .pkg.tar.zst): a copy-on-click
+// monospace strip, recessed against the darker static background so it reads as a code line rather than
+// a second download. Long commands scroll inside it instead of widening the tile.
+.tile-cmd {
+  all: unset;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--primary-background-static);
+  border: 1px solid rgba(50, 212, 153, 0.25);
+  overflow-x: auto;
+
+  &:hover {
+    border-color: rgba(50, 212, 153, 0.5);
+
+    .tile-cmd-copy {
+      color: var(--primary);
+    }
   }
 
-  .cmd-box {
-    all: unset;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    cursor: pointer;
-    padding: 12px 14px;
-    border-radius: 10px;
-    background: var(--primary-background-static);
-    border: 1px solid rgba(50, 212, 153, 0.25);
-    overflow-x: auto;
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
 
-    &:hover {
-      border-color: rgba(50, 212, 153, 0.5);
+  code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12.5px;
+    color: var(--primary);
+    white-space: nowrap;
+  }
 
-      .cmd-copy {
-        color: var(--primary);
-      }
-    }
-
-    code {
-      font-family: "JetBrains Mono", monospace;
-      font-size: 14px;
-      color: var(--primary);
-      white-space: nowrap;
-    }
-
-    .cmd-copy {
-      flex: 0 0 auto;
-      font-size: 12px;
-      color: var(--secondary-text);
-    }
+  .tile-cmd-copy {
+    flex: 0 0 auto;
+    font-size: 11px;
+    color: var(--secondary-text);
   }
 }
 

@@ -350,6 +350,7 @@
     "title": "Download BetterFleet",
     "lead": "We picked the download that fits your system — or choose another below.",
     "leadUnknown": "We couldn't tell what you're running — pick your platform below.",
+    "leadLinux": "Choose the package that fits your distribution below.",
     "recommendedLabel": "Recommended for your system",
     "download": "Download",
     "sixtyFourBit": "64-bit",
@@ -361,10 +362,6 @@
       "windows": {
         "title": "BetterFleet for Windows — Installer",
         "desc": "Classic installation, automatic updates"
-      },
-      "linux": {
-        "title": "BetterFleet for Linux — AppImage",
-        "desc": "Runs on any distribution, no install"
       }
     },
     "windows": {
@@ -373,7 +370,8 @@
       "exe": {
         "label": ".exe installer",
         "desc": "Classic installation, automatic updates"
-      }
+      },
+      "updates": "Updates install automatically in the background — no action needed."
     },
     "linux": {
       "name": "Linux",
@@ -386,22 +384,18 @@
         "label": ".rpm",
         "desc": "Fedora, openSUSE, RHEL"
       },
-      "appimage": {
-        "label": "AppImage",
-        "desc": "Universal — every distribution"
-      },
       "flatpak": {
         "label": "Flatpak",
         "desc": "Via Flathub, sandboxed"
       },
-      "apt": {
-        "label": "Debian / Ubuntu (APT)"
-      },
-      "aur": {
-        "label": "Arch Linux (AUR)"
+      "arch": {
+        "label": "Arch (pacman)",
+        "desc": "Arch, Manjaro, CachyOS"
       },
       "copy": "Copy",
-      "copied": "Copied!"
+      "copied": "Copied!",
+      "copyCommand": "Copy install command",
+      "updates": "Updates on Linux are manual — there's no auto-update. To update, download the latest package from this page and reinstall it over your current version."
     }
   }
 }

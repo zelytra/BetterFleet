@@ -350,6 +350,7 @@
     "title": "Télécharger BetterFleet",
     "lead": "On a choisi le téléchargement adapté à votre système — ou sélectionnez-en un autre ci-dessous.",
     "leadUnknown": "Impossible de détecter votre système — choisissez votre plateforme ci-dessous.",
+    "leadLinux": "Choisissez le paquet adapté à votre distribution ci-dessous.",
     "recommendedLabel": "Recommandé pour votre système",
     "download": "Télécharger",
     "sixtyFourBit": "64 bits",
@@ -361,10 +362,6 @@
       "windows": {
         "title": "BetterFleet pour Windows — Installateur",
         "desc": "Installation classique, mises à jour auto"
-      },
-      "linux": {
-        "title": "BetterFleet pour Linux — AppImage",
-        "desc": "Fonctionne sur toutes les distributions, sans installation"
       }
     },
     "windows": {
@@ -373,7 +370,8 @@
       "exe": {
         "label": "Installateur .exe",
         "desc": "Installation classique, mises à jour auto"
-      }
+      },
+      "updates": "Les mises à jour s'installent automatiquement en arrière-plan — rien à faire."
     },
     "linux": {
       "name": "Linux",
@@ -386,22 +384,18 @@
         "label": ".rpm",
         "desc": "Fedora, openSUSE, RHEL"
       },
-      "appimage": {
-        "label": "AppImage",
-        "desc": "Universel — toutes distributions"
-      },
       "flatpak": {
         "label": "Flatpak",
         "desc": "Via Flathub, sandboxé"
       },
-      "apt": {
-        "label": "Debian / Ubuntu (APT)"
-      },
-      "aur": {
-        "label": "Arch Linux (AUR)"
+      "arch": {
+        "label": "Arch (pacman)",
+        "desc": "Arch, Manjaro, CachyOS"
       },
       "copy": "Copier",
-      "copied": "Copié !"
+      "copied": "Copié !",
+      "copyCommand": "Copier la commande d'installation",
+      "updates": "Sur Linux, les mises à jour sont manuelles — il n'y a pas de mise à jour automatique. Pour mettre à jour, téléchargez le dernier paquet depuis cette page et réinstallez-le par-dessus votre version actuelle."
     }
   }
 }
