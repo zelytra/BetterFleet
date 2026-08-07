@@ -13,19 +13,39 @@ optional future add-on, tracked in #740.
 
 ## Status
 
-This PKGBUILD is a **template**. It can only build once a Linux release has been published (its
-`source` points at a release asset), so it has not been build-tested yet.
+The same repackaging is validated on every release: the release CI builds the pacman package from
+the `.deb` and attaches `betterfleet-bin-<ver>-x86_64.pkg.tar.zst` to the GitHub release
+(`publish-arch`), installable directly with `sudo pacman -U <url>`. Publishing to the **AUR** is the
+one-time setup below.
 
-## Publishing (once a Linux release exists)
+## Publishing to the AUR (automated, one-time setup)
 
-1. Set `pkgver` to the release tag and pin `sha256sums` to the real hash of the release `.deb`.
-2. `makepkg --printsrcinfo > .SRCINFO`
-3. Push `PKGBUILD` + `.SRCINFO` to the `betterfleet-bin` AUR git repo.
+The `publish-aur` job in `.github/workflows/release.yml` does the whole flow on every **stable**
+release (never a pre-release: an RC must not land on the public `betterfleet-bin`). It downloads the
+release `.deb`, pins `pkgver` and `sha256sums`, renders `.SRCINFO` with `makepkg --printsrcinfo`, and
+pushes `PKGBUILD` + `.SRCINFO` + `betterfleet-bin.install` over SSH. It is **guarded**: the whole job
+skips (with a warning, never failing the release) until the SSH key below is set.
 
-Ideally the release CI (#728) automates steps 1-3 so the AUR never drifts from the published build.
+### Secret this needs (not yet configured)
+
+| Secret | What |
+|---|---|
+| `AUR_SSH_PRIVATE_KEY` | Private half of an SSH key registered on an AUR account that maintains `betterfleet-bin` |
+
+### One-time setup
+
+1. Create / sign in to an [AUR account](https://aur.archlinux.org) and add an SSH **public** key to
+   it (My Account -> SSH Public Key).
+2. Put the matching **private** key in a repo secret named `AUR_SSH_PRIVATE_KEY`
+   (Settings -> Secrets and variables -> Actions).
+3. Cut a stable release. `publish-aur` clones `ssh://aur@aur.archlinux.org/betterfleet-bin.git` (an
+   empty repo the first time), commits the rendered package and pushes: the first push creates the
+   AUR package, later releases update it.
+
+Until the secret is set, the job no-ops on every release and nothing else is affected.
 
 ## Privilege
 
 Packet capture needs a capability, granted to a **separate helper** (issue #726), not the GUI, so
-this package keeps the GUI unprivileged. The helper's `setcap` belongs in a `.install`
-`post_install`, added when #726 lands.
+this package keeps the GUI unprivileged. `betterfleet-bin.install` runs the helper's `setcap` in
+`post_install` / `post_upgrade`.
