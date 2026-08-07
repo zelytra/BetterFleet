@@ -1,0 +1,189 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  fetchLatestRelease,
+  findReleaseAsset,
+  type GithubReleaseAsset,
+} from "@/objects/Github.ts";
+
+// The asset names the real v2.3.0-rc.3 release ships. The installer sits right next to its signature
+// and NSIS-updater siblings (.exe.sig, .nsis.zip, .nsis.zip.sig), so an extension match that isn't
+// anchored to the end of the name would happily pick the wrong file.
+const REAL_ASSET_NAMES = [
+  "BetterFleet-2.3.0-rc.3-1.x86_64.rpm",
+  "betterfleet-bin-2.3.0.rc.3-1-x86_64.pkg.tar.zst",
+  "BetterFleet_2.3.0-rc.3_amd64.deb",
+  "BetterFleet_2.3.0-rc.3_x64-setup.exe",
+  "BetterFleet_2.3.0-rc.3_x64-setup.exe.sig",
+  "BetterFleet_2.3.0-rc.3_x64-setup.nsis.zip",
+  "BetterFleet_2.3.0-rc.3_x64-setup.nsis.zip.sig",
+  "latest.json",
+];
+
+const realAssets: GithubReleaseAsset[] = REAL_ASSET_NAMES.map((name) => ({
+  name,
+  url: `https://example.com/${name}`,
+  size: 1024,
+}));
+
+describe("findReleaseAsset", () => {
+  it("matches the Windows installer without catching its .sig / .nsis.zip siblings", () => {
+    const asset = findReleaseAsset(realAssets, [".exe"]);
+    expect(asset?.name).toBe("BetterFleet_2.3.0-rc.3_x64-setup.exe");
+  });
+
+  it("matches the Arch package on the full .pkg.tar.zst suffix", () => {
+    const asset = findReleaseAsset(realAssets, [".pkg.tar.zst"]);
+    expect(asset?.name).toBe("betterfleet-bin-2.3.0.rc.3-1-x86_64.pkg.tar.zst");
+  });
+
+  it("resolves the .deb and .rpm packages", () => {
+    expect(findReleaseAsset(realAssets, [".deb"])?.name).toBe(
+      "BetterFleet_2.3.0-rc.3_amd64.deb",
+    );
+    expect(findReleaseAsset(realAssets, [".rpm"])?.name).toBe(
+      "BetterFleet-2.3.0-rc.3-1.x86_64.rpm",
+    );
+  });
+
+  it("returns undefined for a format the release doesn't carry", () => {
+    expect(findReleaseAsset(realAssets, [".flatpak"])).toBeUndefined();
+  });
+
+  it("matches case-insensitively", () => {
+    expect(findReleaseAsset(realAssets, [".EXE"])?.name).toBe(
+      "BetterFleet_2.3.0-rc.3_x64-setup.exe",
+    );
+  });
+});
+
+/** A minimal `fetch` Response stand-in - only the members the release code reads. */
+function jsonResponse(body: unknown, ok = true, status = 200): Response {
+  return { ok, status, json: async () => body } as unknown as Response;
+}
+
+/** The proxy payload shape: assets carry `url` and the manifest carries `version`. */
+function proxyPayload(names: string[] = REAL_ASSET_NAMES) {
+  return {
+    version: "v2.3.0-rc.3",
+    assets: names.map((name) => ({
+      name,
+      url: `https://proxy.example/${name}`,
+      size: 10,
+    })),
+  };
+}
+
+/** GitHub's own shape: `tag_name` and `browser_download_url`. */
+function githubPayload(names: string[] = REAL_ASSET_NAMES) {
+  return {
+    tag_name: "v2.3.0-rc.3",
+    assets: names.map((name) => ({
+      name,
+      browser_download_url: `https://github.example/${name}`,
+      size: 20,
+    })),
+  };
+}
+
+/** Routes the stubbed fetch by URL: `api.github.com` is the fallback, everything else the proxy. */
+function mockFetch(handlers: {
+  proxy?: () => Response;
+  github?: () => Response;
+}) {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn((url: unknown) => {
+      const isGithub = String(url).includes("api.github.com");
+      const handler = isGithub ? handlers.github : handlers.proxy;
+      // A handler that throws models a rejected fetch (network down); its absence means the test did
+      // not expect this source to be called at all.
+      return Promise.resolve().then(() => {
+        if (!handler) throw new Error(`unexpected fetch: ${String(url)}`);
+        return handler();
+      });
+    }),
+  );
+}
+
+describe("fetchLatestRelease", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("uses the proxy when it answers with resolvable assets", async () => {
+    mockFetch({ proxy: () => jsonResponse(proxyPayload()) });
+    const release = await fetchLatestRelease();
+    expect(release).not.toBeNull();
+    expect(release!.version).toBe("2.3.0-rc.3");
+    expect(findReleaseAsset(release!.assets, [".exe"])?.url).toContain("proxy");
+  });
+
+  it("falls back to GitHub when the proxy answers a non-OK status", async () => {
+    mockFetch({
+      proxy: () => jsonResponse({}, false, 500),
+      github: () => jsonResponse(githubPayload()),
+    });
+    const release = await fetchLatestRelease();
+    expect(findReleaseAsset(release!.assets, [".exe"])?.url).toContain(
+      "github",
+    );
+  });
+
+  it("falls back to GitHub when the proxy fetch throws", async () => {
+    mockFetch({
+      proxy: () => {
+        throw new Error("network down");
+      },
+      github: () => jsonResponse(githubPayload()),
+    });
+    const release = await fetchLatestRelease();
+    expect(release).not.toBeNull();
+    expect(findReleaseAsset(release!.assets, [".deb"])?.url).toContain(
+      "github",
+    );
+  });
+
+  it("falls back to GitHub when the proxy is reachable but empty", async () => {
+    mockFetch({
+      proxy: () => jsonResponse({ version: "v2.3.0-rc.3", assets: [] }),
+      github: () => jsonResponse(githubPayload()),
+    });
+    const release = await fetchLatestRelease();
+    expect(release!.assets.length).toBeGreaterThan(0);
+    expect(findReleaseAsset(release!.assets, [".exe"])?.url).toContain(
+      "github",
+    );
+  });
+
+  it("falls back to GitHub when the proxy set lacks the Windows installer", async () => {
+    // A partial proxy answer (Linux packages only, no .exe) is treated as broken; GitHub has the set.
+    const linuxOnly = REAL_ASSET_NAMES.filter((n) => !n.endsWith(".exe"));
+    mockFetch({
+      proxy: () => jsonResponse(proxyPayload(linuxOnly)),
+      github: () => jsonResponse(githubPayload()),
+    });
+    const release = await fetchLatestRelease();
+    expect(findReleaseAsset(release!.assets, [".exe"])?.url).toContain(
+      "github",
+    );
+  });
+
+  it("signals failure with null when neither source can be reached", async () => {
+    mockFetch({
+      proxy: () => {
+        throw new Error("proxy down");
+      },
+      github: () => jsonResponse({}, false, 503),
+    });
+    expect(await fetchLatestRelease()).toBeNull();
+  });
+
+  it("returns an empty release (not null) when a source is reached but carries nothing yet", async () => {
+    // Reached, just nothing published: this is the "coming soon" branch, not the error branch.
+    mockFetch({
+      proxy: () => jsonResponse({ version: "v2.4.0", assets: [] }),
+      github: () => jsonResponse({ tag_name: "v2.4.0", assets: [] }),
+    });
+    const release = await fetchLatestRelease();
+    expect(release).not.toBeNull();
+    expect(release!.assets).toEqual([]);
+  });
+});

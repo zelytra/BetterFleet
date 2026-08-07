@@ -358,6 +358,11 @@
     "comingSoon": "Bientôt",
     "loading": "Chargement…",
     "viewReleases": "Voir toutes les versions sur GitHub",
+    "error": {
+      "title": "Serveur de versions injoignable",
+      "body": "Impossible de charger les derniers téléchargements. Vous pouvez récupérer chaque version directement sur GitHub.",
+      "cta": "Télécharger sur GitHub"
+    },
     "recommended": {
       "windows": {
         "title": "BetterFleet pour Windows — Installateur",
@@ -384,16 +389,13 @@
         "label": ".rpm",
         "desc": "Fedora, openSUSE, RHEL"
       },
-      "flatpak": {
-        "label": "Flatpak",
-        "desc": "Via Flathub, sandboxé"
-      },
       "arch": {
         "label": "Arch (pacman)",
         "desc": "Arch, Manjaro, CachyOS"
       },
       "copy": "Copier",
       "copied": "Copié !",
+      "copyFailed": "Échec de la copie — sélectionnez puis copiez",
       "copyCommand": "Copier la commande d'installation",
       "updates": "Sur Linux, les mises à jour sont manuelles — il n'y a pas de mise à jour automatique. Pour mettre à jour, téléchargez le dernier paquet depuis cette page et réinstallez-le par-dessus votre version actuelle."
     }

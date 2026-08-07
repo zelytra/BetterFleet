@@ -26,18 +26,23 @@ import { ref } from "vue";
 
 const { t } = useI18n();
 
+// The phone card hands the visitor the download *page*, not a raw GitHub asset URL: it's the stable,
+// shareable link that lets them finish the install on a PC later, and it lands them on the platform
+// picker rather than an installer their phone can't run.
+const DOWNLOAD_URL = "https://betterfleet.fr/download";
+
 const copied = ref(false);
 let copiedTimer: number | undefined;
 
 async function copyLink() {
   try {
-    await navigator.clipboard.writeText(AppStore.githubRelease.url);
+    await navigator.clipboard.writeText(DOWNLOAD_URL);
     copied.value = true;
     clearTimeout(copiedTimer);
     copiedTimer = window.setTimeout(() => (copied.value = false), 2000);
   } catch {
     // Clipboard denied (http origin or permissions): fall back to opening the link.
-    window.open(AppStore.githubRelease.url, "_blank");
+    window.open(DOWNLOAD_URL, "_blank");
   }
 }
 </script>

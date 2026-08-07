@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import PirateButton from "@/vue/PirateButton.vue";
 import PlatformIcon from "@/vue/PlatformIcon.vue";
 import { AppStore } from "@/objects/stores/appStore.ts";
 import { incrementDownload } from "@/objects/Stats.ts";
+import { useDelayedLoading } from "@/objects/DelayedLoading.ts";
 import { detectPlatform, type Platform } from "@/objects/PlatformDetection.ts";
 import {
   fetchLatestRelease,
@@ -20,6 +21,10 @@ import {
 // the latest release doesn't carry yet shows a "coming soon" state and turns into a direct download
 // on its own the moment a release includes it - no redirect anywhere. The one link that leaves for
 // github.com is the "browse every release" line at the bottom.
+//
+// If the release can't be fetched at all (backend proxy down AND GitHub unreachable), the page does
+// NOT fall back to a wall of "coming soon" - that would tell a visitor the software doesn't exist.
+// It shows an error panel pointing straight at the GitHub releases page instead.
 
 const { t } = useI18n();
 
@@ -33,12 +38,29 @@ const fetchedVersion = ref("");
 // does carry never flashes "coming soon" on its way in. Only once this clears does an absent asset
 // mean the format genuinely isn't published.
 const loading = ref(true);
+// The fetch reached neither the backend proxy nor GitHub: a real failure, kept distinct from a
+// release that is merely empty. It swaps the whole picker for an error panel, so a network problem
+// never masquerades as "every format is coming soon".
+const error = ref(false);
+// The spinner rides the *delayed* flag: a cached release (the common case) resolves inside the delay
+// and never flashes it. The "coming soon" fallback, by contrast, stays gated on the real `loading`
+// below, so a format the release does carry can't flash "coming soon" during that same delay.
+const showSpinner = useDelayedLoading(loading);
 
 onMounted(async () => {
   try {
     const release = await fetchLatestRelease();
-    assets.value = release.assets;
-    fetchedVersion.value = release.version;
+    if (release) {
+      assets.value = release.assets;
+      fetchedVersion.value = release.version;
+    } else {
+      // Neither source answered: show the error panel, not a page of "coming soon".
+      error.value = true;
+    }
+  } catch {
+    // fetchLatestRelease resolves rather than throwing, but guard anyway - an unexpected throw is a
+    // failure to reach the release, not an empty release.
+    error.value = true;
   } finally {
     loading.value = false;
   }
@@ -74,9 +96,9 @@ interface DownloadItem {
   // A direct GitHub asset download; undefined => the release doesn't carry this format yet.
   url?: string;
   size?: number;
-  // The command to run *after* downloading this package (e.g. `sudo pacman -U ./…`), built from the
-  // resolved asset's real filename. Undefined when this format has no such step, or isn't published
-  // yet - so it renders only alongside a real, present download.
+  // The command to run *after* downloading this package (e.g. `sudo pacman -U ~/Downloads/…`), built
+  // from the resolved asset's real filename. Undefined when this format has no such step, or isn't
+  // published yet - so it renders only alongside a real, present download.
   command?: string;
 }
 
@@ -96,7 +118,6 @@ const windowsRows = computed<DownloadItem[]>(() => {
 const linuxTiles = computed<DownloadItem[]>(() => {
   const deb = resolve(".deb");
   const rpm = resolve(".rpm");
-  const flatpak = resolve(".flatpak");
   // The pacman package: `betterfleet-bin-<version>-x86_64.pkg.tar.zst`. Matched on the full
   // `.pkg.tar.zst` suffix rather than a bare `.zst` so nothing else in the release can stand in for it.
   const arch = resolve(".pkg.tar.zst");
@@ -107,8 +128,12 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.linux.deb.desc"),
       url: deb.url,
       size: deb.size,
-      // Install the downloaded .deb (leading `./` so apt treats it as a file, not a repo name).
-      command: deb.name ? `sudo apt install ./${deb.name}` : undefined,
+      // Install the freshly downloaded .deb. `~/Downloads/` targets where the browser saved it (a
+      // bare `./name` would assume the terminal is already sitting in the download folder), and the
+      // leading path makes apt treat it as a file rather than a repo name.
+      command: deb.name
+        ? `sudo apt install ~/Downloads/${deb.name}`
+        : undefined,
     },
     {
       id: "rpm",
@@ -116,13 +141,10 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.linux.rpm.desc"),
       url: rpm.url,
       size: rpm.size,
-    },
-    {
-      id: "flatpak",
-      label: t("downloadPage.linux.flatpak.label"),
-      desc: t("downloadPage.linux.flatpak.desc"),
-      url: flatpak.url,
-      size: flatpak.size,
+      // Install the downloaded .rpm with dnf, giving rpm the same copy-and-run parity as .deb/Arch.
+      command: rpm.name
+        ? `sudo dnf install ~/Downloads/${rpm.name}`
+        : undefined,
     },
     {
       id: "arch",
@@ -130,8 +152,10 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.linux.arch.desc"),
       url: arch.url,
       size: arch.size,
-      // Install the downloaded package file directly with pacman.
-      command: arch.name ? `sudo pacman -U ./${arch.name}` : undefined,
+      // Install the downloaded package file directly with pacman, from the browser's download folder.
+      command: arch.name
+        ? `sudo pacman -U ~/Downloads/${arch.name}`
+        : undefined,
     },
   ];
 });
@@ -171,193 +195,176 @@ const leadText = computed(() => {
   return t("downloadPage.leadUnknown");
 });
 
-// Per-package install commands (the .deb and Arch tiles): each tile carries its own `command`, copied
-// to the clipboard on click. `copiedId` drives the brief "Copied!" acknowledgement on the tile just
-// used. Only the direct-file commands live here - the hosted APT repo and the AUR aren't published yet.
-const copiedId = ref<string | null>(null);
+// Per-package install commands (the .deb, .rpm and Arch tiles): each tile carries its own `command`,
+// copied to the clipboard on click. `copyResult` records which tile was last acted on and whether the
+// write succeeded, driving the brief acknowledgement on that tile and the single live region.
+const copyResult = ref<{ id: string; ok: boolean } | null>(null);
 let copyTimer: number | undefined;
 
 async function copyCommand(id: string, command?: string) {
   if (!command) return;
   try {
     await navigator.clipboard.writeText(command);
-    copiedId.value = id;
-    clearTimeout(copyTimer);
-    copyTimer = window.setTimeout(() => (copiedId.value = null), 2000);
+    copyResult.value = { id, ok: true };
   } catch {
-    // Clipboard blocked (http origin / permissions): the command is on screen to copy by hand.
+    // Clipboard blocked (http origin / denied permission). The strip opts back into text selection
+    // (see the style block), so the fallback is to select the command by hand - the swapped label and
+    // the live region say so, rather than the click silently doing nothing.
+    copyResult.value = { id, ok: false };
   }
+  clearTimeout(copyTimer);
+  // A failure lingers longer: it asks the visitor to do something, so it shouldn't vanish as quickly
+  // as a "Copied!" that just confirms.
+  const linger = copyResult.value.ok ? 2000 : 5000;
+  copyTimer = window.setTimeout(() => (copyResult.value = null), linger);
 }
+
+// The one polite live region's text - announced when a copy resolves, then cleared. The visible
+// per-tile label is aria-hidden, so this is the only thing a screen reader hears about the result.
+const copyAnnouncement = computed(() => {
+  if (!copyResult.value) return "";
+  return copyResult.value.ok
+    ? t("downloadPage.linux.copied")
+    : t("downloadPage.linux.copyFailed");
+});
+
+// The visible label on a tile's command strip: "Copy", then "Copied!" / "Copy failed…" for the tile
+// just used.
+function commandLabel(id: string): string {
+  if (copyResult.value?.id === id) {
+    return copyResult.value.ok
+      ? t("downloadPage.linux.copied")
+      : t("downloadPage.linux.copyFailed");
+  }
+  return t("downloadPage.linux.copy");
+}
+
+function copyFailedOn(id: string): boolean {
+  return copyResult.value?.id === id && !copyResult.value.ok;
+}
+
+// A download link's accessible name gets a verb: "Download <label>" reads as an action, where the bare
+// visible label (".deb", "Arch (pacman)") would not.
+function downloadAria(label: string): string {
+  return `${t("downloadPage.download")} ${label}`;
+}
+
+onUnmounted(() => clearTimeout(copyTimer));
 </script>
 
 <template>
   <section class="download-page">
     <header class="hero">
       <h1>{{ t("downloadPage.title") }}</h1>
-      <p class="lead">
+      <p v-if="!error" class="lead">
         {{ leadText }}
       </p>
     </header>
 
-    <!-- Recommended-for-your-system banner, reusing the site's green "the one that matters" callout. -->
-    <article v-if="recommended" class="recommended">
-      <p class="tag">{{ t("downloadPage.recommendedLabel") }}</p>
-      <div class="recommended-body">
-        <span class="os-icon"
-          ><PlatformIcon :platform="recommended.platform"
-        /></span>
-        <div class="info">
-          <h2>{{ recommended.title }}</h2>
-          <p class="meta">
-            <template v-if="version">v{{ version }} · </template>
-            {{ t("downloadPage.sixtyFourBit") }}
-            <template v-if="sizeLabel(recommended.size)">
-              · {{ sizeLabel(recommended.size) }}</template
-            >
-            · {{ recommended.desc }}
-          </p>
-        </div>
-        <a
-          v-if="recommended.url"
-          class="cta"
-          :href="recommended.url"
-          @click="incrementDownload"
+    <!-- Couldn't reach the release: a real, honest failure state instead of a page of "coming soon".
+         It hands the visitor the one path that still works - the GitHub releases page. -->
+    <article v-if="error" class="fetch-error" role="alert">
+      <span class="err-icon" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <PirateButton :label="t('downloadPage.download')" />
-        </a>
-        <span
-          v-else-if="loading"
-          class="cta-loading"
-          role="status"
-          :aria-label="t('downloadPage.loading')"
-          aria-busy="true"
-        >
-          <span class="spinner" aria-hidden="true"></span>
-        </span>
-        <span v-else class="cta-soon">{{ t("downloadPage.comingSoon") }}</span>
+          <path
+            d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+          />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      </span>
+      <div class="err-body">
+        <h2>{{ t("downloadPage.error.title") }}</h2>
+        <p>{{ t("downloadPage.error.body") }}</p>
       </div>
+      <a
+        class="cta"
+        :href="GITHUB_RELEASES_URL"
+        target="_blank"
+        rel="noopener"
+        :aria-label="t('downloadPage.error.cta')"
+      >
+        <PirateButton :label="t('downloadPage.error.cta')" />
+      </a>
     </article>
 
-    <div class="columns">
-      <!-- Windows -->
-      <article class="os-card">
-        <header class="os-head">
-          <span class="os-icon"><PlatformIcon platform="windows" /></span>
-          <div>
-            <h3>{{ t("downloadPage.windows.name") }}</h3>
-            <p class="sub">{{ t("downloadPage.windows.editions") }}</p>
+    <template v-else>
+      <!-- Recommended-for-your-system banner, reusing the site's green "the one that matters" callout. -->
+      <article v-if="recommended" class="recommended">
+        <p class="tag">{{ t("downloadPage.recommendedLabel") }}</p>
+        <div class="recommended-body">
+          <span class="os-icon"
+            ><PlatformIcon :platform="recommended.platform"
+          /></span>
+          <div class="info">
+            <h2>{{ recommended.title }}</h2>
+            <p class="meta">
+              <template v-if="version">v{{ version }} · </template>
+              {{ t("downloadPage.sixtyFourBit") }}
+              <template v-if="sizeLabel(recommended.size)">
+                · {{ sizeLabel(recommended.size) }}</template
+              >
+              · {{ recommended.desc }}
+            </p>
           </div>
-        </header>
-        <div class="rows">
-          <template v-for="row in windowsRows" :key="row.id">
-            <a
-              v-if="row.url"
-              class="dl"
-              :href="row.url"
-              @click="incrementDownload"
-            >
-              <span class="dl-text">
-                <span class="dl-label">{{ row.label }}</span>
-                <span class="dl-desc">{{ row.desc }}</span>
-              </span>
-              <span class="dl-meta">
-                <span v-if="sizeLabel(row.size)" class="dl-size">{{
-                  sizeLabel(row.size)
-                }}</span>
-                <svg
-                  class="dl-icon"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8"
-                    stroke="currentColor"
-                    stroke-width="1.6"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M4.5 15.5h11"
-                    stroke="currentColor"
-                    stroke-width="1.6"
-                    stroke-linecap="round"
-                  />
-                </svg>
-              </span>
-            </a>
-            <div
-              v-else-if="loading"
-              class="dl loading"
-              role="status"
-              :aria-label="t('downloadPage.loading')"
-              aria-busy="true"
-            >
-              <span class="dl-text">
-                <span class="dl-label">{{ row.label }}</span>
-                <span class="dl-desc">{{ row.desc }}</span>
-              </span>
-              <span class="dl-meta">
-                <span class="spinner" aria-hidden="true"></span>
-              </span>
-            </div>
-            <div v-else class="dl soon">
-              <span class="dl-text">
-                <span class="dl-label">{{ row.label }}</span>
-                <span class="dl-desc">{{ row.desc }}</span>
-              </span>
-              <span class="badge">{{ t("downloadPage.comingSoon") }}</span>
-            </div>
-          </template>
-        </div>
-        <p class="update-note">
-          <svg
-            class="note-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
+          <a
+            v-if="recommended.url"
+            class="cta"
+            :href="recommended.url"
+            :aria-label="downloadAria(recommended.title)"
+            @click="incrementDownload"
           >
-            <polyline points="23 4 23 10 17 10" />
-            <polyline points="1 20 1 14 7 14" />
-            <path
-              d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
-            />
-          </svg>
-          <span>{{ t("downloadPage.windows.updates") }}</span>
-        </p>
+            <PirateButton :label="t('downloadPage.download')" />
+          </a>
+          <span
+            v-else-if="loading"
+            class="cta-loading"
+            role="status"
+            :aria-label="t('downloadPage.loading')"
+            aria-busy="true"
+          >
+            <span v-if="showSpinner" class="spinner" aria-hidden="true"></span>
+          </span>
+          <span v-else class="cta-soon">{{
+            t("downloadPage.comingSoon")
+          }}</span>
+        </div>
       </article>
 
-      <!-- Linux -->
-      <article class="os-card">
-        <header class="os-head">
-          <span class="os-icon"><PlatformIcon platform="linux" /></span>
-          <div>
-            <h3>{{ t("downloadPage.linux.name") }}</h3>
-            <p class="sub">{{ t("downloadPage.linux.choose") }}</p>
-          </div>
-        </header>
-        <div class="tiles">
-          <template v-for="tile in linuxTiles" :key="tile.id">
-            <div class="tile-cell">
+      <div class="columns">
+        <!-- Windows -->
+        <article class="os-card">
+          <header class="os-head">
+            <span class="os-icon"><PlatformIcon platform="windows" /></span>
+            <div>
+              <h2>{{ t("downloadPage.windows.name") }}</h2>
+              <p class="sub">{{ t("downloadPage.windows.editions") }}</p>
+            </div>
+          </header>
+          <div class="rows">
+            <template v-for="row in windowsRows" :key="row.id">
               <a
-                v-if="tile.url"
-                class="dl tile"
-                :href="tile.url"
+                v-if="row.url"
+                class="dl"
+                :href="row.url"
+                :aria-label="downloadAria(row.label)"
                 @click="incrementDownload"
               >
                 <span class="dl-text">
-                  <span class="dl-label">{{ tile.label }}</span>
-                  <span class="dl-desc">{{ tile.desc }}</span>
+                  <span class="dl-label">{{ row.label }}</span>
+                  <span class="dl-desc">{{ row.desc }}</span>
                 </span>
                 <span class="dl-meta">
-                  <span v-if="sizeLabel(tile.size)" class="dl-size">{{
-                    sizeLabel(tile.size)
+                  <span v-if="sizeLabel(row.size)" class="dl-size">{{
+                    sizeLabel(row.size)
                   }}</span>
                   <svg
                     class="dl-icon"
@@ -384,77 +391,187 @@ async function copyCommand(id: string, command?: string) {
               </a>
               <div
                 v-else-if="loading"
-                class="dl tile loading"
+                class="dl loading"
                 role="status"
                 :aria-label="t('downloadPage.loading')"
                 aria-busy="true"
               >
                 <span class="dl-text">
-                  <span class="dl-label">{{ tile.label }}</span>
-                  <span class="dl-desc">{{ tile.desc }}</span>
+                  <span class="dl-label">{{ row.label }}</span>
+                  <span class="dl-desc">{{ row.desc }}</span>
                 </span>
                 <span class="dl-meta">
-                  <span class="spinner" aria-hidden="true"></span>
+                  <span
+                    v-if="showSpinner"
+                    class="spinner"
+                    aria-hidden="true"
+                  ></span>
                 </span>
               </div>
-              <div v-else class="dl tile soon">
+              <div v-else class="dl soon">
                 <span class="dl-text">
-                  <span class="dl-label">{{ tile.label }}</span>
-                  <span class="dl-desc">{{ tile.desc }}</span>
+                  <span class="dl-label">{{ row.label }}</span>
+                  <span class="dl-desc">{{ row.desc }}</span>
                 </span>
                 <span class="badge">{{ t("downloadPage.comingSoon") }}</span>
               </div>
+            </template>
+          </div>
+          <p class="update-note">
+            <svg
+              class="note-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <polyline points="23 4 23 10 17 10" />
+              <polyline points="1 20 1 14 7 14" />
+              <path
+                d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+              />
+            </svg>
+            <span>{{ t("downloadPage.windows.updates") }}</span>
+          </p>
+        </article>
 
-              <!-- The command to run after downloading this package. Rendered only when the release
-                   actually carries the file, so its name (and the command) are real; click anywhere on
-                   the strip to copy it. -->
-              <button
-                v-if="tile.url && tile.command"
-                type="button"
-                class="tile-cmd"
-                :aria-label="
-                  copiedId === tile.id
-                    ? t('downloadPage.linux.copied')
-                    : t('downloadPage.linux.copyCommand')
-                "
-                @click="copyCommand(tile.id, tile.command)"
-              >
-                <code>{{ tile.command }}</code>
-                <span class="tile-cmd-copy" aria-hidden="true">{{
-                  copiedId === tile.id
-                    ? t("downloadPage.linux.copied")
-                    : t("downloadPage.linux.copy")
-                }}</span>
-              </button>
+        <!-- Linux -->
+        <article class="os-card">
+          <header class="os-head">
+            <span class="os-icon"><PlatformIcon platform="linux" /></span>
+            <div>
+              <h2>{{ t("downloadPage.linux.name") }}</h2>
+              <p class="sub">{{ t("downloadPage.linux.choose") }}</p>
             </div>
-          </template>
-        </div>
-        <p class="update-note">
-          <svg
-            class="note-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="16" x2="12" y2="12" />
-            <line x1="12" y1="8" x2="12.01" y2="8" />
-          </svg>
-          <span>{{ t("downloadPage.linux.updates") }}</span>
-        </p>
-      </article>
-    </div>
+          </header>
+          <div class="tiles">
+            <template v-for="tile in linuxTiles" :key="tile.id">
+              <div class="tile-cell">
+                <a
+                  v-if="tile.url"
+                  class="dl tile"
+                  :href="tile.url"
+                  :aria-label="downloadAria(tile.label)"
+                  @click="incrementDownload"
+                >
+                  <span class="dl-text">
+                    <span class="dl-label">{{ tile.label }}</span>
+                    <span class="dl-desc">{{ tile.desc }}</span>
+                  </span>
+                  <span class="dl-meta">
+                    <span v-if="sizeLabel(tile.size)" class="dl-size">{{
+                      sizeLabel(tile.size)
+                    }}</span>
+                    <svg
+                      class="dl-icon"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M4.5 15.5h11"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                      />
+                    </svg>
+                  </span>
+                </a>
+                <div
+                  v-else-if="loading"
+                  class="dl tile loading"
+                  role="status"
+                  :aria-label="t('downloadPage.loading')"
+                  aria-busy="true"
+                >
+                  <span class="dl-text">
+                    <span class="dl-label">{{ tile.label }}</span>
+                    <span class="dl-desc">{{ tile.desc }}</span>
+                  </span>
+                  <span class="dl-meta">
+                    <span
+                      v-if="showSpinner"
+                      class="spinner"
+                      aria-hidden="true"
+                    ></span>
+                  </span>
+                </div>
+                <div v-else class="dl tile soon">
+                  <span class="dl-text">
+                    <span class="dl-label">{{ tile.label }}</span>
+                    <span class="dl-desc">{{ tile.desc }}</span>
+                  </span>
+                  <span class="badge">{{ t("downloadPage.comingSoon") }}</span>
+                </div>
+
+                <!-- The command to run after downloading this package. Rendered only when the release
+                     actually carries the file, so its name (and the command) are real; click anywhere on
+                     the strip to copy it, or select and copy it by hand if the clipboard is blocked. -->
+                <button
+                  v-if="tile.url && tile.command"
+                  type="button"
+                  class="tile-cmd"
+                  :class="{ 'copy-failed': copyFailedOn(tile.id) }"
+                  :aria-label="t('downloadPage.linux.copyCommand')"
+                  @click="copyCommand(tile.id, tile.command)"
+                >
+                  <code>{{ tile.command }}</code>
+                  <span class="tile-cmd-copy" aria-hidden="true">{{
+                    commandLabel(tile.id)
+                  }}</span>
+                </button>
+              </div>
+            </template>
+          </div>
+          <p class="update-note">
+            <svg
+              class="note-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <span>{{ t("downloadPage.linux.updates") }}</span>
+          </p>
+        </article>
+      </div>
+    </template>
 
     <p class="all-releases">
       <a :href="GITHUB_RELEASES_URL" target="_blank" rel="noopener">
         {{ t("downloadPage.viewReleases") }}
       </a>
     </p>
+
+    <!-- One polite live region for the copy-to-clipboard result; the visible per-tile labels are
+         aria-hidden, so this is what a screen reader announces. -->
+    <span
+      class="visually-hidden"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      >{{ copyAnnouncement }}</span
+    >
   </section>
 </template>
 
@@ -567,6 +684,47 @@ async function copyCommand(id: string, command?: string) {
   }
 }
 
+// The couldn't-reach-the-release panel. Same shape as the recommended callout, in the amber "warning"
+// palette the "coming soon" chips already use, with a prominent button to the one path that still
+// works. Shown in place of the whole picker, so a failed fetch never reads as "everything is coming
+// soon".
+.fetch-error {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  background: rgba(255, 190, 92, 0.08);
+  border: 1px solid rgba(255, 190, 92, 0.35);
+  border-radius: 14px;
+  padding: 20px 24px;
+
+  .err-icon {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    color: var(--warning);
+  }
+
+  .err-body {
+    flex: 1 1 240px;
+    min-width: 0;
+
+    h2 {
+      font-size: 20px;
+    }
+
+    p {
+      color: var(--secondary-text);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+  }
+
+  .cta {
+    flex: 0 0 auto;
+  }
+}
+
 .columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -594,7 +752,7 @@ async function copyCommand(id: string, command?: string) {
       color: var(--primary);
     }
 
-    h3 {
+    h2 {
       font-size: 18px;
     }
 
@@ -705,9 +863,12 @@ async function copyCommand(id: string, command?: string) {
     color: var(--secondary-text);
   }
 
+  // Format not published yet. Dimmed deliberately, but only to 0.8: the blanket 0.65 it used to carry
+  // dropped the label/desc below the WCAG-AA contrast floor, so an unavailable option became one a
+  // low-vision visitor couldn't actually read.
   &.soon {
     cursor: default;
-    opacity: 0.65;
+    opacity: 0.8;
 
     .badge {
       flex: 0 0 auto;
@@ -764,11 +925,14 @@ async function copyCommand(id: string, command?: string) {
   min-width: 0;
 }
 
-// The command to paste after downloading a native package (.deb, Arch .pkg.tar.zst): a copy-on-click
-// monospace strip, recessed against the darker static background so it reads as a code line rather than
-// a second download. Long commands scroll inside it instead of widening the tile.
+// The command to paste after downloading a native package (.deb, .rpm, Arch .pkg.tar.zst): a
+// copy-on-click monospace strip, recessed against the darker static background so it reads as a code
+// line rather than a second download. Long commands scroll inside it instead of widening the tile.
 .tile-cmd {
   all: unset;
+  // Opt this strip back into text selection: style.scss sets `user-select: none` on everything, which
+  // would otherwise make the promised "select and copy it by hand" clipboard fallback impossible.
+  user-select: text;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -794,11 +958,22 @@ async function copyCommand(id: string, command?: string) {
     outline-offset: 2px;
   }
 
+  // Clipboard write failed: turn the strip amber and colour its label so the "Copy failed - select and
+  // copy" swap reads as a state change, not just different words.
+  &.copy-failed {
+    border-color: rgba(255, 190, 92, 0.6);
+
+    .tile-cmd-copy {
+      color: var(--warning);
+    }
+  }
+
   code {
     font-family: "JetBrains Mono", monospace;
     font-size: 12.5px;
     color: var(--primary);
     white-space: nowrap;
+    user-select: text;
   }
 
   .tile-cmd-copy {
@@ -821,6 +996,20 @@ async function copyCommand(id: string, command?: string) {
       color: var(--primary-text);
     }
   }
+}
+
+// Screen-reader-only: kept out of sight but in the accessibility tree, so the live region can announce
+// the copy result without anything showing on screen.
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 // Tablets and phones: the two OS columns stack, and the Linux tiles fall to one per row so nothing
@@ -853,6 +1042,16 @@ async function copyCommand(id: string, command?: string) {
 
   .recommended .cta-soon {
     justify-content: center;
+  }
+
+  // The error panel stacks the same way, and its button goes full-width for a comfortable tap target.
+  .fetch-error {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fetch-error .cta {
+    width: 100%;
   }
 
   .tiles {
