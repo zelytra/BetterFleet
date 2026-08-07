@@ -373,7 +373,8 @@
       "exe": {
         "label": "Installateur .exe",
         "desc": "Installation classique, mises à jour auto"
-      }
+      },
+      "updates": "Les mises à jour s'installent automatiquement en arrière-plan — rien à faire."
     },
     "linux": {
       "name": "Linux",
@@ -386,10 +387,6 @@
         "label": ".rpm",
         "desc": "Fedora, openSUSE, RHEL"
       },
-      "appimage": {
-        "label": "AppImage",
-        "desc": "Universel — toutes distributions"
-      },
       "flatpak": {
         "label": "Flatpak",
         "desc": "Via Flathub, sandboxé"
@@ -400,7 +397,8 @@
       },
       "copy": "Copier",
       "copied": "Copié !",
-      "copyCommand": "Copier la commande d'installation"
+      "copyCommand": "Copier la commande d'installation",
+      "updates": "Sur Linux, les mises à jour sont manuelles — il n'y a pas de mise à jour automatique. Pour mettre à jour, téléchargez le dernier paquet depuis cette page et réinstallez-le par-dessus votre version actuelle."
     }
   }
 }

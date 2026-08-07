@@ -96,7 +96,6 @@ const windowsRows = computed<DownloadItem[]>(() => {
 const linuxTiles = computed<DownloadItem[]>(() => {
   const deb = resolve(".deb");
   const rpm = resolve(".rpm");
-  const appimage = resolve(".appimage");
   const flatpak = resolve(".flatpak");
   // The pacman package: `betterfleet-bin-<version>-x86_64.pkg.tar.zst`. Matched on the full
   // `.pkg.tar.zst` suffix rather than a bare `.zst` so nothing else in the release can stand in for it.
@@ -117,13 +116,6 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.linux.rpm.desc"),
       url: rpm.url,
       size: rpm.size,
-    },
-    {
-      id: "appimage",
-      label: t("downloadPage.linux.appimage.label"),
-      desc: t("downloadPage.linux.appimage.desc"),
-      url: appimage.url,
-      size: appimage.size,
     },
     {
       id: "flatpak",
@@ -320,6 +312,26 @@ async function copyCommand(id: string, command?: string) {
             </div>
           </template>
         </div>
+        <p class="update-note">
+          <svg
+            class="note-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <polyline points="23 4 23 10 17 10" />
+            <polyline points="1 20 1 14 7 14" />
+            <path
+              d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+            />
+          </svg>
+          <span>{{ t("downloadPage.windows.updates") }}</span>
+        </p>
       </article>
 
       <!-- Linux -->
@@ -418,6 +430,24 @@ async function copyCommand(id: string, command?: string) {
             </div>
           </template>
         </div>
+        <p class="update-note">
+          <svg
+            class="note-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+          <span>{{ t("downloadPage.linux.updates") }}</span>
+        </p>
       </article>
     </div>
 
@@ -588,6 +618,27 @@ async function copyCommand(id: string, command?: string) {
   grid-template-columns: 1fr 1fr;
   align-items: start;
   gap: 10px;
+}
+
+// A quiet footnote under each OS's downloads saying how that platform updates - Windows updates
+// itself, Linux is a manual re-download. Kept deliberately light (muted text, a small accent glyph,
+// no card or border) so it reads as a hint below the tiles, never a second banner. Static content, so
+// it adds no layout shift as the release resolves.
+.update-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--secondary-text);
+
+  .note-icon {
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    margin-top: 1px;
+    color: var(--primary);
+  }
 }
 
 // One shared look for every download affordance - the Windows rows and the Linux tiles.
