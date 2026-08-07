@@ -16,6 +16,11 @@ const initOptions: KeycloakConfig = {
   clientId: "application",
 };
 
+// Dedupes concurrent Linux token refreshes: Keycloak rotates the refresh token, so two parallel
+// restores would invalidate each other and drop the session. Module-level (not in the reactive
+// store) so the in-flight promise is never wrapped by Vue reactivity.
+let linuxRefreshInFlight: Promise<boolean> | null = null;
+
 export const keycloakStore = reactive({
   keycloak: new Keycloak(initOptions),
   isAuthenticated: false,
@@ -90,6 +95,9 @@ export const keycloakStore = reactive({
       )) as typeof this.keycloak.updateToken;
     this.keycloak.logout = (() => {
       LinuxAuth.forget();
+      this.resetLinux();
+      // Full reload drops any live session socket with the old page and re-runs the (now empty)
+      // silent restore, landing on the sign-in screen.
       window.location.reload();
       return Promise.resolve();
     }) as typeof this.keycloak.logout;
@@ -130,9 +138,10 @@ export const keycloakStore = reactive({
     this.isAuthenticated = true;
     this.user.username = LinuxAuth.usernameFromIdToken(tokens.id_token);
     UserStore.player.username = this.user.username;
-    // Push the bearer header now; HTTPAxios.updateToken() re-reads the token we just set (its
-    // updateToken override is a no-op while the token is fresh, so no refresh round-trip here).
-    void HTTPAxios.updateToken();
+    // Deliberately no HTTPAxios.updateToken() call here: it routes through our updateToken override,
+    // which can refresh and re-enter applyTokensLinux, looping when the access-token lifespan is
+    // <= 60s (Keycloak's default). The bearer header is set on demand before each request
+    // (HTTPAxios.updateToken, e.g. Fleet.joinSession), exactly as on Windows.
   },
   resetLinux() {
     this.keycloak.token = undefined;
@@ -146,12 +155,23 @@ export const keycloakStore = reactive({
     const remaining =
       LinuxAuth.accessTokenExpiry(this.keycloak.token ?? "") - Date.now();
     if (remaining > minValiditySeconds * 1000) return false;
-    const tokens = await LinuxAuth.restore();
-    if (!tokens) {
-      this.resetLinux();
-      throw new Error("Linux OIDC session expired");
+    // Share one in-flight refresh so parallel requests do not each rotate (and invalidate) the
+    // refresh token.
+    if (!linuxRefreshInFlight) {
+      linuxRefreshInFlight = (async () => {
+        try {
+          const tokens = await LinuxAuth.restore();
+          if (!tokens) {
+            this.resetLinux();
+            throw new Error("Linux OIDC session expired");
+          }
+          this.applyTokensLinux(tokens);
+          return true;
+        } finally {
+          linuxRefreshInFlight = null;
+        }
+      })();
     }
-    this.applyTokensLinux(tokens);
-    return true;
+    return linuxRefreshInFlight;
   },
 });
