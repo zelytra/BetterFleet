@@ -44,8 +44,9 @@ Settings live in **`webapp/src/components/fleet/ConfigComponent.vue`** and persi
 2. **Register it**: add the name to the `tauri::generate_handler![ … ]` list in `main.rs`. Forgetting
    this is the classic failure: the command compiles but `invoke` rejects at runtime.
 3. **Call it**: `invoke<ReturnType>("my_command", { arg1, arg2 })` from the client
-   (`@tauri-apps/api/tauri`). Keep pure logic in a testable `.ts` module and mock the invoke in specs
-   (`invokeMock()` records into `rustCalls`, answers from `rustResponses`).
+   (`@tauri-apps/api/core`; Tauri v2 renamed the v1 `@tauri-apps/api/tauri` specifier). Keep pure
+   logic in a testable `.ts` module and mock the invoke in specs (`invokeMock()` records into
+   `rustCalls`, answers from `rustResponses`).
 4. **Build/check**: on Windows, `cargo check`/`cargo test` in `webapp/src-tauri/` need
    `BETTERFLEET_TEST_BUILD=1` (see [gotchas.md](gotchas.md)).
 
