@@ -5,6 +5,11 @@ import { UserStore } from "@/objects/stores/UserStore.ts";
 import { isLinux } from "@/objects/utils/platform.ts";
 import * as LinuxAuth from "@/objects/stores/LinuxAuth.ts";
 import { error as logError } from "@tauri-apps/plugin-log";
+import { alertProvider } from "@/main.ts";
+import { AlertType } from "@/vue/alert/Alert.ts";
+import { tsi18n } from "@/objects/i18n";
+
+const { t } = tsi18n.global;
 
 export interface KeycloakUser {
   username: string;
@@ -16,9 +21,11 @@ const initOptions: KeycloakConfig = {
   clientId: "application",
 };
 
-// Dedupes concurrent Linux token refreshes: Keycloak rotates the refresh token, so two parallel
-// restores would invalidate each other and drop the session. Module-level (not in the reactive
-// store) so the in-flight promise is never wrapped by Vue reactivity.
+// Dedupes concurrent Linux token refreshes so parallel requests share one refresh instead of each
+// firing a redundant token call and racing to overwrite the stored token. This realm does not rotate
+// refresh tokens (revokeRefreshToken=false), so the concern is the duplicate work and last-writer
+// churn, not the tokens invalidating one another. Module-level (not in the reactive store) so the
+// in-flight promise is never wrapped by Vue reactivity.
 let linuxRefreshInFlight: Promise<boolean> | null = null;
 
 export const keycloakStore = reactive({
@@ -93,13 +100,16 @@ export const keycloakStore = reactive({
       this.ensureFreshLinux(
         typeof minValidity === "number" ? minValidity : 5,
       )) as typeof this.keycloak.updateToken;
-    this.keycloak.logout = (() => {
+    this.keycloak.logout = (async () => {
+      // Revoke the Keycloak session server-side before dropping the local tokens, so signing out here
+      // actually ends the SSO session instead of leaving it live for a silent re-login. Best-effort:
+      // endSession swallows its own errors, so an offline logout still clears locally.
+      await LinuxAuth.endSession();
       LinuxAuth.forget();
       this.resetLinux();
       // Full reload drops any live session socket with the old page and re-runs the (now empty)
       // silent restore, landing on the sign-in screen.
       window.location.reload();
-      return Promise.resolve();
     }) as typeof this.keycloak.logout;
 
     try {
@@ -125,7 +135,17 @@ export const keycloakStore = reactive({
       const tokens = await LinuxAuth.login();
       this.applyTokensLinux(tokens);
     } catch (e) {
-      logError(`Linux OIDC login failed: ${e}`);
+      // A deliberate cancel from the browser-wait screen is not a failure: reset quietly, no alert.
+      if (!(e instanceof LinuxAuth.LoginAbortedError)) {
+        logError(`Linux OIDC login failed: ${e}`);
+        // Port busy, the timeout, a state mismatch, denied consent, a dropped network: previously the
+        // failure was silent and the screen just fell back to the login button with no explanation.
+        alertProvider.sendAlert({
+          title: t("alert.error.title"),
+          content: t("login.browser.error"),
+          type: AlertType.ERROR,
+        });
+      }
     } finally {
       this.awaitingBrowser = false;
     }
