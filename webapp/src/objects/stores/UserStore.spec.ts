@@ -62,7 +62,9 @@ const CUSTOM = {
   richPresence: false,
   recapCard: false,
   overlayHotkey: "Alt+Shift+P",
-  serverHostName: "wss://custom.example/api/sessions",
+  // The developer host override (#762): the effective serverHostName is re-derived from this on every
+  // init, not persisted directly, so it is this field that has to survive the round-trip.
+  serverHostNameOverride: "wss://custom.example/api/sessions",
 } as const;
 
 describe("UserStore preference persistence", () => {

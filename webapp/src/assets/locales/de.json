@@ -227,9 +227,10 @@
   },
   "login": {
     "browser": {
-      "title": "Continue in your browser",
-      "message": "A sign-in page opened in your browser. Complete it there, then come back here.",
-      "cancel": "Cancel"
+      "title": "Im Browser fortfahren",
+      "message": "Eine Anmeldeseite wurde in Ihrem Browser geöffnet. Schließen Sie die Anmeldung dort ab und kehren Sie dann hierher zurück.",
+      "cancel": "Abbrechen",
+      "error": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut."
     },
     "continue": "Weiter",
     "description": "Willkommen bei BetterFleet! Wir freuen uns, Sie bei uns zu haben. Damit Sie die Anwendung vollständig nutzen können, ist es notwendig, sich bei Ihrem Konto anzumelden oder eins zu erstellen!",

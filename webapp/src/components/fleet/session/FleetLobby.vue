@@ -353,7 +353,10 @@ const linuxAutoclickBannerDismissed = LocalStore(
   false,
 );
 const showLinuxAutoclickNotice = computed(
-  () => isLinux() && !linuxAutoclickBannerDismissed.value,
+  () =>
+    isLinux() &&
+    UserStore.player.macroEnable &&
+    !linuxAutoclickBannerDismissed.value,
 );
 function dismissLinuxAutoclickNotice(): void {
   linuxAutoclickBannerDismissed.value = true;

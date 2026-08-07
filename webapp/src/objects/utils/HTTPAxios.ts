@@ -20,10 +20,14 @@ export class HTTPAxios {
     info("[HTTPAxios.ts][GET] " + urlPath);
     // v2 plugin-http is WHATWG-fetch-shaped: it returns a standard Response, so callers read the
     // body with `await res.json()` / `await res.text()` (there is no v1 `responseType`/`.data`).
-    return await fetch(urlPath, {
+    const response = await fetch(urlPath, {
       method: "GET",
       headers: HTTPAxios.header,
     });
+    // WHATWG fetch resolves on 4xx/5xx, so guard here: otherwise a non-2xx socket/register would
+    // hand its error body back as the token and get spliced straight into a WebSocket URL.
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    return response;
   }
 
   async post(body: any) {
@@ -31,11 +35,15 @@ export class HTTPAxios {
     info("[HTTPAxios.ts][POST] " + urlPath);
     // v2 fetch takes a WHATWG BodyInit: send a JSON string and declare the content type (v1's
     // `Body.json()` helper is gone).
-    return await fetch(urlPath, {
+    const response = await fetch(urlPath, {
       method: "POST",
       body: JSON.stringify(body),
       headers: { ...HTTPAxios.header, "Content-Type": "application/json" },
     });
+    // fetch resolves on 4xx/5xx too; surface those as errors so a caller's .catch fires instead of
+    // the failed request passing for a success.
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    return response;
   }
 
   /*

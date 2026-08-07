@@ -31,7 +31,16 @@ export interface Player extends Preferences {
   boatSize: BoatSize;
   fleet?: Fleet;
   sessionId?: string;
+  /** The resolved effective backend host the session socket talks to (serverHostNameOverride, else VITE_SOCKET_HOST). */
   serverHostName?: string;
+  /**
+   * A developer / self-host override for the backend host (issue #762). Persisted; when set it wins
+   * over VITE_SOCKET_HOST, when absent the app follows the env. Kept apart from serverHostName (the
+   * resolved effective host) so a host saved once can never silently shadow a changed env default the
+   * way a bare persisted serverHostName did. Local only: unlike Preferences it never travels to the
+   * backend on CONNECT.
+   */
+  serverHostNameOverride?: string;
   countDown?: SessionRunner;
   server?: SotServer;
   clientVersion?: string;
