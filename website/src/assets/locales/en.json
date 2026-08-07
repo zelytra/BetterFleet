@@ -358,6 +358,11 @@
     "comingSoon": "Coming soon",
     "loading": "Loading",
     "viewReleases": "Browse every release on GitHub",
+    "error": {
+      "title": "Couldn't reach the release server",
+      "body": "We couldn't load the latest downloads. You can still get every build directly from GitHub.",
+      "cta": "Get it on GitHub"
+    },
     "recommended": {
       "windows": {
         "title": "BetterFleet for Windows — Installer",
@@ -394,6 +399,7 @@
       },
       "copy": "Copy",
       "copied": "Copied!",
+      "copyFailed": "Copy failed — select and copy",
       "copyCommand": "Copy install command",
       "updates": "Updates on Linux are manual — there's no auto-update. To update, download the latest package from this page and reinstall it over your current version."
     }
