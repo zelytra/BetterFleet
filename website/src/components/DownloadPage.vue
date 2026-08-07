@@ -144,10 +144,10 @@ interface Recommended {
   size?: number;
 }
 
-// The banner mirrors the detected OS's best format: the Windows installer, or the Linux AppImage
-// (the "runs anywhere, no install" option). Null when detection failed - the banner is hidden and
-// the visitor picks from the two columns below. If that format isn't in the release yet, the button
-// shows "coming soon" like any other tile rather than sending anyone to github.com.
+// The banner mirrors the detected OS's best single download - and only Windows has one (the installer).
+// It's null for Linux just as for failed detection: no single package fits every distribution
+// (Debian/Fedora/Arch diverge), so a Linux visitor gets no banner and picks from the tiles below. When
+// the .exe isn't in the release yet, the button shows "coming soon" rather than linking to github.com.
 const recommended = computed<Recommended | null>(() => {
   if (detected === "windows") {
     const exe = resolve(".exe");
@@ -159,17 +159,16 @@ const recommended = computed<Recommended | null>(() => {
       size: exe.size,
     };
   }
-  if (detected === "linux") {
-    const appimage = resolve(".appimage");
-    return {
-      platform: "linux",
-      title: t("downloadPage.recommended.linux.title"),
-      desc: t("downloadPage.recommended.linux.desc"),
-      url: appimage.url,
-      size: appimage.size,
-    };
-  }
   return null;
+});
+
+// The intro line under the title. Windows gets the "we picked one for you" copy the banner backs up;
+// Linux is detected but has no single recommended package, so it gets a "pick your distribution's
+// package below" prompt instead of implying a pick was made; anything else is the couldn't-detect line.
+const leadText = computed(() => {
+  if (detected === "windows") return t("downloadPage.lead");
+  if (detected === "linux") return t("downloadPage.leadLinux");
+  return t("downloadPage.leadUnknown");
 });
 
 // Per-package install commands (the .deb and Arch tiles): each tile carries its own `command`, copied
@@ -196,7 +195,7 @@ async function copyCommand(id: string, command?: string) {
     <header class="hero">
       <h1>{{ t("downloadPage.title") }}</h1>
       <p class="lead">
-        {{ detected ? t("downloadPage.lead") : t("downloadPage.leadUnknown") }}
+        {{ leadText }}
       </p>
     </header>
 

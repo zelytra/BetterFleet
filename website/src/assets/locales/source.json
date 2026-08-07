@@ -350,6 +350,7 @@
     "title": "Download BetterFleet",
     "lead": "We picked the download that fits your system — or choose another below.",
     "leadUnknown": "We couldn't tell what you're running — pick your platform below.",
+    "leadLinux": "Choose the package that fits your distribution below.",
     "recommendedLabel": "Recommended for your system",
     "download": "Download",
     "sixtyFourBit": "64-bit",
@@ -361,10 +362,6 @@
       "windows": {
         "title": "BetterFleet for Windows — Installer",
         "desc": "Classic installation, automatic updates"
-      },
-      "linux": {
-        "title": "BetterFleet for Linux — AppImage",
-        "desc": "Runs on any distribution, no install"
       }
     },
     "windows": {
