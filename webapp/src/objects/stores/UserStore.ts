@@ -40,8 +40,15 @@ export const UserStore = reactive({
           : false,
       shareStats:
         readPlayer.shareStats !== undefined ? readPlayer.shareStats : true,
+      // In dev (`npm run dev` / `tauri:dev`), always follow VITE_SOCKET_HOST: a value persisted from
+      // an earlier run silently shadowed the env, so pointing the app at a different backend (e.g.
+      // prod) left the WebSocket talking to the old host while HTTP moved with the env. The persisted
+      // override still wins in prod / self-host builds. Gated on MODE (not DEV) so the test mode keeps
+      // restoring the persisted value.
       serverHostName:
-        readPlayer.serverHostName || import.meta.env.VITE_SOCKET_HOST,
+        import.meta.env.MODE === "development"
+          ? import.meta.env.VITE_SOCKET_HOST
+          : readPlayer.serverHostName || import.meta.env.VITE_SOCKET_HOST,
       clientVersion: import.meta.env.VITE_VERSION,
       fleet: new Fleet(),
       server: undefined,
