@@ -389,10 +389,6 @@
         "label": ".rpm",
         "desc": "Fedora, openSUSE, RHEL"
       },
-      "flatpak": {
-        "label": "Flatpak",
-        "desc": "Via Flathub, sandboxé"
-      },
       "arch": {
         "label": "Arch (pacman)",
         "desc": "Arch, Manjaro, CachyOS"

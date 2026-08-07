@@ -118,7 +118,6 @@ const windowsRows = computed<DownloadItem[]>(() => {
 const linuxTiles = computed<DownloadItem[]>(() => {
   const deb = resolve(".deb");
   const rpm = resolve(".rpm");
-  const flatpak = resolve(".flatpak");
   // The pacman package: `betterfleet-bin-<version>-x86_64.pkg.tar.zst`. Matched on the full
   // `.pkg.tar.zst` suffix rather than a bare `.zst` so nothing else in the release can stand in for it.
   const arch = resolve(".pkg.tar.zst");
@@ -146,13 +145,6 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       command: rpm.name
         ? `sudo dnf install ~/Downloads/${rpm.name}`
         : undefined,
-    },
-    {
-      id: "flatpak",
-      label: t("downloadPage.linux.flatpak.label"),
-      desc: t("downloadPage.linux.flatpak.desc"),
-      url: flatpak.url,
-      size: flatpak.size,
     },
     {
       id: "arch",
