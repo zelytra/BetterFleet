@@ -394,14 +394,13 @@
         "label": "Flatpak",
         "desc": "Via Flathub, sandboxé"
       },
-      "apt": {
-        "label": "Debian / Ubuntu (APT)"
-      },
-      "aur": {
-        "label": "Arch Linux (AUR)"
+      "arch": {
+        "label": "Arch (pacman)",
+        "desc": "Arch, Manjaro, CachyOS"
       },
       "copy": "Copier",
-      "copied": "Copié !"
+      "copied": "Copié !",
+      "copyCommand": "Copier la commande d'installation"
     }
   }
 }
