@@ -109,7 +109,7 @@
     "macro": {
       "check": "Activar/Desactivar macro de sesión",
       "description": "Ejecución de un clic automático al final de la cuenta atrás.",
-      "linuxUnavailable": "Not available on Linux — Wayland blocks the automatic click, so you must click \"Set sail\" yourself."
+      "linuxUnavailable": "No disponible en Linux — Wayland bloquea el clic automático, así que debes hacer clic en \"Establecer navegación\"."
     },
     "overlay": {
       "hotkey": {
@@ -326,8 +326,8 @@
     },
     "leave": "abandonar la sesión",
     "linuxAutoclick": {
-      "banner": "Assisted launch is not available on Linux — Wayland blocks the automatic click. Click \"Set sail\" yourself when the countdown reaches zero.",
-      "dismiss": "Dismiss"
+      "banner": "El lanzamiento asistido no está disponible en Linux — Wayland bloquea el clic automático. Haz clic en \"Establecer navegación\" cuando la cuenta regresiva llegue a cero.",
+      "dismiss": "Descartar"
     },
     "name": {
       "0": "Barco fantasma",

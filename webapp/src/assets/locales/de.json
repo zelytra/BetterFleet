@@ -109,7 +109,7 @@
     "macro": {
       "check": "Sitzungsmakro aktivieren/deaktivieren",
       "description": "Ausführung eines automatischen Klicks am Ende des Countdowns",
-      "linuxUnavailable": "Not available on Linux — Wayland blocks the automatic click, so you must click \"Set sail\" yourself."
+      "linuxUnavailable": "Nicht verfügbar unter Linux — Wayland blockiert den automatischen Klick, daher müssen Sie selbst auf \"Segel setzen\" klicken."
     },
     "overlay": {
       "hotkey": {
@@ -326,8 +326,8 @@
     },
     "leave": "Verlassen Sie die Sitzung",
     "linuxAutoclick": {
-      "banner": "Assisted launch is not available on Linux — Wayland blocks the automatic click. Click \"Set sail\" yourself when the countdown reaches zero.",
-      "dismiss": "Dismiss"
+      "banner": "Unterstützter Start ist unter Linux nicht verfügbar — Wayland blockiert den automatischen Klick. Klicke auf \"Segel setzen\" selbst, wenn der Countdown Null erreicht.",
+      "dismiss": "Verwerfen"
     },
     "name": {
       "0": "Geisterschiff",
