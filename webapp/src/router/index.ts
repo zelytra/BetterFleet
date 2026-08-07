@@ -81,7 +81,7 @@ router.beforeEach((to) => {
       !keycloakStore.isAuthenticated ||
       !keycloakStore.keycloak.authenticated
     ) {
-      router.push("auth");
+      router.push("/");
     }
   }
 });

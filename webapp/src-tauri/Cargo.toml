@@ -30,6 +30,11 @@ tauri-plugin-global-shortcut = "2"
 tauri-plugin-updater = "2"
 tauri-plugin-http = "2"
 tauri-plugin-shell = "2"
+# Loopback OAuth server for the Linux login (#740): the webview's tauri://localhost origin cannot be
+# an OIDC redirect target (webviews block redirects to non-HTTP(S) schemes), so on Linux the hosted
+# Keycloak login opens in the system browser with an http://localhost:<port> redirect that this
+# captures. Windows/macOS keep the in-webview keycloak-js flow (https://tauri.localhost works there).
+tauri-plugin-oauth = "2"
 anyhow = "1.0.80"
 tokio = { version = "1.43.1", features = ["full"] }
 hostname = "0.4.0"

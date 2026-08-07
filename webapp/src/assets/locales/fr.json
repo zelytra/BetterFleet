@@ -226,6 +226,11 @@
     "it": "Italiano"
   },
   "login": {
+    "browser": {
+      "title": "Continuez dans votre navigateur",
+      "message": "Une page de connexion s'est ouverte dans votre navigateur. Terminez-la, puis revenez ici.",
+      "cancel": "Annuler"
+    },
     "continue": "Continuer",
     "description": "Bienvenue sur BetterFleet ! Nous sommes ravis de vous compter parmi nous. Afin d'utiliser l'application, merci de vous connecter à votre compte ou d'en créer un !",
     "disconnect": "Ce n’est pas votre compte ?",
