@@ -5,7 +5,7 @@
     "enableGTKAppId": true
   },
   "bundle": {
-    "targets": ["deb", "appimage"],
+    "targets": ["deb", "rpm"],
     "createUpdaterArtifacts": false,
     "category": "Utility",
     "linux": {
@@ -16,6 +16,20 @@
           "libcap2-bin"
         ],
         "section": "utils",
+        "desktopTemplate": "betterfleet.desktop.template",
+        "files": {
+          "/usr/bin/betterfleet-netcap": "target/release/betterfleet-netcap"
+        },
+        "postInstallScript": "deb/postinst.sh"
+      },
+      "rpm": {
+        "depends": [
+          "webkit2gtk4.1",
+          "gtk3",
+          "libayatana-appindicator-gtk3",
+          "librsvg2",
+          "libcap"
+        ],
         "desktopTemplate": "betterfleet.desktop.template",
         "files": {
           "/usr/bin/betterfleet-netcap": "target/release/betterfleet-netcap"

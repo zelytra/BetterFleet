@@ -55,11 +55,13 @@ back into the problem.
   `wineserver` and unions their UDP ports in a single socket scan; reading only the first PID
   intermittently missed the real server port. The pure union step is unit-tested
   (`fetch_informations.rs`, `udp_ports_owned_by`).
-- **The `AppImage` build can't hold a file capability, so detection needs the `.deb` or AUR install.**
-  A file capability lives in an on-disk binary's extended attributes; the AppImage runs from a
-  self-mounted image, so `setcap` has nothing to pin to and the helper never receives `CAP_NET_RAW`.
-  Detection therefore only works from the `.deb`/AUR packages. Separately, `linuxdeploy`'s strip step
-  fails on Arch/CachyOS, so the AppImage is built with `NO_STRIP=true` (set in `release.yml`).
+- **No AppImage: it can't hold a file capability, so detection would never work from it.** A file
+  capability lives in an on-disk binary's extended attributes; an AppImage runs from a self-mounted,
+  read-only image, so `setcap` has nothing to pin to and the helper never receives `CAP_NET_RAW`.
+  Rather than ship a build whose core feature is silently broken, the Linux bundle targets are the
+  packaged installs that `setcap` the helper on install: `.deb` (Debian/Ubuntu), `.rpm` (Fedora), and
+  the pacman package / AUR (Arch). All three run the same `deb/postinst.sh` on install; Windows keeps
+  its `.exe`.
 
 ## Dev vs prod transport
 
