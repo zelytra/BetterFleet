@@ -189,6 +189,10 @@ export async function login(): Promise<OidcTokens> {
       state,
       code_challenge: challenge,
       code_challenge_method: "S256",
+      // Force the credentials prompt on an explicit login: after a logout (local token forgotten)
+      // the next sign-in then asks for credentials instead of silently reusing Keycloak's SSO
+      // session. Silent reconnection still happens via restore()/the refresh token, not this URL.
+      prompt: "login",
     }).toString()}`;
 
     await open(authorizeUrl);
