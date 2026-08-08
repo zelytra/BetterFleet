@@ -327,7 +327,7 @@
     },
     "leave": "Leave the session",
     "linuxAutoclick": {
-      "banner": "Assisted launch is not available on Linux — Wayland blocks the automatic click. Click \"Set sail\" yourself when the countdown reaches zero.",
+      "banner": "Automatic click unavailable on Linux (Wayland): click \"Set sail\" yourself.",
       "dismiss": "Dismiss"
     },
     "name": {

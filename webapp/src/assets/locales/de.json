@@ -327,7 +327,7 @@
     },
     "leave": "Verlassen Sie die Sitzung",
     "linuxAutoclick": {
-      "banner": "Unterstützter Start ist unter Linux nicht verfügbar — Wayland blockiert den automatischen Klick. Klicke auf \"Segel setzen\" selbst, wenn der Countdown Null erreicht.",
+      "banner": "Automatischer Klick unter Linux nicht verfügbar (Wayland): Klicke selbst auf \"Segel setzen\".",
       "dismiss": "Verwerfen"
     },
     "name": {

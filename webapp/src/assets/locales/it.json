@@ -327,7 +327,7 @@
     },
     "leave": "Lascia la sessione",
     "linuxAutoclick": {
-      "banner": "L'avvio assistito non è disponibile su Linux — Wayland blocca il clic automatico. Clicca tu stesso su \"Salpa\" quando il conto alla rovescia raggiunge lo zero.",
+      "banner": "Clic automatico non disponibile su Linux (Wayland): clicca tu stesso su \"Salpa\".",
       "dismiss": "Chiudi"
     },
     "name": {
