@@ -327,7 +327,7 @@
     },
     "leave": "abandonar la sesión",
     "linuxAutoclick": {
-      "banner": "El lanzamiento asistido no está disponible en Linux — Wayland bloquea el clic automático. Haz clic en \"Establecer navegación\" cuando la cuenta regresiva llegue a cero.",
+      "banner": "Clic automático no disponible en Linux (Wayland): haz clic tú mismo en \"Establecer navegación\".",
       "dismiss": "Descartar"
     },
     "name": {

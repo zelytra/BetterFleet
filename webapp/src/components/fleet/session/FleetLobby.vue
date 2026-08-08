@@ -293,6 +293,14 @@
   </section>
 </template>
 
+<script lang="ts">
+// Kept at module scope so a dismissal survives FleetLobby remounting: a screen change unmounts and
+// remounts this component, and a per-setup ref would reset to false so the hint came back (the bug
+// this fixes). It resets on app restart, which is what "dismissable for the session" means here; the
+// permanent off switch is the settings toggle (UserStore.player.statsHint).
+const sharedStatsHintDismissed = ref(false);
+</script>
+
 <script setup lang="ts">
 import {
   computed,
@@ -372,7 +380,9 @@ function runGuidedDiagnostic(): void {
 // Best-window hint from the anonymous alliance stats (#683): fetched once (module-cached an hour),
 // hidden whenever the data is too thin, dismissable for the session.
 const statsHint = ref<AllianceHint | null>(null);
-const statsHintDismissed = ref(false);
+// Aliases the module-level ref from the plain <script> block above, so the dismissal is not lost when
+// FleetLobby remounts on a screen change.
+const statsHintDismissed = sharedStatsHintDismissed;
 onMounted(async () => {
   // Switched off in the settings: skip the fetch too, since this payload feeds nothing else here.
   if (UserStore.player.statsHint === false) {

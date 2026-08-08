@@ -327,7 +327,7 @@
     },
     "leave": "Quitter la session",
     "linuxAutoclick": {
-      "banner": "Le lancement assisté n'est pas disponible sous Linux : Wayland bloque le clic automatique. Cliquez vous-même sur « Lever l'ancre » quand le décompte atteint zéro.",
+      "banner": "Clic automatique indisponible sous Linux (Wayland) : cliquez « Lever l'ancre » vous-même.",
       "dismiss": "Fermer"
     },
     "name": {
