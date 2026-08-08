@@ -57,10 +57,10 @@ players looking to improve their gaming experience.
 |-------------------------|--------------------|
 | Windows 11              | :white_check_mark: |
 | Windows 10              | :white_check_mark: |
-| Linux (X11 / XWayland)† | :white_check_mark: |
+| Linux (X11 / XWayland)* | :white_check_mark: |
 | macOS                   | :x:                |
 
-† Linux ships `.deb`, `.rpm` (Fedora) and pacman (`.pkg.tar.zst`) packages on the
+* Linux ships `.deb`, `.rpm` (Fedora) and pacman (`.pkg.tar.zst`) packages on the
 [GitHub releases](https://github.com/zelytra/BetterFleet/releases); updates are manual (re-download
 and reinstall), and the synchronized "set sail" auto-click needs X11 (it reaches Proton/Wine games
 natively or through XWayland, but native-Wayland clients forbid the synthetic click).
