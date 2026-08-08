@@ -126,7 +126,11 @@ function updateData(option: InputData) {
     flex-direction: column;
     width: 100%;
     border-radius: 5px;
-    overflow: hidden;
+    // A long list (the 13-language selector) scrolls instead of running past the panel; short
+    // selects stay their natural height since they never reach the cap.
+    max-height: 260px;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     span {
       padding: 8px;
