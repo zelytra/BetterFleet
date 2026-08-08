@@ -43,6 +43,11 @@ on:
     # Monday morning: picks up what translators did during the week.
     - cron: "0 4 * * 1"
   workflow_dispatch:
+    inputs:
+      seed:
+        description: "One-time: upload the repo's current translations TO Crowdin before pulling, so hand-added languages or strings are not handed back in English. Leave off for a normal sync."
+        type: boolean
+        default: false
 
 concurrency:
   group: crowdin
@@ -76,6 +81,25 @@ jobs:
           # The inputs above only reach the action own built-in commands. Everything here goes
           # through `command:`, i.e. the raw CLI, which reads its credentials from these two
           # variables: without them it fails with "Required option api_token is missing".
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      # One-time reconciliation, run by hand with seed=true. When translations are added to the repo
+      # directly (a new language, or new keys in de/es/it/fr), Crowdin does not have them yet, so the
+      # download below hands them back in English and the untranslation guard (rightly) stops the sync.
+      # This uploads the repo's current translations to Crowdin first, so the pull matches. Off by
+      # default: a normal sync must never overwrite the human corrections Crowdin holds. It only reaches
+      # languages that already exist as targets in the project (add a new one in Crowdin's Languages
+      # settings first, or its upload is silently skipped).
+      - name: Seed Crowdin with the repo's current translations
+        if: ${{ inputs.seed }}
+        uses: crowdin/github-action@v2
+        with:
+          command: "upload translations"
+          command_args: "--no-progress"
+          project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
+          token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+        env:
           CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
 
