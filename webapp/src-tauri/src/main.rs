@@ -393,10 +393,14 @@ async fn main() {
                 Target::new(TargetKind::Stdout),
                 Target::new(TargetKind::Webview),
             ])
-            .max_file_size(2_000) //Seems 2MB
+            // max_file_size is in BYTES: 2 MB per file before it rotates (was 2_000 = 2 KB, which
+            // rotated almost every write and, with KeepAll below, spilled hundreds of tiny files).
+            .max_file_size(2_000_000)
             .with_colors(ColoredLevelConfig::default())
             .level(LOG_LEVEL)
-            .rotation_strategy(RotationStrategy::KeepAll)
+            // Keep only the last few rotated files. KeepAll never pruned, so a single session could
+            // leave an unbounded pile of logs that get_logs would then read and concatenate wholesale.
+            .rotation_strategy(RotationStrategy::KeepSome(5))
             .build()
         )
         .invoke_handler(tauri::generate_handler![
@@ -531,6 +535,26 @@ async fn get_logs(max_lines: usize) -> tauri::Result<serde_json::Value> {
     Ok(serde_json::Value::String(output))
 }
 
+/// Which processes to list in the support report. The identities are platform-specific: on Windows
+/// the app and game are `BetterFleet.exe` / `SoTGame.exe`; on Linux the app binary is `BetterFleet`
+/// and the game (under Proton) is only recognisable by its command line, exactly as live detection
+/// finds it (`fetch_informations::cmd_is_sot_game`). Matching the Windows names on Linux listed
+/// neither process, so a Linux support report never showed the app or the game.
+#[cfg(windows)]
+fn is_reportable_process(name: &str, _cmd: &[String]) -> bool {
+    name == "BetterFleet.exe" || name == "SoTGame.exe"
+}
+
+#[cfg(target_os = "linux")]
+fn is_reportable_process(name: &str, cmd: &[String]) -> bool {
+    name == "BetterFleet" || fetch_informations::cmd_is_sot_game(cmd)
+}
+
+#[cfg(not(any(windows, target_os = "linux")))]
+fn is_reportable_process(name: &str, _cmd: &[String]) -> bool {
+    name == "BetterFleet" || name == "SoTGame.exe"
+}
+
 #[tauri::command]
 fn get_system_info() -> String {
     let mut sys = System::new_all();
@@ -553,19 +577,22 @@ fn get_system_info() -> String {
         sys.used_memory(),
         sys.total_swap(),
         sys.used_swap(),
-        System::name().unwrap(),
+        // These are Option on every field and are legitimately None on some hosts (e.g. a Linux box
+        // with no /etc/os-release). This command runs synchronously on the IPC thread, so a bare
+        // unwrap here would panic the whole app while merely building a support report.
+        System::name().unwrap_or_else(|| "unknown".into()),
         fetch_informations::get_hostname(),
-        System::kernel_version().unwrap(),
-        System::long_os_version().unwrap(),
-        System::host_name().unwrap(),
-        System::cpu_arch().unwrap(),
+        System::kernel_version().unwrap_or_else(|| "unknown".into()),
+        System::long_os_version().unwrap_or_else(|| "unknown".into()),
+        System::host_name().unwrap_or_else(|| "unknown".into()),
+        System::cpu_arch().unwrap_or_else(|| "unknown".into()),
         sys.cpus().len()
     );
 
     for (pid, process) in sys.processes() {
         let process_name = process.name();
 
-        if process_name == "BetterFleet.exe" || process_name == "SoTGame.exe" {
+        if is_reportable_process(process_name, process.cmd()) {
             system_info.push_str(&format!(
                 "[{}] {} CPU {}, {:?}\n",
                 pid,
@@ -587,7 +614,7 @@ fn get_system_info() -> String {
         ));
     }
 
-    let hostname = format!("{}:0", System::host_name().unwrap());
+    let hostname = format!("{}:0", System::host_name().unwrap_or_else(|| "unknown".into()));
     let ip_addresses = match hostname.to_socket_addrs() {
         Ok(addrs) => addrs.map(|socket_addr| socket_addr.ip()).collect::<Vec<IpAddr>>(),
         Err(e) => {

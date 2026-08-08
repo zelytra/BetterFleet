@@ -12,6 +12,7 @@
 
 use crate::x11_support::{connect, X11Context};
 use log::{error, info, warn};
+use std::collections::HashSet;
 use std::error::Error;
 use std::thread::sleep;
 use std::time::Duration;
@@ -35,6 +36,39 @@ const RISE_ANCHOR_Y_PROP: f32 = 750.0 / 1080.0;
 
 /// The launch-countdown menu is always rendered at 16:9; letterboxing is computed against it.
 const GAME_ASPECT_RATIO: f32 = 16.0 / 9.0;
+
+/// Pure decision: does this X11 top-level window belong to the running Sea of Thieves game? The
+/// authoritative signal is the window's owning PID (`_NET_WM_PID`): when the window advertises one,
+/// it is the game only if that PID is one of `game_pids` (what `find_game_pids` resolved). This is
+/// what stops the auto-click from focus-stealing and clicking a browser tab, Discord channel or
+/// folder merely NAMED "Sea of Thieves": those advertise their own, non-game PID. The title/`WM_CLASS`
+/// substring is only a fallback, for the rarer window that sets no `_NET_WM_PID` at all. Split out
+/// from the X11 calls so it is unit-tested without a display.
+///
+/// Mirrors the intent of the Windows path's exact `FindWindowA("Sea Of Thieves")`, which cannot be
+/// spoofed by a same-named unrelated window the way a loose substring can.
+pub(crate) fn window_is_game(
+    title: Option<&str>,
+    wm_class: Option<&str>,
+    wm_pid: Option<u32>,
+    game_pids: &HashSet<u32>,
+) -> bool {
+    match wm_pid {
+        // The window names its owner: trust that over any title. A game PID matches; any other PID
+        // is a definite non-match, however much the title looks like the game.
+        Some(pid) => game_pids.contains(&pid),
+        // No PID to cross-reference: fall back to the case-insensitive title/class substring so a
+        // game window that omits `_NET_WM_PID` is still found.
+        None => {
+            let has_needle = |value: Option<&str>| {
+                value
+                    .map(|v| v.to_lowercase().contains(SOT_WINDOW_NEEDLE))
+                    .unwrap_or(false)
+            };
+            has_needle(title) || has_needle(wm_class)
+        }
+    }
+}
 
 /// Entry point for the `rise_anchor` command on Linux: open the display, find the Sea of Thieves
 /// window, focus it, and click "Raise anchor". Returns `false` on any failure (no display, no XTEST,
@@ -63,10 +97,29 @@ pub(crate) fn rise_anchor() -> bool {
         }
     }
 
-    let window = match ctx.find_window_by_title(SOT_WINDOW_NEEDLE) {
+    // Resolve the game process PIDs first, then only accept a window owned by one of them. Without a
+    // running game there is nothing to click - and matching purely on the title would let an unrelated
+    // "Sea of Thieves" window (a browser tab, a Discord channel) be focus-stolen and clicked.
+    let game_pids: HashSet<u32> = crate::fetch_informations::find_game_pids()
+        .iter()
+        .filter_map(|pid| pid.parse::<u32>().ok())
+        .collect();
+    if game_pids.is_empty() {
+        warn!("[rise_anchor] Sea of Thieves does not appear to be running; not injecting a click");
+        return false;
+    }
+
+    let window = match ctx.find_window(&|ctx, window| {
+        window_is_game(
+            ctx.window_title(window).as_deref(),
+            ctx.wm_class(window).as_deref(),
+            ctx.read_wm_pid(window),
+            &game_pids,
+        )
+    }) {
         Some(window) => window,
         None => {
-            warn!("[rise_anchor] no window matching \"{SOT_WINDOW_NEEDLE}\" found");
+            warn!("[rise_anchor] no Sea of Thieves window owned by game PID(s) {game_pids:?} found");
             return false;
         }
     };
@@ -213,5 +266,65 @@ mod tests {
         let (x, y) = content_click_point(1920.0, 1080.0, 0.5, 0.5);
         assert_close(x, 960.0);
         assert_close(y, 540.0);
+    }
+
+    fn game_pids(pids: &[u32]) -> HashSet<u32> {
+        pids.iter().copied().collect()
+    }
+
+    #[test]
+    fn matches_a_window_owned_by_a_game_pid() {
+        let pids = game_pids(&[4242]);
+        assert!(window_is_game(
+            Some("Sea of Thieves"),
+            Some("sotgame.exe"),
+            Some(4242),
+            &pids
+        ));
+    }
+
+    #[test]
+    fn a_game_pid_wins_even_when_the_title_does_not_match() {
+        // `_NET_WM_PID` is authoritative: an owned window counts even under an odd transient title.
+        let pids = game_pids(&[4242]);
+        assert!(window_is_game(Some("Loading"), None, Some(4242), &pids));
+    }
+
+    #[test]
+    fn rejects_a_lookalike_title_owned_by_another_process() {
+        // The false positive this fix exists for: a browser tab / Discord channel / folder NAMED
+        // "Sea of Thieves" but owned by a non-game PID must never be focus-stolen and clicked.
+        let pids = game_pids(&[4242]);
+        assert!(!window_is_game(
+            Some("Sea of Thieves - YouTube"),
+            Some("firefox"),
+            Some(9999),
+            &pids
+        ));
+    }
+
+    #[test]
+    fn falls_back_to_the_title_when_no_pid_is_advertised() {
+        let pids = game_pids(&[4242]);
+        assert!(window_is_game(Some("Sea Of Thieves"), None, None, &pids));
+    }
+
+    #[test]
+    fn falls_back_to_the_wm_class_when_no_pid_is_advertised() {
+        let pids = game_pids(&[4242]);
+        assert!(window_is_game(None, Some("Sea of Thieves"), None, &pids));
+    }
+
+    #[test]
+    fn rejects_an_unrelated_window_with_no_pid_and_no_matching_text() {
+        let pids = game_pids(&[4242]);
+        assert!(!window_is_game(Some("Discord"), Some("discord"), None, &pids));
+    }
+
+    #[test]
+    fn rejects_a_lookalike_title_when_the_game_is_not_running() {
+        // No game PIDs resolved: even a PID-bearing window whose title matches must not count.
+        let empty = game_pids(&[]);
+        assert!(!window_is_game(Some("Sea of Thieves"), None, Some(9999), &empty));
     }
 }
