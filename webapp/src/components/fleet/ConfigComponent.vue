@@ -350,12 +350,15 @@ const presenceEnabled = ref<boolean>(true);
 const recapEnabled = ref<boolean>(true);
 const statsHintEnabled = ref<boolean>(true);
 const bannerIndexes = Array.from({ length: BANNER_COUNT }, (_, i) => i);
-const hostName = ref<string>(UserStore.player.serverHostName!);
+// The developer host field edits the override, never the resolved effective host: an empty field
+// means "follow VITE_SOCKET_HOST" (issue #762).
+const hostName = ref<string>(UserStore.player.serverHostNameOverride ?? "");
 const inputLoading = ref<boolean>(false);
 
 // The overlay checkbox mirrors the overlay window's real visibility; toggling it shows or hides it.
+// Swallow an IPC failure so a rejected show/hide never surfaces as an unhandled rejection.
 const overlayEnabled = ref<boolean>(false);
-watch(overlayEnabled, (visible) => setOverlayVisible(visible));
+watch(overlayEnabled, (visible) => setOverlayVisible(visible).catch(() => {}));
 
 // Overlay hotkey recorder (#687). Press-to-set: the next modifier+key combo becomes the toggle,
 // applied immediately through Rust, which keeps the previous combo bound if the new one is
@@ -428,7 +431,10 @@ onMounted(() => {
   loadOptionList();
   resetConfig();
   // Reflect whatever the overlay is currently doing (it may have been toggled by its hotkey).
-  isOverlayVisible().then((visible) => (overlayEnabled.value = visible));
+  // A rejected IPC call must not leave the checkbox stuck or raise an unhandled rejection.
+  isOverlayVisible()
+    .then((visible) => (overlayEnabled.value = visible))
+    .catch(() => {});
 });
 
 function loadOptionList() {
@@ -500,9 +506,8 @@ function resetConfig() {
     langOptions.value.selectedValue = langOptions.value.data[0];
   }
 
-  if (UserStore.player.serverHostName) {
-    hostName.value = UserStore.player.serverHostName;
-  }
+  // The field carries the override, not the resolved host: empty means "follow the env" (#762).
+  hostName.value = UserStore.player.serverHostNameOverride ?? "";
 
   volume.value = UserStore.player.soundLevel;
   activeSound.value = UserStore.player.soundEnable;
@@ -546,7 +551,12 @@ function onSave() {
   UserStore.player.richPresence = presenceEnabled.value;
   UserStore.player.recapCard = recapEnabled.value;
   UserStore.player.statsHint = statsHintEnabled.value;
-  UserStore.player.serverHostName = hostName.value;
+  // Persist only the override (an empty field clears it back to the env); re-resolve the effective
+  // host from it so the live socket follows the change without a restart (#762).
+  const hostOverride = hostName.value.trim() || undefined;
+  UserStore.player.serverHostNameOverride = hostOverride;
+  UserStore.player.serverHostName =
+    hostOverride ?? import.meta.env.VITE_SOCKET_HOST;
   if (UserStore.player.fleet && UserStore.player.fleet.sessionId) {
     UserStore.player.fleet.updateToSession();
   }
@@ -556,7 +566,8 @@ function onSave() {
 
 function isConfigDifferent(): boolean {
   if (!inputLoading.value) return false;
-  if (UserStore.player.serverHostName != hostName.value) return true;
+  if ((UserStore.player.serverHostNameOverride ?? "") != hostName.value)
+    return true;
   if (
     langOptions.value.selectedValue &&
     UserStore.player.lang != langOptions.value.selectedValue!.id

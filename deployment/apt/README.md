@@ -1,15 +1,18 @@
 # APT repository
 
-A signed APT repo for BetterFleet, so Debian/Ubuntu/derivatives users get:
+> **BetterFleet does not publish an APT repository.** There is no `apt install betterfleet`, and the
+> `https://zelytra.github.io/BetterFleet/apt` repo referenced below does not exist. On
+> Debian/Ubuntu/derivatives, download the `.deb` from the
+> [GitHub release](https://github.com/zelytra/BetterFleet/releases) and install it with
+> `sudo apt install ./BetterFleet_<ver>_amd64.deb` (or `sudo dpkg -i`). To update, download the newer
+> `.deb` and reinstall: Linux has no auto-updater.
 
-```
-sudo apt install betterfleet
-```
-
-instead of a manual `.deb` download. Sibling to `deployment/aur/` (the Arch side of #740): see that
-directory's README for the AUR package. Both repackage the same release artifact: the `.deb` built
-by the Linux leg of `publish-tauri` in `.github/workflows/release.yml` (#727/#739 bundle it,
-#728/#737 publish it).
+Everything in this directory is **dormant on purpose.** A hosted APT repo was judged not worth the
+upkeep, so the `publish-apt` job runs but never publishes (it is guarded, see below) and nothing here
+is a live install path. The plumbing (reprepro config, `publish.sh`, the guarded CI job) is preserved
+only in case that decision is revisited; the notes below document that dormant setup, not a user
+install path. Sibling to `deployment/aur/` (the Arch side of #740): both repackage the same release
+artifact, the `.deb` built by the Linux leg of `publish-tauri` in `.github/workflows/release.yml`.
 
 ## Approach
 
@@ -28,7 +31,7 @@ dependency, so there's no need to mirror upstream's per-codename structure.
 
 ```
 deployment/apt/
-├── conf/distributions   # reprepro config — the source of truth, hand-edited
+├── conf/distributions   # reprepro config: the source of truth, hand-edited
 ├── publish.sh            # includedeb + prune + re-export the pubkey; used by CI and by hand
 └── README.md              # this file
 ```
@@ -106,31 +109,6 @@ GitHub's branch picker only lists branches that already exist, so in order:
 After that, every future release just pushes to `gh-pages` and Pages redeploys on its own: no
 further manual steps.
 
-## Installing (end users)
-
-```bash
-# 1. Trust the signing key
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://zelytra.github.io/BetterFleet/apt/betterfleet-archive-keyring.asc \
-  | sudo gpg --dearmor -o /etc/apt/keyrings/betterfleet.gpg
-
-# 2. Add the repo
-echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/betterfleet.gpg] https://zelytra.github.io/BetterFleet/apt stable main" \
-  | sudo tee /etc/apt/sources.list.d/betterfleet.list
-
-# 3. Install
-sudo apt update
-sudo apt install betterfleet
-```
-
-`apt upgrade` picks up new releases from then on: no reinstalling the key or repo entry.
-
-## Status
-
-Not live yet. This is the plumbing (config, script, guarded CI job); the two manual, one-time steps
-above (secret + Pages) still need the maintainer to run them before `sudo apt install betterfleet`
-actually works. Until then `publish-apt` runs harmlessly as a no-op on every release.
-
 ## Privilege
 
 Same model as the AUR package (see `deployment/aur/README.md`): packet capture needs a capability
@@ -139,6 +117,9 @@ that: the postinst behavior is whatever ships inside the `.deb` itself.
 
 ## Non-goals (here)
 
-- `.rpm` / COPR (Fedora): optional item on #740, not attempted.
+- COPR (Fedora): a hosted COPR repo was not attempted. The `.rpm` itself ships from every GitHub
+  release now (the Linux bundle targets `deb` + `rpm`); only a repo to `dnf install` it from is out
+  of scope here.
 - arm64: the release only builds `amd64`; nothing to publish for other architectures yet.
-- Wiring the website download screen to show this command (#730), out of scope for this change.
+- Wiring the website download screen to an APT install command (#730): moot while the repo stays
+  dormant, and out of scope here regardless.

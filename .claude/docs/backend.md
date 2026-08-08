@@ -19,7 +19,7 @@ proxy. Config in `backend/src/main/resources/application.properties`. Everything
 | `session.ip` | Geolocation: `ProxyCheckAPI` (proxycheck.io), `GeoLocationResolver` (runs lookups off the event loop on a dedicated pool) |
 | `reports` | `ReportEndpoints` (`/report`), `ReportEntity` (table `reporting`): the diagnostic/feedback reports |
 | `statistics` | Two stat systems (see below): daily counters + anonymous alliance analytics |
-| `github` | Release proxies: `GithubApi` (Tauri `latest.json` at startup → Windows installer URL, `/github/release/download`) and `GithubLatestReleaseApi` (version from the same `latest.json`, then builds the fixed Tauri asset URLs and HEAD-probes each for existence + size; no api.github.com, no token; cached ~5 min → `/github/release/latest`), both exposed by `GithubRest` |
+| `github` | Release proxies: `GithubApi` (Tauri `latest.json` at startup → Windows installer URL, `/github/release/download`) and `GithubLatestReleaseApi` (reads GitHub's `releases/latest` REST API server-side and enumerates the release's **real** assets, each asset's `name`, `size`, `browser_download_url`, so whatever the release actually ships is served, any OS/format, `.rpm` and the Arch `.pkg.tar.zst` included; version from `tag_name`; never a pre-release; cached ~5 min, with a short negative-cache window bounding retries during a GitHub outage → `/github/release/latest`), both exposed by `GithubRest` |
 
 ## Real-time sessions (WebSocket)
 
@@ -31,7 +31,9 @@ empty `sessionId` means "create a new session and become its master".
 2. `@OnOpen` arms a 1-second timeout that closes the socket unless a message arrives.
 3. Client sends `CONNECT`; the server validates the token (then **deletes it, single use**), checks
    the client version against the `app.version` allowlist (else `OUTDATED_CLIENT` /
-   `CONNECTION_REFUSED`), and joins/creates the fleet.
+   `CONNECTION_REFUSED`), and joins/creates the fleet. A release candidate matches on its **base**
+   release: `2.3.0-rc.3` is accepted when `2.3.0` is allowlisted (`SessionSocket.isSupportedClientVersion`),
+   so RCs of a supported release connect without listing every candidate.
 
 **Protocol**: `SocketMessage<T> { messageType, data }`, `MessageType` in `session/socket/`:
 - Client → server: `CONNECT`, `UPDATE`, `START_COUNTDOWN`, `JOIN_SERVER`, `LEAVE_SERVER`,
@@ -84,7 +86,7 @@ Auth model: Keycloak OIDC bearer via `@Authenticated`. **Only `POST /report/send
 | `/report/list/{page}/{amount}` | GET | `ReportEndpoints` | paged reports |
 | `/report/send` | POST | `ReportEndpoints` | persist a report (**`@Authenticated`**) |
 | `/github/release/download` | GET | `GithubRest` | latest Windows installer URL |
-| `/github/release/latest` | GET | `GithubRest` | latest release: version + all assets (`name`,`size`,`url`), cached ~5 min |
+| `/github/release/latest` | GET | `GithubRest` | latest release: version + the release's real assets (`name`,`size`,`url`) enumerated from GitHub's `releases/latest`, cached ~5 min |
 | `/stats/online-users` | GET | `StatsEndpoints` | live user count |
 | `/stats/all` | GET | `StatsEndpoints` | summed daily counters |
 | `/stats/download` | POST | `StatsEndpoints` | bump today's download counter |

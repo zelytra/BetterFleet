@@ -1,6 +1,6 @@
 <template>
   <div class="card" :style="{ background: background }">
-    <img src="@/assets/banners/session.svg" />
+    <img src="@/assets/banners/session.webp" />
     <div class="title-content">
       <h2>{{ title }}</h2>
       <slot />

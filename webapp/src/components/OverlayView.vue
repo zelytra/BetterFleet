@@ -63,9 +63,11 @@ function syncCountdown(endsAt: string | null): void {
       return;
     }
     // Same arithmetic as the app's SessionCountdown: seconds + the first two fractional digits.
+    // Zero-pad the nanos before slicing so a sub-100ms fraction keeps its leading zeros (4.080s
+    // reads "4,08", not "4,80").
     const delta = target.minusSeconds(now.second()).minusNanos(now.nano());
     countdownText.value =
-      delta.second() + "," + delta.nano().toString().slice(0, 2);
+      delta.second() + "," + String(delta.nano()).padStart(9, "0").slice(0, 2);
   };
   tick();
   countdownTimer = window.setInterval(tick, 50);

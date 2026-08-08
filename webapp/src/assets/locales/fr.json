@@ -109,7 +109,7 @@
     "macro": {
       "check": "Lancement assisté",
       "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte",
-      "linuxUnavailable": "Not available on Linux — Wayland blocks the automatic click, so you must click \"Set sail\" yourself."
+      "linuxUnavailable": "Indisponible sous Linux : Wayland bloque le clic automatique, cliquez vous-même sur « Lever l'ancre »."
     },
     "overlay": {
       "hotkey": {
@@ -227,9 +227,10 @@
   },
   "login": {
     "browser": {
-      "title": "Continue in your browser",
-      "message": "A sign-in page opened in your browser. Complete it there, then come back here.",
-      "cancel": "Cancel"
+      "title": "Continuez dans votre navigateur",
+      "message": "Une page de connexion s'est ouverte dans votre navigateur. Terminez-y la connexion, puis revenez ici.",
+      "cancel": "Annuler",
+      "error": "Échec de la connexion. Veuillez réessayer."
     },
     "continue": "Continuer",
     "description": "Bienvenue sur BetterFleet ! Nous sommes ravis de vous compter parmi nous. Afin d'utiliser l'application, merci de vous connecter à votre compte ou d'en créer un !",
@@ -326,8 +327,8 @@
     },
     "leave": "Quitter la session",
     "linuxAutoclick": {
-      "banner": "Assisted launch is not available on Linux — Wayland blocks the automatic click. Click \"Set sail\" yourself when the countdown reaches zero.",
-      "dismiss": "Dismiss"
+      "banner": "Le lancement assisté n'est pas disponible sous Linux : Wayland bloque le clic automatique. Cliquez vous-même sur « Lever l'ancre » quand le décompte atteint zéro.",
+      "dismiss": "Fermer"
     },
     "name": {
       "0": "Le Navire Fantôme",

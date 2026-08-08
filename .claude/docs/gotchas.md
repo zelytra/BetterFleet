@@ -46,9 +46,10 @@ back into the problem.
   **Dev**: `npm run tauri:dev` builds the helper and `setcap cap_net_raw+ep`s it via
   `webapp/scripts/netcap-dev.mjs` (it calls `sudo`, so a passwordless setcap rule keeps startup
   non-interactive; a failed setcap is non-fatal, leaving the in-process fallback). **Packaged**: the
-  `.deb` post-install and the AUR `.install` setcap the helper, so end users never touch it. Without
-  the capability the socket fails `EPERM`, the capture returns no flows, and detection degrades to
-  "no server" instead of crashing (the Help-tab report shows zero packets).
+  `.deb`/`.rpm` post-install (`webapp/src-tauri/deb/postinst.sh`) and the pacman package's `.install`
+  (`deployment/aur/betterfleet-bin/betterfleet-bin.install`) setcap the helper, so end users never
+  touch it. Without the capability the socket fails `EPERM`, the capture returns no flows, and
+  detection degrades to "no server" instead of crashing (the Help-tab report shows zero packets).
 - **Proton spreads the game's UDP sockets, so candidate ports are unioned (#725).** Under Proton the
   ~100 `sotgame.exe` "task" PIDs share one command line but only one owns the UDP sockets, and
   `wineserver` (a sibling process) can own others. Detection resolves every game task PID plus
@@ -60,8 +61,10 @@ back into the problem.
   read-only image, so `setcap` has nothing to pin to and the helper never receives `CAP_NET_RAW`.
   Rather than ship a build whose core feature is silently broken, the Linux bundle targets are the
   packaged installs that `setcap` the helper on install: `.deb` (Debian/Ubuntu), `.rpm` (Fedora), and
-  the pacman package / AUR (Arch). All three run the same `deb/postinst.sh` on install; Windows keeps
-  its `.exe`.
+  the pacman package (Arch). The `.deb` and `.rpm` share one post-install script
+  (`webapp/src-tauri/deb/postinst.sh`, wired as `postInstallScript` for both bundle targets); the
+  pacman package runs its own `deployment/aur/betterfleet-bin/betterfleet-bin.install`. Windows keeps
+  its `.exe` (NSIS). MSI is not built.
 
 ## Dev vs prod transport
 
@@ -70,6 +73,14 @@ back into the problem.
   **silently falls back to polling** (you'll see `/public-sessions` GETs loop every ~5s in dev logs).
   Production is same-origin HTTPS, so SSE connects and the poll idles. This is not a regression and
   the loop is bounded to the sessions-browser page (connect on mount, disconnect on unmount).
+- **A persisted `serverHostName` used to silently shadow `VITE_SOCKET_HOST` in dev.** A value saved
+  to localStorage on an earlier run won over the env, so repointing the app at another backend left
+  the WebSocket talking to the old host while HTTP moved with the env (the `serverHostName` default in
+  `UserStore.init()`, `webapp/src/objects/stores/UserStore.ts`). It's now gated on
+  `import.meta.env.MODE === "development"`: dev always follows `VITE_SOCKET_HOST`, while prod /
+  self-host builds still honour the persisted override. Deliberately **`MODE`, not `DEV`**, so the
+  vitest run (mode `test`) keeps restoring the persisted value; don't "simplify" it to
+  `import.meta.env.DEV`.
 
 ## Frontend layout
 
@@ -85,6 +96,32 @@ back into the problem.
 - **Login is a self-registered Keycloak account.** The realm also has a Microsoft/Xbox identity
   provider configured, but it has never worked, so don't treat it as the sign-in path or document it as
   one. Keycloak realm `Betterfleet`, OIDC client `application`.
+- **Linux can't sign in through the webview; it uses a loopback OAuth on a fixed port.** Keycloak
+  rejects the desktop webview's `tauri://localhost` redirect as a non-HTTP(S) scheme ("Redirection to
+  URL with a scheme that is not HTTP(S)"), so the Linux build signs in the RFC 8252 way
+  (`webapp/src/objects/stores/LinuxAuth.ts`): it opens the hosted Keycloak page in the **system
+  browser**, captures the code on a **loopback server at the fixed port 47823** (`REDIRECT_PORT`,
+  redirect `http://localhost:47823/callback`) with **PKCE**, and runs the token exchange from **Rust
+  via `@tauri-apps/plugin-http`** to avoid the webview's CORS against the custom scheme. The realm
+  must therefore register `http://localhost:47823/callback` as a valid redirect URI. Windows/macOS
+  keep in-webview `keycloak-js` (WebView2 serves `https://tauri.localhost`, which Keycloak accepts):
+  don't route them through the loopback, and don't drop the Linux redirect-URI registration.
+
+## Release & packaging
+
+- **pacman `pkgver` forbids `-`, so a pre-release asset name won't match its tag.** `publish-arch`
+  maps the semver pre-release dash to a dot when it pins `pkgver` (`.github/workflows/release.yml`,
+  the `pkgver` substitution step): tag `v2.3.0-rc.3` ships as
+  `betterfleet-bin-2.3.0.rc.3-x86_64.pkg.tar.zst`, not `...-2.3.0-rc.3-...`. Anything that derives the
+  pacman asset name from the raw tag (or the tag from the asset) has to account for that `-`→`.`
+  substitution.
+- **A pre-release tag suppresses everything "latest".** Any semver pre-release suffix on the tag
+  (`v2.3.0-rc.1`) sets `prerelease=true` in the `resolve-version` job
+  (`.github/workflows/release.yml`), and the pipeline keys off it: no updater `latest.json`, no Docker
+  `:latest` (the RC images are tagged by version only), `publish-apt` and `publish-aur` skip, and
+  `sync-version-to-master` does not bump the version on `master`. The exception is `publish-arch`: it
+  still attaches the pacman package to the pre-release, by design (nobody's `pacman -U`/`paru` picks
+  it up by surprise). A stable tag turns all of that back on.
 
 ## Backend concurrency (`SessionManager`)
 

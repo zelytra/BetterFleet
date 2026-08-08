@@ -213,7 +213,9 @@ async fn capture_via_helper(game_ports: &[u16], window: Duration) -> Option<Vec<
 
     match serde_json::from_slice::<Vec<FlowStat>>(&output.stdout) {
         Ok(flows) => {
-            info!("[capture] betterfleet-netcap returned {} flow(s)", flows.len());
+            // debug!, not info!: capture_flows runs on every detection cycle, so this fired once a
+            // cycle and, with the log rotation misconfigured, helped bury the logs in tiny files.
+            log::debug!("[capture] betterfleet-netcap returned {} flow(s)", flows.len());
             Some(flows)
         }
         Err(e) => {

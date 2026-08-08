@@ -4,7 +4,7 @@
     <h1>{{ t("session.countdown") }}</h1>
     <h2>
       <strong>{{
-        delta.second() + "," + delta.nano().toString().slice(0, 2)
+        delta.second() + "," + String(delta.nano()).padStart(9, "0").slice(0, 2)
       }}</strong
       >s
     </h2>

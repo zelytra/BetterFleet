@@ -43,7 +43,9 @@ Locale files live in `webapp/src/assets/locales/` (and the website has its own s
   every file or the test fails.
 - After merging changes that touch strings, the French seed workflow may be needed so Crowdin doesn't
   serve English for strings it never received. Sync lives in `.github/workflows/crowdin.yml`.
-- The settings screen deliberately avoids em-dashes in its strings: match the surrounding copy.
+- **No em-dashes in comments or documentation** (#749): use a colon, a comma, or parentheses
+  instead. This is a repo-wide rule, not an i18n one. Em-dashes in `source.json` and the other locale
+  files (and in any user-visible display string) are fine and must **not** be "fixed".
 
 ## Formatting
 

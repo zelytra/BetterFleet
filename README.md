@@ -1,5 +1,6 @@
 [![image](/webapp/src/assets/banners/banner.png)](https://betterfleet.fr/)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 [![Tauri](https://img.shields.io/badge/tauri-%2324C8DB.svg?style=for-the-badge&logo=tauri&logoColor=%23FFFFFF)](https://tauri.app/)
 [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/zelytra)
 [![Crowdin](https://img.shields.io/badge/Crowdin-2E3340.svg?style=for-the-badge&logo=Crowdin&logoColor=white)](https://translate.betterfleet.fr)
@@ -52,12 +53,17 @@ players looking to improve their gaming experience.
 
 ## OS Compatibility
 
-| Operating System | Compatible         |
-|------------------|--------------------|
-| Windows 11       | :white_check_mark: |
-| Windows 10       | :white_check_mark: |
-| macOS            | :x:                |
-| Linux            | :x:                |
+| Operating System        | Compatible         |
+|-------------------------|--------------------|
+| Windows 11              | :white_check_mark: |
+| Windows 10              | :white_check_mark: |
+| Linux (X11 / XWayland)† | :white_check_mark: |
+| macOS                   | :x:                |
+
+† Linux ships `.deb`, `.rpm` (Fedora) and pacman (`.pkg.tar.zst`) packages on the
+[GitHub releases](https://github.com/zelytra/BetterFleet/releases); updates are manual (re-download
+and reinstall), and the synchronized "set sail" auto-click needs X11 (it reaches Proton/Wine games
+natively or through XWayland, but native-Wayland clients forbid the synthetic click).
 
 ---
 

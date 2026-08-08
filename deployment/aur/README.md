@@ -1,48 +1,38 @@
-# AUR packaging
+# Arch / pacman packaging
 
-`betterfleet-bin/PKGBUILD` is the prebuilt Arch package for BetterFleet: it repackages the `.deb`
-produced by the release workflow (issue #728) so Arch/CachyOS users install with:
+The pacman package is attached to **every GitHub release** as
+`betterfleet-bin-<ver>-x86_64.pkg.tar.zst`. On Arch/CachyOS/derivatives, download that file from the
+[release](https://github.com/zelytra/BetterFleet/releases) and install it locally:
 
 ```
-paru -S betterfleet-bin   # or: yay -S betterfleet-bin
+sudo pacman -U betterfleet-bin-<ver>-x86_64.pkg.tar.zst
 ```
 
-`pacman -S` on its own can't reach the AUR: that's expected; the AUR is what third-party Arch
-software uses. A self-hosted signed pacman repo (for a literal `pacman -S betterfleet`) is an
-optional future add-on, tracked in #740.
+To update, download the newer `.pkg.tar.zst` and `pacman -U` it again: Linux has no auto-updater.
+This local install is the real, supported Arch path. The `publish-arch` job in
+`.github/workflows/release.yml` builds the package from the release `.deb` (`betterfleet-bin/PKGBUILD`
+repackages it, issue #728) and uploads it on every release, RC included (an RC package harms no one:
+it is served from no repo, so nothing installs it by surprise).
 
-## Status
+## `betterfleet-bin.install` is live: do not delete it
 
-The same repackaging is validated on every release: the release CI builds the pacman package from
-the `.deb` and attaches `betterfleet-bin-<ver>-x86_64.pkg.tar.zst` to the GitHub release
-(`publish-arch`), installable directly with `sudo pacman -U <url>`. Publishing to the **AUR** is the
-one-time setup below.
+`betterfleet-bin/betterfleet-bin.install` is **not dead code.** `publish-arch` copies it into the
+build and the generated `PKGBUILD` sets `install='betterfleet-bin.install'`, so it runs the helper's
+`setcap` in `post_install` / `post_upgrade` (see Privilege below). Removing it silently breaks server
+detection on the pacman install.
 
-## Publishing to the AUR (automated, one-time setup)
+## AUR: not pursued (dormant plumbing)
 
-The `publish-aur` job in `.github/workflows/release.yml` does the whole flow on every **stable**
-release (never a pre-release: an RC must not land on the public `betterfleet-bin`). It downloads the
+Publishing to the [AUR](https://aur.archlinux.org), which is what would let `paru -S betterfleet-bin`
+or `yay -S betterfleet-bin` work, is **not pursued**: AUR account registrations are closed. Plain
+`pacman -S` never reaches the AUR regardless; the supported route is the `pacman -U` download above.
+
+The `publish-aur` job is kept **dormant** in case that ever changes. It is guarded on an
+`AUR_SSH_PRIVATE_KEY` secret that is intentionally unset, so it no-ops on every release and affects
+nothing else. If the AUR route is ever revived, the job (on stable releases only) downloads the
 release `.deb`, pins `pkgver` and `sha256sums`, renders `.SRCINFO` with `makepkg --printsrcinfo`, and
-pushes `PKGBUILD` + `.SRCINFO` + `betterfleet-bin.install` over SSH. It is **guarded**: the whole job
-skips (with a warning, never failing the release) until the SSH key below is set.
-
-### Secret this needs (not yet configured)
-
-| Secret | What |
-|---|---|
-| `AUR_SSH_PRIVATE_KEY` | Private half of an SSH key registered on an AUR account that maintains `betterfleet-bin` |
-
-### One-time setup
-
-1. Create / sign in to an [AUR account](https://aur.archlinux.org) and add an SSH **public** key to
-   it (My Account -> SSH Public Key).
-2. Put the matching **private** key in a repo secret named `AUR_SSH_PRIVATE_KEY`
-   (Settings -> Secrets and variables -> Actions).
-3. Cut a stable release. `publish-aur` clones `ssh://aur@aur.archlinux.org/betterfleet-bin.git` (an
-   empty repo the first time), commits the rendered package and pushes: the first push creates the
-   AUR package, later releases update it.
-
-Until the secret is set, the job no-ops on every release and nothing else is affected.
+pushes `PKGBUILD` + `.SRCINFO` + `betterfleet-bin.install` over SSH to
+`ssh://aur@aur.archlinux.org/betterfleet-bin.git` once that private key is provided.
 
 ## Privilege
 

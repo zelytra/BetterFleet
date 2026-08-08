@@ -1,5 +1,6 @@
-//! Shared X11 plumbing for the Linux native integration (#731): a display connection, top-level
-//! window discovery by title, and EWMH client-message sends. Both the synchronized set-sail
+//! Shared X11 plumbing for the Linux native integration (#731): a display connection, predicate-based
+//! top-level window discovery (title, `WM_CLASS`, owning PID), and EWMH client-message sends. Both the
+//! synchronized set-sail
 //! auto-click (`window_interaction_linux`) and the in-game overlay stacking fix (`overlay_x11`)
 //! build on it.
 //!
@@ -52,17 +53,24 @@ impl X11Context {
         (atom != 0).then_some(atom)
     }
 
-    /// Finds a top-level window whose title (or `WM_CLASS`) contains `needle`, which must already be
-    /// lowercase. Prefers EWMH's `_NET_CLIENT_LIST` - the true client windows, independent of how the
-    /// WM reparents them - and falls back to a depth-bounded tree walk for non-EWMH window managers.
-    pub fn find_window_by_title(&self, needle: &str) -> Option<Window> {
-        if let Some(window) = self.find_in_client_list(needle) {
+    /// Finds a top-level window satisfying `predicate`. Prefers EWMH's `_NET_CLIENT_LIST` - the true
+    /// client windows, independent of how the WM reparents them - and falls back to a depth-bounded
+    /// tree walk for non-EWMH window managers. Callers supply the predicate (title/class substring,
+    /// an owning-PID cross-reference, ...) so this stays free of any single app's matching rules.
+    pub(crate) fn find_window(
+        &self,
+        predicate: &dyn Fn(&X11Context, Window) -> bool,
+    ) -> Option<Window> {
+        if let Some(window) = self.find_in_client_list(predicate) {
             return Some(window);
         }
-        self.find_in_tree(self.root, needle, 0)
+        self.find_in_tree(self.root, predicate, 0)
     }
 
-    fn find_in_client_list(&self, needle: &str) -> Option<Window> {
+    fn find_in_client_list(
+        &self,
+        predicate: &dyn Fn(&X11Context, Window) -> bool,
+    ) -> Option<Window> {
         let atom = self.intern(b"_NET_CLIENT_LIST", true)?;
         let reply = self
             .conn
@@ -71,37 +79,30 @@ impl X11Context {
             .reply()
             .ok()?;
         let windows: Vec<Window> = reply.value32()?.collect();
-        windows
-            .into_iter()
-            .find(|&window| self.window_matches(window, needle))
+        windows.into_iter().find(|&window| predicate(self, window))
     }
 
-    fn find_in_tree(&self, window: Window, needle: &str, depth: u8) -> Option<Window> {
+    fn find_in_tree(
+        &self,
+        window: Window,
+        predicate: &dyn Fn(&X11Context, Window) -> bool,
+        depth: u8,
+    ) -> Option<Window> {
         if depth > 6 {
             return None;
         }
-        if self.window_matches(window, needle) {
+        if predicate(self, window) {
             return Some(window);
         }
         let tree = self.conn.query_tree(window).ok()?.reply().ok()?;
         tree.children
             .into_iter()
-            .find_map(|child| self.find_in_tree(child, needle, depth + 1))
-    }
-
-    fn window_matches(&self, window: Window, needle: &str) -> bool {
-        let has_needle = |value: Option<String>| {
-            value
-                .map(|v| v.to_lowercase().contains(needle))
-                .unwrap_or(false)
-        };
-        has_needle(self.window_title(window))
-            || has_needle(self.read_text_property(window, AtomEnum::WM_CLASS.into()))
+            .find_map(|child| self.find_in_tree(child, predicate, depth + 1))
     }
 
     /// The window's human title: `_NET_WM_NAME` (UTF-8, what modern WMs and Wine set) with a fallback
     /// to the legacy `WM_NAME`.
-    fn window_title(&self, window: Window) -> Option<String> {
+    pub(crate) fn window_title(&self, window: Window) -> Option<String> {
         if let Some(atom) = self.intern(b"_NET_WM_NAME", true) {
             if let Some(title) = self.read_text_property(window, atom) {
                 if !title.is_empty() {
@@ -110,6 +111,28 @@ impl X11Context {
             }
         }
         self.read_text_property(window, AtomEnum::WM_NAME.into())
+    }
+
+    /// The window's `WM_CLASS` (its NUL-separated instance/class), as a lossy UTF-8 string.
+    pub(crate) fn wm_class(&self, window: Window) -> Option<String> {
+        self.read_text_property(window, AtomEnum::WM_CLASS.into())
+    }
+
+    /// The PID that owns `window`, from EWMH `_NET_WM_PID` (a `CARDINAL`). `None` when the window
+    /// advertises no PID - not every window sets it - so callers must read "no PID" as "unknown",
+    /// never as "not a match".
+    pub(crate) fn read_wm_pid(&self, window: Window) -> Option<u32> {
+        let atom = self.intern(b"_NET_WM_PID", true)?;
+        let reply = self
+            .conn
+            .get_property(false, window, atom, AtomEnum::CARDINAL, 0, 1)
+            .ok()?
+            .reply()
+            .ok()?;
+        // Bind before returning so the value32() iterator, which borrows `reply`, is dropped at this
+        // semicolon rather than after `reply` at the end of the block (E0597).
+        let pid = reply.value32()?.next();
+        pid
     }
 
     /// Reads a text window-property as a lossy UTF-8 string. `WM_CLASS` comes back NUL-separated; the

@@ -22,8 +22,9 @@
 //! `main.rs`), because the WM re-evaluates stacking on exactly those transitions. Best-effort: every
 //! failure is logged and swallowed so it can never take the app down.
 
-use crate::x11_support::connect;
+use crate::x11_support::{connect, X11Context};
 use log::{info, warn};
+use x11rb::protocol::xproto::Window;
 
 /// Substring identifying the overlay window in the X11 client list. Its title is
 /// "BetterFleet Overlay" (tauri.conf.json), unique against the main "BetterFleet" window.
@@ -42,7 +43,9 @@ pub(crate) fn reinforce_overlay_stacking() {
         Some(ctx) => ctx,
         None => return,
     };
-    let window = match ctx.find_window_by_title(OVERLAY_TITLE_NEEDLE) {
+    // Match our own overlay only: the title needle, and - when the window advertises one - our PID.
+    let our_pid = std::process::id();
+    let window = match ctx.find_window(&|ctx, window| overlay_window_matches(ctx, window, our_pid)) {
         Some(window) => window,
         None => {
             warn!("[overlay] X11 overlay window not found yet; skipping stacking reinforcement");
@@ -79,4 +82,22 @@ pub(crate) fn reinforce_overlay_stacking() {
         }
     }
     info!("[overlay] reinforced X11 stacking (above + sticky + skip taskbar/pager) on 0x{window:x}");
+}
+
+/// True when `window` is our overlay: its title carries the overlay needle and, when the window
+/// advertises a `_NET_WM_PID`, it is this process. Tauri runs every window in one process, so the
+/// overlay's `_NET_WM_PID` is ours; requiring it rejects a foreign window that merely shares the
+/// title. A window that sets no PID falls back to the (already unique) title alone.
+fn overlay_window_matches(ctx: &X11Context, window: Window, our_pid: u32) -> bool {
+    let title_matches = ctx
+        .window_title(window)
+        .map(|title| title.to_lowercase().contains(OVERLAY_TITLE_NEEDLE))
+        .unwrap_or(false);
+    if !title_matches {
+        return false;
+    }
+    match ctx.read_wm_pid(window) {
+        Some(pid) => pid == our_pid,
+        None => true,
+    }
 }

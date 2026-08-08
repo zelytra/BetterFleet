@@ -179,12 +179,14 @@ export async function onOverlayUpdate(
 
 /** Shows or hides the overlay window. Bound to the settings checkbox (the hotkey lives in Rust). */
 export async function setOverlayVisible(visible: boolean): Promise<void> {
-  const overlay = await WebviewWindow.getByLabel(OVERLAY_LABEL);
-  if (!overlay) {
-    error("[Overlay] window not found");
-    return;
-  }
+  // getByLabel became async in Tauri v2 and can reject; keep it inside the try so a failed lookup
+  // is logged like any other IPC error instead of escaping as an unhandled rejection.
   try {
+    const overlay = await WebviewWindow.getByLabel(OVERLAY_LABEL);
+    if (!overlay) {
+      error("[Overlay] window not found");
+      return;
+    }
     if (visible) {
       await overlay.show();
       emit(UPDATE_EVENT, computeSnapshot()).catch(() => {});
@@ -198,8 +200,10 @@ export async function setOverlayVisible(visible: boolean): Promise<void> {
 
 /** Current visibility of the overlay window, so the settings checkbox can reflect the real state. */
 export async function isOverlayVisible(): Promise<boolean> {
-  const overlay = await WebviewWindow.getByLabel(OVERLAY_LABEL);
+  // getByLabel is async in Tauri v2 and can reject; inside the try its rejection resolves to false
+  // rather than escaping and leaving the settings checkbox in a wrong state.
   try {
+    const overlay = await WebviewWindow.getByLabel(OVERLAY_LABEL);
     return overlay ? await overlay.isVisible() : false;
   } catch {
     return false;
