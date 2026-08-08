@@ -120,21 +120,21 @@ const emits = defineEmits(["createSession"]);
     }
 
     &.create {
-      background-image: url("@assets/banners/create_session.svg");
+      background-image: url("@assets/banners/create_session.webp");
 
       &:after {
-        mask-image: url("@assets/banners/create_session.svg");
-        -webkit-mask-image: url("@assets/banners/create_session.svg");
+        mask-image: url("@assets/banners/create_session.webp");
+        -webkit-mask-image: url("@assets/banners/create_session.webp");
       }
     }
 
     &.join {
-      background-image: url("@assets/banners/join_session.svg");
+      background-image: url("@assets/banners/join_session.webp");
       background-blend-mode: darken;
 
       &:after {
-        mask-image: url("@assets/banners/join_session.svg");
-        -webkit-mask-image: url("@assets/banners/join_session.svg");
+        mask-image: url("@assets/banners/join_session.webp");
+        -webkit-mask-image: url("@assets/banners/join_session.webp");
       }
     }
 
