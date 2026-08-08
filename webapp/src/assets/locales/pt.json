@@ -1,0 +1,496 @@
+{
+  "alert": {
+    "alreadyConnected": {
+      "content": "Você já está nesta sessão em outra janela ou dispositivo. Feche-a e tente novamente.",
+      "title": "Já conectado"
+    },
+    "badRequest": {
+      "content": "A requisição está corrompida ou incorreta",
+      "title": "Requisição inválida"
+    },
+    "emptySession": {
+      "content": "Por favor, insira um código de sessão",
+      "title": "Código de sessão vazio"
+    },
+    "error": {
+      "content": "Ocorreu um erro",
+      "title": "Erro"
+    },
+    "forbidden": {
+      "content": "Você não tem a permissão necessária para acessar esta página",
+      "title": "Acesso negado"
+    },
+    "outdated": {
+      "content": "Por favor, atualize seu aplicativo",
+      "title": "Cliente desatualizado"
+    },
+    "report": {
+      "emptyMessage": {
+        "content": "Por favor, descreva seu problema da melhor forma possível no relatório de bug",
+        "title": "Relatório vazio"
+      },
+      "send": {
+        "title": "Relatório enviado"
+      }
+    },
+    "research": {
+      "notInMenu": {
+        "content": "Você não está no menu do jogo",
+        "title": "Falha ao iniciar"
+      },
+      "notReady": {
+        "content": "Você não está pronto",
+        "title": "Falha ao iniciar"
+      },
+      "offline": {
+        "content": "Seu jogo está fechado",
+        "title": "Falha ao iniciar"
+      }
+    },
+    "session": {
+      "notLeave": {
+        "content": "Você não pode sair desta página",
+        "title": "Contagem em andamento"
+      }
+    },
+    "sessionNotFound": {
+      "content": "Verifique seu código de sessão",
+      "title": "Sessão não encontrada"
+    },
+    "socket": {
+      "connectionFailed": "A conexão com o servidor falhou",
+      "random": "O WebSocket fechou inesperadamente",
+      "title": "Conexão perdida"
+    },
+    "unsupportedMedia": {
+      "content": "A mídia que você está tentando enviar não é suportada pelo aplicativo",
+      "title": "Mídia não suportada"
+    },
+    "username": {
+      "ignore": {
+        "content": "Alteração de nome de usuário cancelada",
+        "title": "Contagem em andamento"
+      },
+      "length": {
+        "content": "Seu nome de usuário não pode estar vazio nem ultrapassar 16 caracteres",
+        "title": "Formato de nome de usuário inválido"
+      }
+    },
+    "websocketAuthFailed": {
+      "content": "A autenticação do WebSocket falhou",
+      "title": "Falha na conexão"
+    }
+  },
+  "appName": "BetterFleet",
+  "boatSize": {
+    "brigantine": "Brigue",
+    "galleon": "Galeão",
+    "label": "Tamanho do navio",
+    "none": "Não especificado",
+    "sloop": "Saveiro"
+  },
+  "config": {
+    "banner": {
+      "description": "O estandarte que suas sessões hospedadas exibem, no saguão e no navegador de sessões.",
+      "pick": "Estandarte {number}",
+      "shuffle": {
+        "check": "Sortear os estandartes aleatoriamente",
+        "description": "Escolhe um estandarte diferente cada vez que você hospeda uma sessão"
+      }
+    },
+    "device": {
+      "label": "Plataforma"
+    },
+    "devmode": "Ativar modo desenvolvedor",
+    "disconnect": "Desconectar",
+    "lang": {
+      "label": "Idioma"
+    },
+    "macro": {
+      "check": "Lançamento assistido",
+      "description": "Clica automaticamente em \"Zarpar\" ao final da contagem regressiva",
+      "linuxUnavailable": "Indisponível no Linux — o Wayland bloqueia o clique automático, então você mesmo precisa clicar em \"Zarpar\"."
+    },
+    "overlay": {
+      "hotkey": {
+        "hint": "Clique e depois pressione uma combinação de teclas. Uma única tecla não funciona: é preciso um modificador (Ctrl, Alt ou Shift).",
+        "invalid": "Este atalho não pode ser usado",
+        "label": "Atalho para exibir/ocultar",
+        "recording": "Pressione uma combinação…",
+        "reset": "Redefinir"
+      },
+      "toggle": "Exibir / ocultar overlay",
+      "description": "Exibe a sessão ao vivo (servidores e status de prontidão) por cima do jogo, no modo janela sem bordas."
+    },
+    "name": {
+      "label": "Nome de usuário",
+      "placeholder": "Nome de usuário"
+    },
+    "part": {
+      "audio": "Áudio",
+      "banner": "Estandarte do servidor",
+      "developer": "Desenvolvedor",
+      "general": "Geral",
+      "overlay": "Overlay no jogo"
+    },
+    "presence": {
+      "check": "Rich Presence do Discord",
+      "description": "Mostre sua sessão no seu perfil do Discord — tamanho do saguão, quantidade de prontos e o código das sessões públicas."
+    },
+    "recap": {
+      "check": "Cartão de aliança formada",
+      "description": "Mostra um cartão no saguão quando sua tripulação se reúne em um servidor, com as tentativas, o tamanho da tripulação e o tempo levado."
+    },
+    "savebar": {
+      "cancel": "Cancelar alterações",
+      "content": "Alto lá! Vejo que você fez algumas alterações!",
+      "save": "Salvar"
+    },
+    "server": {
+      "label": "Endereço do servidor",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "sound": {
+      "check": "Ativar/Desativar contagem sonora",
+      "label": "Contagem sonora",
+      "test": "Testar"
+    },
+    "stats": {
+      "check": "Estatísticas anônimas de aliança",
+      "description": "Contribua com os resultados anônimos das suas sessões (sucesso, regiões, nunca quem você é) para a página pública de estatísticas."
+    },
+    "statsHint": {
+      "check": "Dica de melhor horário",
+      "description": "Sugere os horários em que as alianças se formam com mais frequência, com base nas estatísticas anônimas e exibidos no seu horário local."
+    },
+    "subtitle": "Opções de preferência",
+    "title": "Configurações"
+  },
+  "contextMenu": {
+    "master": {
+      "demote": "Rebaixar",
+      "kick": "Expulsar",
+      "promote": "Promover a mestre da sessão",
+      "title": "Usuário"
+    }
+  },
+  "credits": {
+    "and": "e",
+    "description": "O BetterFleet foi desenvolvido para facilitar a formação de alianças no Sea of Thieves",
+    "designed": "Design por",
+    "details": "O BetterFleet é um aplicativo de terceiros não oficial, sem qualquer vínculo com a equipe de desenvolvimento de Sea of Thieves. Seu uso é puramente externo e não tem impacto na experiência de jogo. O usuário concorda em ser o único responsável por seu uso!",
+    "developed": "Desenvolvido por",
+    "socials": "Encontre-nos aqui:",
+    "sot": {
+      "thanks": "Gostaríamos de devolver a",
+      "use": "aquilo que pertence aos piratas pois, como você pode notar, usamos a fonte e os estandartes do jogo!"
+    },
+    "title": "Créditos"
+  },
+  "diagnostic": {
+    "banner": "A detecção de servidor parece travada — uma captura de 20s pode nos dizer o porquê.",
+    "capture": {
+      "capturing": "Capturando…",
+      "copied": "Copiado para a área de transferência",
+      "copy": "Copiar",
+      "description": "Captura os fluxos UDP do jogo por ~20s para depurar a detecção de servidor (problema #364). Execute uma vez no menu principal e uma vez em jogo, depois copie e compartilhe cada resultado.",
+      "error": "Erro: {error}",
+      "inGame": "Capturar (em jogo)",
+      "mainMenu": "Capturar (menu principal)",
+      "title": "Diagnóstico de detecção de servidor"
+    },
+    "dismiss": "Agora não",
+    "prefill": "A detecção de servidor ficou em silêncio em jogo — diagnóstico automático anexado nos logs.",
+    "run": "Executar o diagnóstico"
+  },
+  "firstLogin": {
+    "button": {
+      "description": "Içai as velas, marujos, ao leme e rumo ao alto-mar!",
+      "title": "Que comece a jornada"
+    },
+    "description": "Por favor, insira sua gamertag atual para garantir o bom andamento da aliança",
+    "tips": "Este é o nome pelo qual seus companheiros de tripulação verão você na sessão",
+    "title": "Qual é o seu nome, marujo?"
+  },
+  "loading": {
+    "loading": "Carregando...",
+    "targetGame": "Detecção de jogo em andamento",
+    "targetLoading": "Jogo detectado. Preparando os navios.",
+    "tips": "Este processo pode demorar um pouco, verifique se o seu jogo está aberto"
+  },
+  "locales": {
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "hi": "हिन्दी",
+    "it": "Italiano",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pl": "Polski",
+    "pt": "Português (Brasil)",
+    "ru": "Русский",
+    "uk": "Українська",
+    "zh": "简体中文"
+  },
+  "login": {
+    "browser": {
+      "title": "Continue no seu navegador",
+      "message": "Uma página de login abriu no seu navegador. Conclua por lá e depois volte aqui.",
+      "cancel": "Cancelar",
+      "error": "Falha no login. Por favor, tente novamente."
+    },
+    "continue": "Continuar",
+    "description": "Bem-vindo ao BetterFleet! Estamos muito felizes em ter você entre nós. Para acessar o aplicativo, faça login na sua conta ou crie uma!",
+    "disconnect": "Esta não é a sua conta?",
+    "loginButton": "Entrar",
+    "succeed": "Login efetuado com sucesso!",
+    "userWelcome": "Bem-vindo",
+    "welcome": "Bem-vindo ao"
+  },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "Cancelar",
+        "confirm": "Zarpar",
+        "content": "Nem todos os jogadores estão prontos! Tem certeza de que deseja zarpar?",
+        "title": "ATENÇÃO!"
+      },
+      "leave": {
+        "cancel": "Cancelar",
+        "confirm": "Sair da sessão",
+        "content": "Tem certeza de que deseja sair da sessão?",
+        "title": "SAIR DA SESSÃO"
+      }
+    }
+  },
+  "overlay": {
+    "empty": "Aguardando sua sessão…"
+  },
+  "report": {
+    "bug": {
+      "button": "Enviar relatório",
+      "content1": "Seus relatórios nos ajudam a corrigir bugs e funcionamentos anormais que você possa encontrar ao usar o aplicativo. Se for o seu caso, convidamos você a ser o mais preciso possível e descrever seu problema no campo abaixo.",
+      "content2": "Vale ressaltar que, além da mensagem, seu relatório nos enviará anonimamente dados úteis para identificar o problema.",
+      "title": "Reportar um bug"
+    },
+    "faq": {
+      "button": {
+        "discord": "Discord",
+        "faq": "F.A.Q."
+      },
+      "content": "Confira a página de F.A.Q. do nosso site, talvez você já encontre uma resposta para o seu problema por lá! Caso contrário, você pode nos contatar no nosso Discord. Se for sobre um bug, saiba que muito provavelmente pediremos que você envie um relatório!",
+      "title": "Tem alguma dúvida?"
+    }
+  },
+  "session": {
+    "empty": {
+      "comment": "Parece que não há navio à vista para velejar pelos mares…",
+      "title": "Com mil demônios!"
+    },
+    "filter": {
+      "all": "Todas",
+      "private": "Privadas",
+      "public": "Públicas"
+    },
+    "issue": "Se encontrar algum problema, entre no nosso",
+    "or": "OU",
+    "connectedPlayers": "Jogadores conectados",
+    "playerLabel": "Jogador",
+    "playersLabel": "Jogadores",
+    "refresh": "Atualizar",
+    "privateHint": "Sessão privada — peça o código ao anfitrião para entrar.",
+    "searchPlaceholder": "Buscar uma sessão…",
+    "autoSetSail": {
+      "description": "Zarpa automaticamente assim que todos os jogadores estiverem prontos",
+      "label": "Zarpar automaticamente"
+    },
+    "choice": {
+      "createComment": "Prove a liberdade e reine sobre o mar dos ladrões!",
+      "createSession": "Criar uma sessão",
+      "joinComment": "Pegue um caneco, venha a bordo e junte-se à tripulação!",
+      "joinSession": "Entrar em uma sessão",
+      "modal": {
+        "button": "Entrar na sessão",
+        "comment": "Cada sessão é privada e requer um código de identificação. Peça o código ao anfitrião da sessão em que você deseja entrar!",
+        "title": "Insira um código de sessão"
+      }
+    },
+    "contributor": {
+      "alpha_tester": "Testador Alpha",
+      "designer": "Designer",
+      "developer": "Desenvolvedor",
+      "translator": "Tradutor"
+    },
+    "countdown": "A busca começa em...",
+    "id": "Código de sessão",
+    "idCopy": "Copiado!",
+    "inviteConsole": "Convidar jogadores de console",
+    "inviteCopied": "Link copiado!",
+    "informations": {
+      "success": "Taxa de sucesso",
+      "title": "Informações",
+      "totalPlayer": "Jogadores prontos",
+      "tryNumber": "Número de tentativas"
+    },
+    "leave": "Sair da sessão",
+    "linuxAutoclick": {
+      "banner": "Clique automático indisponível no Linux (Wayland): clique em \"Zarpar\" você mesmo.",
+      "dismiss": "Fechar"
+    },
+    "name": {
+      "0": "O Navio Fantasma",
+      "1": "O Tesouro Escondido",
+      "10": "A Luneta Riscada",
+      "11": "A Abordagem Noturna",
+      "12": "A Bravura do Capitão",
+      "13": "A Tripulação Amotinada",
+      "14": "A Onda Impetuosa",
+      "15": "O Butim Roubado",
+      "16": "O Rum do Contrabandista",
+      "17": "A Vela Umbrosa",
+      "18": "A Âncora Enferrujada",
+      "19": "O Porto Improvisado",
+      "2": "Os Dados Viciados",
+      "20": "A Lenda Esquecida",
+      "21": "O Destroço Velado",
+      "22": "O Gancho Cintilante",
+      "23": "A Tempestade Torrencial",
+      "24": "A Prancha Escorregadia",
+      "25": "A Enseada Secreta",
+      "26": "O Mercado Negro",
+      "27": "A Caça ao Tesouro",
+      "28": "O Mastro Cambaleante",
+      "29": "A Pistola de Pederneira",
+      "3": "A Ilha Misteriosa",
+      "30": "A Lula Descomunal",
+      "31": "O Código Pirata",
+      "32": "A Adaga Sangrenta",
+      "33": "O Vento Favorável",
+      "34": "O Fugitivo Coxo",
+      "35": "O Cartucho Rústico",
+      "36": "O Duelo Improvisado",
+      "37": "A Chama Ardente",
+      "38": "O Coração do Oceano",
+      "39": "A História do Passado",
+      "4": "O Papagaio Tagarela",
+      "40": "O Motim Selvagem",
+      "41": "A Tartaruga Marinha",
+      "42": "O Plano Infalível",
+      "43": "A Pólvora Molhada",
+      "44": "O Galeão Espanhol",
+      "45": "A Baía Celestial",
+      "46": "O Leme Lascado",
+      "47": "A Estrela do Norte",
+      "48": "A Promessa Vingativa",
+      "49": "O Banquete Escandaloso",
+      "5": "A Bússola Desorientada",
+      "50": "O Mosquete Fumegante",
+      "51": "A Cantiga do Mar",
+      "52": "O Cordame Duvidoso",
+      "53": "O Medalhão Asteca",
+      "54": "O Mapa Enigmático",
+      "55": "A Mensagem na Garrafa",
+      "56": "O Lampião da Tempestade",
+      "57": "O Pergaminho Antigo",
+      "58": "A Aurora Crepuscular",
+      "59": "O Filibusteiro Astuto",
+      "6": "O Sabre Afiado",
+      "60": "A Travessia Perigosa",
+      "61": "O Bucaneiro Matreiro",
+      "62": "O Xelim Reluzente",
+      "63": "O Conselho Pirata",
+      "64": "A Alma Errante",
+      "65": "A Prisão Fortificada",
+      "66": "O Amuleto Amaldiçoado",
+      "67": "A Batalha Naval",
+      "68": "O Clarão Verde",
+      "69": "O Baú do Morto",
+      "7": "O Canhão Estrondoso",
+      "70": "A Fonte da Juventude",
+      "71": "A Costa Inexplorada",
+      "72": "A Moeda Falsa",
+      "73": "O Pacto de Sangue",
+      "74": "A Aliança Despedaçada",
+      "75": "O Velho Manuscrito",
+      "76": "A Palavra de Honra",
+      "77": "O Holandês Voador",
+      "78": "A Pirataria Real",
+      "79": "A Miragem Marinha",
+      "8": "A Bandeira Negra",
+      "80": "O Eco Estridente",
+      "81": "A Areia Dourada",
+      "82": "O Horizonte Penetrante",
+      "83": "O Tique-Taque Incessante",
+      "84": "O Sol Poente",
+      "85": "A Noite Sem Lua",
+      "86": "A Maré Alta",
+      "87": "O Sopro Abissal",
+      "88": "A Tempestade Ameaçadora",
+      "89": "A Embarcação Naufragada",
+      "9": "O Covil de Davy Jones",
+      "90": "O Refúgio dos Ladrões",
+      "91": "O Ataque Oportuno",
+      "92": "A Fuga Intrépida",
+      "93": "A Fortuna Extraviada",
+      "94": "A Peça de Oito",
+      "95": "A Saga Heroica",
+      "96": "O Manto Flamejante",
+      "97": "O Corsário Juramentado",
+      "98": "A Lagoa Azul",
+      "99": "A Missão Travessa"
+    },
+    "player": {
+      "notReady": "Não pronto",
+      "ready": "Pronto",
+      "status": {
+        "closed": "Offline",
+        "in-game": "Em jogo",
+        "main-menu": "No menu do jogo",
+        "started": "Jogo iniciado"
+      }
+    },
+    "run": "Zarpar",
+    "recap": {
+      "copied": "Copiado!",
+      "copy": "Copiar para o Discord",
+      "dismiss": "Fechar",
+      "duration": "Duração",
+      "pirates": "Piratas",
+      "title": "Aliança formada! ⚓",
+      "tries": "Tentativas"
+    },
+    "statsHint": {
+      "dismiss": "Ocultar",
+      "text": "Melhor janela: {range} ({best}% das alianças dão certo — agora: {now}%)",
+      "textNoNow": "Melhor janela: {range} ({best}% das alianças dão certo)"
+    },
+    "status": {
+      "countdown": "Lançamento em",
+      "ready": "Pronto",
+      "waiting": "Aguardando"
+    },
+    "visibility": {
+      "description": "Sessões públicas ficam listadas no navegador para qualquer um entrar.",
+      "label": "Sessão pública",
+      "private": "Privada",
+      "public": "Pública"
+    },
+    "rename": {
+      "label": "Renomear a sessão",
+      "placeholder": "Nome da sessão"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "Configurações",
+      "fleet": "Sessão",
+      "home": "Página inicial"
+    }
+  },
+  "whatsnew": {
+    "full": "Ver o registro de alterações completo",
+    "offline": "Não foi possível carregar as notas — o registro de alterações completo online as contém.",
+    "title": "Novidades da versão {version}"
+  }
+}

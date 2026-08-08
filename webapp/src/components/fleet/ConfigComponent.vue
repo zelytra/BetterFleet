@@ -302,6 +302,14 @@ import de from "@assets/icons/locales/de.svg";
 import es from "@assets/icons/locales/es.svg";
 import en from "@assets/icons/locales/en.svg";
 import it from "@assets/icons/locales/it.svg";
+import hi from "@assets/icons/locales/hi.svg";
+import ja from "@assets/icons/locales/ja.svg";
+import ko from "@assets/icons/locales/ko.svg";
+import pl from "@assets/icons/locales/pl.svg";
+import pt from "@assets/icons/locales/pt.svg";
+import ru from "@assets/icons/locales/ru.svg";
+import uk from "@assets/icons/locales/uk.svg";
+import zh from "@assets/icons/locales/zh.svg";
 import xbox from "@assets/icons/xbox.svg";
 import microsoft from "@assets/icons/microsoft.svg";
 import playstation from "@assets/icons/playstation.svg";
@@ -605,6 +613,22 @@ function getImgUrl(iconName: string): string {
       return es;
     case "it":
       return it;
+    case "hi":
+      return hi;
+    case "ja":
+      return ja;
+    case "ko":
+      return ko;
+    case "pl":
+      return pl;
+    case "pt":
+      return pt;
+    case "ru":
+      return ru;
+    case "uk":
+      return uk;
+    case "zh":
+      return zh;
     default:
       return en;
   }

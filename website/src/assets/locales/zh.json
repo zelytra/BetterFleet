@@ -1,0 +1,403 @@
+{
+  "button": {
+    "download": "下载",
+    "downloadApp": "下载应用程序",
+    "downloadHere": "点此下载"
+  },
+  "comparison": {
+    "description": "BetterFleet 致力于快速且可靠地找到你的游戏服务器。在我们的基准测试中，它大约 5 秒即可检测到服务器，比 Fleet Creator 快约 3 到 4 倍。它还能在 Fleet Creator 已经失效的情况下继续工作：Sea of Thieves 近期的更新及其新的中继服务器（SDR）破坏了 Fleet Creator 的检测方式，如今它常常报告错误或“损坏”的服务器。我们全新的基于流量的分析正是围绕这些服务器构建的，因此始终能为你指向正确的那一个。图表并排比较了检测时间：柱状越低越好。",
+    "subtitle": "更快的服务器检测——少花时间在菜单里，多花时间在海上。",
+    "table": {
+      "countdown": "同步倒计时",
+      "detection": "自动服务器检测",
+      "free": "免费且开源",
+      "languages": "支持 5 种语言",
+      "public": "公开会话浏览器"
+    },
+    "title": "与 Fleet Creator 的对比"
+  },
+  "credits": {
+    "and": "&",
+    "designed": "设计者",
+    "developed": "开发者",
+    "license": "许可证"
+  },
+  "descriptions": {
+    "globe": "简洁的界面，灵感源自 Sea of Thieves 的风格——宛如游戏的自然延伸。",
+    "hourglass": "共享倒计时会同步每位玩家的“启航”点击，让你的船员在同一刻启航，从而更常一同抵达同一片海域。",
+    "key": "开源且可审计：全部代码公开，活跃的团队持续对其进行更新和维护，确保安全。",
+    "title": "核心亮点"
+  },
+  "discover": {
+    "discord": {
+      "button": "加入 Discord",
+      "content": "BetterFleet 的日常大多发生在我们的 Discord 上。玩家在这里交流技巧、报告错误，并提出常常被采纳进应用的点子。无论你是需要帮忙，还是只想和其他船员一起出海，这里都是你该来的地方。",
+      "nav": "社区",
+      "title": "社区活跃在 Discord 上"
+    },
+    "github": {
+      "button": "GitHub",
+      "content": "BetterFleet 完全开源。任何人都可以阅读代码、报告错误或提交合并请求（pull request）——玩家的反馈实实在在地影响着项目的走向。如果你愿意参与开发，我们的代码仓库随时向你敞开。",
+      "nav": "开源",
+      "title": "开源，欢迎贡献"
+    },
+    "title": "我们的目标与理念",
+    "translation": {
+      "button": "Crowdin",
+      "content": "BetterFleet 由社区通过 Crowdin 进行翻译，让世界各地的玩家都能用自己的母语使用它。如果缺少你的语言，或某处翻译还能更好，非常欢迎你来帮忙。",
+      "nav": "翻译",
+      "title": "支持你的语言"
+    }
+  },
+  "download": {
+    "now": "立即下载",
+    "pc": {
+      "content": "你正在使用手机——先保存好链接，稍后在你的 Windows 电脑上安装应用吧。",
+      "copied": "链接已复制！",
+      "copy": "复制下载链接",
+      "title": "BetterFleet 安装在电脑上"
+    }
+  },
+  "faq": {
+    "copy": "链接已复制",
+    "description": "对 BetterFleet 有疑问？我们在这里解答最常见的问题",
+    "faq": "F.A.Q.",
+    "more": "遇到麻烦，或者找不到问题的答案？欢迎来我们的",
+    "question": {
+      "alliance": {
+        "content1": "BetterFleet 能帮助玩家更好地组建联盟，但并不保证立即进入同一个服务器。",
+        "content2": "搜索过程涉及众多 BetterFleet 无法控制的因素，其中包括：当前时间、玩家数量、所在地区、网络连接，以及 Sea of Thieves 匹配服务器是否“赏脸”。",
+        "content3": "至于需要多长时间，我们观察到的情况各不相同：运气最好的约 5 分钟，运气最差的则可能长达 3 小时。不过这些只是大致估计，并不保证。",
+        "content4": "尽管如此，如果你了解如何改进 BetterFleet 的搜索机制，我们非常乐意研究你在 Discord 或 GitHub 上提出的任何建议。",
+        "title": "BetterFleet 能保证立即加入同一个服务器吗？"
+      },
+      "bug": {
+        "content1": "如果你遇到任何问题或错误，欢迎告知我们，以便我们改进你的使用体验。你可以通过以下方式联系我们：",
+        "content2": "Discord：加入我们的 Discord 服务器，在专门的支持频道中反馈你的问题。我们的团队随时准备实时为你提供帮助、解答疑问。",
+        "content3": "GitHub：如果你熟悉 GitHub，也可以在我们的 GitHub 仓库中提交 issue。这能让我们更有条理地追踪问题，确保透明而高效的跟进。",
+        "content4": "我们感谢你的反馈，并承诺尽快解决所报告的问题。",
+        "title": "我该如何报告问题或错误？"
+      },
+      "console": {
+        "content1": "当然！我们专门开发了一些功能来提升 Xbox 和 PlayStation 玩家的体验。我们实现了以下内容：",
+        "content2": "声音倒计时：我们为倒计时加入了声音提示。这一功能让用户无需联盟队长口头指挥，就能准确知道何时启航。它让会话进行得更顺畅，同时规避了在线语音平台带来的延迟。",
+        "content3": "所用平台的可视化标识：我们添加了一个图标，让用户知道队友是否在使用主机游玩。这一功能有助于使用不同平台的玩家之间更好地协调与理解。",
+        "content4": "这些改进旨在让主机玩家的游戏体验更加直观、便捷，确保他们能融洽地融入混合平台的游戏社区。",
+        "title": "它对主机玩家有价值吗？"
+      },
+      "data": {
+        "content1": "用户数据的保密与安全对我们至关重要。以下是我们在用户数据管理方面的政策：",
+        "content2": "数据用途：用户名和电子邮箱地址是应用正常运行所需的唯一信息。我们不会收集任何其他个人数据。",
+        "content3": "安全与加密：所收集的数据均经过加密并安全存储，以防止任何未经授权的访问。",
+        "content4": "Cookie 与转售：我们不使用 Cookie，也不会向第三方出售或分享用户信息。",
+        "content5": "匿名数据与统计：为持续改进我们的应用，我们会将匿名数据用于统计目的。这些数据在任何情况下都无法用于识别用户个人身份。",
+        "content6": "我们始终致力于保持透明，并尊重每一位用户的隐私。",
+        "title": "我们如何处理用户数据？"
+      },
+      "download": {
+        "content1": "前往我们的官方网站：",
+        "content2": "点击“下载”按钮。",
+        "content3": "按照屏幕上的提示完成安装。",
+        "content4": "就是这样！完成这些步骤后，BetterFleet 就会安装到你的设备上。",
+        "title": "我该如何安装 BetterFleet？"
+      },
+      "eac": {
+        "content1": "BetterFleet 更像是一本航海日志。它的主要自动功能只是模拟一次相当简单的鼠标点击，就像语音口令一样，从技术上讲本身并不构成宏。像 Easy Anti-Cheat（EAC）这样的系统主要关注对内存（RAM）的篡改，因此没有理由判定我们的做法违规。",
+        "content2": "此外，点击从不在游戏内执行，只发生在菜单中，这符合 Sea of Thieves 和 Xbox 的服务条款（TOS）。这些条款在法律上覆盖得足够宽泛，尽可能涵盖各种情形，但没有任何一条提及我们这种特定用途。当然，用户也可以自行选择关闭该选项。",
+        "content3": "不过仍需明白，使用 BetterFleet 和 Fleet Creator 这类工具并非完全没有风险，尤其是在 IP 检测方面，这始终是个敏感之处。我们的应用与同类产品一样安全，但由于既未获得 Rare 认可，也未获得 Microsoft 认可，是否采取行动完全取决于他们单方面的决定。",
+        "title": "使用 Easy Anti-Cheat（EAC）会有风险吗？"
+      },
+      "edge": {
+        "content1": "如果你在运行应用时遇到问题，或应用在正确安装后崩溃，请按照以下排查步骤操作：",
+        "content2": "确保你的操作系统是 Windows 10 或 Windows 11。",
+        "content3": "检查你的设备上是否正确安装了 Microsoft Edge 和 Microsoft Edge WebView2。这些组件对应用的正常运行至关重要。",
+        "content4": "有时可能与你的杀毒软件发生冲突。如果杀毒软件允许，请将 BetterFleet 从当前的威胁列表中排除。否则，请先关闭杀毒软件，再重新运行应用。",
+        "content5": "如果经过这些检查问题依旧存在，请尝试重新安装应用，以修复可能的文件损坏。",
+        "content6": "如果完成这些步骤后应用仍无法运行，请不要犹豫，来我们的 Discord 服务器寻求更有针对性的帮助。",
+        "title": "为什么我的应用会崩溃和/或无法启动？"
+      },
+      "password": {
+        "content1": "在登录界面点击“忘记密码？”链接。输入你的用户名或电子邮箱地址，我们就会给你发送一个用于设置新密码的链接。",
+        "content2": "邮件会发送到你注册时使用的邮箱，如果没有收到，请检查垃圾邮件文件夹。仍然无法解决？在 Discord 上问我们吧。",
+        "title": "如果我忘记了密码该怎么办？"
+      },
+      "security": {
+        "content1": "是的，我们的应用在设计时将用户安全放在绝对优先的位置。以下是我们为确保安全使用而采取的措施：",
+        "content2": "强化的身份验证：我们引入了一层身份验证机制，以加强用户账户的安全。",
+        "content3": "开源：本应用完全开源，其使用与运行方式完全透明。这让社区能够验证和审计我们的代码，从而增强对我们产品的信任。",
+        "content4": "主动维护：我们的开发者致力于让应用保持在最佳的安全状态。这包括定期更新依赖项，并持续监控潜在的安全漏洞，以防范任何风险。",
+        "content5": "独立的定位：由于 BetterFleet 未获得 Microsoft 授权，安装时会受到 Windows Defender 的拦截。我们的应用同样安全，我们也在努力适应这些我们无法完全掌控的限制。",
+        "content6": "这些共同的努力为我们每一位用户打造出一个可靠而安全的平台。",
+        "title": "这款应用安全吗？"
+      },
+      "update": {
+        "content1": "每当有可用更新时，启动 BetterFleet 会弹出一个窗口。你只需点击“是”即可开始更新。应用会自动安装最新版本，并在更新完成后重新启动。",
+        "content2": "如果在 BetterFleet 已经运行时出现可用更新，你只需关闭应用即可。下次启动时，系统会提示你进行更新。",
+        "title": "我该如何更新 BetterFleet？"
+      }
+    },
+    "title": "常见问题"
+  },
+  "footer": {
+    "content": "一款由 Sea of Thieves 社区打造的免费开源工具，帮助船员们一同出海。由玩家共同构建并不断改进。",
+    "discord": "需要帮助？快来我们的",
+    "github": "你是一位驰骋 Sea of Thieves 的开发者吗？快来为这个项目搭把手吧！",
+    "warning": {
+      "content": "BetterFleet 是一款非官方的第三方应用程序，与 Sea of Thieves 开发团队没有任何关联。它的使用完全在游戏之外，不会影响游戏体验。用户须自行承担使用本应用的全部责任！",
+      "title": "免责声明"
+    }
+  },
+  "header": {
+    "details": "BetterFleet 现已推出——快来试试吧！"
+  },
+  "name": "BetterFleet",
+  "nav": {
+    "joinSession": "加入会话",
+    "documentation": "探索",
+    "home": "首页",
+    "support": "支持",
+    "statistics": "统计"
+  },
+  "presentation": {
+    "content": "要让全体船员进入同一个 Sea of Thieves 服务器往往很麻烦。BetterFleet 帮你搞定这一切：它会同步每个人的“启航”点击，并告诉你谁最终汇聚到了一起——让组建联盟只需几分钟，而不是几个小时。免费、开源，由玩家打造。",
+    "how": "了解运作方式",
+    "joinConsole": "从主机加入",
+    "pill": "Windows 应用——免费且开源",
+    "title": "BetterFleet"
+  },
+  "stats": {
+    "download": "下载量",
+    "players": "在线玩家",
+    "sessions": "开放会话",
+    "title": "统计数据"
+  },
+  "tutorial": {
+    "eyebrow": "分步指南",
+    "title": "让你的船员进入同一服务器",
+    "lead": "Sea of Thieves 会把每艘船随机分配到不同的服务器。BetterFleet 让你的船员排好节奏，在同一秒一起点击“启航”，然后告诉你谁真正汇聚到了一起。",
+    "whatIsIt": {
+      "title": "什么是联盟服务器？",
+      "content": "在 Sea of Thieves 中，联盟是船只之间的一种盟约：它们共享战利品，如同一支舰队一同航行。难点在于，一开始就要让这些船进入同一个服务器。游戏会随机为你匹配，而你无法选择自己最终落在哪里。",
+      "role": "这正是 BetterFleet 唯一做的事。它从不触碰游戏本身，不提供任何游戏内优势，也不会在游戏内自动执行任何操作。它只是协调你们一起按下“启航”的时机，然后读取你的网络流量，来判断你们各自最终进入了哪个服务器。"
+    },
+    "needs": {
+      "title": "开始之前",
+      "item1": "在 Windows 上安装好 BetterFleet，并注册一个免费账户。每位 PC 玩家都要运行自己的那一份。",
+      "item2": "一种沟通方式，至少能互相传递会话代码——语音聊天、Discord，什么都行。",
+      "item3": "打开 Sea of Thieves 并停留在主菜单等待，而不是已经进入了某个世界。"
+    },
+    "steps": {
+      "title": "分步组建联盟"
+    },
+    "step": {
+      "1": {
+        "title": "创建会话并分享代码",
+        "content": "打开 BetterFleet，登录并创建一个会话。你会得到一个六位字符的代码，并成为会话的船长——由你来启动倒计时。把代码念给你的船员，他们在各自的程序中输入代码，就会出现在你的大厅里。",
+        "console": "主机玩家无需安装任何东西。使用“邀请主机玩家”复制一个链接，或者让他们在手机上打开 betterfleet.fr 并输入代码。"
+      },
+      "2": {
+        "title": "所有人都在“启航”界面等待",
+        "content": "在游戏中，每位玩家选好船只，停在“启航”界面但先不要点击。在搜索期间，每个人都各自驾船单独航行——等你们进入同一个服务器后，再正式会合。"
+      },
+      "3": {
+        "title": "把自己标记为已准备",
+        "content": "回到 BetterFleet，每位玩家把状态切换为“已准备”。船长一眼就能看出还差谁，这样就不用再用语音点名了。"
+      },
+      "4": {
+        "title": "船长启动倒计时",
+        "content": "所有人都准备就绪后，船长启动倒计时。它会在每个人的屏幕上同时进行，并配有声音提示，让主机玩家也能听到。归零时，所有人在同一秒内点击“启航”——正是这种同步，才让匹配系统有机会把你们分配到同一个服务器。"
+      },
+      "5": {
+        "title": "看看谁汇聚到了一起",
+        "content": "游戏加载时，BetterFleet 会根据每位玩家的网络流量判断出各自的服务器，并把落到同一处的人归到同一张卡片下。如果一支船员队伍被分到了两张卡片上，就说明他们在两个不同的服务器。",
+        "again": "没有全部汇聚到一起？离开当前世界，回到“启航”界面，再进行一次倒计时。什么都不用重置，会话会保持原样。"
+      }
+    },
+    "shot": {
+      "session": "会话刚创建时的大厅：可分享的代码，以及陆续到来的船员。",
+      "ready": "每位玩家的准备状态，让船长知道何时可以开始。",
+      "countdown": "共享倒计时，在每个人的屏幕上同时进行。",
+      "grouped": "结果：三位玩家汇聚在同一个服务器，第四位则落到了别处。"
+    },
+    "reality": {
+      "title": "实际需要多长时间",
+      "content": "一次倒计时往往不够，这很正常：决定权在匹配系统，而不是应用本身。船员们通常需要尝试好几次，短则几分钟，长则将近一个小时。BetterFleet 带来的改变在于，每一次尝试都得到妥善的同步，而且你能立刻知道它是否成功。",
+      "tip1": "冷清的时段更难——玩家越少，同时填满的服务器就越少。大厅会推荐历史上效果最好的时段。",
+      "tip2": "尽量待在大致相同的地区。分处世界两端的两名玩家几乎永远不会相遇。",
+      "tip3": "一个服务器能容纳五到六艘船。让你们两艘船会合很快；而要占满整个服务器则需要耐心。"
+    },
+    "cta": {
+      "title": "准备好出海了吗？",
+      "content": "下载 Windows 版 BetterFleet，或者直接用手机加入船员的会话。"
+    }
+  },
+  "mobileLobby": {
+    "countdown": {
+      "go": "启航！",
+      "label": "启航倒计时"
+    },
+    "ended": {
+      "again": "加入另一个",
+      "text": "船员关闭了会话，或者你的连接中断了。",
+      "title": "会话已结束"
+    },
+    "error": {
+      "generic": "出了点问题。请检查你的网络连接后重试。",
+      "notFound": "找不到与该代码对应的会话。请与你的船员再核对一下。",
+      "refused": "无法加入。这个名字在此会话中可能已被占用。请换一个试试。"
+    },
+    "imNotReady": "我还没准备好",
+    "imReady": "我准备好了！",
+    "join": {
+      "button": "加入大厅",
+      "code": "会话代码",
+      "codePlaceholder": "ABC1234",
+      "connecting": "连接中…",
+      "device": "你的主机",
+      "subtitle": "在手机上就能查看船员们的服务器和倒计时。",
+      "title": "加入你的联盟",
+      "username": "你的名字",
+      "usernamePlaceholder": "海盗名号"
+    },
+    "noServer": "尚未进入服务器",
+    "readyCount": "已准备"
+  },
+  "consoleGuide": {
+    "intro": "Xbox 和 PlayStation 玩家用手机就能加入船队的联盟。无需应用，无需账户。",
+    "note": "只要有一位 PC 玩家还在会话中，会话就会一直保持开放。",
+    "step1": "一位使用 PC 的船员打开 BetterFleet 并创建一个会话。",
+    "step2": "在大厅中，他们点击“邀请主机玩家”复制一个链接，或者把会话代码念给你。",
+    "step3": "在你的手机上打开那个链接，或者访问 betterfleet.fr 并输入代码。",
+    "step4": "取一个名字，选择你的主机，然后点击“加入”。",
+    "step5": "看着大厅逐渐坐满。当倒计时归零时，与你的船员在同一刻于游戏中启航。",
+    "title": "从你的主机加入"
+  },
+  "notFound": {
+    "home": "返回首页",
+    "text": "此页面不存在或已被移动。",
+    "title": "页面未找到"
+  },
+  "seo": {
+    "console": {
+      "description": "Xbox 和 PlayStation 玩家如何用手机通过 BetterFleet 加入 Sea of Thieves 联盟。",
+      "title": "从主机加入 | BetterFleet"
+    },
+    "notFound": {
+      "description": "无法找到此页面。",
+      "title": "页面未找到 | BetterFleet"
+    },
+    "lobby": {
+      "description": "用手机加入你船员的 Sea of Thieves 联盟：实时服务器、准备状态和同步倒计时。",
+      "title": "加入联盟 | BetterFleet"
+    },
+    "home": {
+      "title": "BetterFleet——让你的 Sea of Thieves 船员进入同一服务器",
+      "description": "免费、开源的应用，同步你船员的“启航”，让你们一同抵达同一个 Sea of Thieves 服务器。共享倒计时、实时服务器检测，不再意外地独自出海。"
+    },
+    "tutorial": {
+      "title": "如何让你的船员进入同一服务器 —— BetterFleet",
+      "description": "分步教程：安装 BetterFleet，创建联盟，分享代码，并使用共享倒计时，让你全体 Sea of Thieves 船员进入同一个服务器。"
+    },
+    "support": {
+      "title": "帮助与常见问题 —— BetterFleet",
+      "description": "关于安装和更新 BetterFleet、在 Sea of Thieves 中使用是否安全、你的数据会如何处理，以及如何报告问题的解答。"
+    },
+    "reports": {
+      "title": "报告 —— BetterFleet",
+      "description": "从 BetterFleet 应用发送的错误报告。"
+    },
+    "download": {
+      "title": "下载 BetterFleet",
+      "description": "下载 Windows 或 Linux 版 BetterFleet——选择适合你系统的安装程序或安装包。"
+    }
+  },
+  "alliance": {
+    "title": "联盟统计",
+    "subtitle": "船员们实际落到同一个服务器的频率，以及什么时候效果最好。匿名的汇总数据。",
+    "empty": "暂无数据。等船员们开始组建联盟后再回来看看吧。",
+    "bestTime": "组建联盟的最佳时间",
+    "bestTimeNone": "数据尚不足",
+    "tile": {
+      "attempts": "已记录的尝试",
+      "convergence": "汇聚成功率",
+      "tries": "平均汇聚所需尝试次数",
+      "goal": "已达成目标"
+    },
+    "region": {
+      "label": "房主所在地区",
+      "all": "所有地区"
+    },
+    "heatmap": {
+      "title": "按小时与星期的汇聚情况（UTC）",
+      "low": "很少汇聚",
+      "high": "经常汇聚"
+    },
+    "regions": {
+      "title": "玩家来自哪里"
+    },
+    "size": {
+      "title": "按搜索规模",
+      "note": "同时搜索的船只越多，两艘船相遇就越容易；而一支大船队通常想凑齐五艘，而不是两艘。每个区间都会按其实际可能达成的目标来评分。",
+      "band": "正在搜索的玩家",
+      "attempts": "尝试次数"
+    }
+  },
+  "loading": {
+    "stats": "正在读取日志…",
+    "globe": "正在展开图表…"
+  },
+  "downloadPage": {
+    "title": "下载 BetterFleet",
+    "lead": "我们为你挑选了适合你系统的下载版本——你也可以在下方另选其他版本。",
+    "leadUnknown": "我们无法判断你正在使用的系统——请在下方选择你的平台。",
+    "leadLinux": "请在下方选择适合你发行版的安装包。",
+    "recommendedLabel": "为你的系统推荐",
+    "download": "下载",
+    "sixtyFourBit": "64 位",
+    "megabytes": "MB",
+    "comingSoon": "即将推出",
+    "loading": "加载中",
+    "viewReleases": "在 GitHub 上浏览所有版本",
+    "error": {
+      "title": "无法连接到发布服务器",
+      "body": "我们无法加载最新的下载内容。你仍然可以直接从 GitHub 获取所有版本。",
+      "cta": "在 GitHub 上获取"
+    },
+    "recommended": {
+      "windows": {
+        "title": "Windows 版 BetterFleet —— 安装程序",
+        "desc": "经典安装方式，自动更新"
+      }
+    },
+    "windows": {
+      "name": "Windows",
+      "editions": "Windows 10 / 11 · 64 位",
+      "exe": {
+        "label": ".exe 安装程序",
+        "desc": "经典安装方式，自动更新"
+      },
+      "updates": "更新会在后台自动安装——无需任何操作。"
+    },
+    "linux": {
+      "name": "Linux",
+      "choose": "选择你的发行版",
+      "deb": {
+        "label": ".deb",
+        "desc": "Ubuntu, Debian, Mint, Pop!_OS"
+      },
+      "rpm": {
+        "label": ".rpm",
+        "desc": "Fedora, openSUSE, RHEL"
+      },
+      "arch": {
+        "label": "Arch (pacman)",
+        "desc": "Arch, Manjaro, CachyOS"
+      },
+      "copy": "复制",
+      "copied": "已复制！",
+      "copyFailed": "复制失败——请手动选择并复制",
+      "copyCommand": "复制安装命令",
+      "updates": "Linux 上的更新需要手动进行——没有自动更新。要更新，请从本页面下载最新的安装包，并覆盖安装到你当前的版本之上。"
+    }
+  }
+}

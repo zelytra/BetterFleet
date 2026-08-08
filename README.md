@@ -88,6 +88,9 @@ project, feel free to fork the repository and submit your pull requests or you c
 
 ## Translations 🌍
 
+BetterFleet ships in **13 languages**: English, French, German, Spanish, Italian, Russian, Simplified
+Chinese, Japanese, Ukrainian, Hindi, Korean, Brazilian Portuguese and Polish.
+
 `source.json` is the English original and the only locale file anyone edits by hand. The rest is
 produced for you:
 
@@ -97,6 +100,7 @@ produced for you:
 | `en.json` | a copy of `source.json`, rewritten by CI: never edit it |
 | `fr.json` | translated by humans, **never machine-translated** |
 | `de.json`, `es.json`, `it.json` | machine-translated first, then corrected in Crowdin |
+| `ru`, `zh`, `ja`, `uk`, `hi`, `ko`, `pt`, `pl` | first-pass AI translations: a native or Crowdin review is welcome |
 
 The sync lives in [`.github/workflows/crowdin.yml`](/.github/workflows/crowdin.yml). That workflow
 *is* the configuration: its header explains the whole flow, and the two settings that can only be

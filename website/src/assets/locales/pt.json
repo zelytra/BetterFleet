@@ -1,0 +1,403 @@
+{
+  "button": {
+    "download": "Baixar",
+    "downloadApp": "Baixar o aplicativo",
+    "downloadHere": "Baixar aqui"
+  },
+  "comparison": {
+    "description": "O BetterFleet foi feito para encontrar o seu servidor de jogo rapidamente — e de forma confiável. No nosso benchmark, ele detecta o servidor em cerca de 5 segundos, aproximadamente 3 a 4 vezes mais rápido que o Fleet Creator. Ele também continua funcionando onde o Fleet Creator já não funciona: as atualizações recentes de Sea of Thieves e seus novos servidores de retransmissão (SDR) quebraram o método de detecção dele, que agora costuma apontar um servidor errado ou \"corrompido\". Nossa nova análise baseada no tráfego foi pensada para esses servidores, então ela continua apontando o servidor certo. O gráfico compara os tempos de detecção lado a lado: quanto menor a barra, melhor.",
+    "subtitle": "Detecção de servidor mais rápida — menos tempo nos menus, mais tempo no mar.",
+    "table": {
+      "countdown": "Contagem regressiva sincronizada",
+      "detection": "Detecção automática de servidor",
+      "free": "Gratuito e open source",
+      "languages": "Disponível em 5 idiomas",
+      "public": "Navegador de sessões públicas"
+    },
+    "title": "Comparação com o Fleet Creator"
+  },
+  "credits": {
+    "and": "&",
+    "designed": "Design por",
+    "developed": "Desenvolvido por",
+    "license": "Licença"
+  },
+  "descriptions": {
+    "globe": "Uma interface limpa, inspirada no estilo de Sea of Thieves — parece uma extensão natural do jogo.",
+    "hourglass": "Uma contagem regressiva compartilhada sincroniza o clique de \"Zarpar\" de cada jogador, para que suas tripulações partam no mesmo instante e cheguem juntas com mais frequência.",
+    "key": "Open source e auditável: todo o código é público, e uma equipe ativa o mantém atualizado e seguro.",
+    "title": "O essencial"
+  },
+  "discover": {
+    "discord": {
+      "button": "Entrar no Discord",
+      "content": "A maior parte do dia a dia do BetterFleet acontece no nosso Discord. Os jogadores trocam dicas, relatam bugs e sugerem ideias que regularmente chegam ao aplicativo. Seja para pedir uma ajuda ou apenas navegar com outras tripulações, é ali que a coisa acontece.",
+      "nav": "Comunidade",
+      "title": "A comunidade vive no Discord"
+    },
+    "github": {
+      "button": "GitHub",
+      "content": "O BetterFleet é totalmente open source. Qualquer um pode ler o código, relatar um bug ou abrir um pull request — e o feedback dos jogadores realmente orienta os rumos do projeto. Se você quiser ajudar a construí-lo, o repositório está aberto para você.",
+      "nav": "Open Source",
+      "title": "Open source, aberto a contribuições"
+    },
+    "title": "Nossos objetivos e valores",
+    "translation": {
+      "button": "Crowdin",
+      "content": "O BetterFleet é traduzido pela sua comunidade através do Crowdin, para que jogadores do mundo todo possam usá-lo no seu próprio idioma. Se o seu estiver faltando ou uma tradução puder ser melhorada, sua ajuda é muito bem-vinda.",
+      "nav": "Traduções",
+      "title": "Disponível no seu idioma"
+    }
+  },
+  "download": {
+    "now": "Baixar agora",
+    "pc": {
+      "content": "Você está no celular — guarde o link à mão e instale o aplicativo depois no seu PC com Windows.",
+      "copied": "Link copiado!",
+      "copy": "Copiar o link de download",
+      "title": "O BetterFleet se instala no PC"
+    }
+  },
+  "faq": {
+    "copy": "Link copiado",
+    "description": "Tem uma dúvida sobre o BetterFleet? Aqui respondemos às perguntas mais frequentes",
+    "faq": "F.A.Q.",
+    "more": "Está enfrentando dificuldades ou não encontra uma resposta para o seu problema? Encontre-nos aqui no nosso",
+    "question": {
+      "alliance": {
+        "content1": "O BetterFleet ajuda os jogadores a otimizar a formação de suas alianças, mas não garante acesso instantâneo a um mesmo servidor.",
+        "content2": "O processo de busca envolve inúmeros fatores sobre os quais o BetterFleet não tem controle. Entre eles: o horário do dia, o número de jogadores, a localização, a conexão com a internet, além da boa vontade dos servidores de matchmaking de Sea of Thieves.",
+        "content3": "Quanto ao tempo necessário, observamos uma tendência que varia entre 5 minutos para os mais sortudos e até 3 horas para os menos afortunados. No entanto, essas estimativas permanecem aproximadas e não são garantidas.",
+        "content4": "Ainda assim, se você tem conhecimento sobre como melhorar o sistema de busca do BetterFleet, estamos dispostos a analisar qualquer sugestão que você possa fazer no Discord ou no GitHub.",
+        "title": "O BetterFleet garante entrar no mesmo servidor instantaneamente?"
+      },
+      "bug": {
+        "content1": "Se você encontrar qualquer problema ou bug, incentivamos que nos avise para que possamos trabalhar em melhorar sua experiência. Veja como entrar em contato conosco:",
+        "content2": "Discord: entre no nosso servidor do Discord e compartilhe seu problema no canal de suporte dedicado. Nossa equipe está sempre pronta para ajudar você e responder às suas perguntas em tempo real.",
+        "content3": "GitHub: se você tem familiaridade com o GitHub, também pode abrir uma \"issue\" no nosso repositório do GitHub. Isso nos permite acompanhar os problemas de forma estruturada e garantir um monitoramento transparente e eficaz.",
+        "content4": "Agradecemos o seu feedback e nos comprometemos a resolver os problemas relatados o mais rápido possível.",
+        "title": "Como relato um problema ou um bug?"
+      },
+      "console": {
+        "content1": "Com certeza! Desenvolvemos recursos específicos para melhorar a experiência dos jogadores de Xbox e PlayStation. Veja o que implementamos:",
+        "content2": "Contagem sonora: incorporamos um componente sonoro à contagem regressiva. Essa função permite que os usuários saibam exatamente quando zarpar, sem sobrecarregar o líder da aliança com instruções por voz. Isso torna as sessões mais fluidas, contornando ao mesmo tempo a latência causada pelas plataformas de comunicação online.",
+        "content3": "Indicação visual da plataforma utilizada: adicionamos um ícone para que os usuários saibam se seus companheiros estão em um console. Esse recurso favorece uma melhor coordenação e compreensão entre jogadores que usam plataformas diferentes.",
+        "content4": "Essas melhorias foram pensadas para tornar a experiência de jogo mais intuitiva e acessível para os jogadores de console, garantindo uma integração harmoniosa dentro de comunidades de jogo mistas.",
+        "title": "Vale a pena para os jogadores de console?"
+      },
+      "data": {
+        "content1": "A confidencialidade e a segurança dos dados dos nossos usuários são da mais alta importância para nós. Veja nossa política sobre o gerenciamento dos dados dos usuários:",
+        "content2": "Uso dos dados: o nome de usuário e o endereço de e-mail são os únicos elementos necessários para o bom funcionamento do aplicativo. Nenhum outro dado pessoal é coletado.",
+        "content3": "Segurança e criptografia: os dados coletados são criptografados e armazenados de forma segura para evitar qualquer acesso não autorizado.",
+        "content4": "Cookies e revenda: não usamos cookies e não vendemos nem compartilhamos as informações dos usuários com terceiros.",
+        "content5": "Dados anônimos e estatísticas: para a melhoria contínua do nosso aplicativo, usamos dados anônimos para fins estatísticos. Em nenhuma circunstância esses dados permitem identificar pessoalmente os usuários.",
+        "content6": "Comprometemo-nos a manter certo nível de transparência e a respeitar a privacidade dos nossos usuários em todas as circunstâncias.",
+        "title": "O que fazemos com os dados dos usuários?"
+      },
+      "download": {
+        "content1": "Acesse nosso site oficial:",
+        "content2": "Clique no botão \"Download\".",
+        "content3": "Siga as instruções na tela para concluir a instalação.",
+        "content4": "Pronto! Após esses passos, o BetterFleet estará instalado no seu dispositivo.",
+        "title": "Como instalo o BetterFleet?"
+      },
+      "eac": {
+        "content1": "O BetterFleet se assemelha mais a um diário de bordo do que a qualquer outra coisa. Seu principal recurso automático simula um clique de mouse bastante simples, assim como um comando de voz faria, e tecnicamente não constitui uma macro em si. Sistemas como o Easy Anti-Cheat (EAC) focam principalmente na manipulação da memória RAM e, portanto, não têm motivo para condenar nosso método.",
+        "content2": "Além disso, o clique nunca é executado em jogo e ocorre apenas no menu, em conformidade com os termos de serviço (TOS) de Sea of Thieves e da Xbox. Esses termos são amplos o suficiente para cobrir juridicamente o maior número possível de situações, mas nenhum ponto menciona nosso uso específico. A opção pode, no entanto, ser desativada a critério do usuário.",
+        "content3": "Ainda assim, é essencial entender que o uso de ferramentas como o BetterFleet e o Fleet Creator não é totalmente isento de riscos, especialmente no que diz respeito à detecção de IP, que continua sendo um ponto sensível. Nosso aplicativo é tão seguro quanto qualquer outro, mas, não sendo reconhecido nem pela Rare nem pela Microsoft, dependemos totalmente da decisão exclusiva deles de tomar alguma medida.",
+        "title": "Existe algum risco com o Easy Anti-Cheat? (EAC)"
+      },
+      "edge": {
+        "content1": "Se você tiver problemas para executar o aplicativo ou se ele travar após instalá-lo corretamente, siga estes passos de solução de problemas:",
+        "content2": "Certifique-se de que seu sistema operacional é o Windows 10 ou o Windows 11.",
+        "content3": "Verifique se o Microsoft Edge e o Microsoft Edge WebView2 estão corretamente instalados no seu dispositivo. Esses componentes são essenciais para o bom funcionamento do aplicativo.",
+        "content4": "Pode ocorrer um conflito com o seu antivírus. Se ele permitir, exclua o BetterFleet da lista de ameaças detectadas. Caso contrário, desative o seu antivírus e execute o aplicativo novamente.",
+        "content5": "Se o problema persistir apesar dessas verificações, tente reinstalar o aplicativo para corrigir qualquer possível corrupção.",
+        "content6": "Se, após esses passos, o aplicativo ainda não funcionar, não hesite em nos encontrar no nosso servidor do Discord para uma assistência mais personalizada.",
+        "title": "Por que meu aplicativo trava e/ou não inicia?"
+      },
+      "password": {
+        "content1": "Use o link \"Esqueceu a senha?\" na tela de login. Insira seu nome de usuário ou seu endereço de e-mail e nós lhe enviaremos um link para escolher uma nova.",
+        "content2": "O e-mail vai para o endereço com o qual você se cadastrou, então verifique sua pasta de spam se ele não aparecer. Ainda com problemas? Fale conosco no Discord.",
+        "title": "O que fazer se eu esquecer minha senha?"
+      },
+      "security": {
+        "content1": "Sim, nosso aplicativo foi projetado com a segurança do usuário como prioridade absoluta. A seguir estão as medidas que implementamos para garantir um uso seguro:",
+        "content2": "Autenticação reforçada: incorporamos uma camada de autenticação para fortalecer a segurança das contas dos usuários.",
+        "content3": "Open source: o aplicativo é totalmente open source, oferecendo transparência total sobre seu uso e funcionamento. Isso permite que a comunidade verifique e audite nosso código, fortalecendo assim a confiança no nosso produto.",
+        "content4": "Manutenção proativa: nossos desenvolvedores se comprometem a manter o aplicativo em condições de segurança ideais. Isso inclui a atualização regular das dependências e o monitoramento contínuo de possíveis falhas de segurança para prevenir qualquer risco.",
+        "content5": "Abordagem independente: como o BetterFleet não é licenciado pela Microsoft, ele é submetido ao Windows Defender na instalação. Nosso aplicativo não é por isso menos seguro, e nos empenhamos em nos adaptar a essas restrições que não conseguimos controlar totalmente.",
+        "content6": "Esses esforços conjuntos contribuem para uma plataforma confiável e segura para cada um dos nossos usuários.",
+        "title": "O aplicativo é seguro?"
+      },
+      "update": {
+        "content1": "Sempre que uma atualização estiver disponível, uma janela pop-up aparece ao iniciar o BetterFleet. Basta clicar em \"Sim\" para iniciar a atualização. O aplicativo instalará automaticamente a versão mais recente e reiniciará assim que a atualização for concluída.",
+        "content2": "Caso uma atualização esteja disponível enquanto o BetterFleet já estiver aberto, basta fechar o aplicativo. A atualização será oferecida na próxima inicialização.",
+        "title": "Como atualizo o BetterFleet?"
+      }
+    },
+    "title": "Perguntas Frequentes"
+  },
+  "footer": {
+    "content": "Uma ferramenta gratuita e open source feita pela comunidade de Sea of Thieves para ajudar as tripulações a navegarem juntas. Construída e aprimorada por jogadores.",
+    "discord": "Precisa de ajuda? Entre em contato com a equipe no nosso",
+    "github": "Você é um desenvolvedor que navega pelo Sea of Thieves? Venha dar uma mão no projeto!",
+    "warning": {
+      "content": "O BetterFleet é um aplicativo de terceiros não oficial, sem qualquer vínculo com a equipe de desenvolvimento de Sea of Thieves. Seu uso é puramente externo e não tem impacto na experiência de jogo. O usuário concorda em ser o único responsável por seu uso!",
+      "title": "Aviso legal"
+    }
+  },
+  "header": {
+    "details": "O BetterFleet já está disponível — experimente!"
+  },
+  "name": "BetterFleet",
+  "nav": {
+    "joinSession": "Entrar em uma sessão",
+    "documentation": "Descubra",
+    "home": "Início",
+    "support": "Suporte",
+    "statistics": "Estatísticas"
+  },
+  "presentation": {
+    "content": "Reunir toda a sua tripulação no mesmo servidor de Sea of Thieves costuma ser um transtorno. O BetterFleet cuida disso: o aplicativo sincroniza o clique de \"Zarpar\" de todos e mostra quem acabou junto — assim uma aliança se forma em minutos em vez de horas. Gratuito, open source e feito por jogadores.",
+    "how": "Veja como funciona",
+    "joinConsole": "Entrar pelo console",
+    "pill": "Aplicativo para Windows — gratuito e open source",
+    "title": "BetterFleet"
+  },
+  "stats": {
+    "download": "Downloads",
+    "players": "Jogadores online",
+    "sessions": "Sessões abertas",
+    "title": "Estatísticas"
+  },
+  "tutorial": {
+    "eyebrow": "Guia passo a passo",
+    "title": "Reúna sua tripulação em um só servidor",
+    "lead": "Sea of Thieves coloca cada navio em um servidor aleatório. O BetterFleet alinha suas tripulações para que todos cliquem em Zarpar no mesmo segundo e depois informa quem realmente chegou junto.",
+    "whatIsIt": {
+      "title": "O que é um servidor de aliança?",
+      "content": "Em Sea of Thieves, uma aliança é um pacto entre navios: eles compartilham o butim e navegam como uma só frota. O difícil é justamente colocar esses navios no mesmo servidor. O jogo faz o matchmaking de forma aleatória e não oferece nenhuma maneira de escolher onde você vai parar.",
+      "role": "É a única coisa que o BetterFleet faz. Ele nunca mexe no jogo, não dá nenhuma vantagem dentro dele e não automatiza nada em seu interior. Ele coordena o momento em que todos apertam Zarpar e depois lê o seu tráfego de rede para descobrir em qual servidor cada um de vocês foi parar."
+    },
+    "needs": {
+      "title": "Antes de começar",
+      "item1": "O BetterFleet instalado no Windows e uma conta gratuita. Cada jogador de PC roda a sua própria cópia.",
+      "item2": "Um jeito de conversar ou pelo menos de repassar o código da sessão — chat de voz, Discord, qualquer coisa.",
+      "item3": "Sea of Thieves aberto e aguardando no menu principal, ainda não dentro de um mundo."
+    },
+    "steps": {
+      "title": "Formando uma aliança, passo a passo"
+    },
+    "step": {
+      "1": {
+        "title": "Crie uma sessão e compartilhe o código",
+        "content": "Abra o BetterFleet, faça login e crie uma sessão. Você recebe um código de seis caracteres e se torna o capitão, quem inicia a contagem regressiva. Leia o código para seus companheiros de tripulação; eles o inserem na própria cópia e aparecem no seu saguão.",
+        "console": "Os jogadores de console não instalam nada. Use Convidar jogadores de console para copiar um link, ou diga a eles para abrir betterfleet.fr no celular e digitar o código."
+      },
+      "2": {
+        "title": "Todos esperam na tela de Zarpar",
+        "content": "No jogo, cada jogador escolhe um navio e para na tela de Zarpar sem clicar. Durante a busca, cada um navega sozinho no próprio barco — vocês se reúnem de fato quando estiverem no mesmo servidor."
+      },
+      "3": {
+        "title": "Marquem-se como prontos",
+        "content": "De volta ao BetterFleet, cada jogador muda para Pronto. O capitão vê num relance quem ainda falta, então ninguém precisa fazer a chamada pela voz."
+      },
+      "4": {
+        "title": "O capitão inicia a contagem regressiva",
+        "content": "Assim que todos estiverem prontos, o capitão inicia a contagem regressiva. Ela roda em todas as telas ao mesmo tempo, com um sinal sonoro para que os jogadores de console também a ouçam. No zero, todos clicam em Zarpar dentro do mesmo segundo — é essa simultaneidade que dá ao matchmaking uma chance de colocar vocês em um só servidor."
+      },
+      "5": {
+        "title": "Veja quem chegou junto",
+        "content": "Enquanto o jogo carrega, o BetterFleet descobre o servidor de cada jogador a partir do seu tráfego de rede e agrupa sob um mesmo cartão todos que foram parar no mesmo lugar. Uma tripulação espalhada por dois cartões está em dois servidores diferentes.",
+        "again": "Não ficaram todos juntos? Saia do mundo, volte à tela de Zarpar e faça outra contagem regressiva. Não é preciso reiniciar nada, e a sessão permanece como está."
+      }
+    },
+    "shot": {
+      "session": "O saguão logo após a criação de uma sessão: o código para compartilhar e os companheiros chegando.",
+      "ready": "O status de prontidão de cada jogador, para que o capitão saiba quando começar.",
+      "countdown": "A contagem regressiva compartilhada, rodando em todas as telas ao mesmo tempo.",
+      "grouped": "O resultado: três jogadores reunidos em um servidor, um quarto que foi parar em outro lugar."
+    },
+    "reality": {
+      "title": "Quanto tempo realmente leva",
+      "content": "Uma única contagem raramente basta, e isso é normal: quem decide é o matchmaking, não o aplicativo. As tripulações costumam precisar de várias tentativas, de alguns minutos até quase uma hora. O que o BetterFleet muda é que cada tentativa fica devidamente sincronizada e que você sabe na hora se deu certo.",
+      "tip1": "As horas de menor movimento são mais difíceis — menos jogadores significam menos servidores enchendo ao mesmo tempo. O saguão sugere os horários que historicamente funcionam melhor.",
+      "tip2": "Fiquem mais ou menos na mesma região. Dois jogadores em lados opostos do mundo quase nunca vão se encontrar.",
+      "tip3": "Um servidor comporta de cinco a seis navios. Reunir dois de vocês é rápido; tomar um servidor inteiro exige paciência."
+    },
+    "cta": {
+      "title": "Pronto para navegar?",
+      "content": "Baixe o BetterFleet para Windows ou entre na sessão de um companheiro direto do seu celular."
+    }
+  },
+  "mobileLobby": {
+    "countdown": {
+      "go": "Zarpar!",
+      "label": "Zarpar em"
+    },
+    "ended": {
+      "again": "Entrar em outra",
+      "text": "A tripulação fechou a sessão, ou sua conexão caiu.",
+      "title": "Sessão encerrada"
+    },
+    "error": {
+      "generic": "Algo deu errado. Verifique sua conexão e tente novamente.",
+      "notFound": "Nenhuma sessão encontrada para esse código. Confira com sua tripulação.",
+      "refused": "Não foi possível entrar. Esse nome talvez já esteja em uso nesta sessão. Tente outro."
+    },
+    "imNotReady": "Não estou pronto",
+    "imReady": "Estou pronto!",
+    "join": {
+      "button": "Entrar no saguão",
+      "code": "Código da sessão",
+      "codePlaceholder": "ABC1234",
+      "connecting": "Conectando…",
+      "device": "Seu console",
+      "subtitle": "Veja os servidores da sua tripulação e a contagem regressiva direto do seu celular.",
+      "title": "Entre na sua aliança",
+      "username": "Seu nome",
+      "usernamePlaceholder": "Nome de pirata"
+    },
+    "noServer": "Ainda não está em um servidor",
+    "readyCount": "prontos"
+  },
+  "consoleGuide": {
+    "intro": "Jogadores de Xbox e PlayStation podem entrar na aliança de uma tripulação direto do celular. Sem aplicativo, sem conta.",
+    "note": "A sessão permanece aberta enquanto houver um jogador de PC nela.",
+    "step1": "Um companheiro no PC abre o BetterFleet e cria uma sessão.",
+    "step2": "No saguão, ele toca em \"Convidar jogadores de console\" para copiar um link, ou lê o código da sessão para você.",
+    "step3": "No seu celular, abra esse link, ou acesse betterfleet.fr e insira o código.",
+    "step4": "Escolha um nome, selecione seu console e toque em Entrar.",
+    "step5": "Veja o saguão se encher. Quando a contagem regressiva chegar a zero, zarpe no jogo no mesmo momento que sua tripulação.",
+    "title": "Entre pelo seu console"
+  },
+  "notFound": {
+    "home": "Voltar ao início",
+    "text": "Esta página não existe ou foi movida.",
+    "title": "Página não encontrada"
+  },
+  "seo": {
+    "console": {
+      "description": "Como jogadores de Xbox e PlayStation entram em uma aliança de Sea of Thieves pelo celular com o BetterFleet.",
+      "title": "Entrar pelo console | BetterFleet"
+    },
+    "notFound": {
+      "description": "Não foi possível encontrar esta página.",
+      "title": "Página não encontrada | BetterFleet"
+    },
+    "lobby": {
+      "description": "Entre na aliança de Sea of Thieves da sua tripulação pelo celular: servidores ao vivo, status de prontidão e a contagem regressiva sincronizada.",
+      "title": "Entrar na aliança | BetterFleet"
+    },
+    "home": {
+      "title": "BetterFleet — reúna sua tripulação de Sea of Thieves no mesmo servidor",
+      "description": "Aplicativo gratuito e open source que sincroniza o Zarpar da sua tripulação para que todos cheguem no mesmo servidor de Sea of Thieves. Contagem regressiva compartilhada, verificação de servidor ao vivo, e chega de navegar sozinho por acidente."
+    },
+    "tutorial": {
+      "title": "Como reunir sua tripulação no mesmo servidor — BetterFleet",
+      "description": "Passo a passo: instale o BetterFleet, crie uma aliança, compartilhe o código e use a contagem regressiva compartilhada para que toda a sua tripulação de Sea of Thieves chegue em um só servidor."
+    },
+    "support": {
+      "title": "Ajuda e FAQ — BetterFleet",
+      "description": "Respostas sobre como instalar e atualizar o BetterFleet, se é seguro usá-lo com Sea of Thieves, o que acontece com seus dados e como relatar um problema."
+    },
+    "reports": {
+      "title": "Relatórios — BetterFleet",
+      "description": "Relatórios de bug enviados pelo aplicativo BetterFleet."
+    },
+    "download": {
+      "title": "Baixar o BetterFleet",
+      "description": "Baixe o BetterFleet para Windows ou Linux — escolha o instalador ou pacote que combina com o seu sistema."
+    }
+  },
+  "alliance": {
+    "title": "Estatísticas de aliança",
+    "subtitle": "Com que frequência as tripulações realmente chegam no mesmo servidor, e quando isso funciona melhor. Dados anônimos e agregados.",
+    "empty": "Ainda sem dados. Volte quando as tripulações começarem a formar alianças.",
+    "bestTime": "Melhor horário para formar uma aliança",
+    "bestTimeNone": "Ainda sem dados suficientes",
+    "tile": {
+      "attempts": "Tentativas registradas",
+      "convergence": "Taxa de convergência",
+      "tries": "Média de tentativas para convergir",
+      "goal": "Objetivo alcançado"
+    },
+    "region": {
+      "label": "Região do dono",
+      "all": "Todas as regiões"
+    },
+    "heatmap": {
+      "title": "Convergência por hora e dia (UTC)",
+      "low": "raramente juntos",
+      "high": "frequentemente juntos"
+    },
+    "regions": {
+      "title": "De onde vêm os jogadores"
+    },
+    "size": {
+      "title": "Por tamanho da busca",
+      "note": "Dois navios se encontrarem é mais fácil quanto mais barcos estão buscando, e uma tripulação grande geralmente quer cinco deles, não dois. Cada faixa é avaliada com base no que ela realmente poderia alcançar.",
+      "band": "Jogadores buscando",
+      "attempts": "Tentativas"
+    }
+  },
+  "loading": {
+    "stats": "Lendo o diário de bordo…",
+    "globe": "Desenrolando o mapa…"
+  },
+  "downloadPage": {
+    "title": "Baixar o BetterFleet",
+    "lead": "Escolhemos o download que combina com o seu sistema — ou selecione outro abaixo.",
+    "leadUnknown": "Não conseguimos identificar o que você está usando — escolha sua plataforma abaixo.",
+    "leadLinux": "Escolha abaixo o pacote que combina com a sua distribuição.",
+    "recommendedLabel": "Recomendado para o seu sistema",
+    "download": "Baixar",
+    "sixtyFourBit": "64 bits",
+    "megabytes": "MB",
+    "comingSoon": "Em breve",
+    "loading": "Carregando",
+    "viewReleases": "Ver todas as versões no GitHub",
+    "error": {
+      "title": "Não foi possível acessar o servidor de versões",
+      "body": "Não conseguimos carregar os downloads mais recentes. Você ainda pode obter todas as versões diretamente no GitHub.",
+      "cta": "Baixar no GitHub"
+    },
+    "recommended": {
+      "windows": {
+        "title": "BetterFleet para Windows — Instalador",
+        "desc": "Instalação clássica, atualizações automáticas"
+      }
+    },
+    "windows": {
+      "name": "Windows",
+      "editions": "Windows 10 / 11 · 64 bits",
+      "exe": {
+        "label": "Instalador .exe",
+        "desc": "Instalação clássica, atualizações automáticas"
+      },
+      "updates": "As atualizações se instalam automaticamente em segundo plano — nada a fazer."
+    },
+    "linux": {
+      "name": "Linux",
+      "choose": "Escolha sua distribuição",
+      "deb": {
+        "label": ".deb",
+        "desc": "Ubuntu, Debian, Mint, Pop!_OS"
+      },
+      "rpm": {
+        "label": ".rpm",
+        "desc": "Fedora, openSUSE, RHEL"
+      },
+      "arch": {
+        "label": "Arch (pacman)",
+        "desc": "Arch, Manjaro, CachyOS"
+      },
+      "copy": "Copiar",
+      "copied": "Copiado!",
+      "copyFailed": "Falha ao copiar — selecione e copie",
+      "copyCommand": "Copiar comando de instalação",
+      "updates": "No Linux, as atualizações são manuais — não há atualização automática. Para atualizar, baixe o pacote mais recente nesta página e reinstale-o por cima da sua versão atual."
+    }
+  }
+}

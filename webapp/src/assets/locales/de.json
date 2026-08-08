@@ -1,15 +1,15 @@
 {
   "alert": {
     "alreadyConnected": {
-      "content": "Sie befinden sich bereits in dieser Sitzung in einem anderen Fenster oder Gerät. Schließen Sie sie und versuchen Sie es erneut.",
+      "content": "Du bist bereits in dieser Sitzung – in einem anderen Fenster oder auf einem anderen Gerät. Schließe sie und versuche es erneut.",
       "title": "Bereits verbunden"
     },
     "badRequest": {
-      "content": "Die Abfrage ist beschädigt oder falsch",
-      "title": "Schlechte Abfrage"
+      "content": "Die Anfrage ist beschädigt oder fehlerhaft",
+      "title": "Fehlerhafte Anfrage"
     },
     "emptySession": {
-      "content": "Das ID-Feld ist leer. Bitte geben Sie einen Wert ein",
+      "content": "Bitte gib eine Sitzungs-ID ein",
       "title": "Leere Sitzungs-ID"
     },
     "error": {
@@ -17,17 +17,17 @@
       "title": "Fehler"
     },
     "forbidden": {
-      "content": "Sie verfügen nicht über die erforderliche Berechtigung, um auf diese Seite zuzugreifen",
-      "title": "Zugriff abgelehnt"
+      "content": "Du hast nicht die nötige Berechtigung, um auf diese Seite zuzugreifen",
+      "title": "Zugriff verweigert"
     },
     "outdated": {
-      "content": "Bitte aktualisieren Sie Ihre Bewerbung",
-      "title": "Veralteter Kunde"
+      "content": "Bitte aktualisiere deine Anwendung",
+      "title": "Veralteter Client"
     },
     "report": {
       "emptyMessage": {
-        "content": "Sie können keinen Bericht ohne Inhalt in der Nachricht einreichen",
-        "title": "Leere Nachricht"
+        "content": "Bitte beschreibe dein Problem im Fehlerbericht so genau wie möglich",
+        "title": "Leerer Bericht"
       },
       "send": {
         "title": "Bericht gesendet"
@@ -35,53 +35,53 @@
     },
     "research": {
       "notInMenu": {
-        "content": "Sie befinden sich nicht im Spielmenü",
-        "title": "Der Start ist fehlgeschlagen"
+        "content": "Du bist nicht im Spielmenü",
+        "title": "Start fehlgeschlagen"
       },
       "notReady": {
-        "content": "Sie sind nicht bereit",
-        "title": "Der Start ist fehlgeschlagen"
+        "content": "Du bist nicht bereit",
+        "title": "Start fehlgeschlagen"
       },
       "offline": {
         "content": "Dein Spiel ist geschlossen",
-        "title": "Der Start ist fehlgeschlagen"
+        "title": "Start fehlgeschlagen"
       }
     },
     "session": {
       "notLeave": {
-        "content": "Sie können die Seite während eines Starts nicht verlassen",
-        "title": "Sie können die Seite nicht verlassen"
+        "content": "Du kannst diese Seite nicht verlassen",
+        "title": "Countdown läuft"
       }
     },
     "sessionNotFound": {
-      "content": "Überprüfen Sie Ihre Sitzungs-ID",
+      "content": "Überprüfe deine Sitzungs-ID",
       "title": "Sitzung nicht gefunden"
     },
     "socket": {
       "connectionFailed": "Die Verbindung zum Server ist fehlgeschlagen",
       "random": "Der WebSocket wurde unerwartet geschlossen",
-      "title": "Beim Server ist ein Fehler aufgetreten"
+      "title": "Verbindung verloren"
     },
     "unsupportedMedia": {
-      "content": "Das Medium, das Sie senden möchten, wird von der Anwendung nicht unterstützt",
-      "title": "Nicht unterstützte Medien"
+      "content": "Das Medium, das du senden möchtest, wird von der Anwendung nicht unterstützt",
+      "title": "Nicht unterstütztes Medium"
     },
     "username": {
       "ignore": {
-        "content": "Der Geschichtenerzähler wird gestartet",
-        "title": "Änderung ignoriert"
+        "content": "Änderung des Benutzernamens abgebrochen",
+        "title": "Countdown läuft"
       },
       "length": {
-        "content": "Le pseudonyme ne doit pas dépasser 16 caractères et ne dois pas etre vide",
-        "title": "Mauvais format de pseudo"
+        "content": "Dein Benutzername darf nicht leer sein und nicht länger als 16 Zeichen sein",
+        "title": "Ungültiges Benutzernamensformat"
       }
     },
     "websocketAuthFailed": {
-      "content": "Die Websocket-Authentifizierung ist fehlgeschlagen",
-      "title": "Authentifizierung fehlgeschlagen"
+      "content": "Die WebSocket-Authentifizierung ist fehlgeschlagen",
+      "title": "Verbindung fehlgeschlagen"
     }
   },
-  "appName": "Bessere Flotte",
+  "appName": "BetterFleet",
   "boatSize": {
     "brigantine": "Brigantine",
     "galleon": "Galeone",
@@ -91,59 +91,59 @@
   },
   "config": {
     "banner": {
-      "description": "Der Banner Ihrer gehosteten Sitzungen, in der Lobby und im Session-Browser.",
+      "description": "Das Banner, das die von dir gehosteten Sitzungen tragen – in der Lobby und im Sitzungsbrowser.",
       "pick": "Banner {number}",
       "shuffle": {
-        "check": "Die Banner zufällig mischen",
-        "description": "Wählt jedes Mal, wenn Sie eine Sitzung hosten, einen anderen Banner aus"
+        "check": "Banner zufällig mischen",
+        "description": "Wählt jedes Mal ein anderes Banner, wenn du eine Sitzung hostest"
       }
     },
     "device": {
-      "label": "Plattformen"
+      "label": "Plattform"
     },
-    "devmode": "Aktivieren Sie den Entwicklermodus",
+    "devmode": "Entwicklermodus aktivieren",
     "disconnect": "Abmelden",
     "lang": {
       "label": "Sprache"
     },
     "macro": {
-      "check": "Sitzungsmakro aktivieren/deaktivieren",
-      "description": "Ausführung eines automatischen Klicks am Ende des Countdowns",
-      "linuxUnavailable": "Nicht verfügbar unter Linux — Wayland blockiert den automatischen Klick, daher müssen Sie selbst auf \"Segel setzen\" klicken."
+      "check": "Assistierter Start",
+      "description": "Klickt am Ende des Countdowns automatisch auf „Leinen los“",
+      "linuxUnavailable": "Unter Linux nicht verfügbar – Wayland blockiert den automatischen Klick, daher musst du selbst auf „Leinen los“ klicken."
     },
     "overlay": {
       "hotkey": {
-        "hint": "Klicken Sie auf eine Tastenkombination, und eine einzelne Taste funktioniert nicht: ein Modifikator (Strg, Alt oder Umschalt) ist erforderlich.",
-        "invalid": "Diese Verknüpfung kann nicht verwendet werden",
-        "label": "Verknüpfung umschalten",
-        "recording": "Drücke eine Kombo…",
+        "hint": "Klicke und drücke dann eine Tastenkombination. Eine einzelne Taste funktioniert nicht: Ein Modifikator (Strg, Alt oder Umschalt) ist erforderlich.",
+        "invalid": "Diese Tastenkombination kann nicht verwendet werden",
+        "label": "Tastenkombination zum Umschalten",
+        "recording": "Drücke eine Kombination…",
         "reset": "Zurücksetzen"
       },
-      "toggle": "Overlay ein-/ausblenden",
-      "description": "Zeigt die Live-Session (Server und Bereitschaftsstatus) oben im Spiel, im grenzenlosen Fenstermodus."
+      "toggle": "Overlay anzeigen / ausblenden",
+      "description": "Zeigt die Live-Sitzung (Server und Bereitschaftsstatus) über dem Spiel an, im randlosen Fenstermodus."
     },
     "name": {
-      "label": "Nutzername",
-      "placeholder": "Nutzername"
+      "label": "Benutzername",
+      "placeholder": "Benutzername"
     },
     "part": {
       "audio": "Audio",
       "banner": "Server-Banner",
       "developer": "Entwickler",
       "general": "Allgemein",
-      "overlay": "In-Game Overlay"
+      "overlay": "In-Game-Overlay"
     },
     "presence": {
-      "check": "Discord Reiche Präsenz",
-      "description": "Zeige deine Sitzung auf deinem Discord Profil — Lobby-Größe, Bereitschaftsanzahl und den Code für öffentliche Sitzungen."
+      "check": "Discord Rich Presence",
+      "description": "Zeige deine Sitzung auf deinem Discord-Profil – Lobby-Größe, Anzahl der Bereiten und den Code für öffentliche Sitzungen."
     },
     "recap": {
-      "check": "Allianzformierte Karte",
-      "description": "Zeige eine Karte in der Lobby, wenn sich deine Crew auf einem Server zusammenschließt, mit den Versuchen, der Crewgröße und der Zeit, die sie eingeschaltet hat."
+      "check": "Karte „Allianz gebildet“",
+      "description": "Zeigt eine Karte in der Lobby, wenn sich deine Crew auf einem Server zusammenfindet – mit den Versuchen, der Crewgröße und der benötigten Zeit."
     },
     "savebar": {
-      "cancel": "Änderungen abbrechen",
-      "content": "Hop Hop Hop! Ich habe gesehen, dass du einige Änderungen vorgenommen hast! ",
+      "cancel": "Änderungen verwerfen",
+      "content": "Halt, stopp! Ich sehe, du hast ein paar Änderungen gemacht!",
       "save": "Speichern"
     },
     "server": {
@@ -152,285 +152,293 @@
     },
     "sound": {
       "check": "Audio-Countdown aktivieren/deaktivieren",
-      "label": "Tonanzahl",
-      "test": "prüfen"
+      "label": "Audio-Countdown",
+      "test": "Testen"
     },
     "stats": {
-      "check": "Anonyme Allianzstatistiken",
-      "description": "Unterstützen Sie die anonymen Ergebnisse Ihrer Sitzungen (Erfolg, Regionen, nie wer Sie sind) auf der öffentlichen Statistikseite."
+      "check": "Anonyme Allianz-Statistiken",
+      "description": "Steuere die anonymen Ergebnisse deiner Sitzungen (Erfolg, Regionen, niemals wer du bist) zur öffentlichen Statistikseite bei."
     },
     "statsHint": {
-      "check": "Aktueller Hinweis",
-      "description": "Schlagen Sie die Stunden vor, in denen sich Allianzen am häufigsten bilden, die aus anonymen Statistiken stammen und in Ihrer lokalen Zeit angezeigt werden."
+      "check": "Hinweis zur besten Zeit",
+      "description": "Schlägt die Stunden vor, in denen sich Allianzen am häufigsten bilden – ermittelt aus den anonymen Statistiken und in deiner lokalen Zeit angezeigt."
     },
-    "subtitle": "Präferenzoptionen",
+    "subtitle": "Einstellungsoptionen",
     "title": "Einstellungen"
   },
   "contextMenu": {
     "master": {
-      "demote": "Master entfernen",
-      "kick": "Kicken",
-      "promote": "Master zuweisen",
+      "demote": "Herabstufen",
+      "kick": "Rauswerfen",
+      "promote": "Zum Sitzungsleiter befördern",
       "title": "Benutzer"
     }
   },
   "credits": {
     "and": "und",
-    "description": "BetterFleet wurde entwickelt, um die Bildung von Allianzen in Sea Of Thieves zu erleichtern",
-    "designed": "Bezeichnen durch",
-    "details": "BetterFleet ist eine nicht offizielle Drittanbieteranwendung, die nichts mit dem Entwicklungsteam von Sea Of Thieves zu tun hat. Die Verwendung ist rein äußerlich und hat keinen Einfluss auf das Spielerlebnis!",
-    "developed": "Entwickeln von",
-    "socials": "Finden Sie uns hier:",
+    "description": "BetterFleet wurde entwickelt, um das Bilden von Allianzen in Sea of Thieves zu erleichtern",
+    "designed": "Design von",
+    "details": "BetterFleet ist eine inoffizielle Drittanbieter-Anwendung ohne Verbindung zum Entwicklungsteam von Sea of Thieves. Die Nutzung erfolgt rein extern und hat keinerlei Einfluss auf das Spielerlebnis. Der Nutzer erklärt sich damit einverstanden, die alleinige Verantwortung für die Nutzung zu tragen!",
+    "developed": "Entwickelt von",
+    "socials": "Findet uns hier:",
     "sot": {
-      "thanks": "Wir möchten uns bedanken",
-      "use": "um uns die Nutzung der Schriftart und Banner ihres Spiels zu ermöglichen"
+      "thanks": "Wir möchten",
+      "use": "zurückgeben, was den Piraten gehört, denn wie ihr seht, verwenden wir die Schriftart und die Banner aus dem Spiel!"
     },
     "title": "Credits"
   },
   "diagnostic": {
-    "banner": "Server-Erkennung scheint stecken zu sein – eine 20er Jahre Aufnahme kann uns sagen, warum.",
+    "banner": "Die Servererkennung scheint zu hängen – eine 20-sekündige Aufzeichnung kann uns verraten, warum.",
     "capture": {
-      "capturing": "Erfassen…",
-      "copied": "In Zwischenablage kopiert",
+      "capturing": "Aufzeichnung läuft…",
+      "copied": "In die Zwischenablage kopiert",
       "copy": "Kopieren",
-      "description": "Erfasst die UDP-Ströme des Spiels für ~20s, um die Servererkennung zu debuggen (Problem #364). Führen Sie es einmal im Hauptmenü und einmal im Spiel aus, dann kopieren und teilen Sie jedes Ergebnis.",
+      "description": "Zeichnet die UDP-Datenströme des Spiels für ~20 s auf, um die Servererkennung zu debuggen (Issue #364). Führe sie einmal im Hauptmenü und einmal im Spiel aus, kopiere und teile dann jedes Ergebnis.",
       "error": "Fehler: {error}",
-      "inGame": "Erfassen (im Spiel)",
-      "mainMenu": "Aufnahme (Hauptmenü)",
-      "title": "Server-Erkennungsdiagnose"
+      "inGame": "Aufzeichnen (im Spiel)",
+      "mainMenu": "Aufzeichnen (Hauptmenü)",
+      "title": "Diagnose der Servererkennung"
     },
     "dismiss": "Nicht jetzt",
-    "prefill": "Die Servererkennung blieb im Spiel still – automatische Diagnose in den Logs.",
+    "prefill": "Die Servererkennung blieb im Spiel stumm – automatische Diagnose in den Logs angehängt.",
     "run": "Diagnose ausführen"
   },
   "firstLogin": {
     "button": {
-      "description": "Hissen Sie die Segel, Jungs, übernehmen Sie das Ruder und machen Sie sich auf den Weg zur See!",
+      "description": "Hisst die Segel, Jungs, übernehmt das Ruder und stecht in See!",
       "title": "Lasst die Reise beginnen"
     },
-    "description": "Bitte geben Sie Ihren aktuellen Gamertag ein, um den reibungslosen Ablauf der Allianz zu überwachen",
-    "tips": "Dieser Name ist, wie deine Crewmates dich in der Sitzung sehen werden",
-    "title": "Wie heißt du?"
+    "description": "Bitte gib deinen aktuellen Gamertag ein, um für den reibungslosen Ablauf der Allianz zu sorgen",
+    "tips": "Unter diesem Namen sehen dich deine Crewmitglieder in der Sitzung",
+    "title": "Wie heißt du, Matrose?"
   },
   "loading": {
     "loading": "Wird geladen...",
     "targetGame": "Spielerkennung läuft",
-    "targetLoading": "Spiel erkannt. Schiffe in Vorbereitung.",
-    "tips": "Dieser Vorgang kann eine Weile dauern. Bitte stellen Sie sicher, dass Ihr Spiel gestartet ist"
+    "targetLoading": "Spiel erkannt. Schiffe werden vorbereitet.",
+    "tips": "Dieser Vorgang kann eine Weile dauern. Bitte stelle sicher, dass dein Spiel gestartet ist"
   },
   "locales": {
     "de": "Deutsch",
     "en": "English",
     "es": "Español",
     "fr": "Français",
-    "it": "Italienisch"
+    "hi": "हिन्दी",
+    "it": "Italiano",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pl": "Polski",
+    "pt": "Português (Brasil)",
+    "ru": "Русский",
+    "uk": "Українська",
+    "zh": "简体中文"
   },
   "login": {
     "browser": {
       "title": "Im Browser fortfahren",
-      "message": "Eine Anmeldeseite wurde in Ihrem Browser geöffnet. Schließen Sie die Anmeldung dort ab und kehren Sie dann hierher zurück.",
+      "message": "In deinem Browser wurde eine Anmeldeseite geöffnet. Schließe die Anmeldung dort ab und komm dann hierher zurück.",
       "cancel": "Abbrechen",
-      "error": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut."
+      "error": "Anmeldung fehlgeschlagen. Bitte versuche es erneut."
     },
     "continue": "Weiter",
-    "description": "Willkommen bei BetterFleet! Wir freuen uns, Sie bei uns zu haben. Damit Sie die Anwendung vollständig nutzen können, ist es notwendig, sich bei Ihrem Konto anzumelden oder eins zu erstellen!",
-    "disconnect": "Das ist nicht Ihr Konto? ",
-    "loginButton": "Einloggen",
-    "succeed": "Erfolgreiche Verbindung!",
-    "userWelcome": "Begrüßung",
-    "welcome": "Willkommen zu"
+    "description": "Willkommen bei BetterFleet! Wir freuen uns riesig, dich bei uns zu haben. Um die Anwendung zu nutzen, melde dich bitte bei deinem Konto an oder erstelle ein neues!",
+    "disconnect": "Das ist nicht dein Konto?",
+    "loginButton": "Anmelden",
+    "succeed": "Anmeldung erfolgreich!",
+    "userWelcome": "Willkommen",
+    "welcome": "Willkommen bei"
   },
   "modal": {
     "confirm": {
       "launch": {
         "cancel": "Abbrechen",
-        "confirm": "Heben Sie den Anker",
-        "content": "Nicht alle Spieler sind bereit! Sind Sie sicher, dass Sie den Anker lichten möchten?",
-        "title": "WARNUNG!"
+        "confirm": "Leinen los",
+        "content": "Nicht alle Spieler sind bereit! Bist du sicher, dass du ablegen möchtest?",
+        "title": "ACHTUNG!"
       },
       "leave": {
         "cancel": "Abbrechen",
         "confirm": "Sitzung verlassen",
-        "content": "Sind Sie sicher, dass Sie die Sitzung verlassen möchten?",
-        "title": "VERLASSEN SIE DIE SITZUNG"
+        "content": "Bist du sicher, dass du die Sitzung verlassen möchtest?",
+        "title": "SITZUNG VERLASSEN"
       }
     }
   },
   "overlay": {
-    "empty": "Warten auf Ihre Sitzung…"
+    "empty": "Warten auf deine Sitzung…"
   },
   "report": {
     "bug": {
       "button": "Bericht senden",
-      "content1": "Wenn bei der Anwendung ein Problem auftritt, funktioniert etwas nicht richtig. Wir empfehlen Ihnen, uns das Problem zu melden, indem Sie uns eine kurze Nachricht schreiben, in der Sie das Problem erläutern, damit wir es so schnell wie möglich beheben können.",
-      "content2": "Die im Rahmen der Meldung an uns übermittelten Daten sind anonym und enthalten keine personenbezogenen Daten. Wir versenden statistische Informationen und Debug-Nachrichten, um Ihr Problem so effizient wie möglich untersuchen zu können.",
-      "title": "Ein Käfer ?"
+      "content1": "Deine Berichte helfen uns, Fehler und Fehlfunktionen zu beheben, die dir bei der Nutzung der Anwendung begegnen. Falls das bei dir der Fall ist, beschreibe dein Problem bitte so genau wie möglich im Feld unten.",
+      "content2": "Beachte, dass dein Bericht neben der Nachricht auch anonym nützliche Daten zur Eingrenzung des Problems an uns übermittelt.",
+      "title": "Einen Fehler melden"
     },
     "faq": {
       "button": {
         "discord": "Discord",
-        "faq": "FAQs"
+        "faq": "F.A.Q."
       },
-      "content": "Haben Sie ein Problem? Besuchen Sie unsere Website auf der FAQ-Seite, um zu sehen, ob wir Ihnen noch nicht geantwortet haben! Ansonsten empfehlen wir Ihnen, uns auf unserem Discord zu fragen",
-      "title": "Hast du eine Frage ?"
+      "content": "Wirf einen Blick auf die F.A.Q.-Seite unserer Website – vielleicht findest du dort schon eine Antwort auf dein Problem! Andernfalls kannst du uns auf unserem Discord kontaktieren. Falls es um einen Fehler geht, wirst du höchstwahrscheinlich gebeten, einen Bericht zu senden!",
+      "title": "Hast du eine Frage?"
     }
   },
   "session": {
     "empty": {
-      "comment": "Ich rechne damit, dass es kein Schiff gibt, um die Meere mit… zu segeln",
-      "title": "Verflixt!"
+      "comment": "Mir scheint, da ist kein Schiff, um die Meere zu befahren…",
+      "title": "Sapperlot!"
     },
     "filter": {
       "all": "Alle",
       "private": "Privat",
       "public": "Öffentlich"
     },
-    "issue": "Wenn du irgendwelche Probleme findest, trete unserem bei",
+    "issue": "Wenn du auf Probleme stößt, besuche unseren",
     "or": "ODER",
     "connectedPlayers": "Verbundene Spieler",
     "playerLabel": "Spieler",
     "playersLabel": "Spieler",
     "refresh": "Aktualisieren",
-    "privateHint": "Private Sitzung — fragen Sie den Host, ob der Code beitreten soll.",
-    "searchPlaceholder": "Suche eine Sitzung…",
+    "privateHint": "Private Sitzung – frag den Host nach dem Code, um beizutreten.",
+    "searchPlaceholder": "Sitzung suchen…",
     "autoSetSail": {
-      "description": "Setzt automatisch die Segel, sobald alle Spieler bereit sind",
-      "label": "Automatisch Segel setzen"
+      "description": "Legt automatisch ab, sobald alle Spieler bereit sind",
+      "label": "Automatisch ablegen"
     },
     "choice": {
-      "createComment": "Genießen Sie die Freiheit und herrschen Sie über das Meer der Diebe!",
-      "createSession": "Erstellen Sie eine Sitzung",
-      "joinComment": "Schnappen Sie sich einen Krug, kommen Sie an Bord und schließen Sie sich der Crew an!",
-      "joinSession": "Nehmen Sie an einer Sitzung teil",
+      "createComment": "Koste die Freiheit und herrsche über die Sea of Thieves!",
+      "createSession": "Sitzung erstellen",
+      "joinComment": "Schnapp dir einen Humpen, komm an Bord und schließ dich der Crew an!",
+      "joinSession": "Einer Sitzung beitreten",
       "modal": {
-        "button": "Nehmen Sie an der Sitzung teil",
-        "comment": "Jede Sitzung ist privat und benötigt einen Identifikationscode. Fragen Sie den Gastgeber der Sitzung, an der Sie teilnehmen möchten, für die ID!",
-        "title": "Geben Sie eine Sitzungs-ID ein"
+        "button": "Der Sitzung beitreten",
+        "comment": "Jede Sitzung ist privat und erfordert einen Zugangscode. Frag den Host der Sitzung, der du beitreten möchtest, nach der ID!",
+        "title": "Gib eine Sitzungs-ID ein"
       }
     },
     "contributor": {
       "alpha_tester": "Alpha-Tester",
-      "designer": "Benennen",
+      "designer": "Designer",
       "developer": "Entwickler",
       "translator": "Übersetzer"
     },
-    "countdown": "Die Forschung beginnt in...",
-    "id": "Session-ID",
-    "idCopy": "Kopiert !",
-    "inviteConsole": "Lade Konsolenspieler ein",
+    "countdown": "Die Suche beginnt in...",
+    "id": "Sitzungs-ID",
+    "idCopy": "Kopiert!",
+    "inviteConsole": "Konsolenspieler einladen",
     "inviteCopied": "Link kopiert!",
     "informations": {
-      "success": "Erfolgsrate",
-      "title": "Information",
+      "success": "Erfolgsquote",
+      "title": "Informationen",
       "totalPlayer": "Spieler bereit",
       "tryNumber": "Anzahl der Versuche"
     },
-    "leave": "Verlassen Sie die Sitzung",
+    "leave": "Sitzung verlassen",
     "linuxAutoclick": {
-      "banner": "Automatischer Klick unter Linux nicht verfügbar (Wayland): Klicke selbst auf \"Segel setzen\".",
-      "dismiss": "Verwerfen"
+      "banner": "Automatischer Klick unter Linux (Wayland) nicht verfügbar: Klicke selbst auf „Leinen los“.",
+      "dismiss": "Schließen"
     },
     "name": {
-      "0": "Geisterschiff",
-      "1": "Versteckter Schatz",
-      "10": "Piraten-Fernglas",
-      "11": "Nachtboarding",
-      "12": "Kapitän Courageous",
-      "13": "Rebellencrew",
-      "14": "Monströse Welle",
-      "15": "Gestohlene Beute",
-      "16": "Würziger Rum",
-      "17": "Zerrissener Schleier",
-      "18": "Rostiger Anker",
-      "19": "Verbotener Hafen",
-      "2": "Alte Karte",
-      "20": "Vergessene Legende",
-      "21": "Untergetauchtes Wrack",
-      "22": "Brillanter Haken",
-      "23": "Heftigen Sturm",
-      "24": "Rutschiger Boden",
-      "25": "Geheime Bucht",
-      "26": "Schwarzmarkt",
-      "27": "Schatzsuche",
-      "28": "Gebrochener Mast",
-      "29": "Geladene Pistole",
-      "3": "Mysteriöse Insel",
-      "30": "Riesenkalmar",
-      "31": "Piratenkodex",
-      "32": "Versteckter Dolch",
-      "33": "Günstiger Wind",
-      "34": "Geflüchteter Häftling",
-      "35": "Alte Patrone",
-      "36": "Tödliches Duell",
-      "37": "Erloschene Flamme",
-      "38": "Kostbares Juwel",
-      "39": "Vergessene Geschichte",
-      "4": "Gesprächiger Papagei",
-      "40": "Meuterei-Crew",
-      "41": "Meeresschildkröte",
-      "42": "Geheimer Plan",
-      "43": "Geweichtes Gunpowder",
-      "44": "Spanische Galeone",
-      "45": "Ruhige Bucht",
-      "46": "Kaputtes Ruder",
-      "47": "Leitstern",
-      "48": "Versprochene Rache",
-      "49": "Wildes Bankett",
-      "5": "Magischer Kompass",
-      "50": "Rauchende Muskete",
-      "51": "Meereslied",
-      "52": "Greifer geworfen",
-      "53": "Piratenmedaille",
-      "54": "Rätselhafte Karte",
-      "55": "Versteckte Nachricht",
-      "56": "Sturmlampe",
-      "57": "Altes Pergament",
-      "58": "Nachtleuchtfeuer",
-      "59": "Agile Filibuster",
-      "6": "Geschärfter Säbel",
-      "60": "Gefährliche Überfahrt",
-      "61": "Listiger Freibeuter",
-      "62": "Gestohlene Krone",
-      "63": "Piratenrat",
-      "64": "Wandernde Seele",
-      "65": "Befestigtes Gefängnis",
-      "66": "Geschütztes Amulett",
-      "67": "Seekampf",
-      "68": "Schwarze Hexerei",
-      "69": "Gefangene Truhe",
-      "7": "Rumpelnde Kanone",
-      "70": "Freiheitsschrei",
-      "71": "Wildes Ufer",
-      "72": "Gefälschte Währung",
-      "73": "Geheimer Pakt",
-      "74": "Gebrochene Allianz",
-      "75": "Altes Manuskript",
-      "76": "Wort gegeben",
-      "77": "Geisterschiff",
-      "78": "Piratenthron",
-      "79": "Marine Mirage",
-      "8": "Schwarze Flagge",
-      "80": "Echohöhle",
-      "81": "goldener Sand",
-      "82": "Aufmerksames Auge",
-      "83": "Kaputte Uhr",
-      "84": "Sonnenuntergang",
-      "85": "Mondlose Nacht",
-      "86": "Die hohe Ebene",
-      "87": "Rückenwind",
-      "88": "Gewittergefahr",
-      "89": "Schiffbrüchiges Boot",
-      "9": "Verschlossene Truhe",
-      "90": "Versteckte Zuflucht",
-      "91": "Überraschungsattacke",
-      "92": "Kühne Flucht",
-      "93": "Verlorenes Vermögen",
-      "94": "Brillantes Nugget",
-      "95": "Heldenhafte Geschichte",
-      "96": "Gestohlener Umhang",
-      "97": "Piraten-Eid",
-      "98": "Blaue Lagune",
-      "99": "Geheime Mission"
+      "0": "Das Geisterschiff",
+      "1": "Der verborgene Schatz",
+      "10": "Das zerkratzte Fernrohr",
+      "11": "Das nächtliche Entern",
+      "12": "Der Mut des Kapitäns",
+      "13": "Die meuternde Crew",
+      "14": "Die brandende Welle",
+      "15": "Die gestohlene Beute",
+      "16": "Der Rum des Schmugglers",
+      "17": "Das schattige Segel",
+      "18": "Der rostige Anker",
+      "19": "Der behelfsmäßige Hafen",
+      "2": "Die gezinkten Würfel",
+      "20": "Die vergessene Legende",
+      "21": "Das verhüllte Wrack",
+      "22": "Der funkelnde Haken",
+      "23": "Der tosende Sturm",
+      "24": "Die glitschige Planke",
+      "25": "Die geheime Bucht",
+      "26": "Der Schwarzmarkt",
+      "27": "Die Schatzsuche",
+      "28": "Der wackelige Mast",
+      "29": "Die Steinschlosspistole",
+      "3": "Die geheimnisvolle Insel",
+      "30": "Der gigantische Tintenfisch",
+      "31": "Der Piratenkodex",
+      "32": "Der blutige Dolch",
+      "33": "Der günstige Wind",
+      "34": "Der lahme Flüchtling",
+      "35": "Die rustikale Patrone",
+      "36": "Das improvisierte Duell",
+      "37": "Die lodernde Flamme",
+      "38": "Das Herz des Ozeans",
+      "39": "Die Geschichte der Vergangenheit",
+      "4": "Der geschwätzige Papagei",
+      "40": "Die wilde Meuterei",
+      "41": "Die Meeresschildkröte",
+      "42": "Der unfehlbare Plan",
+      "43": "Durchnässtes Schießpulver",
+      "44": "Die spanische Galeone",
+      "45": "Die himmlische Bucht",
+      "46": "Das angeschlagene Steuerrad",
+      "47": "Der Polarstern",
+      "48": "Das rachsüchtige Versprechen",
+      "49": "Das ausschweifende Bankett",
+      "5": "Der verwirrte Kompass",
+      "50": "Die rauchende Muskete",
+      "51": "Das Seemannslied",
+      "52": "Die zweifelhafte Takelage",
+      "53": "Das aztekische Medaillon",
+      "54": "Die rätselhafte Karte",
+      "55": "Die Flaschenpost",
+      "56": "Die Sturmlaterne",
+      "57": "Das uralte Pergament",
+      "58": "Die dämmrige Morgenröte",
+      "59": "Der gerissene Freibeuter",
+      "6": "Der scharfe Säbel",
+      "60": "Die gefährliche Überfahrt",
+      "61": "Der listige Bukanier",
+      "62": "Der glühende Shilling",
+      "63": "Der Piratenrat",
+      "64": "Die irrende Seele",
+      "65": "Das befestigte Gefängnis",
+      "66": "Das verfluchte Amulett",
+      "67": "Die Seeschlacht",
+      "68": "Der grüne Blitz",
+      "69": "Die Truhe des toten Mannes",
+      "7": "Die grollende Kanone",
+      "70": "Der Jungbrunnen",
+      "71": "Die unbekannte Küste",
+      "72": "Die gefälschte Münze",
+      "73": "Der Blutpakt",
+      "74": "Die zerbrochene Allianz",
+      "75": "Das alte Manuskript",
+      "76": "Das Ehrenwort",
+      "77": "Der fliegende Holländer",
+      "78": "Königliche Piraterie",
+      "79": "Das Trugbild der See",
+      "8": "Die schwarze Flagge",
+      "80": "Das kreischende Echo",
+      "81": "Der vergoldete Sand",
+      "82": "Der stechende Horizont",
+      "83": "Das unerbittliche Ticken",
+      "84": "Die untergehende Sonne",
+      "85": "Die mondlose Nacht",
+      "86": "Die Flut",
+      "87": "Der Atem des Abgrunds",
+      "88": "Der bedrohliche Sturm",
+      "89": "Das havarierte Schiff",
+      "9": "Davy Jones' Kiste",
+      "90": "Der Hort der Diebe",
+      "91": "Der gelegene Angriff",
+      "92": "Die furchtlose Flucht",
+      "93": "Das verschollene Vermögen",
+      "94": "Der Piaster",
+      "95": "Die heldenhafte Geschichte",
+      "96": "Der prunkvolle Umhang",
+      "97": "Der vereidigte Kaperfahrer",
+      "98": "Die blaue Lagune",
+      "99": "Die verschmitzte Mission"
     },
     "player": {
       "notReady": "Nicht bereit",
@@ -442,28 +450,28 @@
         "started": "Spiel gestartet"
       }
     },
-    "run": "Segel setzen",
+    "run": "Leinen los",
     "recap": {
       "copied": "Kopiert!",
       "copy": "Für Discord kopieren",
-      "dismiss": "Verwerfen",
+      "dismiss": "Schließen",
       "duration": "Dauer",
       "pirates": "Piraten",
       "title": "Allianz gebildet! ⚓",
       "tries": "Versuche"
     },
     "statsHint": {
-      "dismiss": "Verstecken",
-      "text": "Bestes Fenster: {range} ({best}% der Allianzen erfolgreich — gerade jetzt: {now}%)",
-      "textNoNow": "Bestes Fenster: {range} ({best}% der Allianzen erfolgreich)"
+      "dismiss": "Ausblenden",
+      "text": "Bestes Zeitfenster: {range} ({best}% der Allianzen gelingen – gerade jetzt: {now}%)",
+      "textNoNow": "Bestes Zeitfenster: {range} ({best}% der Allianzen gelingen)"
     },
     "status": {
-      "countdown": "Starten in",
+      "countdown": "Start in",
       "ready": "Bereit",
       "waiting": "Warten"
     },
     "visibility": {
-      "description": "Öffentliche Sitzungen werden im Browser aufgelistet, damit jeder beitreten kann.",
+      "description": "Öffentliche Sitzungen werden im Browser aufgelistet, sodass jeder beitreten kann.",
       "label": "Öffentliche Sitzung",
       "private": "Privat",
       "public": "Öffentlich"
@@ -475,14 +483,14 @@
   },
   "tooltips": {
     "navbar": {
-      "config": "Page de configuration",
+      "config": "Einstellungen",
       "fleet": "Sitzung",
-      "home": "Page d'acceuil"
+      "home": "Startseite"
     }
   },
   "whatsnew": {
-    "full": "Den kompletten Changelog ansehen",
-    "offline": "Konnte die Notizen nicht laden — das komplette Changelog hat sie.",
-    "title": "Was ist neu in {version}"
+    "full": "Vollständiges Änderungsprotokoll ansehen",
+    "offline": "Die Notizen konnten nicht geladen werden – das vollständige Änderungsprotokoll online enthält sie.",
+    "title": "Neuigkeiten in {version}"
   }
 }

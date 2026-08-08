@@ -1,16 +1,16 @@
 {
   "alert": {
     "alreadyConnected": {
-      "content": "Sei già in questa sessione su un'altra finestra o un altro dispositivo. Chiudila e riprova.",
+      "content": "Sei già in questa sessione su un'altra finestra o dispositivo. Chiudila, poi riprova.",
       "title": "Già connesso"
     },
     "badRequest": {
-      "content": "La query è corrotta o errata",
-      "title": "Query errata"
+      "content": "La richiesta è corrotta o errata",
+      "title": "Richiesta errata"
     },
     "emptySession": {
-      "content": "Inserisci un ID di sessione",
-      "title": "ID sessione vuota"
+      "content": "Inserisci un ID sessione",
+      "title": "ID sessione vuoto"
     },
     "error": {
       "content": "Si è verificato un errore",
@@ -26,25 +26,25 @@
     },
     "report": {
       "emptyMessage": {
-        "content": "Fai del tuo meglio per descrivere il tuo problema nella segnalazione dei bug",
-        "title": "Rapporto vuoto"
+        "content": "Descrivi il tuo problema nel modo più preciso possibile nella segnalazione del bug",
+        "title": "Segnalazione vuota"
       },
       "send": {
-        "title": "Report inviato"
+        "title": "Segnalazione inviata"
       }
     },
     "research": {
       "notInMenu": {
         "content": "Non sei nel menu di gioco",
-        "title": "Avvio fallito"
+        "title": "Avvio non riuscito"
       },
       "notReady": {
         "content": "Non sei pronto",
-        "title": "Avvio fallito"
+        "title": "Avvio non riuscito"
       },
       "offline": {
-        "content": "La tua partita è chiusa",
-        "title": "Avvio fallito"
+        "content": "Il tuo gioco è chiuso",
+        "title": "Avvio non riuscito"
       }
     },
     "session": {
@@ -58,7 +58,7 @@
       "title": "Sessione non trovata"
     },
     "socket": {
-      "connectionFailed": "La connessione al server non è riuscita",
+      "connectionFailed": "Connessione al server non riuscita",
       "random": "Il WebSocket si è chiuso inaspettatamente",
       "title": "Connessione persa"
     },
@@ -68,17 +68,17 @@
     },
     "username": {
       "ignore": {
-        "content": "Modifica nome utente annullata",
+        "content": "Modifica del nome utente annullata",
         "title": "Conto alla rovescia in corso"
       },
       "length": {
-        "content": "Il tuo username non può essere vuoto o superare i 16 caratteri",
-        "title": "Formato username non valido"
+        "content": "Il nome utente non può essere vuoto né superare i 16 caratteri",
+        "title": "Formato del nome utente non valido"
       }
     },
     "websocketAuthFailed": {
-      "content": "Autenticazione WebSocket fallita",
-      "title": "Connessione fallita"
+      "content": "Autenticazione al WebSocket non riuscita",
+      "title": "Connessione non riuscita"
     }
   },
   "appName": "BetterFleet",
@@ -86,12 +86,12 @@
     "brigantine": "Brigantino",
     "galleon": "Galeone",
     "label": "Dimensione della nave",
-    "none": "Non specificato",
+    "none": "Non specificata",
     "sloop": "Sloop"
   },
   "config": {
     "banner": {
-      "description": "Lo stendardo delle sessioni che ospiti, nella lobby e nell'elenco delle sessioni.",
+      "description": "Lo stendardo che portano le sessioni che ospiti, nella lobby e nell'elenco delle sessioni.",
       "pick": "Stendardo {number}",
       "shuffle": {
         "check": "Stendardo casuale",
@@ -108,42 +108,42 @@
     },
     "macro": {
       "check": "Avvio assistito",
-      "description": "Clicca automaticamente su \"Salpa\" alla fine del conto alla rovescia",
-      "linuxUnavailable": "Non disponibile su Linux — Wayland blocca il clic automatico, quindi devi cliccare tu stesso su \"Salpa\"."
+      "description": "Clicca automaticamente su \"Salpa\" al termine del conto alla rovescia",
+      "linuxUnavailable": "Non disponibile su Linux — Wayland blocca il clic automatico, quindi devi cliccare tu su \"Salpa\"."
     },
     "overlay": {
       "hotkey": {
-        "hint": "Clicca e poi premi una combinazione di tasti. Un singolo tasto non funziona: serve un modificatore (Ctrl, Alt o Maiusc).",
+        "hint": "Clicca, poi premi una combinazione di tasti. Un singolo tasto non funziona: serve un modificatore (Ctrl, Alt o Maiusc).",
         "invalid": "Questa scorciatoia non può essere usata",
         "label": "Scorciatoia di attivazione",
         "recording": "Premi una combinazione…",
         "reset": "Reimposta"
       },
       "toggle": "Mostra / nascondi l'overlay",
-      "description": "Mostra la sessione in diretta (server e giocatori pronti) sopra il gioco, in modalità finestra senza bordi."
+      "description": "Mostra la sessione in tempo reale (server e stati di pronto) sopra il gioco, in modalità finestra senza bordi."
     },
     "name": {
-      "label": "Username",
-      "placeholder": "Username"
+      "label": "Nome utente",
+      "placeholder": "Nome utente"
     },
     "part": {
       "audio": "Audio",
-      "banner": "Stendardo della sessione",
+      "banner": "Stendardo del server",
       "developer": "Sviluppatore",
       "general": "Generale",
       "overlay": "Overlay in gioco"
     },
     "presence": {
       "check": "Discord Rich Presence",
-      "description": "Mostra la tua sessione sul tuo profilo Discord — dimensione della lobby, giocatori pronti e il codice delle sessioni pubbliche."
+      "description": "Mostra la tua sessione sul tuo profilo Discord — dimensione della lobby, numero di giocatori pronti e il codice delle sessioni pubbliche."
     },
     "recap": {
-      "check": "Scheda alleanza formata",
-      "description": "Mostra una scheda nella lobby quando la tua ciurma si raggruppa su un server, con i tentativi, la dimensione e il tempo impiegato."
+      "check": "Scheda di alleanza formata",
+      "description": "Mostra una scheda nella lobby quando la tua ciurma si riunisce su un server, con i tentativi, la dimensione della ciurma e il tempo impiegato."
     },
     "savebar": {
       "cancel": "Annulla le modifiche",
-      "content": "Aspetta un attimo! Vedo che hai fatto delle modifiche!",
+      "content": "Un momento! Vedo che hai fatto delle modifiche!",
       "save": "Salva"
     },
     "server": {
@@ -151,41 +151,41 @@
       "placeholder": "https://betterfleet.com/api"
     },
     "sound": {
-      "check": "Abilita/Disabilita audio del conto alla rovescia",
-      "label": "Audio del conto alla rovescia",
+      "check": "Abilita/Disabilita il conto alla rovescia sonoro",
+      "label": "Conto alla rovescia sonoro",
       "test": "Prova"
     },
     "stats": {
       "check": "Statistiche anonime delle alleanze",
-      "description": "Contribuisci i risultati anonimi delle tue sessioni (successo, regioni, mai chi sei) alla pagina pubblica delle statistiche."
+      "description": "Contribuisci con i risultati anonimi delle tue sessioni (successo, regioni, mai la tua identità) alla pagina pubblica delle statistiche."
     },
     "statsHint": {
-      "check": "Best-time hint",
-      "description": "Suggest the hours when alliances form most often, drawn from the anonymous statistics and shown in your local time."
+      "check": "Suggerimento sull'orario migliore",
+      "description": "Suggerisce gli orari in cui le alleanze si formano più spesso, ricavati dalle statistiche anonime e mostrati nel tuo fuso orario locale."
     },
-    "subtitle": "Opzioni di preferenza",
+    "subtitle": "Opzioni delle preferenze",
     "title": "Impostazioni"
   },
   "contextMenu": {
     "master": {
-      "demote": "Declassa",
+      "demote": "Retrocedi",
       "kick": "Espelli",
-      "promote": "Promuovi al master della sessione",
+      "promote": "Promuovi a master della sessione",
       "title": "Utente"
     }
   },
   "credits": {
     "and": "e",
-    "description": "BetterFleet è stato sviluppato per facilitare la formazione di alleanze su Sea of ​​Thieves",
+    "description": "BetterFleet è stato sviluppato per facilitare la formazione di alleanze su Sea of Thieves",
     "designed": "Progettato da",
-    "details": "BetterFleet è un'applicazione di terze parti non ufficiale e non correlata al team di sviluppo di Sea of ​​Thieves. Il suo utilizzo è puramente esterno e non ha alcun impatto sull'esperienza di gioco. L'utente accetta di essere ritenuto l'unico responsabile del suo utilizzo!",
+    "details": "BetterFleet è un'applicazione di terze parti non ufficiale e non collegata al team di sviluppo di Sea of Thieves. Il suo utilizzo è puramente esterno e non ha alcun impatto sull'esperienza di gioco. L'utente accetta di essere ritenuto l'unico responsabile del suo utilizzo!",
     "developed": "Sviluppato da",
     "socials": "Trovaci qui:",
     "sot": {
-      "thanks": "Rendiamo a",
-      "use": "ciò che appartiene ai pirati — aye, il carattere e gli stendardi che vedete qui son roba loro!"
+      "thanks": "Vogliamo rendere a",
+      "use": "ciò che appartiene ai pirati perché, come potete notare, usiamo il font e gli stendardi del gioco!"
     },
-    "title": "Riconoscimenti"
+    "title": "Crediti"
   },
   "diagnostic": {
     "banner": "Il rilevamento del server sembra bloccato — una cattura di 20s può dirci perché.",
@@ -193,37 +193,45 @@
       "capturing": "Cattura in corso…",
       "copied": "Copiato negli appunti",
       "copy": "Copia",
-      "description": "Cattura i flussi UDP del gioco per ~20s per diagnosticare il rilevamento del server (issue #364). Eseguila una volta nel menu principale e una in partita, poi copia e condividi ogni risultato.",
+      "description": "Cattura i flussi UDP del gioco per ~20s per analizzare il rilevamento del server (issue #364). Eseguila una volta nel menu principale e una volta in gioco, poi copia e condividi ogni risultato.",
       "error": "Errore: {error}",
-      "inGame": "Cattura (in partita)",
+      "inGame": "Cattura (in gioco)",
       "mainMenu": "Cattura (menu principale)",
       "title": "Diagnostica del rilevamento del server"
     },
     "dismiss": "Non ora",
-    "prefill": "Il rilevamento del server è rimasto muto in partita — diagnostica automatica allegata nei log.",
-    "run": "Avvia la diagnostica"
+    "prefill": "Il rilevamento del server è rimasto in silenzio in gioco — diagnostica automatica allegata nei log.",
+    "run": "Esegui la diagnostica"
   },
   "firstLogin": {
     "button": {
-      "description": "Ragazzi, alzate le vele, afferrate il timone e prendete il largo!",
-      "title": "Che il viaggio abbia inizio"
+      "description": "Issate le vele, ragazzi, prendete il timone e puntate al largo!",
+      "title": "Che l'avventura abbia inizio"
     },
-    "description": "Inserisci il tuo attuale gamertag per controllare il corretto svolgimento dell'alleanza",
-    "tips": "Questo è il nome che i tuoi compagni vedranno nella sessione",
-    "title": "Come ti chiami, ragazzo?"
+    "description": "Inserisci il tuo gamertag attuale per garantire il corretto svolgimento dell'alleanza",
+    "tips": "Questo è il nome con cui i tuoi compagni ti vedranno nella sessione",
+    "title": "Come ti chiami, marinaio?"
   },
   "loading": {
     "loading": "Caricamento...",
     "targetGame": "Rilevamento del gioco in corso",
     "targetLoading": "Gioco rilevato. Navi in preparazione.",
-    "tips": "Questo processo potrebbe richiedere un po' di tempo, assicurati che il tuo gioco sia avviato"
+    "tips": "Questo processo potrebbe richiedere un po', assicurati che il gioco sia avviato"
   },
   "locales": {
     "de": "Deutsch",
     "en": "English",
-    "es": "Español",
+    "es": "Español",
     "fr": "Français",
-    "it": "Italiano"
+    "hi": "हिन्दी",
+    "it": "Italiano",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pl": "Polski",
+    "pt": "Português (Brasil)",
+    "ru": "Русский",
+    "uk": "Українська",
+    "zh": "简体中文"
   },
   "login": {
     "browser": {
@@ -233,12 +241,12 @@
       "error": "Accesso non riuscito. Riprova."
     },
     "continue": "Continua",
-    "description": "Benvenuti su BetterFleet! Siamo entusiasti di averti tra noi. Per accedere all'applicazione, accedi al tuo account o creane uno!",
+    "description": "Benvenuto su BetterFleet! Siamo entusiasti di averti tra noi. Per accedere all'applicazione, accedi al tuo account o creane uno!",
     "disconnect": "Questo non è il tuo account?",
     "loginButton": "Accedi",
-    "succeed": "Accesso Riuscito!",
+    "succeed": "Accesso riuscito!",
     "userWelcome": "Benvenuto",
-    "welcome": "Benvenuto in"
+    "welcome": "Benvenuto su"
   },
   "modal": {
     "confirm": {
@@ -252,7 +260,7 @@
         "cancel": "Annulla",
         "confirm": "Lascia la sessione",
         "content": "Sei sicuro di voler lasciare la sessione?",
-        "title": "LASCIARE LA SESSIONE"
+        "title": "LASCIA LA SESSIONE"
       }
     }
   },
@@ -261,9 +269,9 @@
   },
   "report": {
     "bug": {
-      "button": "Invia report",
-      "content1": "Le tue segnalazioni ci aiutano a correggere eventuali bug e anomalie che potresti riscontrare durante la l'utilizzo dell'applicazione. Se questo è il tuo caso, ti invitiamo a essere il più preciso possibile e a descrivere il tuo problema nel riquadro sottostante.",
-      "content2": "Vale la pena notare che oltre al messaggio, la tua segnalazione ci invierà in forma anonima dati utili per identificare il problema.",
+      "button": "Invia segnalazione",
+      "content1": "Le tue segnalazioni ci aiutano a correggere bug e malfunzionamenti che potresti riscontrare durante l'uso dell'applicazione. Se è il tuo caso, ti invitiamo a essere il più preciso possibile e a descrivere il problema nel riquadro qui sotto.",
+      "content2": "Da notare che, oltre al messaggio, la tua segnalazione ci invierà in forma anonima dati utili a identificare il problema.",
       "title": "Segnala un bug"
     },
     "faq": {
@@ -271,22 +279,22 @@
         "discord": "Discord",
         "faq": "F.A.Q."
       },
-      "content": "Consulta la pagina delle FAQ del nostro sito web: potresti già trovare lì la risposta al tuo problema! In alternativa, puoi contattarci sul nostro Discord. Se si tratta di un bug, tieni presente che ti verrà sicuramente chiesto di inviarci una segnalazione!",
+      "content": "Dai un'occhiata alla pagina F.A.Q. del nostro sito web: potresti già trovarci una risposta al tuo problema! In alternativa puoi contattarci sul nostro Discord. Se si tratta di un bug, tieni presente che ti verrà quasi sicuramente chiesto di inviare una segnalazione!",
       "title": "Hai una domanda?"
     }
   },
   "session": {
     "empty": {
-      "comment": "Nessuna nave per solcare i mari…",
-      "title": "Perbacco!"
+      "comment": "Pare non ci sia nave con cui solcare i mari…",
+      "title": "Per mille sabordi!"
     },
     "filter": {
       "all": "Tutte",
-      "private": "Privata",
-      "public": "Pubblica"
+      "private": "Private",
+      "public": "Pubbliche"
     },
     "issue": "Se riscontri problemi, unisciti al nostro",
-    "or": "O",
+    "or": "OPPURE",
     "connectedPlayers": "Giocatori connessi",
     "playerLabel": "Giocatore",
     "playersLabel": "Giocatori",
@@ -298,18 +306,18 @@
       "label": "Salpa automaticamente"
     },
     "choice": {
-      "createComment": "Dai un morso alla libertà e domina il mare dei ladri!",
+      "createComment": "Assapora la libertà e domina il mare dei ladri!",
       "createSession": "Crea una sessione",
-      "joinComment": "Prendi un boccale, sali a bordo e unisciti all'equipaggio!",
-      "joinSession": "Entra in una sessione",
+      "joinComment": "Prendi un boccale, sali a bordo e unisciti alla ciurma!",
+      "joinSession": "Unisciti a una sessione",
       "modal": {
-        "button": "Entra nella sessione",
-        "comment": "Ogni sessione è privata e richiede un codice identificativo. Chiedi all'organizzatore della sessione a cui vuoi partecipare l’ID!",
+        "button": "Unisciti alla sessione",
+        "comment": "Ogni sessione è privata e richiede un codice identificativo. Chiedi l'ID all'host della sessione a cui vuoi unirti!",
         "title": "Inserisci un ID sessione"
       }
     },
     "contributor": {
-      "alpha_tester": "Alfa Tester",
+      "alpha_tester": "Alpha Tester",
       "designer": "Designer",
       "developer": "Sviluppatore",
       "translator": "Traduttore"
@@ -327,39 +335,39 @@
     },
     "leave": "Lascia la sessione",
     "linuxAutoclick": {
-      "banner": "Clic automatico non disponibile su Linux (Wayland): clicca tu stesso su \"Salpa\".",
+      "banner": "Clic automatico non disponibile su Linux (Wayland): clicca tu su \"Salpa\".",
       "dismiss": "Chiudi"
     },
     "name": {
       "0": "La Nave Fantasma",
       "1": "Il Tesoro Nascosto",
       "10": "Il Cannocchiale Graffiato",
-      "11": "L'Imbarco Notturno",
+      "11": "L'Abbordaggio Notturno",
       "12": "Il Coraggio del Capitano",
-      "13": "L'Equipaggio Ribelle",
-      "14": "L'Onda Crescente",
+      "13": "La Ciurma Ammutinata",
+      "14": "L'Onda Impetuosa",
       "15": "Il Bottino Rubato",
       "16": "Il Rum del Contrabbandiere",
       "17": "La Vela Ombrosa",
       "18": "L'Ancora Arrugginita",
-      "19": "Il Porto Improvvisato",
-      "2": "Il Dado Truccato",
+      "19": "Il Porto di Fortuna",
+      "2": "I Dadi Truccati",
       "20": "La Leggenda Dimenticata",
       "21": "Il Relitto Velato",
-      "22": "Il Gancio Scintillante",
+      "22": "L'Uncino Scintillante",
       "23": "La Tempesta Torrenziale",
       "24": "L'Asse Scivolosa",
-      "25": "Il Ruscello Segreto",
+      "25": "La Cala Segreta",
       "26": "Il Mercato Nero",
       "27": "La Caccia al Tesoro",
       "28": "L'Albero Traballante",
       "29": "La Pistola a Pietra Focaia",
       "3": "L'Isola Misteriosa",
       "30": "Il Calamaro Gigante",
-      "31": "Il Codice Pirata",
+      "31": "Il Codice dei Pirati",
       "32": "Il Pugnale Insanguinato",
       "33": "Il Vento Favorevole",
-      "34": "Il Fugitivo Zoppo",
+      "34": "Il Fuggitivo Zoppo",
       "35": "La Cartuccia Rustica",
       "36": "Il Duello Improvvisato",
       "37": "La Fiamma Furiosa",
@@ -369,58 +377,58 @@
       "40": "L'Ammutinamento Selvaggio",
       "41": "La Tartaruga di Mare",
       "42": "Il Piano Infallibile",
-      "43": "Polvere da Sparo Imbevuta",
-      "44": "Il Galleone Spagnolo",
+      "43": "La Polvere da Sparo Bagnata",
+      "44": "Il Galeone Spagnolo",
       "45": "La Baia Celeste",
-      "46": "L'Elmo Scheggiato",
-      "47": "La Stella del Nord",
+      "46": "Il Timone Scheggiato",
+      "47": "La Stella Polare",
       "48": "La Promessa Vendicativa",
-      "49": "Il Banchetto Scandaloso",
-      "5": "La Bussola Disorientata",
+      "49": "Il Banchetto Sfarzoso",
+      "5": "La Bussola Impazzita",
       "50": "Il Moschetto Fumante",
-      "51": "Il Canto Marinaro",
-      "52": "Il Dubbioso Sartiame",
+      "51": "Il Canto Marinaresco",
+      "52": "Il Sartiame Dubbio",
       "53": "Il Medaglione Azteco",
       "54": "La Mappa Enigmatica",
       "55": "Il Messaggio in Bottiglia",
       "56": "La Lanterna della Tempesta",
       "57": "L'Antica Pergamena",
       "58": "L'Alba Crepuscolare",
-      "59": "Il Filibustiere Volpino",
+      "59": "Il Filibustiere Scaltro",
       "6": "La Sciabola Affilata",
       "60": "La Pericolosa Traversata",
-      "61": "Il Bucaniero Astuto",
+      "61": "Il Bucaniere Astuto",
       "62": "Lo Scellino Splendente",
       "63": "Il Consiglio dei Pirati",
       "64": "L'Anima Errante",
       "65": "La Prigione Fortificata",
       "66": "L'Amuleto Maledetto",
       "67": "La Battaglia Navale",
-      "68": "Il Lampo Verde",
+      "68": "Il Raggio Verde",
       "69": "Il Forziere del Morto",
-      "7": "Il Cannone Rimbombante",
+      "7": "Il Cannone Rombante",
       "70": "La Fontana della Giovinezza",
       "71": "La Costa Inesplorata",
       "72": "La Moneta Contraffatta",
       "73": "Il Patto di Sangue",
-      "74": "L'Alleanza Distrutta",
+      "74": "L'Alleanza Infranta",
       "75": "Il Vecchio Manoscritto",
       "76": "La Parola d'Onore",
       "77": "L'Olandese Volante",
       "78": "Pirateria Reale",
-      "79": "Il Miraggio del Mare",
+      "79": "Il Miraggio Marino",
       "8": "La Bandiera Nera",
       "80": "L'Eco Stridente",
       "81": "La Sabbia Dorata",
-      "82": "L'Orizzonte Perforante",
-      "83": "Il Ticchettio Inquietante",
-      "84": "Il Sole al Tamonto",
+      "82": "L'Orizzonte Penetrante",
+      "83": "Il Ticchettio Incessante",
+      "84": "Il Sole al Tramonto",
       "85": "La Notte Senza Luna",
       "86": "L'Alta Marea",
       "87": "Il Respiro Abissale",
       "88": "La Tempesta Minacciosa",
-      "89": "La Nave Distrutta",
-      "9": "Il Baule di Davy Jones",
+      "89": "Il Vascello Naufragato",
+      "9": "L'Antro di Davy Jones",
       "90": "Il Rifugio dei Ladri",
       "91": "L'Attacco Opportuno",
       "92": "La Fuga Temeraria",
@@ -439,13 +447,13 @@
         "closed": "Offline",
         "in-game": "In gioco",
         "main-menu": "Nel menu di gioco",
-        "started": "Partita avviata"
+        "started": "Gioco avviato"
       }
     },
     "run": "Salpa",
     "recap": {
-      "copied": "Copied!",
-      "copy": "Copy for Discord",
+      "copied": "Copiato!",
+      "copy": "Copia per Discord",
       "dismiss": "Chiudi",
       "duration": "Durata",
       "pirates": "Pirati",
@@ -454,13 +462,13 @@
     },
     "statsHint": {
       "dismiss": "Nascondi",
-      "text": "Fascia migliore: {range} ({best}% di alleanze riuscite — in questo momento: {now}%)",
-      "textNoNow": "Fascia migliore: {range} ({best}% di alleanze riuscite)"
+      "text": "Fascia migliore: {range} ({best}% delle alleanze riesce — proprio ora: {now}%)",
+      "textNoNow": "Fascia migliore: {range} ({best}% delle alleanze riesce)"
     },
     "status": {
-      "countdown": "Avvia in",
+      "countdown": "Avvio tra",
       "ready": "Pronto",
-      "waiting": "In Attesa"
+      "waiting": "In attesa"
     },
     "visibility": {
       "description": "Le sessioni pubbliche compaiono nell'elenco e chiunque può unirsi.",
@@ -483,6 +491,6 @@
   "whatsnew": {
     "full": "Vedi il changelog completo",
     "offline": "Impossibile caricare le note — il changelog completo online le contiene.",
-    "title": "Novità della {version}"
+    "title": "Novità della versione {version}"
   }
 }

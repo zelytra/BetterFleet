@@ -10,6 +10,14 @@ import fr from "@/assets/locales/fr.json";
 import es from "@/assets/locales/es.json";
 import de from "@/assets/locales/de.json";
 import it from "@/assets/locales/it.json";
+import hi from "@/assets/locales/hi.json";
+import ja from "@/assets/locales/ja.json";
+import ko from "@/assets/locales/ko.json";
+import pl from "@/assets/locales/pl.json";
+import pt from "@/assets/locales/pt.json";
+import ru from "@/assets/locales/ru.json";
+import uk from "@/assets/locales/uk.json";
+import zh from "@/assets/locales/zh.json";
 import source from "@/assets/locales/source.json";
 import { AlertProvider } from "@/vue/alert/Alert.ts";
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
@@ -23,7 +31,7 @@ export const i18n = createI18n({
   legacy: false, // you must set `false`, to use Composition API
   locale: "fr", // set locale
   fallbackLocale: "en", // set fallback locale
-  messages: { fr, en, es, de, it, source },
+  messages: { fr, en, es, de, it, hi, ja, ko, pl, pt, ru, uk, zh, source },
 });
 
 const alertProvider = reactive(new AlertProvider());
