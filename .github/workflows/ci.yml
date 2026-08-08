@@ -215,6 +215,8 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: webapp/package-lock.json
 
       - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
@@ -234,17 +236,20 @@ jobs:
       - name: Install Webapp Dependencies
         run: npm ci
 
-      # A compile check on both platforms, not a release build. tauri-action runs from the repo root
-      # and so couldn't find webapp/node_modules on Linux (`vue-tsc: not found`). `npm run` inherits
-      # the job's webapp working-directory, so the frontend build resolves; --no-bundle skips the
-      # installers, so this needs neither the signing keys nor the per-distro bundle config (#727).
-      - name: Build the Tauri app (compile check, no bundle)
-        run: npm run tauri:build -- --no-bundle
+      # A debug compile check on both platforms, faster than the optimized release build (the real
+      # release is built on a tag in release.yml). `npm run` inherits the job's webapp working-directory
+      # so the frontend build resolves (tauri-action from the repo root couldn't find webapp/node_modules
+      # on Linux: `vue-tsc: not found`). --debug skips optimization, --no-bundle skips the installers, so
+      # this needs neither the signing keys nor the per-distro bundle config (#727).
+      - name: Build the Tauri app (debug compile check, no bundle)
+        run: npm run tauri:build -- --debug --no-bundle
 
-  # The Rust detection logic (pick_server_flow, the FlowAggregator, the #364/#657 capture fixtures,
-  # the port range) has unit tests that never ran in CI: test-tauri only *builds* the app. This runs
-  # them. windows-latest because the crate is Windows-only: it captures packets through winsock raw
-  # sockets (std::os::windows, winapi), so it does not compile anywhere else.
+  # The Rust detection logic (pick_server_flow, the FlowAggregator, the capture fixtures, the port
+  # range) has unit tests that test-tauri never runs: it only *builds* the app. This runs them on both
+  # platforms. The 2.3.0 Linux port added a large Linux surface (the netcap helper, the X11 window
+  # match, the AF_PACKET capture, the Proton multi-PID union) with its own tests, and the crate
+  # compiles and tests on Linux too (release.yml runs cargo test on ubuntu), so a windows-only matrix
+  # left that whole core untested on PRs.
   tauri-test:
     name: Tauri Unit Tests
     runs-on: ${{ matrix.platform }}
@@ -253,7 +258,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [windows-latest]
+        platform: [windows-latest, ubuntu-latest]
     defaults:
       run:
         working-directory: 'webapp'
@@ -263,6 +268,8 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: webapp/package-lock.json
 
       - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
@@ -270,6 +277,14 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: 'webapp/src-tauri'
+
+      - name: Install dependencies on Ubuntu
+        if: matrix.platform == 'ubuntu-latest'
+        # cargo test links the Tauri/webkit2gtk crate, so the Linux leg needs the same dev libraries as
+        # the build job (webkit2gtk-4.1 + ayatana, libasound2-dev for the rodio countdown audio).
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf build-essential libssl-dev libgtk-3-dev libasound2-dev
 
       - name: Install Webapp Dependencies
         run: npm ci
