@@ -63,6 +63,7 @@
 
 <script setup lang="ts">
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
+import * as LinuxAuth from "@/objects/stores/LinuxAuth.ts";
 import { useI18n } from "vue-i18n";
 import PirateButton from "@/vue/form/PirateButton.vue";
 import router from "@/router";
@@ -92,10 +93,13 @@ function authUser() {
   }
 }
 
-function cancelBrowser() {
-  // Reopening the flow after a half-finished attempt would clash on the loopback port, so a reload is
-  // the clean reset: it kills the pending login and its local server, then re-runs the silent restore.
-  window.location.reload();
+async function cancelBrowser() {
+  // Release the loopback listener before leaving the wait screen. abort() rejects the pending login
+  // and frees the fixed redirect port, so the next attempt can bind it. A bare reload would tear this
+  // context down mid-await, skipping login()'s cleanup and leaving the port bound, which then fails
+  // the next login with EADDRINUSE. Rejecting the login flips awaitingBrowser back off, returning the
+  // screen to the sign-in card without a full reload.
+  await LinuxAuth.abort();
 }
 
 function leavePage() {

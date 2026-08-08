@@ -6,7 +6,7 @@ import { i18n } from "@/main.ts";
 // Loopback OIDC for the Linux desktop build (#740). The webview's `tauri://localhost` origin cannot
 // be an OAuth redirect target: webviews block redirects to non-HTTP(S) schemes, so Keycloak refuses
 // `tauri://localhost` with "Redirection to URL with a scheme that is not HTTP(S)" (Windows/macOS is
-// unaffected — WebView2 serves `https://tauri.localhost`, which Keycloak accepts). The native-app
+// unaffected: WebView2 serves `https://tauri.localhost`, which Keycloak accepts). The native-app
 // standard (RFC 8252) is a loopback: open the hosted Keycloak login in the system browser with an
 // `http://localhost:<port>` redirect, capture the code with a tiny local server
 // (`tauri-plugin-oauth`), and run the PKCE token exchange from Rust through `plugin-http` so the
@@ -27,6 +27,15 @@ export interface OidcTokens {
   refresh_token: string;
   id_token: string;
   expires_in: number;
+}
+
+// Thrown when the player cancels the browser-wait screen (see abort()). Distinguished from a genuine
+// login failure so the caller can reset quietly instead of surfacing an error to the player.
+export class LoginAbortedError extends Error {
+  constructor() {
+    super("login aborted");
+    this.name = "LoginAbortedError";
+  }
 }
 
 function oidcBase(): string {
@@ -59,7 +68,7 @@ async function sha256(input: string): Promise<Uint8Array> {
 }
 
 // `plugin-http` issues the request from Rust, so it is not subject to the webview's CORS on the
-// `tauri://localhost` origin — the reason the exchange lives here rather than in keycloak-js.
+// `tauri://localhost` origin, the reason the exchange lives here rather than in keycloak-js.
 async function tokenRequest(body: Record<string, string>): Promise<OidcTokens> {
   const response = await fetch(`${oidcBase()}/token`, {
     method: "POST",
@@ -79,7 +88,12 @@ async function tokenRequest(body: Record<string, string>): Promise<OidcTokens> {
 function decodeJwtClaims(token: string): Record<string, unknown> {
   try {
     const payload = token.split(".")[1] ?? "";
-    const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    const b64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    // Decode as UTF-8: atob() yields one byte per character, so a multi-byte username (accents,
+    // non-Latin scripts) would be mangled if the raw byte string were parsed directly.
+    const json = new TextDecoder().decode(
+      Uint8Array.from(atob(b64), (c) => c.charCodeAt(0)),
+    );
     return JSON.parse(json) as Record<string, unknown>;
   } catch {
     return {};
@@ -125,16 +139,25 @@ const SUCCESS_STRINGS: Record<string, { title: string; message: string }> = {
   },
 };
 
+// Escapes for both element text and double/single-quoted attribute contexts (successPage puts the
+// locale in an attribute), so quotes must be escaped too, not only the angle brackets.
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function successPage(): string {
-  const locale = String(i18n.global.locale.value);
-  const strings = SUCCESS_STRINGS[locale] ?? SUCCESS_STRINGS.en;
+  // Validate the active locale against the known set before interpolating it into the page (it lands
+  // in the <html lang> attribute), so only a known language tag is ever emitted.
+  const rawLocale = String(i18n.global.locale.value);
+  const locale = Object.keys(SUCCESS_STRINGS).includes(rawLocale)
+    ? rawLocale
+    : "en";
+  const strings = SUCCESS_STRINGS[locale];
   const title = escapeHtml(strings.title);
   const message = escapeHtml(strings.message);
   const style =
@@ -153,6 +176,10 @@ function successPage(): string {
   );
 }
 
+// Rejecter for the in-flight interactive login's capture promise, held at module scope so abort() can
+// unblock a login the player walked away from. Null when no login is waiting on the browser.
+let pendingReject: ((reason: unknown) => void) | null = null;
+
 // Full interactive login: hosted Keycloak page in the system browser, code captured on the loopback.
 export async function login(): Promise<OidcTokens> {
   const verifier = randomString(32);
@@ -165,18 +192,24 @@ export async function login(): Promise<OidcTokens> {
   });
 
   let unlisten: (() => void) | undefined;
+  let timeout: ReturnType<typeof setTimeout> | undefined;
   try {
+    let resolveUrl!: (url: string) => void;
     const captured = new Promise<string>((resolve, reject) => {
-      const timeout = setTimeout(
-        () => reject(new Error("login timed out")),
-        300_000,
-      );
-      onUrl((url) => {
-        clearTimeout(timeout);
-        resolve(url);
-      }).then((fn) => {
-        unlisten = fn;
-      });
+      resolveUrl = resolve;
+      pendingReject = reject;
+    });
+    // Surface a stuck flow (browser closed, or the player never finished) as an error rather than
+    // waiting indefinitely on a callback that will never arrive.
+    timeout = setTimeout(
+      () => pendingReject?.(new Error("login timed out")),
+      120_000,
+    );
+    // Register the redirect listener and await it before opening the browser: awaiting here means a
+    // listener that fails to register rejects the flow instead of leaking an unhandled rejection.
+    unlisten = await onUrl((url) => {
+      clearTimeout(timeout);
+      resolveUrl(url);
     });
 
     const authorizeUrl = `${oidcBase()}/auth?${new URLSearchParams({
@@ -214,9 +247,21 @@ export async function login(): Promise<OidcTokens> {
     localStorage.setItem(REFRESH_KEY, tokens.refresh_token);
     return tokens;
   } finally {
+    clearTimeout(timeout);
+    pendingReject = null;
     unlisten?.();
     await cancel(port).catch(() => undefined);
   }
+}
+
+// Abort an in-flight interactive login: reject its capture promise and release the loopback listener.
+// The browser-wait "Cancel" relies on this to free the fixed redirect port. Without it a half-finished
+// attempt leaves the listener bound and the next login() fails to bind the port (EADDRINUSE). Cancels
+// here directly (not only via login()'s finally) so it still frees the port even if the caller tears
+// the page down before that finally runs.
+export async function abort(): Promise<void> {
+  pendingReject?.(new LoginAbortedError());
+  await cancel(REDIRECT_PORT).catch(() => undefined);
 }
 
 // Silent restore on startup / refresh: trade the persisted refresh token for fresh ones. Returns null
@@ -235,6 +280,28 @@ export async function restore(): Promise<OidcTokens | null> {
   } catch {
     localStorage.removeItem(REFRESH_KEY);
     return null;
+  }
+}
+
+// Best-effort server-side logout: ask Keycloak to revoke the session tied to the stored refresh token
+// so signing out actually ends it, instead of only forgetting the local copy (a still-live SSO session
+// would otherwise let the next login silently reconnect). Swallows every error and bounds the connect
+// so an offline or unreachable logout still lets the local sign-out proceed.
+export async function endSession(): Promise<void> {
+  const refreshToken = localStorage.getItem(REFRESH_KEY);
+  if (!refreshToken) return;
+  try {
+    await fetch(`${oidcBase()}/logout`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: CLIENT_ID,
+        refresh_token: refreshToken,
+      }).toString(),
+      connectTimeout: 3000,
+    });
+  } catch {
+    // Offline or unreachable: the local logout still clears the stored token.
   }
 }
 
