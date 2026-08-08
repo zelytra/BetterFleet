@@ -175,7 +175,7 @@
     }
   },
   "credits": {
-    "and": "e",
+    "and": "&",
     "description": "BetterFleet è stato sviluppato per facilitare la formazione di alleanze su Sea of Thieves",
     "designed": "Progettato da",
     "details": "BetterFleet è un'applicazione di terze parti non ufficiale e non collegata al team di sviluppo di Sea of Thieves. Il suo utilizzo è puramente esterno e non ha alcun impatto sull'esperienza di gioco. L'utente accetta di essere ritenuto l'unico responsabile del suo utilizzo!",
@@ -221,7 +221,7 @@
   "locales": {
     "de": "Deutsch",
     "en": "English",
-    "es": "Español",
+    "es": "Español",
     "fr": "Français",
     "hi": "हिन्दी",
     "it": "Italiano",
@@ -290,7 +290,7 @@
     },
     "filter": {
       "all": "Tutte",
-      "private": "Private",
+      "private": "Privata",
       "public": "Pubbliche"
     },
     "issue": "Se riscontri problemi, unisciti al nostro",
@@ -317,7 +317,7 @@
       }
     },
     "contributor": {
-      "alpha_tester": "Alpha Tester",
+      "alpha_tester": "Alfa Tester",
       "designer": "Designer",
       "developer": "Sviluppatore",
       "translator": "Traduttore"

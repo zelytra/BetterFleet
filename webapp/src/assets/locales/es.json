@@ -81,7 +81,7 @@
       "title": "Error de conexión"
     }
   },
-  "appName": "BetterFleet",
+  "appName": "Mejor flota",
   "boatSize": {
     "brigantine": "Bergantín",
     "galleon": "Galeón",
@@ -134,7 +134,7 @@
       "overlay": "Superposición en el juego"
     },
     "presence": {
-      "check": "Discord Rich Presence",
+      "check": "Presencia de Discord Rich",
       "description": "Muestra tu sesión en tu perfil de Discord: tamaño de la sala, cuántos están listos y el código de las sesiones públicas."
     },
     "recap": {
@@ -175,7 +175,7 @@
     }
   },
   "credits": {
-    "and": "y",
+    "and": "&",
     "description": "BetterFleet se creó para facilitar la formación de alianzas en Sea of Thieves",
     "designed": "Diseñado por",
     "details": "BetterFleet es una aplicación de terceros no oficial y sin relación con el equipo de desarrollo de Sea of Thieves. Su uso es puramente externo y no afecta a la experiencia de juego. ¡El usuario acepta ser el único responsable de su uso!",
@@ -226,11 +226,11 @@
     "hi": "हिन्दी",
     "it": "Italiano",
     "ja": "日本語",
-    "ko": "한국어",
+    "ko": "한국어",
     "pl": "Polski",
-    "pt": "Português (Brasil)",
+    "pt": "Português (Brasil)",
     "ru": "Русский",
-    "uk": "Українська",
+    "uk": "Українська",
     "zh": "简体中文"
   },
   "login": {
@@ -276,7 +276,7 @@
     },
     "faq": {
       "button": {
-        "discord": "Discord",
+        "discord": "Discordia",
         "faq": "F.A.Q."
       },
       "content": "¡Echa un vistazo a la página de preguntas frecuentes de nuestro sitio web, quizá ya encuentres allí una respuesta a tu problema! Si no, puedes contactar con nosotros en nuestro Discord. Si se trata de un error, ten en cuenta que casi con toda seguridad se te pedirá que envíes un informe.",
