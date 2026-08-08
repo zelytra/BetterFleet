@@ -96,7 +96,10 @@ jobs:
         uses: crowdin/github-action@v2
         with:
           command: "upload translations"
-          command_args: "--no-progress"
+          # --auto-approve-imported: mark the uploaded translations approved so they become the version
+          # Crowdin serves. Without it the upload is stored but the project's existing (older machine)
+          # de/es/it stay the winning translation, and the next download reverts the repo's redo.
+          command_args: "--no-progress --auto-approve-imported"
           project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
           token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
         env:
