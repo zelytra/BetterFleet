@@ -1,0 +1,496 @@
+{
+  "alert": {
+    "alreadyConnected": {
+      "content": "Jesteś już w tej sesji w innym oknie lub na innym urządzeniu. Zamknij ją i spróbuj ponownie.",
+      "title": "Już połączono"
+    },
+    "badRequest": {
+      "content": "Zapytanie jest uszkodzone lub nieprawidłowe",
+      "title": "Błędne zapytanie"
+    },
+    "emptySession": {
+      "content": "Wprowadź identyfikator sesji",
+      "title": "Pusty identyfikator sesji"
+    },
+    "error": {
+      "content": "Wystąpił błąd",
+      "title": "Błąd"
+    },
+    "forbidden": {
+      "content": "Nie masz uprawnień wymaganych do uzyskania dostępu do tej strony",
+      "title": "Odmowa dostępu"
+    },
+    "outdated": {
+      "content": "Zaktualizuj swoją aplikację",
+      "title": "Nieaktualny klient"
+    },
+    "report": {
+      "emptyMessage": {
+        "content": "Postaraj się jak najdokładniej opisać swój problem w zgłoszeniu błędu",
+        "title": "Puste zgłoszenie"
+      },
+      "send": {
+        "title": "Zgłoszenie wysłane"
+      }
+    },
+    "research": {
+      "notInMenu": {
+        "content": "Nie jesteś w menu gry",
+        "title": "Uruchomienie nie powiodło się"
+      },
+      "notReady": {
+        "content": "Nie jesteś gotowy",
+        "title": "Uruchomienie nie powiodło się"
+      },
+      "offline": {
+        "content": "Twoja gra jest zamknięta",
+        "title": "Uruchomienie nie powiodło się"
+      }
+    },
+    "session": {
+      "notLeave": {
+        "content": "Nie możesz opuścić tej strony",
+        "title": "Trwa odliczanie"
+      }
+    },
+    "sessionNotFound": {
+      "content": "Sprawdź identyfikator sesji",
+      "title": "Nie znaleziono sesji"
+    },
+    "socket": {
+      "connectionFailed": "Połączenie z serwerem nie powiodło się",
+      "random": "WebSocket został nieoczekiwanie zamknięty",
+      "title": "Utracono połączenie"
+    },
+    "unsupportedMedia": {
+      "content": "Materiał, który próbujesz wysłać, nie jest obsługiwany przez aplikację",
+      "title": "Nieobsługiwany materiał"
+    },
+    "username": {
+      "ignore": {
+        "content": "Zmiana nazwy użytkownika została anulowana",
+        "title": "Trwa odliczanie"
+      },
+      "length": {
+        "content": "Nazwa użytkownika nie może być pusta ani przekraczać 16 znaków",
+        "title": "Nieprawidłowy format nazwy użytkownika"
+      }
+    },
+    "websocketAuthFailed": {
+      "content": "Uwierzytelnianie WebSocket nie powiodło się",
+      "title": "Połączenie nie powiodło się"
+    }
+  },
+  "appName": "BetterFleet",
+  "boatSize": {
+    "brigantine": "Brygantyna",
+    "galleon": "Galeon",
+    "label": "Rozmiar statku",
+    "none": "Nie określono",
+    "sloop": "Slup"
+  },
+  "config": {
+    "banner": {
+      "description": "Baner, który noszą hostowane przez ciebie sesje — w lobby i w przeglądarce sesji.",
+      "pick": "Baner {number}",
+      "shuffle": {
+        "check": "Losowy baner",
+        "description": "Wybiera inny baner przy każdej hostowanej przez ciebie sesji"
+      }
+    },
+    "device": {
+      "label": "Platforma"
+    },
+    "devmode": "Włącz tryb dewelopera",
+    "disconnect": "Wyloguj się",
+    "lang": {
+      "label": "Język"
+    },
+    "macro": {
+      "check": "Wspomagane uruchomienie",
+      "description": "Automatycznie klika „Postaw żagle” po zakończeniu odliczania",
+      "linuxUnavailable": "Niedostępne w systemie Linux — Wayland blokuje automatyczne kliknięcie, więc musisz sam kliknąć „Postaw żagle”."
+    },
+    "overlay": {
+      "hotkey": {
+        "hint": "Kliknij, a następnie naciśnij kombinację klawiszy. Pojedynczy klawisz nie zadziała — wymagany jest modyfikator (Ctrl, Alt lub Shift).",
+        "invalid": "Tego skrótu nie można użyć",
+        "label": "Skrót przełączania",
+        "recording": "Naciśnij kombinację…",
+        "reset": "Resetuj"
+      },
+      "toggle": "Pokaż / ukryj nakładkę",
+      "description": "Wyświetl sesję na żywo (serwery i statusy gotowości) na wierzchu gry, w trybie okna bez obramowania."
+    },
+    "name": {
+      "label": "Nazwa użytkownika",
+      "placeholder": "Nazwa użytkownika"
+    },
+    "part": {
+      "audio": "Dźwięk",
+      "banner": "Baner serwera",
+      "developer": "Deweloper",
+      "general": "Ogólne",
+      "overlay": "Nakładka w grze"
+    },
+    "presence": {
+      "check": "Discord Rich Presence",
+      "description": "Pokaż swoją sesję na profilu Discord — rozmiar lobby, liczbę gotowych graczy i kod sesji publicznych."
+    },
+    "recap": {
+      "check": "Karta utworzonego sojuszu",
+      "description": "Pokazuje w lobby kartę, gdy twoja załoga zbierze się na jednym serwerze — z liczbą prób, rozmiarem załogi i czasem, jaki to zajęło."
+    },
+    "savebar": {
+      "cancel": "Anuluj zmiany",
+      "content": "Chwileczkę! Widzę, że wprowadziłeś jakieś zmiany!",
+      "save": "Zapisz"
+    },
+    "server": {
+      "label": "Adres serwera",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "sound": {
+      "check": "Włącz/wyłącz dźwiękowe odliczanie",
+      "label": "Dźwiękowe odliczanie",
+      "test": "Testuj"
+    },
+    "stats": {
+      "check": "Anonimowe statystyki sojuszy",
+      "description": "Przekaż anonimowe wyniki swoich sesji (sukces, regiony — nigdy twoją tożsamość) na publiczną stronę statystyk."
+    },
+    "statsHint": {
+      "check": "Podpowiedź najlepszej pory",
+      "description": "Sugeruje godziny, w których sojusze powstają najczęściej — na podstawie anonimowych statystyk i pokazane w twoim czasie lokalnym."
+    },
+    "subtitle": "Opcje preferencji",
+    "title": "Ustawienia"
+  },
+  "contextMenu": {
+    "master": {
+      "demote": "Zdegraduj",
+      "kick": "Wyrzuć",
+      "promote": "Awansuj na mistrza sesji",
+      "title": "Użytkownik"
+    }
+  },
+  "credits": {
+    "and": "i",
+    "description": "BetterFleet powstał, aby ułatwić tworzenie sojuszy w Sea of Thieves",
+    "designed": "Zaprojektowane przez",
+    "details": "BetterFleet to nieoficjalna aplikacja zewnętrzna, niezwiązana z zespołem twórców Sea of Thieves. Jej użycie jest całkowicie zewnętrzne i nie wpływa na rozgrywkę. Użytkownik ponosi wyłączną odpowiedzialność za korzystanie z niej!",
+    "developed": "Rozwijane przez",
+    "socials": "Znajdź nas tutaj:",
+    "sot": {
+      "thanks": "Chcemy oddać",
+      "use": "to, co należy do piratów, bo — jak widać — korzystamy z czcionki i banerów z gry!"
+    },
+    "title": "Twórcy"
+  },
+  "diagnostic": {
+    "banner": "Wykrywanie serwera wydaje się zablokowane — 20-sekundowy zapis może wyjaśnić dlaczego.",
+    "capture": {
+      "capturing": "Przechwytywanie…",
+      "copied": "Skopiowano do schowka",
+      "copy": "Kopiuj",
+      "description": "Przechwytuje ruch UDP gry przez ~20 s, aby zdiagnozować wykrywanie serwera (zgłoszenie #364). Uruchom je raz w menu głównym i raz w grze, a następnie skopiuj i udostępnij każdy wynik.",
+      "error": "Błąd: {error}",
+      "inGame": "Przechwyć (w grze)",
+      "mainMenu": "Przechwyć (menu główne)",
+      "title": "Diagnostyka wykrywania serwera"
+    },
+    "dismiss": "Nie teraz",
+    "prefill": "Wykrywanie serwera milczało w grze — automatyczna diagnostyka dołączona do logów.",
+    "run": "Uruchom diagnostykę"
+  },
+  "firstLogin": {
+    "button": {
+      "description": "Stawiać żagle, chwytać za ster i w morze!",
+      "title": "Rozpocznij przygodę"
+    },
+    "description": "Podaj swój aktualny gamertag, aby zadbać o sprawne działanie sojuszu",
+    "tips": "Pod tą nazwą zobaczą cię kompani z załogi w sesji",
+    "title": "Jak się zwiesz, młody?"
+  },
+  "loading": {
+    "loading": "Ładowanie...",
+    "targetGame": "Trwa wykrywanie gry",
+    "targetLoading": "Wykryto grę. Przygotowywanie statków.",
+    "tips": "Ten proces może chwilę potrwać — upewnij się, że gra jest uruchomiona"
+  },
+  "locales": {
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "hi": "हिन्दी",
+    "it": "Italiano",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pl": "Polski",
+    "pt": "Português (Brasil)",
+    "ru": "Русский",
+    "uk": "Українська",
+    "zh": "简体中文"
+  },
+  "login": {
+    "browser": {
+      "title": "Kontynuuj w przeglądarce",
+      "message": "W przeglądarce otworzyła się strona logowania. Dokończ je tam, a następnie wróć tutaj.",
+      "cancel": "Anuluj",
+      "error": "Logowanie nie powiodło się. Spróbuj ponownie."
+    },
+    "continue": "Kontynuuj",
+    "description": "Witaj w BetterFleet! Cieszymy się, że jesteś wśród nas. Aby uzyskać dostęp do aplikacji, zaloguj się na swoje konto lub utwórz nowe!",
+    "disconnect": "To nie twoje konto?",
+    "loginButton": "Zaloguj się",
+    "succeed": "Logowanie powiodło się!",
+    "userWelcome": "Witaj",
+    "welcome": "Witaj w"
+  },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "Anuluj",
+        "confirm": "Postaw żagle",
+        "content": "Nie wszyscy gracze są gotowi! Czy na pewno chcesz postawić żagle?",
+        "title": "UWAGA!"
+      },
+      "leave": {
+        "cancel": "Anuluj",
+        "confirm": "Opuść sesję",
+        "content": "Czy na pewno chcesz opuścić sesję?",
+        "title": "OPUŚĆ SESJĘ"
+      }
+    }
+  },
+  "overlay": {
+    "empty": "Oczekiwanie na twoją sesję…"
+  },
+  "report": {
+    "bug": {
+      "button": "Wyślij zgłoszenie",
+      "content1": "Twoje zgłoszenia pomagają nam naprawiać błędy i nieprawidłowe działanie, które możesz napotkać podczas korzystania z aplikacji. Jeśli tak jest w twoim przypadku, opisz swój problem jak najdokładniej w polu poniżej.",
+      "content2": "Warto wiedzieć, że oprócz wiadomości twoje zgłoszenie prześle nam anonimowo dane przydatne do zidentyfikowania problemu.",
+      "title": "Zgłaszanie błędu"
+    },
+    "faq": {
+      "button": {
+        "discord": "Discord",
+        "faq": "F.A.Q."
+      },
+      "content": "Zajrzyj na stronę F.A.Q. w naszej witrynie — być może już tam znajdziesz odpowiedź na swój problem! W przeciwnym razie możesz skontaktować się z nami na Discordzie. Jeśli chodzi o błąd, pamiętaj, że niemal na pewno poprosimy cię o wysłanie zgłoszenia!",
+      "title": "Masz pytanie?"
+    }
+  },
+  "session": {
+    "empty": {
+      "comment": "Zdaje się, że nie ma statku, którym można by wypłynąć w morze…",
+      "title": "A niech mnie!"
+    },
+    "filter": {
+      "all": "Wszystkie",
+      "private": "Prywatne",
+      "public": "Publiczne"
+    },
+    "issue": "Jeśli napotkasz problemy, wpadnij na nasz",
+    "or": "LUB",
+    "connectedPlayers": "Połączeni gracze",
+    "playerLabel": "Gracz",
+    "playersLabel": "Gracze",
+    "refresh": "Odśwież",
+    "privateHint": "Sesja prywatna — poproś gospodarza o kod, aby dołączyć.",
+    "searchPlaceholder": "Szukaj sesji…",
+    "autoSetSail": {
+      "description": "Automatycznie stawia żagle, gdy wszyscy gracze są gotowi",
+      "label": "Automatyczne stawianie żagli"
+    },
+    "choice": {
+      "createComment": "Zakosztuj wolności i rządź na morzu złodziei!",
+      "createSession": "Utwórz sesję",
+      "joinComment": "Chwyć kufel, wejdź na pokład i dołącz do załogi!",
+      "joinSession": "Dołącz do sesji",
+      "modal": {
+        "button": "Dołącz do sesji",
+        "comment": "Każda sesja jest prywatna i wymaga kodu identyfikacyjnego. Poproś o identyfikator gospodarza sesji, do której chcesz dołączyć!",
+        "title": "Wprowadź identyfikator sesji"
+      }
+    },
+    "contributor": {
+      "alpha_tester": "Alfa-tester",
+      "designer": "Projektant",
+      "developer": "Deweloper",
+      "translator": "Tłumacz"
+    },
+    "countdown": "Wyszukiwanie rozpocznie się za...",
+    "id": "Identyfikator sesji",
+    "idCopy": "Skopiowano!",
+    "inviteConsole": "Zaproś graczy z konsoli",
+    "inviteCopied": "Skopiowano link!",
+    "informations": {
+      "success": "Wskaźnik sukcesu",
+      "title": "Informacje",
+      "totalPlayer": "Gotowi gracze",
+      "tryNumber": "Liczba prób"
+    },
+    "leave": "Opuść sesję",
+    "linuxAutoclick": {
+      "banner": "Automatyczne kliknięcie niedostępne w systemie Linux (Wayland): kliknij „Postaw żagle” samodzielnie.",
+      "dismiss": "Zamknij"
+    },
+    "name": {
+      "0": "Statek Widmo",
+      "1": "Ukryty Skarb",
+      "10": "Porysowana Luneta",
+      "11": "Nocny Abordaż",
+      "12": "Odwaga Kapitana",
+      "13": "Zbuntowana Załoga",
+      "14": "Wzburzona Fala",
+      "15": "Skradziony Łup",
+      "16": "Rum Przemytnika",
+      "17": "Cienisty Żagiel",
+      "18": "Zardzewiała Kotwica",
+      "19": "Prowizoryczny Port",
+      "2": "Fałszywe Kości",
+      "20": "Zapomniana Legenda",
+      "21": "Zasłonięty Wrak",
+      "22": "Lśniący Hak",
+      "23": "Ulewna Nawałnica",
+      "24": "Śliska Deska",
+      "25": "Sekretna Zatoczka",
+      "26": "Czarny Rynek",
+      "27": "Polowanie na Skarb",
+      "28": "Chwiejny Maszt",
+      "29": "Pistolet Skałkowy",
+      "3": "Tajemnicza Wyspa",
+      "30": "Gigantyczna Kałamarnica",
+      "31": "Kodeks Piratów",
+      "32": "Krwawy Sztylet",
+      "33": "Pomyślny Wiatr",
+      "34": "Kulawy Zbieg",
+      "35": "Prymitywny Nabój",
+      "36": "Improwizowany Pojedynek",
+      "37": "Szalejący Płomień",
+      "38": "Serce Oceanu",
+      "39": "Opowieść z Przeszłości",
+      "4": "Gadatliwa Papuga",
+      "40": "Dziki Bunt",
+      "41": "Żółw Morski",
+      "42": "Niezawodny Plan",
+      "43": "Zamoczony Proch",
+      "44": "Hiszpański Galeon",
+      "45": "Niebiańska Zatoka",
+      "46": "Wyszczerbiony Ster",
+      "47": "Gwiazda Polarna",
+      "48": "Mściwa Obietnica",
+      "49": "Wystawna Uczta",
+      "5": "Zdezorientowany Kompas",
+      "50": "Dymiący Muszkiet",
+      "51": "Morska Szanta",
+      "52": "Podejrzany Takielunek",
+      "53": "Aztecki Medalion",
+      "54": "Zagadkowa Mapa",
+      "55": "Wiadomość w Butelce",
+      "56": "Latarnia Sztormowa",
+      "57": "Starożytny Pergamin",
+      "58": "Mroczny Brzask",
+      "59": "Przebiegły Korsarz",
+      "6": "Ostra Szabla",
+      "60": "Niebezpieczna Przeprawa",
+      "61": "Sprytny Bukanier",
+      "62": "Płonący Szyling",
+      "63": "Rada Piratów",
+      "64": "Błądząca Dusza",
+      "65": "Ufortyfikowane Więzienie",
+      "66": "Przeklęty Amulet",
+      "67": "Bitwa Morska",
+      "68": "Zielony Błysk",
+      "69": "Skrzynia Umarlaka",
+      "7": "Grzmiące Działo",
+      "70": "Fontanna Młodości",
+      "71": "Nieznany Brzeg",
+      "72": "Fałszywa Moneta",
+      "73": "Krwawy Pakt",
+      "74": "Rozbity Sojusz",
+      "75": "Stary Manuskrypt",
+      "76": "Słowo Honoru",
+      "77": "Latający Holender",
+      "78": "Królewskie Piractwo",
+      "79": "Morski Miraż",
+      "8": "Czarna Bandera",
+      "80": "Przeraźliwe Echo",
+      "81": "Pozłacany Piasek",
+      "82": "Przeszywający Horyzont",
+      "83": "Nieustanne Tykanie",
+      "84": "Zachodzące Słońce",
+      "85": "Bezksiężycowa Noc",
+      "86": "Wysoki Przypływ",
+      "87": "Oddech Otchłani",
+      "88": "Złowroga Burza",
+      "89": "Rozbity Okręt",
+      "9": "Skrzynia Davy'ego Jonesa",
+      "90": "Kryjówka Złodziei",
+      "91": "Dogodny Atak",
+      "92": "Nieustraszona Ucieczka",
+      "93": "Zagubiona Fortuna",
+      "94": "Ośmioreal",
+      "95": "Heroiczna Opowieść",
+      "96": "Olśniewająca Peleryna",
+      "97": "Zaprzysiężony Kaper",
+      "98": "Błękitna Laguna",
+      "99": "Psotna Misja"
+    },
+    "player": {
+      "notReady": "Niegotowy",
+      "ready": "Gotowy",
+      "status": {
+        "closed": "Offline",
+        "in-game": "W grze",
+        "main-menu": "W menu gry",
+        "started": "Gra uruchomiona"
+      }
+    },
+    "run": "Postaw żagle",
+    "recap": {
+      "copied": "Skopiowano!",
+      "copy": "Kopiuj dla Discorda",
+      "dismiss": "Zamknij",
+      "duration": "Czas trwania",
+      "pirates": "Piraci",
+      "title": "Sojusz utworzony! ⚓",
+      "tries": "Próby"
+    },
+    "statsHint": {
+      "dismiss": "Ukryj",
+      "text": "Najlepszy przedział: {range} ({best}% sojuszy kończy się sukcesem — teraz: {now}%)",
+      "textNoNow": "Najlepszy przedział: {range} ({best}% sojuszy kończy się sukcesem)"
+    },
+    "status": {
+      "countdown": "Start za",
+      "ready": "Gotowy",
+      "waiting": "Oczekiwanie"
+    },
+    "visibility": {
+      "description": "Sesje publiczne są widoczne w przeglądarce i każdy może do nich dołączyć.",
+      "label": "Sesja publiczna",
+      "private": "Prywatna",
+      "public": "Publiczna"
+    },
+    "rename": {
+      "label": "Zmień nazwę sesji",
+      "placeholder": "Nazwa sesji"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "Ustawienia",
+      "fleet": "Sesja",
+      "home": "Strona główna"
+    }
+  },
+  "whatsnew": {
+    "full": "Zobacz pełną listę zmian",
+    "offline": "Nie udało się wczytać informacji — pełna lista zmian online je zawiera.",
+    "title": "Co nowego w {version}"
+  }
+}

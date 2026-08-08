@@ -1,0 +1,496 @@
+{
+  "alert": {
+    "alreadyConnected": {
+      "content": "你已在另一个窗口或设备上加入了此会话。请先关闭它，然后重试。",
+      "title": "已连接"
+    },
+    "badRequest": {
+      "content": "请求已损坏或不正确",
+      "title": "无效请求"
+    },
+    "emptySession": {
+      "content": "请输入会话 ID",
+      "title": "会话 ID 为空"
+    },
+    "error": {
+      "content": "发生了错误",
+      "title": "错误"
+    },
+    "forbidden": {
+      "content": "你没有访问此页面所需的权限",
+      "title": "访问被拒绝"
+    },
+    "outdated": {
+      "content": "请更新你的应用程序",
+      "title": "客户端版本过旧"
+    },
+    "report": {
+      "emptyMessage": {
+        "content": "请在错误报告中尽量详细地描述你的问题",
+        "title": "报告为空"
+      },
+      "send": {
+        "title": "报告已发送"
+      }
+    },
+    "research": {
+      "notInMenu": {
+        "content": "你不在游戏菜单中",
+        "title": "启动失败"
+      },
+      "notReady": {
+        "content": "你尚未准备就绪",
+        "title": "启动失败"
+      },
+      "offline": {
+        "content": "你的游戏已关闭",
+        "title": "启动失败"
+      }
+    },
+    "session": {
+      "notLeave": {
+        "content": "你无法离开此页面",
+        "title": "倒计时进行中"
+      }
+    },
+    "sessionNotFound": {
+      "content": "请检查你的会话 ID",
+      "title": "未找到会话"
+    },
+    "socket": {
+      "connectionFailed": "连接服务器失败",
+      "random": "WebSocket 意外关闭",
+      "title": "连接已断开"
+    },
+    "unsupportedMedia": {
+      "content": "你尝试发送的媒体文件不受应用程序支持",
+      "title": "不支持的媒体文件"
+    },
+    "username": {
+      "ignore": {
+        "content": "用户名修改已取消",
+        "title": "倒计时进行中"
+      },
+      "length": {
+        "content": "用户名不能为空，也不能超过 16 个字符",
+        "title": "用户名格式无效"
+      }
+    },
+    "websocketAuthFailed": {
+      "content": "WebSocket 身份验证失败",
+      "title": "连接失败"
+    }
+  },
+  "appName": "BetterFleet",
+  "boatSize": {
+    "brigantine": "双桅帆船",
+    "galleon": "大帆船",
+    "label": "船只类型",
+    "none": "未指定",
+    "sloop": "单桅帆船"
+  },
+  "config": {
+    "banner": {
+      "description": "你主持的会话所使用的旗帜，会显示在大厅和会话浏览器中。",
+      "pick": "旗帜 {number}",
+      "shuffle": {
+        "check": "随机切换旗帜",
+        "description": "每次主持会话时随机选用一面不同的旗帜"
+      }
+    },
+    "device": {
+      "label": "平台"
+    },
+    "devmode": "启用开发者模式",
+    "disconnect": "退出登录",
+    "lang": {
+      "label": "语言"
+    },
+    "macro": {
+      "check": "辅助启航",
+      "description": "在倒计时结束时自动点击“启航”",
+      "linuxUnavailable": "在 Linux 上不可用——Wayland 会阻止自动点击，因此你需要自己点击“启航”。"
+    },
+    "overlay": {
+      "hotkey": {
+        "hint": "点击后按下一个组合键。单个按键无效：需要包含一个修饰键（Ctrl、Alt 或 Shift）。",
+        "invalid": "无法使用此快捷键",
+        "label": "开关快捷键",
+        "recording": "请按下组合键…",
+        "reset": "重置"
+      },
+      "toggle": "显示 / 隐藏悬浮窗",
+      "description": "以无边框窗口模式在游戏上方显示实时会话（服务器和准备状态）。"
+    },
+    "name": {
+      "label": "用户名",
+      "placeholder": "用户名"
+    },
+    "part": {
+      "audio": "音频",
+      "banner": "会话旗帜",
+      "developer": "开发者",
+      "general": "常规",
+      "overlay": "游戏内悬浮窗"
+    },
+    "presence": {
+      "check": "Discord 丰富状态",
+      "description": "在你的 Discord 个人资料上展示你的会话——大厅人数、准备人数，以及公开会话的代码。"
+    },
+    "recap": {
+      "check": "联盟已组成卡片",
+      "description": "当你的船员汇聚到同一服务器时，在大厅显示一张卡片，包含尝试次数、船员人数和所用时间。"
+    },
+    "savebar": {
+      "cancel": "取消修改",
+      "content": "等一下！我看到你做了一些修改！",
+      "save": "保存"
+    },
+    "server": {
+      "label": "服务器地址",
+      "placeholder": "https://betterfleet.com/api"
+    },
+    "sound": {
+      "check": "启用/禁用声音倒计时",
+      "label": "声音倒计时",
+      "test": "测试"
+    },
+    "stats": {
+      "check": "匿名联盟统计",
+      "description": "将你会话的匿名结果（成功情况、区域，绝不包含你的身份）贡献给公开统计页面。"
+    },
+    "statsHint": {
+      "check": "最佳时段提示",
+      "description": "根据匿名统计数据推荐联盟最常组成的时段，并以你的本地时间显示。"
+    },
+    "subtitle": "偏好设置",
+    "title": "设置"
+  },
+  "contextMenu": {
+    "master": {
+      "demote": "降级",
+      "kick": "踢出",
+      "promote": "提升为会话主持人",
+      "title": "用户"
+    }
+  },
+  "credits": {
+    "and": "和",
+    "description": "BetterFleet 的开发旨在帮助玩家更轻松地在 Sea of Thieves 中组成联盟",
+    "designed": "设计者",
+    "details": "BetterFleet 是一款非官方的第三方应用程序，与 Sea of Thieves 开发团队没有任何关联。它的使用完全在游戏之外，不会影响游戏体验。用户须自行承担使用本应用的全部责任！",
+    "developed": "开发者",
+    "socials": "在这里找到我们：",
+    "sot": {
+      "thanks": "我们想把属于海盗之物，归还给",
+      "use": "——正如你所见，我们使用了游戏中的字体和旗帜！"
+    },
+    "title": "鸣谢"
+  },
+  "diagnostic": {
+    "banner": "服务器检测似乎卡住了——一次 20 秒的抓包可以帮我们找出原因。",
+    "capture": {
+      "capturing": "抓包中…",
+      "copied": "已复制到剪贴板",
+      "copy": "复制",
+      "description": "抓取游戏约 20 秒的 UDP 流量以排查服务器检测问题（issue #364）。请分别在主菜单和游戏中各运行一次，然后复制并分享每次的结果。",
+      "error": "错误：{error}",
+      "inGame": "抓包（游戏中）",
+      "mainMenu": "抓包（主菜单）",
+      "title": "服务器检测诊断"
+    },
+    "dismiss": "暂不",
+    "prefill": "服务器检测在游戏中始终没有响应——已在日志中附上自动诊断信息。",
+    "run": "运行诊断"
+  },
+  "firstLogin": {
+    "button": {
+      "description": "扬起风帆，掌好船舵，向大海进发吧，伙计们！",
+      "title": "冒险就此开始"
+    },
+    "description": "请输入你当前的游戏名，以便顺利组建联盟",
+    "tips": "这个名字就是会话中船员们看到的你",
+    "title": "你叫什么名字，伙计？"
+  },
+  "loading": {
+    "loading": "加载中……",
+    "targetGame": "正在检测游戏",
+    "targetLoading": "已检测到游戏，正在备船。",
+    "tips": "此过程可能需要一些时间，请确保你的游戏已启动"
+  },
+  "locales": {
+    "de": "Deutsch",
+    "en": "English",
+    "es": "Español",
+    "fr": "Français",
+    "hi": "हिन्दी",
+    "it": "Italiano",
+    "ja": "日本語",
+    "ko": "한국어",
+    "pl": "Polski",
+    "pt": "Português (Brasil)",
+    "ru": "Русский",
+    "uk": "Українська",
+    "zh": "简体中文"
+  },
+  "login": {
+    "browser": {
+      "title": "在浏览器中继续",
+      "message": "登录页面已在你的浏览器中打开。请在那里完成登录，然后返回此处。",
+      "cancel": "取消",
+      "error": "登录失败，请重试。"
+    },
+    "continue": "继续",
+    "description": "欢迎来到 BetterFleet！我们很高兴有你的加入。请登录你的账户或创建一个新账户，以使用本应用！",
+    "disconnect": "这不是你的账户？",
+    "loginButton": "登录",
+    "succeed": "登录成功！",
+    "userWelcome": "欢迎",
+    "welcome": "欢迎来到"
+  },
+  "modal": {
+    "confirm": {
+      "launch": {
+        "cancel": "取消",
+        "confirm": "启航",
+        "content": "还有玩家尚未准备就绪！你确定要启航吗？",
+        "title": "警告！"
+      },
+      "leave": {
+        "cancel": "取消",
+        "confirm": "离开会话",
+        "content": "你确定要离开会话吗？",
+        "title": "离开会话"
+      }
+    }
+  },
+  "overlay": {
+    "empty": "正在等待你的会话…"
+  },
+  "report": {
+    "bug": {
+      "button": "提交报告",
+      "content1": "你的报告能帮助我们修复你在使用应用过程中遇到的各种错误和异常。如果你遇到了此类情况，欢迎在下方的框中尽可能详细地描述你的问题。",
+      "content2": "需要说明的是，除了留言之外，你的报告还会匿名地向我们发送有助于定位问题的有用数据。",
+      "title": "报告错误"
+    },
+    "faq": {
+      "button": {
+        "discord": "Discord",
+        "faq": "常见问题"
+      },
+      "content": "去看看我们网站上的常见问题（F.A.Q.）页面吧，也许你已经能在那里找到问题的答案！你也可以通过我们的 Discord 联系我们。如果是关于错误的问题，请注意，我们多半会请你发送一份报告！",
+      "title": "有疑问吗？"
+    }
+  },
+  "session": {
+    "empty": {
+      "comment": "我看啊，眼下没有船能出海咯……",
+      "title": "我的天！"
+    },
+    "filter": {
+      "all": "全部",
+      "private": "私密",
+      "public": "公开"
+    },
+    "issue": "如果你遇到任何问题，欢迎加入我们的",
+    "or": "或",
+    "connectedPlayers": "在线玩家",
+    "playerLabel": "玩家",
+    "playersLabel": "玩家",
+    "refresh": "刷新",
+    "privateHint": "私密会话——向主持人索取代码即可加入。",
+    "searchPlaceholder": "搜索会话…",
+    "autoSetSail": {
+      "description": "当所有玩家都准备就绪后自动启航",
+      "label": "自动启航"
+    },
+    "choice": {
+      "createComment": "咬一口自由的滋味，称霸 Sea of Thieves！",
+      "createSession": "创建会话",
+      "joinComment": "端起酒杯，登船加入船员队伍吧！",
+      "joinSession": "加入会话",
+      "modal": {
+        "button": "加入会话",
+        "comment": "每个会话都是私密的，需要一个识别代码。请向你想加入的会话主持人索取该 ID！",
+        "title": "输入会话 ID"
+      }
+    },
+    "contributor": {
+      "alpha_tester": "Alpha 测试员",
+      "designer": "设计师",
+      "developer": "开发者",
+      "translator": "翻译人员"
+    },
+    "countdown": "搜索即将开始……",
+    "id": "会话 ID",
+    "idCopy": "已复制！",
+    "inviteConsole": "邀请主机玩家",
+    "inviteCopied": "链接已复制！",
+    "informations": {
+      "success": "成功率",
+      "title": "信息",
+      "totalPlayer": "已准备玩家",
+      "tryNumber": "尝试次数"
+    },
+    "leave": "离开会话",
+    "linuxAutoclick": {
+      "banner": "自动点击在 Linux（Wayland）上不可用：请自行点击“启航”。",
+      "dismiss": "关闭"
+    },
+    "name": {
+      "0": "幽灵船",
+      "1": "隐藏的宝藏",
+      "10": "刮花的望远镜",
+      "11": "夜袭登船",
+      "12": "船长的英勇",
+      "13": "叛变的船员",
+      "14": "汹涌的浪潮",
+      "15": "被窃的赃物",
+      "16": "私酒贩子的朗姆酒",
+      "17": "阴翳之帆",
+      "18": "生锈的船锚",
+      "19": "临时港口",
+      "2": "灌铅的骰子",
+      "20": "被遗忘的传说",
+      "21": "隐匿的沉船",
+      "22": "闪亮的钩子",
+      "23": "倾盆的暴风雨",
+      "24": "湿滑的跳板",
+      "25": "隐秘的小湾",
+      "26": "黑市",
+      "27": "寻宝之旅",
+      "28": "摇晃的桅杆",
+      "29": "燧发手枪",
+      "3": "神秘岛",
+      "30": "巨型乌贼",
+      "31": "海盗法典",
+      "32": "血腥匕首",
+      "33": "顺风",
+      "34": "跛脚的逃犯",
+      "35": "老旧的弹药筒",
+      "36": "即兴的决斗",
+      "37": "熊熊烈焰",
+      "38": "海洋之心",
+      "39": "往昔的故事",
+      "4": "喋喋不休的鹦鹉",
+      "40": "野蛮的叛变",
+      "41": "海龟",
+      "42": "万无一失的计划",
+      "43": "受潮的火药",
+      "44": "西班牙大帆船",
+      "45": "天堂湾",
+      "46": "残破的船舵",
+      "47": "北极星",
+      "48": "复仇的誓言",
+      "49": "奢靡的盛宴",
+      "5": "失灵的罗盘",
+      "50": "冒烟的火枪",
+      "51": "船歌",
+      "52": "可疑的索具",
+      "53": "阿兹特克徽章",
+      "54": "神秘的地图",
+      "55": "瓶中信",
+      "56": "暴风灯",
+      "57": "古老的羊皮卷",
+      "58": "微光的黎明",
+      "59": "狡猾的私掠者",
+      "6": "锋利的军刀",
+      "60": "凶险的航程",
+      "61": "狡黠的海贼",
+      "62": "炽热的先令",
+      "63": "海盗议会",
+      "64": "漂泊的灵魂",
+      "65": "森严的监狱",
+      "66": "被诅咒的护身符",
+      "67": "海战",
+      "68": "绿色闪光",
+      "69": "亡者之箱",
+      "7": "轰鸣的火炮",
+      "70": "青春之泉",
+      "71": "未知的海岸",
+      "72": "伪造的钱币",
+      "73": "血之契约",
+      "74": "破碎的联盟",
+      "75": "古旧的手稿",
+      "76": "荣誉的誓言",
+      "77": "飞翔的荷兰人号",
+      "78": "皇家劫掠",
+      "79": "海市蜃楼",
+      "8": "黑色海盗旗",
+      "80": "刺耳的回声",
+      "81": "鎏金的沙滩",
+      "82": "刺目的地平线",
+      "83": "无休止的滴答声",
+      "84": "落日",
+      "85": "无月之夜",
+      "86": "涨潮",
+      "87": "深渊的气息",
+      "88": "不祥的风暴",
+      "89": "失事的船只",
+      "9": "戴维·琼斯的锁柜",
+      "90": "盗贼的避风港",
+      "91": "适时的进攻",
+      "92": "无畏的逃脱",
+      "93": "遗落的财富",
+      "94": "八连金币",
+      "95": "英雄传说",
+      "96": "华丽的斗篷",
+      "97": "宣誓效忠的私掠者",
+      "98": "蓝色泻湖",
+      "99": "顽皮的使命"
+    },
+    "player": {
+      "notReady": "未准备",
+      "ready": "已准备",
+      "status": {
+        "closed": "离线",
+        "in-game": "游戏中",
+        "main-menu": "游戏菜单中",
+        "started": "游戏已启动"
+      }
+    },
+    "run": "启航",
+    "recap": {
+      "copied": "已复制！",
+      "copy": "复制到 Discord",
+      "dismiss": "关闭",
+      "duration": "耗时",
+      "pirates": "海盗",
+      "title": "联盟已组成！⚓",
+      "tries": "尝试次数"
+    },
+    "statsHint": {
+      "dismiss": "隐藏",
+      "text": "最佳时段：{range}（{best}% 的联盟能成功——当前：{now}%）",
+      "textNoNow": "最佳时段：{range}（{best}% 的联盟能成功）"
+    },
+    "status": {
+      "countdown": "启航倒计时",
+      "ready": "已准备",
+      "waiting": "等待中"
+    },
+    "visibility": {
+      "description": "公开会话会显示在浏览器中，任何人都可以加入。",
+      "label": "公开会话",
+      "private": "私密",
+      "public": "公开"
+    },
+    "rename": {
+      "label": "重命名会话",
+      "placeholder": "会话名称"
+    }
+  },
+  "tooltips": {
+    "navbar": {
+      "config": "设置",
+      "fleet": "会话",
+      "home": "主页"
+    }
+  },
+  "whatsnew": {
+    "full": "查看完整更新日志",
+    "offline": "无法加载更新说明——完整的更新日志可在线查看。",
+    "title": "{version} 的新变化"
+  }
+}

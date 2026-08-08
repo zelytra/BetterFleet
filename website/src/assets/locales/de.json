@@ -1,58 +1,58 @@
 {
   "button": {
     "download": "Herunterladen",
-    "downloadApp": "Lade die Anwendung herunter",
+    "downloadApp": "Anwendung herunterladen",
     "downloadHere": "Hier herunterladen"
   },
   "comparison": {
-    "description": "BetterFleet se positionne comme un titan de la performance, en réduisant le temps de recherche de serveur de manière significative – affichant une vitesse 3 à 4 fois supérieure à celle de \"Fleet Creator\". Lorsqu'on observe notre graphique, les barres vertes, correspondant à BetterFleet, atteignent des valeurs inférieures avec une constance qui dénote une optimisation technique avancée. Cela signifie que, concrètement, BetterFleet localise le serveur de jeu avec une agilité remarquable, réduisant drastiquement les délais de connexion. Les joueurs peuvent ainsi expérimenter une transition quasi instantanée vers leurs mondes virtuels préférés, grâce à une plateforme conçue pour l'efficience et la rapidité. BetterFleet, c'est l'assurance d'une performance sans compromis pour une expérience utilisateur sans égale.",
-    "subtitle": "Eine turbogeladene Verbindung für ein Spielerlebnis mit dreifacher Geschwindigkeit!",
-    "title": "Vergleich mit Flottengenerator",
+    "description": "BetterFleet ist darauf ausgelegt, deinen Spielserver schnell – und zuverlässig – zu finden. In unserem Benchmark erkennt es den Server in etwa 5 Sekunden, also rund 3- bis 4-mal schneller als Fleet Creator. Es funktioniert außerdem dort weiter, wo Fleet Creator es nicht mehr tut: Die jüngsten Sea-of-Thieves-Updates und ihre neuen Relay-Server (SDR) haben dessen Erkennungsmethode zunichtegemacht, die nun oft einen falschen oder „beschädigten“ Server meldet. Unsere neue verkehrsbasierte Analyse wurde rund um diese Server entwickelt und weist dich daher weiterhin auf den richtigen hin. Das Diagramm vergleicht die Erkennungszeiten direkt nebeneinander: Je niedriger der Balken, desto besser.",
+    "subtitle": "Schnellere Servererkennung – weniger Zeit in Menüs, mehr Zeit auf See.",
     "table": {
       "countdown": "Synchronisierter Countdown",
       "detection": "Automatische Servererkennung",
       "free": "Kostenlos & Open Source",
       "languages": "In 5 Sprachen verfügbar",
-      "public": "Öffentliche Sitzungsübersicht"
-    }
+      "public": "Öffentlicher Sitzungsbrowser"
+    },
+    "title": "Vergleich mit Fleet Creator"
   },
   "credits": {
     "and": "&",
-    "designed": "Bezeichnen durch",
-    "developed": "Entwickeln von",
+    "designed": "Design von",
+    "developed": "Entwickelt von",
     "license": "Lizenz"
   },
   "descriptions": {
-    "globe": "Notre application offre une recherche rapide et visuellement agréable pour Sea of Thieves, vous plongeant dans l'aventure pirate sans délai et avec style.",
-    "hourglass": "Unsere synchronisierte Auto-Click-Funktion implementiert einen perfekt koordinierten Countdown zwischen allen Spielern in der Sitzung und sorgt so für eine hocheffiziente Serversuche, die die Wartezeit auf ein Minimum reduziert.",
-    "key": "Unsere Anwendung gewährleistet die Benutzersicherheit dank ihres Open-Source-Codes, der vollständige Transparenz ermöglicht, und eines aktiven Entwicklerteams, das sich regelmäßigen Updates und Sicherheitswartungen widmet.",
+    "globe": "Eine aufgeräumte Oberfläche im Stil von Sea of Thieves – sie fühlt sich wie eine natürliche Erweiterung des Spiels an.",
+    "hourglass": "Ein gemeinsamer Countdown synchronisiert das „Leinen los“ jedes Spielers, damit eure Crews im selben Moment ablegen und öfter zusammen landen.",
+    "key": "Open Source und überprüfbar: Der gesamte Code ist öffentlich, und ein aktives Team hält ihn aktuell und sicher.",
     "title": "Das Wesentliche"
   },
   "discover": {
     "discord": {
-      "button": "Rejoindre le discord",
-      "content": "Unsere App geht weit über eine einfache Benutzeroberfläche hinaus, da sie in einer lebendigen und engagierten Community auf unserem dedizierten Discord-Server verankert ist. Dieser dynamische Raum ist der Knotenpunkt, an dem Spieler nicht nur ihre Erfahrungen austauschen, sondern auch aktiv zur Entwicklung beitragen können, indem sie Verbesserungsvorschläge einreichen. Ein offener und konstruktiver Dialog wird gefördert, wodurch Synergien zwischen Benutzern und Entwicklern entstehen. Darüber hinaus bietet unser Discord-Server leistungsstarken Support für diejenigen, die unsere App auf ihrer Seite integrieren möchten. Ob technische Beratung, strategische Anleitung oder Anpassungstipps – unsere Mitglieder und unser Support-Team sind immer bereit zu helfen und sorgen für eine nahtlose und erfolgreiche Integration.",
-      "nav": "Unsere Gemeinschaft",
-      "title": "Notre plateforme d'échange préféré !"
+      "button": "Dem Discord beitreten",
+      "content": "Das meiste rund um BetterFleet spielt sich Tag für Tag auf unserem Discord ab. Spieler tauschen Tipps aus, melden Fehler und schlagen Ideen vor, die es regelmäßig in die App schaffen. Ob du eine helfende Hand brauchst oder einfach mit anderen Crews segeln willst – hier bist du richtig.",
+      "nav": "Community",
+      "title": "Die Community lebt auf Discord"
     },
     "github": {
       "button": "GitHub",
-      "content": "Im Mittelpunkt unseres Projekts steht ein tiefes Engagement für Open Source, das sich in unserem öffentlich zugänglichen Code und unserem Team aus aktiven und reaktionsschnellen Entwicklern widerspiegelt. Diese Philosophie garantiert eine ständige Weiterentwicklung unserer Anwendung, unterstützt durch transparente Zusammenarbeit und fruchtbaren Austausch mit unserer Community. Das Feedback der Spieler ist ein Eckpfeiler unseres Entwicklungsprozesses, da es uns ermöglicht, unser Angebot zu verfeinern und zu verbessern und sicherzustellen, dass es genau den Bedürfnissen und Wünschen unserer Benutzer entspricht. Die Offenheit unserer Entwickler gegenüber Vorschlägen und die schnelle Anpassung stellen sicher, dass unsere App auf dem neuesten Stand bleibt, und pflegen gleichzeitig ein Vertrauensverhältnis und gegenseitigen Respekt mit unserer engagierten Community.",
-      "nav": "Kollaborative Innovation",
-      "title": "Unser Open-Source-Engagement für eine sich ständig weiterentwickelnde Anwendung"
+      "content": "BetterFleet ist vollständig Open Source. Jeder kann den Code lesen, einen Fehler melden oder einen Pull Request öffnen – und das Feedback der Spieler prägt tatsächlich, wohin sich das Projekt entwickelt. Wenn du beim Aufbau mithelfen möchtest, steht dir das Repository offen.",
+      "nav": "Open Source",
+      "title": "Open Source, offen für Beiträge"
     },
     "title": "Unsere Ziele und Werte",
     "translation": {
       "button": "Crowdin",
-      "content": "Unsere App steht für Vielfalt und Inklusivität, da sie sich bei der Entwicklung auf den i18n-Standard konzentriert und der Community selbst die Tür zu Übersetzungen in jede beliebige Sprache öffnet. Dieser Ansatz stellt sicher, dass unsere App von Benutzern auf der ganzen Welt problemlos angepasst und verwendet werden kann, was unser Engagement für den Abbau von Sprachbarrieren widerspiegelt. Darüber hinaus haben wir ein öffentliches Crowdin-Projekt eingerichtet, das eine intuitive Plattform für alle bietet, die sich an Übersetzungsbemühungen beteiligen möchten. Diese Initiative fördert die internationale Zusammenarbeit und ermöglicht es, unsere Bewerbung mit den kulturellen und sprachlichen Nuancen jedes Mitwirkenden zu bereichern. Gemeinsam bauen wir ein wirklich globales, zugängliches und ansprechendes Spielerlebnis für eine ständig wachsende internationale Gemeinschaft auf.",
-      "nav": "Teilnehmende Übersetzung",
-      "title": "Vereint Gamer auf der ganzen Welt mit i18n und Crowdin"
+      "content": "BetterFleet wird von seiner Community über Crowdin übersetzt, damit Spieler auf der ganzen Welt es in ihrer eigenen Sprache nutzen können. Wenn deine fehlt oder eine Übersetzung besser sein könnte, bist du herzlich eingeladen, mit anzupacken.",
+      "nav": "Übersetzungen",
+      "title": "In deiner Sprache verfügbar"
     }
   },
   "download": {
-    "now": "jetzt downloaden",
+    "now": "Jetzt herunterladen",
     "pc": {
-      "content": "Du bist am Handy: Merk dir den Link und installiere die App später auf deinem Windows-PC.",
+      "content": "Du bist am Handy – merk dir den Link und installiere die App später auf deinem Windows-PC.",
       "copied": "Link kopiert!",
       "copy": "Download-Link kopieren",
       "title": "BetterFleet wird auf dem PC installiert"
@@ -60,115 +60,115 @@
   },
   "faq": {
     "copy": "Link kopiert",
-    "description": "Haben Sie eine Frage zu Better Fleet? Hier beantworten wir die am häufigsten gestellten Fragen",
-    "faq": "FAQs",
-    "more": "Haben Sie Schwierigkeiten oder finden Sie keine Antwort auf Ihr Problem? Besuchen Sie unser",
+    "description": "Du hast eine Frage zu BetterFleet? Hier beantworten wir die am häufigsten gestellten Fragen",
+    "faq": "F.A.Q.",
+    "more": "Du stößt auf Schwierigkeiten oder findest keine Antwort auf dein Problem? Triff uns hier auf unserem",
     "question": {
       "alliance": {
-        "content1": "BetterFleet hilft Spielern dabei, Allianzen zu finden, garantiert jedoch keinen sofortigen Zugriff auf denselben Server.",
-        "content2": "Beim Zusammenführen mehrerer Spieler in einer Gruppe spielen viele Faktoren eine Rolle, auf die BetterFleet keinen Einfluss hat. Darunter: Zeit, Anzahl der suchenden Spieler, Standort, Internetverbindung und das Wohlwollen der Matchmaking-Server von Sea of Thieves.",
-        "content3": "Wir beobachten einen Trend, bei dem die Suchzeit zwischen 5 Minuten für die Glücklichen und bis zu 3 Stunden für die weniger Glücklichen variiert. Diese Schätzungen sind jedoch nur annähernd und können nicht garantiert werden.",
-        "content4": "Dennoch, wenn Sie wissen, wie Sie das Suchsystem für BetterFleet verbessern können, wir sind geneigt, jeden Vorschlag, den du auf Discord oder GitHub machen kannst, zu studieren.",
-        "title": "Garantiert BetterFleet, dass man sich sofort demselben Server anschließt?"
+        "content1": "BetterFleet hilft Spielern, das Bilden von Allianzen zu optimieren, garantiert aber keinen sofortigen Zugriff auf ein und denselben Server.",
+        "content2": "Der Suchprozess hängt von zahlreichen Faktoren ab, auf die BetterFleet keinen Einfluss hat. Darunter: Tageszeit, Anzahl der Spieler, Standort, Internetverbindung sowie das Wohlwollen der Matchmaking-Server von Sea of Thieves.",
+        "content3": "Was die benötigte Zeit angeht, beobachten wir eine Tendenz zwischen 5 Minuten für die Glücklichsten und bis zu 3 Stunden für die weniger Glücklichen. Diese Schätzungen bleiben jedoch ungefähr und sind nicht garantiert.",
+        "content4": "Wenn du dennoch weißt, wie sich das Suchsystem von BetterFleet verbessern lässt, sehen wir uns gerne jeden Vorschlag an, den du auf Discord oder GitHub machst.",
+        "title": "Garantiert BetterFleet, sofort demselben Server beizutreten?"
       },
       "bug": {
-        "content1": "Wenn Sie auf Probleme oder Fehler stoßen, empfehlen wir Ihnen, uns diese zu melden, damit wir daran arbeiten können, Ihr Erlebnis zu verbessern. So erreichen Sie uns:",
-        "content2": "Discord: Treten Sie unserem Discord-Server bei und teilen Sie Ihr Problem im speziellen Support-Kanal. Unser Team ist immer bereit, Ihnen zu helfen und Ihre Fragen in Echtzeit zu beantworten.",
-        "content3": "GitHub: Wenn Sie mit GitHub vertraut sind, können Sie ein Issue auch in unserem GitHub-Repository öffnen. Dadurch können wir Probleme strukturiert verfolgen und eine transparente und effiziente Nachverfolgung gewährleisten.",
-        "content4": "Wir freuen uns über Ihr Feedback und sind bestrebt, gemeldete Probleme so schnell wie möglich zu lösen.",
-        "title": "Ich stoße auf Probleme/Bugs, wie melde ich diese?"
+        "content1": "Wenn du auf Probleme oder Fehler stößt, melde sie uns bitte, damit wir daran arbeiten können, dein Erlebnis zu verbessern. So erreichst du uns:",
+        "content2": "Discord: Tritt unserem Discord-Server bei und schildere dein Problem im dafür vorgesehenen Support-Kanal. Unser Team ist stets bereit, dir zu helfen und deine Fragen in Echtzeit zu beantworten.",
+        "content3": "GitHub: Wenn du dich mit GitHub auskennst, kannst du auch ein Issue in unserem GitHub-Repository öffnen. So können wir Probleme strukturiert verfolgen und eine transparente und effektive Nachverfolgung sicherstellen.",
+        "content4": "Wir schätzen dein Feedback und sind bestrebt, gemeldete Probleme so schnell wie möglich zu lösen.",
+        "title": "Wie melde ich ein Problem oder einen Fehler?"
       },
       "console": {
-        "content1": "Absolut ! Wir haben spezielle Funktionen entwickelt, um das Erlebnis für Xbox- und PlayStation-Spieler zu verbessern. Folgendes haben wir umgesetzt:",
-        "content2": "Tonzählung: Wir haben eine Tonkomponente in die Zählung integriert. Mit dieser Funktion können Benutzer genau wissen, wann sie den Anker lichten müssen, ohne dass der Anführer der Allianz Sprachanweisungen geben muss. Dies macht Sitzungen flüssiger und überwindet gleichzeitig die Verzögerungen, die durch Online-Austauschplattformen verursacht werden.",
-        "content3": "Visuelle Anzeige des Plattformtyps: Wir haben ein Symbol hinzugefügt, das Benutzer darüber informiert, ob ihre Teamkollegen eine Konsole verwenden. Diese Funktion fördert eine bessere Koordination und ein besseres Verständnis zwischen Spielern auf verschiedenen Plattformen.",
-        "content4": "Diese Verbesserungen sollen das Spielerlebnis für Konsolenspieler intuitiver und zugänglicher machen und eine nahtlose Integration in gemischte Gaming-Communitys gewährleisten.",
-        "title": "Besteht Interesse für Konsolenspieler?"
+        "content1": "Absolut! Wir haben spezielle Funktionen entwickelt, um das Erlebnis für Xbox- und PlayStation-Spieler zu verbessern. Das haben wir umgesetzt:",
+        "content2": "Audio-Countdown: Wir haben dem Countdown eine Tonkomponente hinzugefügt. So wissen die Nutzer genau, wann sie ablegen müssen, ohne dass der Anführer der Allianz per Sprache Anweisungen geben muss. Das lässt Sitzungen reibungslos ablaufen und umgeht zugleich die Verzögerung durch Online-Kommunikationsplattformen.",
+        "content3": "Visuelle Anzeige der genutzten Plattform: Wir haben ein Symbol hinzugefügt, das anzeigt, ob deine Teamkollegen auf einer Konsole spielen. Das fördert eine bessere Koordination und ein besseres Verständnis zwischen Spielern auf unterschiedlichen Plattformen.",
+        "content4": "Diese Verbesserungen sollen das Spielerlebnis für Konsolenspieler intuitiver und zugänglicher machen und für eine harmonische Integration in gemischten Gaming-Communitys sorgen.",
+        "title": "Ist es auch für Konsolenspieler interessant?"
       },
       "data": {
-        "content1": "Der Datenschutz und die Sicherheit der Daten unserer Nutzer sind für uns von größter Bedeutung. Hier ist unsere Richtlinie bezüglich der Verwaltung von Benutzerdaten:",
-        "content2": "Datenverwendung: Für die Zwecke der Bewerbung sind lediglich der Benutzername und die E-Mail-Adresse erforderlich. Weitere personenbezogene Daten werden nicht erhoben.",
+        "content1": "Die Vertraulichkeit und Sicherheit der Daten unserer Nutzer sind für uns von größter Bedeutung. Hier ist unsere Richtlinie zum Umgang mit Nutzerdaten:",
+        "content2": "Datennutzung: Benutzername und E-Mail-Adresse sind die einzigen Angaben, die für das ordnungsgemäße Funktionieren der Anwendung erforderlich sind. Weitere personenbezogene Daten werden nicht erhoben.",
         "content3": "Sicherheit und Verschlüsselung: Die erfassten Daten werden verschlüsselt und sicher gespeichert, um unbefugten Zugriff zu verhindern.",
-        "content4": "Cookies und Weiterverkauf: Wir verwenden keine Cookies und wir verkaufen oder geben Benutzerinformationen nicht an Dritte weiter.",
-        "content5": "Anonyme und statistische Daten: Zur kontinuierlichen Verbesserung unserer Anwendung nutzen wir anonymisierte Daten zu statistischen Zwecken. Diese Daten ermöglichen keinerlei Rückschlüsse auf die Person der Nutzer.",
-        "content6": "Wir verpflichten uns zu einer gewissen Transparenz und respektieren die Privatsphäre unserer Nutzer unter allen Umständen.",
-        "title": "Was machen wir mit Benutzerdaten?"
+        "content4": "Cookies und Weiterverkauf: Wir verwenden keine Cookies und wir verkaufen die Informationen der Nutzer nicht und geben sie nicht an Dritte weiter.",
+        "content5": "Anonyme Daten und Statistiken: Zur kontinuierlichen Verbesserung unserer Anwendung nutzen wir anonyme Daten zu statistischen Zwecken. Diese Daten erlauben unter keinen Umständen eine persönliche Identifizierung der Nutzer.",
+        "content6": "Wir sind bestrebt, ein gewisses Maß an Transparenz zu wahren und die Privatsphäre unserer Nutzer jederzeit zu respektieren.",
+        "title": "Was machen wir mit den Nutzerdaten?"
       },
       "download": {
-        "content1": "Gehe zu unserer offiziellen Website:",
-        "content2": "Klicken Sie auf die Schaltfläche \"Download\".",
-        "content3": "Folgen Sie den Anweisungen auf dem Bildschirm, um die Installation abzuschließen.",
-        "content4": "Und los geht's! Nach diesen Schritten wird Better Fleet auf Ihrem Gerät installiert.",
-        "title": "Wie installiere ich Better Fleet?"
+        "content1": "Gehe auf unsere offizielle Website:",
+        "content2": "Klicke auf die Schaltfläche „Download“.",
+        "content3": "Folge den Anweisungen auf dem Bildschirm, um die Installation abzuschließen.",
+        "content4": "Das war's! Nach diesen Schritten ist BetterFleet auf deinem Gerät installiert.",
+        "title": "Wie installiere ich BetterFleet?"
       },
       "eac": {
-        "content1": "Better Fleet ist eher ein Logbuch als alles andere. Seine Hauptautomatikfunktion simuliert einen einfachen Mausklick, genau wie ein Sprachbefehl, und ist per se kein Makro. Systeme wie Easy Anti-Cheat (EAC) konzentrieren sich hauptsächlich auf die Manipulation des Arbeitsspeichers und haben daher keinen Grund, unsere Methode zu verurteilen.",
-        "content2": "Außerdem wird der Klick nie im Spiel ausgeführt und erscheint nur im Menü, in Übereinstimmung mit dem Meer der Diebe und Xbox Nutzungsbedingungen (TOS). Diese Begriffe sind breit genug, um juristisch so viele Situationen wie möglich abzudecken, aber kein Sinn erwähnt unsere spezifische Verwendung. Die Option kann jedoch nach eigenem Ermessen deaktiviert werden.",
-        "content3": "Es bleibt wichtig zu verstehen, dass der Einsatz von Tools wie Better Fleet und Fleet Creator nicht ganz ohne Risiken ist, insbesondere im Hinblick auf die IP-Erkennung, die nach wie vor ein sensibler Punkt ist. Unsere Anwendung ist genauso sicher wie jede andere, aber da sie weder von Rare noch von Microsoft anerkannt wird, sind wir vollständig auf deren alleinige Handlungsbereitschaft angewiesen.",
-        "title": "Gibt es Risiken bei Easy Anti-Cheat? (EAC)"
+        "content1": "BetterFleet ähnelt eher einem Logbuch als allem anderen. Seine wichtigste automatische Funktion simuliert einen recht einfachen Mausklick, genau wie es ein Sprachbefehl täte, und stellt technisch gesehen kein Makro dar. Systeme wie Easy Anti-Cheat (EAC) konzentrieren sich vor allem auf Manipulationen des Arbeitsspeichers und haben daher keinen Grund, unsere Methode zu beanstanden.",
+        "content2": "Zudem wird der Klick nie im Spiel ausgeführt und erfolgt nur im Menü, im Einklang mit den Nutzungsbedingungen (TOS) von Sea of Thieves und Xbox. Diese Bedingungen sind weit genug gefasst, um juristisch möglichst viele Situationen abzudecken, aber kein Punkt erwähnt unsere konkrete Nutzung. Die Option lässt sich jedoch nach eigenem Ermessen deaktivieren.",
+        "content3": "Dennoch ist es wichtig zu verstehen, dass die Nutzung von Tools wie BetterFleet und Fleet Creator nicht völlig risikofrei ist, insbesondere im Hinblick auf die IP-Erkennung, die ein heikler Punkt bleibt. Unsere Anwendung ist so sicher wie jede andere, aber da sie weder von Rare noch von Microsoft anerkannt wird, sind wir vollständig von deren alleiniger Entscheidung abhängig, Maßnahmen zu ergreifen.",
+        "title": "Gibt es ein Risiko mit Easy Anti-Cheat? (EAC)"
       },
       "edge": {
-        "content1": "Wenn Sie Probleme beim Starten der Anwendung haben oder diese nach erfolgreicher Installation abstürzt, befolgen Sie bitte diese Schritte zur Fehlerbehebung:",
-        "content2": "Stellen Sie sicher, dass Ihr Betriebssystem Windows 10 oder Windows 11 ist.",
-        "content3": "Überprüfen Sie, ob Microsoft Edge und Microsoft Edge WebView2 korrekt auf Ihrem Gerät installiert sind. Diese Komponenten sind für das einwandfreie Funktionieren der Anwendung unentbehrlich.",
-        "content4": "Möglicherweise liegt ein Konflikt mit Ihrem Antivirenprogramm vor. Wenn es dies zulässt, schließen Sie Better Fleet aus der Liste der aktuellen Bedrohungen aus. Andernfalls deaktivieren Sie Ihr Antivirenprogramm und starten Sie die Anwendung neu.",
-        "content5": "Wenn das Problem trotz dieser Überprüfungen weiterhin besteht, versuchen Sie, die Anwendung neu zu installieren, um mögliche Schäden zu beheben.",
-        "content6": "Wenn die Anwendung nach diesen Schritten immer noch nicht funktioniert, zögern Sie nicht, uns auf unserem Discord-Server zu kontaktieren, um weitere persönliche Unterstützung zu erhalten.",
-        "title": "Die Anwendung startet nicht bzw. stürzt nicht ab. Warum? (Rand)"
+        "content1": "Wenn du Probleme hast, die Anwendung auszuführen, oder wenn sie nach ordnungsgemäßer Installation abstürzt, befolge bitte diese Schritte zur Fehlerbehebung:",
+        "content2": "Stelle sicher, dass dein Betriebssystem Windows 10 oder Windows 11 ist.",
+        "content3": "Prüfe, ob Microsoft Edge und Microsoft Edge WebView2 korrekt auf deinem Gerät installiert sind. Diese Komponenten sind für das einwandfreie Funktionieren der Anwendung unerlässlich.",
+        "content4": "Möglicherweise gibt es einen Konflikt mit deiner Antivirensoftware. Wenn diese es zulässt, nimm BetterFleet von der Liste der aktuellen Bedrohungen aus. Andernfalls deaktiviere deine Software und starte die Anwendung erneut.",
+        "content5": "Wenn das Problem trotz dieser Prüfungen weiterhin besteht, versuche, die Anwendung neu zu installieren, um mögliche Beschädigungen zu beheben.",
+        "content6": "Wenn die Anwendung nach diesen Schritten immer noch nicht funktioniert, zögere nicht und triff uns auf unserem Discord-Server für individuellere Unterstützung.",
+        "title": "Warum stürzt meine Anwendung ab und/oder startet nicht?"
       },
       "password": {
         "content1": "Nutze den Link „Passwort vergessen?“ auf der Anmeldeseite. Gib deinen Benutzernamen oder deine E-Mail-Adresse ein, und wir schicken dir einen Link, um ein neues zu wählen.",
-        "content2": "Die E-Mail geht an die Adresse, mit der du dich registriert hast. Sieh also im Spam-Ordner nach, falls sie nicht ankommt. Kommst du trotzdem nicht weiter? Frag uns auf Discord.",
-        "title": "Was soll ich tun, wenn ich mein Passwort vergesse?"
+        "content2": "Die E-Mail geht an die Adresse, mit der du dich registriert hast. Schau also in deinem Spam-Ordner nach, falls sie nicht ankommt. Kommst du trotzdem nicht weiter? Frag uns auf Discord.",
+        "title": "Was soll ich tun, wenn ich mein Passwort vergessen habe?"
       },
       "security": {
-        "content1": "Ja, bei der Entwicklung unserer App steht die Benutzersicherheit an erster Stelle. Hier sind die Maßnahmen, die wir ergriffen haben, um eine sichere Nutzung zu gewährleisten:",
-        "content2": "Verstärkte Authentifizierung: Wir haben ein Authentifizierungs-Overlay integriert, um die Sicherheit von Benutzerkonten zu erhöhen.",
-        "content3": "Open Source: Die Anwendung ist vollständig Open Source und bietet vollständige Transparenz über ihre Verwendung und Funktionsweise. Dadurch kann die Community unseren Code verifizieren und prüfen und so Vertrauen in unser Produkt aufbauen.",
-        "content4": "Proaktive Wartung: Unsere Entwickler sind bestrebt, die Anwendung in einem optimalen Sicherheitszustand zu halten. Dazu gehört die regelmäßige Aktualisierung von Abhängigkeiten und die kontinuierliche Überwachung potenzieller Sicherheitslücken, um etwaigen Risiken vorzubeugen.",
-        "content5": "Unabhängiger Ansatz: Da Better Fleet nicht von Microsoft lizenziert ist, unterliegt es bei der Installation dem Windows Defender. Unsere Anwendung ist nicht weniger sicher und wir sind bestrebt, uns an diese Einschränkungen anzupassen, auf die wir keinen Einfluss haben.",
+        "content1": "Ja, bei der Entwicklung unserer Anwendung stand die Sicherheit der Nutzer an oberster Stelle. Hier sind die Maßnahmen, die wir für eine sichere Nutzung ergriffen haben:",
+        "content2": "Verstärkte Authentifizierung: Wir haben ein Authentifizierungs-Overlay integriert, um die Sicherheit der Nutzerkonten zu erhöhen.",
+        "content3": "Open Source: Die Anwendung ist vollständig quelloffen und bietet volle Transparenz über ihre Nutzung und Funktionsweise. So kann die Community unseren Code überprüfen und auditieren, was das Vertrauen in unser Produkt stärkt.",
+        "content4": "Proaktive Wartung: Unsere Entwickler sind bestrebt, die Anwendung in einem optimalen Sicherheitszustand zu halten. Dazu gehören regelmäßige Aktualisierungen der Abhängigkeiten und die kontinuierliche Überwachung möglicher Sicherheitslücken, um jedes Risiko zu vermeiden.",
+        "content5": "Unabhängiger Ansatz: Da BetterFleet nicht von Microsoft lizenziert ist, unterliegt es bei der Installation dem Windows Defender. Unsere Anwendung ist deshalb nicht weniger sicher, und wir sind bestrebt, uns an diese Einschränkungen anzupassen, auf die wir keinen vollen Einfluss haben.",
         "content6": "Diese gemeinsamen Anstrengungen tragen zu einer zuverlässigen und sicheren Plattform für jeden unserer Nutzer bei.",
         "title": "Ist die Anwendung sicher?"
       },
       "update": {
-        "content1": "Wenn ein Update verfügbar ist, erscheint beim Starten von Better Fleet ein Popup-Fenster. Sie müssen lediglich auf „Ja“ klicken, um das Update zu starten. Die App installiert automatisch die neueste Version und startet neu, sobald das Update abgeschlossen ist.",
-        "content2": "Falls ein Update verfügbar ist, während Better Fleet bereits gestartet ist, können Sie die Anwendung einfach schließen. Das Update wird Ihnen beim nächsten Start angeboten.",
-        "title": "Wie aktualisiere ich Better Fleet?"
+        "content1": "Sobald ein Update verfügbar ist, erscheint beim Starten von BetterFleet ein Pop-up-Fenster. Du musst nur auf „Ja“ klicken, um das Update zu starten. Die Anwendung installiert automatisch die neueste Version und startet neu, sobald das Update abgeschlossen ist.",
+        "content2": "Falls ein Update verfügbar ist, während BetterFleet bereits läuft, kannst du die Anwendung einfach schließen. Beim nächsten Start wird dir das Update angeboten.",
+        "title": "Wie aktualisiere ich BetterFleet?"
       }
     },
-    "title": "Am häufigsten gestellte Fragen"
+    "title": "Häufig gestellte Fragen"
   },
   "footer": {
-    "content": "Werden Sie Teil unseres globalen Abenteuers – Ihrer Leidenschaft, unserer Technologie. Lassen Sie uns gemeinsam das Spiel verändern. Unterstützt durch Community und offene Innovation.",
-    "discord": "Haben Sie ein Problem? Kontaktieren Sie unser Team umgehend über unsere",
-    "github": "Sind Sie Entwickler und lieben es, in Sea of Thieves zu segeln? Kommen Sie vorbei und unterstützen Sie das Projekt!",
+    "content": "Ein kostenloses Open-Source-Tool, von der Sea-of-Thieves-Community erstellt, um Crews beim gemeinsamen Segeln zu helfen. Von Spielern entwickelt und verbessert.",
+    "discord": "Brauchst du Hilfe? Kontaktiere das Team auf unserem",
+    "github": "Bist du Entwickler und segelst auf der Sea of Thieves? Komm vorbei und pack beim Projekt mit an!",
     "warning": {
-      "content": "BetterFleet ist keine offizielle Anwendung im Zusammenhang mit Sea of Thieves und distanziert sich von jeglichen direkten Verweisen auf dieses Spiel.",
-      "title": "Warnungen"
+      "content": "BetterFleet ist eine inoffizielle Drittanbieter-Anwendung ohne Verbindung zum Entwicklungsteam von Sea of Thieves. Die Nutzung erfolgt rein extern und hat keinerlei Einfluss auf das Spielerlebnis. Der Nutzer erklärt sich damit einverstanden, die alleinige Verantwortung für die Nutzung zu tragen!",
+      "title": "Haftungsausschluss"
     }
   },
   "header": {
-    "details": "BetterFleet ist offiziell verfügbar! Probieren Sie die Anwendung jetzt aus!"
+    "details": "BetterFleet ist jetzt da – probier es aus!"
   },
   "name": "BetterFleet",
   "nav": {
-    "joinSession": "Sitzung beitreten",
-    "documentation": "Dokumentation",
-    "home": "Zuhause",
-    "support": "Unterstützung",
+    "joinSession": "Einer Sitzung beitreten",
+    "documentation": "Entdecken",
+    "home": "Startseite",
+    "support": "Support",
     "statistics": "Statistiken"
   },
   "presentation": {
-    "joinConsole": "Von der Konsole beitreten",
-    "content": "Tauchen Sie ein in die Welt von Sea of Thieves mit dem ultimativen Tool, mit dem Sie Allianzen wie nie zuvor schmieden können. Unsere App revolutioniert die Art und Weise, wie Spieler miteinander in Kontakt treten. Sie bietet eine außergewöhnliche Flexibilität und erhöht Ihre Chancen, eine Allianz zu finden, erheblich, indem sie die Möglichkeiten anderer Apps bei weitem übertrifft. Treten Sie unserer Community bei und verwandeln Sie Ihr Spielerlebnis in ein episches Abenteuer, bei dem Bindung und gemeinsames Segeln mit jedem Klick zur Realität werden.",
-    "title": "BetterFleet",
+    "content": "Die ganze Crew auf denselben Sea-of-Thieves-Server zu bekommen, ist oft mühsam. BetterFleet übernimmt das: Die App synchronisiert das „Leinen los“ aller und zeigt dir, wer zusammen gelandet ist – so entsteht eine Allianz in Minuten statt Stunden. Kostenlos, Open Source und von Spielern gemacht.",
     "how": "So funktioniert's",
-    "pill": "Windows-App, kostenlos & Open Source"
+    "joinConsole": "Von der Konsole beitreten",
+    "pill": "Windows-App – kostenlos & Open Source",
+    "title": "BetterFleet"
   },
   "stats": {
-    "download": "Téléchargement",
-    "players": "Joueur(s) en ligne",
-    "sessions": "Session(s) ouverte",
+    "download": "Downloads",
+    "players": "Spieler online",
+    "sessions": "Offene Sitzungen",
     "title": "Statistiken"
   },
   "tutorial": {
@@ -291,20 +291,24 @@
       "title": "Der Allianz beitreten | BetterFleet"
     },
     "home": {
-      "title": "BetterFleet, bring deine Sea-of-Thieves-Crew auf denselben Server",
+      "title": "BetterFleet — bring deine Sea-of-Thieves-Crew auf denselben Server",
       "description": "Kostenlose Open-Source-App, die das „Leinen los“ deiner Crew synchronisiert, damit ihr alle auf demselben Sea-of-Thieves-Server landet. Gemeinsamer Countdown, Live-Serverprüfung, kein versehentliches Solo-Segeln mehr."
     },
     "tutorial": {
-      "title": "So bringst du deine Crew auf denselben Server, BetterFleet",
+      "title": "So bringst du deine Crew auf denselben Server — BetterFleet",
       "description": "Schritt für Schritt: BetterFleet installieren, eine Allianz erstellen, den Code teilen und den gemeinsamen Countdown nutzen, damit deine ganze Sea-of-Thieves-Crew auf einem Server landet."
     },
     "support": {
-      "title": "Hilfe und FAQ, BetterFleet",
+      "title": "Hilfe und FAQ — BetterFleet",
       "description": "Antworten zur Installation und Aktualisierung von BetterFleet, zur Sicherheit bei Sea of Thieves, was mit deinen Daten passiert und wie du ein Problem meldest."
     },
     "reports": {
-      "title": "Berichte, BetterFleet",
+      "title": "Berichte — BetterFleet",
       "description": "Fehlerberichte, die aus der BetterFleet-App gesendet wurden."
+    },
+    "download": {
+      "title": "BetterFleet herunterladen",
+      "description": "Lade BetterFleet für Windows oder Linux herunter — wähle das Installationsprogramm oder Paket, das zu deinem System passt."
     }
   },
   "alliance": {
@@ -341,5 +345,59 @@
   "loading": {
     "stats": "Das Logbuch wird gelesen…",
     "globe": "Die Seekarte wird entrollt…"
+  },
+  "downloadPage": {
+    "title": "BetterFleet herunterladen",
+    "lead": "Wir haben den passenden Download für dein System ausgewählt — oder wähle unten einen anderen.",
+    "leadUnknown": "Wir konnten nicht erkennen, was du verwendest — wähle unten deine Plattform.",
+    "leadLinux": "Wähle unten das Paket, das zu deiner Distribution passt.",
+    "recommendedLabel": "Empfohlen für dein System",
+    "download": "Herunterladen",
+    "sixtyFourBit": "64-Bit",
+    "megabytes": "MB",
+    "comingSoon": "Demnächst",
+    "loading": "Wird geladen",
+    "viewReleases": "Alle Releases auf GitHub durchsuchen",
+    "error": {
+      "title": "Der Release-Server war nicht erreichbar",
+      "body": "Wir konnten die neuesten Downloads nicht laden. Du kannst dir jeden Build weiterhin direkt von GitHub holen.",
+      "cta": "Auf GitHub holen"
+    },
+    "recommended": {
+      "windows": {
+        "title": "BetterFleet für Windows — Installer",
+        "desc": "Klassische Installation, automatische Updates"
+      }
+    },
+    "windows": {
+      "name": "Windows",
+      "editions": "Windows 10 / 11 · 64-Bit",
+      "exe": {
+        "label": ".exe-Installer",
+        "desc": "Klassische Installation, automatische Updates"
+      },
+      "updates": "Updates installieren sich automatisch im Hintergrund — du musst nichts tun."
+    },
+    "linux": {
+      "name": "Linux",
+      "choose": "Wähle deine Distribution",
+      "deb": {
+        "label": ".deb",
+        "desc": "Ubuntu, Debian, Mint, Pop!_OS"
+      },
+      "rpm": {
+        "label": ".rpm",
+        "desc": "Fedora, openSUSE, RHEL"
+      },
+      "arch": {
+        "label": "Arch (pacman)",
+        "desc": "Arch, Manjaro, CachyOS"
+      },
+      "copy": "Kopieren",
+      "copied": "Kopiert!",
+      "copyFailed": "Kopieren fehlgeschlagen — markieren und kopieren",
+      "copyCommand": "Installationsbefehl kopieren",
+      "updates": "Updates unter Linux erfolgen manuell — es gibt keine automatische Aktualisierung. Zum Aktualisieren lädst du das neueste Paket von dieser Seite herunter und installierst es über deine aktuelle Version."
+    }
   }
 }
