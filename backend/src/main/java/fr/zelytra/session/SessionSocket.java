@@ -371,7 +371,7 @@ public class SessionSocket {
 
         // Refuse connection from an out-of-date client. Web guests carry no app version (they follow
         // the live site, not a released build), so the allowlist only gates the desktop app.
-        if (!guest && (player.getClientVersion() == null || !appVersion.contains(player.getClientVersion()))) {
+        if (!guest && !isSupportedClientVersion(player.getClientVersion())) {
             Log.warn("[" + player.getUsername() + "] Client is out of date, connection refused (" + player.getClientVersion() + ")");
             sessionManager.sendThenClose(session, MessageType.OUTDATED_CLIENT, null);
             return;
@@ -407,6 +407,27 @@ public class SessionSocket {
                 sessionManager.broadcastDataToSession(sessionId, MessageType.UPDATE, fleet);
             }
         }
+    }
+
+    /**
+     * Whether a desktop client version may connect. The configured {@code app.version} list is an
+     * exact allowlist of shipped releases. A release candidate reports its base release with a
+     * pre-release suffix (for example {@code 2.3.0-rc.3}), so its base ({@code 2.3.0}, everything
+     * before the first {@code -}) is matched against the allowlist too: that lets every RC of a
+     * supported release connect without enumerating each candidate in the list.
+     */
+    private boolean isSupportedClientVersion(String clientVersion) {
+        if (clientVersion == null) {
+            return false;
+        }
+        if (appVersion.contains(clientVersion)) {
+            return true;
+        }
+        int suffix = clientVersion.indexOf('-');
+        if (suffix > 0) {
+            return appVersion.contains(clientVersion.substring(0, suffix));
+        }
+        return false;
     }
 
     private void handleUpdateMessage(Player player) {

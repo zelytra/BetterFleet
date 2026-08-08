@@ -378,6 +378,25 @@ class SessionSocketTest {
     }
 
     @Test
+    void releaseCandidateOfASupportedRelease_isAcceptedNotRejected() throws Exception {
+        // A release candidate reports its base release with a -rc.N suffix (e.g. 2.3.0-rc.3). Its base
+        // is an allowlisted release, so the RC must connect: the prod backend used to reject it with
+        // OUTDATED_CLIENT because the allowlist match was exact.
+        Player player = new Player();
+        player.setUsername("RcTester");
+        player.setClientVersion(appVersion.get(0) + "-rc.1"); // base is in app.version
+
+        betterFleetClient.sendMessage(MessageType.CONNECT, player);
+        assertTrue(betterFleetClient.getLatch().await(2, TimeUnit.SECONDS));
+
+        // The connect succeeds: the client is put in a session rather than told it is outdated.
+        Fleet fleet = betterFleetClient.getMessageReceived(Fleet.class);
+        assertNotNull(fleet, "An RC of a supported release must connect, not be refused");
+        assertEquals(1, sessionManager.getSessions().size(),
+                "An RC of a supported release must create its session like any current client");
+    }
+
+    @Test
     void invalidToken_connectionRefusedAndNoSessionCreated() throws Exception {
         BetterFleetClient client = new BetterFleetClient();
         URI badUri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort()
