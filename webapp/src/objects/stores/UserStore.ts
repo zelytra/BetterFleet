@@ -40,15 +40,15 @@ export const UserStore = reactive({
           : false,
       shareStats:
         readPlayer.shareStats !== undefined ? readPlayer.shareStats : true,
-      // In dev (`npm run dev` / `tauri:dev`), always follow VITE_SOCKET_HOST: a value persisted from
-      // an earlier run silently shadowed the env, so pointing the app at a different backend (e.g.
-      // prod) left the WebSocket talking to the old host while HTTP moved with the env. The persisted
-      // override still wins in prod / self-host builds. Gated on MODE (not DEV) so the test mode keeps
-      // restoring the persisted value.
+      // Re-resolve the effective backend host from the env on every init, never from a bare persisted
+      // host: a value saved once (issue #762) shadowed VITE_SOCKET_HOST for the life of the install, so
+      // the day the backend URL moved every client stayed pinned to the dead host while HTTP followed
+      // the env. Only an explicit developer override wins over the env now, and it travels in its own
+      // field so a stale one is told apart from "follow the env". Same in every environment: an install
+      // carrying only the old serverHostName falls back to the env value.
+      serverHostNameOverride: readPlayer.serverHostNameOverride,
       serverHostName:
-        import.meta.env.MODE === "development"
-          ? import.meta.env.VITE_SOCKET_HOST
-          : readPlayer.serverHostName || import.meta.env.VITE_SOCKET_HOST,
+        readPlayer.serverHostNameOverride ?? import.meta.env.VITE_SOCKET_HOST,
       clientVersion: import.meta.env.VITE_VERSION,
       fleet: new Fleet(),
       server: undefined,

@@ -227,9 +227,10 @@
   },
   "login": {
     "browser": {
-      "title": "Continue in your browser",
-      "message": "A sign-in page opened in your browser. Complete it there, then come back here.",
-      "cancel": "Cancel"
+      "title": "Continúa en tu navegador",
+      "message": "Se abrió una página de inicio de sesión en tu navegador. Complétala allí y luego vuelve aquí.",
+      "cancel": "Cancelar",
+      "error": "Error al iniciar sesión. Inténtalo de nuevo."
     },
     "continue": "seguir",
     "description": "¡Bienvenidos a Mejor Flota! Estamos encantados de tenerte entre nosotros. Para poder utilizar la aplicación por completo, es necesario iniciar sesión en su cuenta o crear una.",

@@ -81,7 +81,9 @@ router.beforeEach((to) => {
       !keycloakStore.isAuthenticated ||
       !keycloakStore.keycloak.authenticated
     ) {
-      router.push("/");
+      // Returning the location redirects the in-flight navigation itself; router.push kicked off a
+      // second one on top of it (vue-router 4).
+      return "/";
     }
   }
 });

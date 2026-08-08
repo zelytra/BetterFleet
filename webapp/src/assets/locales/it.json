@@ -109,7 +109,7 @@
     "macro": {
       "check": "Avvio assistito",
       "description": "Clicca automaticamente su \"Salpa\" alla fine del conto alla rovescia",
-      "linuxUnavailable": "Not available on Linux — Wayland blocks the automatic click, so you must click \"Set sail\" yourself."
+      "linuxUnavailable": "Non disponibile su Linux — Wayland blocca il clic automatico, quindi devi cliccare tu stesso su \"Salpa\"."
     },
     "overlay": {
       "hotkey": {
@@ -227,9 +227,10 @@
   },
   "login": {
     "browser": {
-      "title": "Continue in your browser",
-      "message": "A sign-in page opened in your browser. Complete it there, then come back here.",
-      "cancel": "Cancel"
+      "title": "Continua nel tuo browser",
+      "message": "Si è aperta una pagina di accesso nel tuo browser. Completa l'accesso lì, poi torna qui.",
+      "cancel": "Annulla",
+      "error": "Accesso non riuscito. Riprova."
     },
     "continue": "Continua",
     "description": "Benvenuti su BetterFleet! Siamo entusiasti di averti tra noi. Per accedere all'applicazione, accedi al tuo account o creane uno!",
@@ -326,8 +327,8 @@
     },
     "leave": "Lascia la sessione",
     "linuxAutoclick": {
-      "banner": "Assisted launch is not available on Linux — Wayland blocks the automatic click. Click \"Set sail\" yourself when the countdown reaches zero.",
-      "dismiss": "Dismiss"
+      "banner": "L'avvio assistito non è disponibile su Linux — Wayland blocca il clic automatico. Clicca tu stesso su \"Salpa\" quando il conto alla rovescia raggiunge lo zero.",
+      "dismiss": "Chiudi"
     },
     "name": {
       "0": "La Nave Fantasma",
