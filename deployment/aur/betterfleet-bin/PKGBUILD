@@ -22,7 +22,7 @@ conflicts=('betterfleet')
 install='betterfleet-bin.install'
 # Runtime libraries the Tauri v2 / webkit2gtk-4.1 GUI links against, plus libcap for the setcap
 # that grants the capture helper CAP_NET_RAW in the install scriptlet.
-depends=('webkit2gtk-4.1' 'gtk3' 'libayatana-appindicator' 'librsvg' 'libcap')
+depends=('webkit2gtk-4.1' 'gtk3' 'libayatana-appindicator' 'librsvg' 'libcap' 'alsa-lib')
 options=('!strip' '!debug')
 source=("https://github.com/zelytra/BetterFleet/releases/download/v${pkgver}/BetterFleet_${pkgver}_amd64.deb")
 sha256sums=('SKIP')

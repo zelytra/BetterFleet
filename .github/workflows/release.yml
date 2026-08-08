@@ -16,10 +16,15 @@ on:
         type: boolean
         default: false
 
-# Never cancel an in-flight release; let it finish publishing.
+# Never cancel an in-flight release; let it finish publishing. One global lane so a stable tag and a
+# lingering RC run cannot race on Docker :latest or the master version bump.
 concurrency:
-  group: release-${{ github.ref }}
+  group: release
   cancel-in-progress: false
+
+# Least privilege by default; the jobs that publish opt into contents: write individually.
+permissions:
+  contents: read
 
 jobs:
   resolve-version:
@@ -126,9 +131,14 @@ jobs:
         run: node .github/scripts/set-version-from-tag.mjs "${{ needs.resolve-version.outputs.tag }}"
 
       - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
+        # Pinned to a commit (this job holds the updater signing key, so a hijacked action would be able
+        # to sign malicious updates). dtolnay/rust-toolchain selects the toolchain from the ref name, so
+        # a SHA pin must name the toolchain explicitly.
+        uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master
+        with:
+          toolchain: stable
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
         with:
           workspaces: webapp/src-tauri
 
@@ -155,23 +165,22 @@ jobs:
         env:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-          # linuxdeploy's strip step aborts the AppImage bundling on some hosts; skipping strip keeps
-          # both the .deb and the AppImage building. A failed AppImage would otherwise abort the whole
-          # publish, and with it the .deb we actually need.
+          # Skip the post-build strip: it has aborted the Linux bundling on some hosts, and a failed
+          # bundle would take the whole publish with it. The packages are a few MB larger as a result.
           NO_STRIP: "true"
         run: npm run tauri:build
 
       - name: Build & publish Tauri release
         if: ${{ !inputs.dry_run }}
-        # v1 tracks Tauri 2 configs (top-level "identifier"); do not pin back to @v0.
-        uses: tauri-apps/tauri-action@v1
+        # v1 tracks Tauri 2 configs (top-level "identifier"); do not pin back to @v0. Pinned to a commit
+        # on v1 (this job holds the updater signing key).
+        uses: tauri-apps/tauri-action@1deb371b0cd8bd54025b384f1cd735e725c4060f # v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-          # linuxdeploy's strip step aborts the AppImage bundling on some hosts; skipping strip keeps
-          # both the .deb and the AppImage building. A failed AppImage would otherwise abort the whole
-          # publish, and with it the .deb we actually need.
+          # Skip the post-build strip: it has aborted the Linux bundling on some hosts, and a failed
+          # bundle would take the whole publish with it. The packages are a few MB larger as a result.
           NO_STRIP: "true"
         with:
           # tauri-action runs from the repo root; point it at the app so its frontend build resolves
@@ -180,10 +189,38 @@ jobs:
           tagName: v__VERSION__
           releaseName: "BetterFleet v__VERSION__"
           releaseBody: "See the assets to download this version and install."
-          releaseDraft: false
+          # Create the release as a draft: each matrix leg (windows, ubuntu) uploads its own assets to
+          # it, and the publish-release job below un-drafts it only once BOTH legs have succeeded. This
+          # stops a single failed leg from publishing a "latest" release that is missing the other
+          # platform's assets, including the latest.json every installed client polls.
+          releaseDraft: true
           # A pre-release tag (v2.3.0-rc.1) publishes a GitHub pre-release: not "latest", so the
           # updater (which reads releases/latest) never serves it to installed apps.
           prerelease: ${{ needs.resolve-version.outputs.prerelease == 'true' }}
+
+  publish-release:
+    needs: [resolve-version, publish-tauri]
+    # publish-tauri is a matrix; needs waits for every leg, and a dependent job is skipped if any leg
+    # failed. So this runs only when BOTH platforms built. It flips the draft the matrix legs created into a real
+    # release; if a leg failed it never runs and the release stays a draft (never "latest").
+    if: ${{ !inputs.dry_run }}
+    name: Publish the GitHub release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Un-draft the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.resolve-version.outputs.tag }}
+          PRERELEASE: ${{ needs.resolve-version.outputs.prerelease }}
+        run: |
+          set -euo pipefail
+          if [ "${PRERELEASE}" = "true" ]; then
+            gh release edit "${TAG}" --repo "${{ github.repository }}" --draft=false --prerelease=true --latest=false
+          else
+            gh release edit "${TAG}" --repo "${{ github.repository }}" --draft=false --prerelease=false --latest=true
+          fi
 
   publish-backend:
     needs: [resolve-version, verify]
@@ -364,7 +401,7 @@ jobs:
           if git clone --branch gh-pages --single-branch --depth 1 "${REPO_URL}" "${WORKTREE}" 2>/dev/null; then
             echo "Checked out the existing gh-pages branch."
           else
-            echo "No gh-pages branch yet — this run creates it."
+            echo "No gh-pages branch yet, this run creates it."
             mkdir -p "${WORKTREE}"
             git -C "${WORKTREE}" init --initial-branch=gh-pages --quiet
             git -C "${WORKTREE}" remote add origin "${REPO_URL}"
@@ -455,7 +492,7 @@ jobs:
           provides=('betterfleet')
           conflicts=('betterfleet')
           install='betterfleet-bin.install'
-          depends=('webkit2gtk-4.1' 'gtk3' 'libayatana-appindicator' 'librsvg' 'libcap')
+          depends=('webkit2gtk-4.1' 'gtk3' 'libayatana-appindicator' 'librsvg' 'libcap' 'alsa-lib')
           options=('!strip' '!debug')
           source=('__DEBNAME__')
           sha256sums=('SKIP')
@@ -589,6 +626,7 @@ jobs:
     needs:
       - resolve-version
       - publish-tauri
+      - publish-release
       - publish-backend
       - publish-website
     # A pre-release must not bump the version on master; only a real release syncs it.
