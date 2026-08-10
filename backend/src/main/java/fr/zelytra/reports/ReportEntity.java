@@ -3,14 +3,18 @@ package fr.zelytra.reports;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "reporting")
 public class ReportEntity extends PanacheEntityBase {
 
+    // LocalDate, not java.util.Date: the column is a plain SQL date, and mapping it as a timestamp
+    // made Jackson serialize "midnight in the JVM's zone" converted to UTC — the payload could carry
+    // the previous day (2024-11-02 became 2024-11-01T23:00:00Z). LocalDate serializes as the stored
+    // calendar date ("2024-11-02"), which is the only thing this field ever meant.
     @Column(name = "date", columnDefinition = "date")
-    private Date reportingDate;
+    private LocalDate reportingDate;
 
     @Id
     @GeneratedValue
@@ -29,11 +33,11 @@ public class ReportEntity extends PanacheEntityBase {
     public ReportEntity() {
     }
 
-    public Date getReportingDate() {
+    public LocalDate getReportingDate() {
         return reportingDate;
     }
 
-    public void setReportingDate(Date reportingDate) {
+    public void setReportingDate(LocalDate reportingDate) {
         this.reportingDate = reportingDate;
     }
 

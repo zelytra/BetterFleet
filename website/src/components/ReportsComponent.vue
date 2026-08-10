@@ -1,10 +1,18 @@
 <template>
   <section class="reports-wrapper">
+    <!-- The row number is the report's position in the list, not its database id: Hibernate hands
+         out ids from a sequence in blocks of 50, so raw ids jump after every backend restart and
+         read like missing reports. Position stays dense, and stable as new reports are appended. -->
     <FaqCollapse
-      v-for="report of reports"
+      v-for="(report, index) of reports"
       :key="report.id"
       url="reports"
-      :title="'Report n°' + report.id + ' | ' + report.reportingDate"
+      :title="
+        'Report n°' +
+        (index + 1) +
+        ' | ' +
+        formatReportDate(report.reportingDate, locale)
+      "
     >
       <div class="content-wrapper">
         <p class="message">
@@ -24,15 +32,21 @@
 <script setup lang="ts">
 import FaqCollapse from "@/vue/FaqCollapse.vue";
 import { onMounted, ref } from "vue";
-import { ReportInterface } from "@/objects/BugReport.ts";
+import { useI18n } from "vue-i18n";
+import { formatReportDate, ReportInterface } from "@/objects/BugReport.ts";
 import { HTTPAxios } from "@/objects/HTTPAxios.ts";
 import { AxiosResponse } from "axios";
 
+const { locale } = useI18n();
 const reports = ref<ReportInterface[]>([]);
 
 onMounted(() => {
   new HTTPAxios("report/list/all").get().then((response: AxiosResponse) => {
-    reports.value = response.data as ReportInterface[];
+    // The endpoint has no ORDER BY, so pin insertion order here: the template numbers rows by
+    // position, and that numbering must not reshuffle between two loads.
+    reports.value = (response.data as ReportInterface[]).sort(
+      (a, b) => a.id - b.id,
+    );
   });
 });
 </script>
