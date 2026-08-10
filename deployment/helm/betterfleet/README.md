@@ -83,6 +83,7 @@ Either way the Secret must expose these keys:
 | `MICROSOFT_CLIENT_ID`      | keycloak (`${MICROSOFT_CLIENT_ID}` in realm JSON)   |
 | `MICROSOFT_CLIENT_SECRET`  | keycloak (`${MICROSOFT_CLIENT_SECRET}` in realm JSON)|
 | `PROXY_CHECK_API_KEY`      | backend `PROXY_CHECK_API_KEY`                       |
+| `GITHUB_API_TOKEN`         | backend `GITHUB_API_TOKEN` (optional, release proxy quota) |
 
 As in docker-compose, a single `POSTGRES_USER` / `POSTGRES_PASSWORD` pair is
 shared by both databases.
