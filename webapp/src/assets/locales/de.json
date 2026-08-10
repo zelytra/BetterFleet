@@ -81,7 +81,7 @@
       "title": "Verbindung fehlgeschlagen"
     }
   },
-  "appName": "BetterFleet",
+  "appName": "Bessere Flotte",
   "boatSize": {
     "brigantine": "Brigantine",
     "galleon": "Galeone",
@@ -134,7 +134,7 @@
       "overlay": "In-Game-Overlay"
     },
     "presence": {
-      "check": "Discord Rich Presence",
+      "check": "Discord Reiche Präsenz",
       "description": "Zeige deine Sitzung auf deinem Discord-Profil – Lobby-Größe, Anzahl der Bereiten und den Code für öffentliche Sitzungen."
     },
     "recap": {
@@ -175,7 +175,7 @@
     }
   },
   "credits": {
-    "and": "und",
+    "and": "&",
     "description": "BetterFleet wurde entwickelt, um das Bilden von Allianzen in Sea of Thieves zu erleichtern",
     "designed": "Design von",
     "details": "BetterFleet ist eine inoffizielle Drittanbieter-Anwendung ohne Verbindung zum Entwicklungsteam von Sea of Thieves. Die Nutzung erfolgt rein extern und hat keinerlei Einfluss auf das Spielerlebnis. Der Nutzer erklärt sich damit einverstanden, die alleinige Verantwortung für die Nutzung zu tragen!",
@@ -224,13 +224,13 @@
     "es": "Español",
     "fr": "Français",
     "hi": "हिन्दी",
-    "it": "Italiano",
+    "it": "Italienisch",
     "ja": "日本語",
-    "ko": "한국어",
+    "ko": "한국어",
     "pl": "Polski",
-    "pt": "Português (Brasil)",
-    "ru": "Русский",
-    "uk": "Українська",
+    "pt": "Português (Brasil)",
+    "ru": "Russisch",
+    "uk": "Українська",
     "zh": "简体中文"
   },
   "login": {
@@ -277,7 +277,7 @@
     "faq": {
       "button": {
         "discord": "Discord",
-        "faq": "F.A.Q."
+        "faq": "FAQs"
       },
       "content": "Wirf einen Blick auf die F.A.Q.-Seite unserer Website – vielleicht findest du dort schon eine Antwort auf dein Problem! Andernfalls kannst du uns auf unserem Discord kontaktieren. Falls es um einen Fehler geht, wirst du höchstwahrscheinlich gebeten, einen Bericht zu senden!",
       "title": "Hast du eine Frage?"
@@ -318,7 +318,7 @@
     },
     "contributor": {
       "alpha_tester": "Alpha-Tester",
-      "designer": "Designer",
+      "designer": "Benennen",
       "developer": "Entwickler",
       "translator": "Übersetzer"
     },
