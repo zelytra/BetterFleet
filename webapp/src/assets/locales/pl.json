@@ -218,21 +218,6 @@
     "targetLoading": "Wykryto grę. Przygotowywanie statków.",
     "tips": "Ten proces może chwilę potrwać — upewnij się, że gra jest uruchomiona"
   },
-  "locales": {
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "hi": "हिन्दी",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "pl": "Polski",
-    "pt": "Português (Brasil)",
-    "ru": "Русский",
-    "uk": "Українська",
-    "zh": "简体中文"
-  },
   "login": {
     "browser": {
       "title": "Kontynuuj w przeglądarce",

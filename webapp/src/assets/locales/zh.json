@@ -218,21 +218,6 @@
     "targetLoading": "已检测到游戏，正在备船。",
     "tips": "此过程可能需要一些时间，请确保你的游戏已启动"
   },
-  "locales": {
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "hi": "हिन्दी",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "pl": "Polski",
-    "pt": "Português (Brasil)",
-    "ru": "Русский",
-    "uk": "Українська",
-    "zh": "简体中文"
-  },
   "login": {
     "browser": {
       "title": "在浏览器中继续",

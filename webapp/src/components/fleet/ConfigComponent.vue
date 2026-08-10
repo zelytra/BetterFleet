@@ -296,6 +296,7 @@ import SingleSelect from "@/vue/form/SingleSelect.vue";
 import { SingleSelectInterface } from "@/vue/form/Inputs.ts";
 import { inject, onMounted, onUnmounted, ref, watch } from "vue";
 import { invoke } from "@tauri-apps/api/core";
+import { LOCALE_NAMES } from "@/objects/utils/localeNames.ts";
 
 import fr from "@assets/icons/locales/fr.svg";
 import de from "@assets/icons/locales/de.svg";
@@ -449,7 +450,7 @@ function loadOptionList() {
   langOptions.value.data = [];
   for (const locale of availableLocales) {
     langOptions.value.data.push({
-      display: t("locales." + locale),
+      display: LOCALE_NAMES[locale] ?? locale,
       id: locale,
       image: getImgUrl(locale),
     });

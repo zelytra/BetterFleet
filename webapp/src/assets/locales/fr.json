@@ -218,21 +218,6 @@
     "targetLoading": "Jeu détecté. Préparation des navires.",
     "tips": "Cela peut prendre un certain moment, merci de vérifier que votre jeu est lancé"
   },
-  "locales": {
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "hi": "हिन्दी",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "pl": "Polski",
-    "pt": "Português (Brasil)",
-    "ru": "Русский",
-    "uk": "Українська",
-    "zh": "简体中文"
-  },
   "login": {
     "browser": {
       "title": "Continuez dans votre navigateur",
