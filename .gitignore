@@ -1,5 +1,3 @@
 deployment/psql-data/
 .idea/
 /deployment/dev/psql-data/
-# publish.sh's default local output dir when run by hand (see deployment/apt/README.md)
-/deployment/apt/public/

@@ -67,7 +67,7 @@ jobs:
 
           # A pre-release tag carries a semver pre-release suffix (v2.3.0-rc.1). Everything downstream
           # keys off this to keep an RC out of "latest": no updater latest.json, no Docker :latest, no
-          # APT publish, no version bump on master.
+          # version bump on master.
           if [[ "${VERSION}" == *-* ]]; then
             echo "prerelease=true" >> "${GITHUB_OUTPUT}"
           else
@@ -316,124 +316,11 @@ jobs:
           push: ${{ !inputs.dry_run }}
           tags: ${{ steps.docker-tags.outputs.tags }}
 
-  publish-apt:
-    needs: [resolve-version, publish-tauri]
-    # Never publish a pre-release RC to the APT repo, or `apt upgrade` would hand it to everyone.
-    if: ${{ !inputs.dry_run && needs.resolve-version.outputs.prerelease != 'true' }}
-    name: APT repository
-    runs-on: ubuntu-latest
-    # Add-on to the Windows/Linux/backend/website publishing above, not a gate for it: never let a
-    # missing signing secret (until deployment/apt/README.md's one-time setup is done) or an
-    # unexpected failure here fail the release.
-    continue-on-error: true
-    permissions:
-      contents: write
-    steps:
-      - name: Check required secrets
-        id: gate
-        env:
-          APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
-        run: |
-          if [ -n "${APT_GPG_PRIVATE_KEY}" ]; then
-            echo "configured=true" >> "${GITHUB_OUTPUT}"
-          else
-            echo "configured=false" >> "${GITHUB_OUTPUT}"
-            echo "::warning::APT_GPG_PRIVATE_KEY is not set, skipping the APT repo publish. See deployment/apt/README.md to configure it."
-          fi
-
-      - name: Checkout
-        if: steps.gate.outputs.configured == 'true'
-        uses: actions/checkout@v7
-
-      - name: Install reprepro
-        if: steps.gate.outputs.configured == 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y reprepro gnupg
-
-      - name: Download the release .deb
-        if: steps.gate.outputs.configured == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p "${RUNNER_TEMP}/deb"
-          gh release download "${{ needs.resolve-version.outputs.tag }}" \
-            --repo "${{ github.repository }}" \
-            --pattern 'BetterFleet_*_amd64.deb' \
-            --dir "${RUNNER_TEMP}/deb"
-
-      - name: Import the signing key
-        if: steps.gate.outputs.configured == 'true'
-        env:
-          APT_GPG_PRIVATE_KEY: ${{ secrets.APT_GPG_PRIVATE_KEY }}
-          APT_GPG_PASSPHRASE: ${{ secrets.APT_GPG_PASSPHRASE }}
-        run: |
-          export GNUPGHOME="${RUNNER_TEMP}/gnupg"
-          mkdir -m 700 -p "${GNUPGHOME}"
-          printf '%s\n' "${APT_GPG_PRIVATE_KEY}" | gpg --batch --import
-          printf 'pinentry-mode loopback\n' > "${GNUPGHOME}/gpg.conf"
-          printf 'allow-loopback-pinentry\n' > "${GNUPGHOME}/gpg-agent.conf"
-          gpgconf --kill gpg-agent || true
-
-          # reprepro shells out to `gpg` non-interactively; priming the agent's passphrase cache
-          # here (with a throwaway signature) lets that later call succeed without a prompt. Keys
-          # created without a passphrase (the README's recommendation) skip this - nothing to cache.
-          if [ -n "${APT_GPG_PASSPHRASE}" ]; then
-            KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/{print $5; exit}')
-            printf 'priming the agent\n' | gpg --batch --pinentry-mode loopback \
-              --passphrase "${APT_GPG_PASSPHRASE}" --local-user "${KEY_ID}" \
-              --detach-sign --output /dev/null
-          fi
-
-          echo "GNUPGHOME=${GNUPGHOME}" >> "${GITHUB_ENV}"
-
-      - name: Update and publish the repo
-        if: steps.gate.outputs.configured == 'true'
-        env:
-          REPO_URL: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          TAG: ${{ needs.resolve-version.outputs.tag }}
-        run: |
-          set -euo pipefail
-          WORKTREE="${RUNNER_TEMP}/gh-pages"
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          if git clone --branch gh-pages --single-branch --depth 1 "${REPO_URL}" "${WORKTREE}" 2>/dev/null; then
-            echo "Checked out the existing gh-pages branch."
-          else
-            echo "No gh-pages branch yet, this run creates it."
-            mkdir -p "${WORKTREE}"
-            git -C "${WORKTREE}" init --initial-branch=gh-pages --quiet
-            git -C "${WORKTREE}" remote add origin "${REPO_URL}"
-          fi
-
-          # Pages serves this branch's root through Jekyll by default; the repo is plain static
-          # files, not a Jekyll site, so opt out at the root (publish.sh adds its own inside apt/
-          # too, which matters if REPO_DIR is ever pointed at a Pages root directly instead).
-          touch "${WORKTREE}/.nojekyll"
-
-          DEB_FILE=$(find "${RUNNER_TEMP}/deb" -name 'BetterFleet_*_amd64.deb' | head -n1)
-          if [ -z "${DEB_FILE}" ]; then
-            echo "::error::No BetterFleet_*_amd64.deb release asset found to publish." >&2
-            exit 1
-          fi
-
-          bash deployment/apt/publish.sh "${DEB_FILE}" "${WORKTREE}/apt"
-
-          cd "${WORKTREE}"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "APT repo already up to date, nothing to publish."
-          else
-            git commit -m "apt: publish ${TAG}" --quiet
-            git push origin HEAD:gh-pages
-          fi
-
   publish-arch:
     needs: [resolve-version, publish-tauri]
     # Every release, RC included: a direct pacman package (`sudo pacman -U <url>`) is the Arch/CachyOS
-    # counterpart of the .deb. Unlike the AUR publish below it is safe on pre-releases (nobody's
-    # `paru -S` picks it up by surprise). Add-on, never a gate on the rest of the release (#740).
+    # counterpart of the .deb. Safe on pre-releases: it is served from no repository, so nothing picks
+    # an RC up by surprise. Add-on, never a gate on the rest of the release.
     if: ${{ !inputs.dry_run }}
     name: Arch package
     runs-on: ubuntu-latest
@@ -479,8 +366,9 @@ jobs:
           cp "${DEB}" "${BUILD}/"
           cp deployment/aur/betterfleet-bin/betterfleet-bin.install "${BUILD}/"
 
-          # A -bin PKGBUILD that just unpacks this build's .deb (kept in step with the AUR template in
-          # deployment/aur/betterfleet-bin/; there the source is the release URL, here the local file).
+          # A -bin PKGBUILD that just unpacks this build's .deb (kept in step with the reference
+          # PKGBUILD in deployment/aur/betterfleet-bin/; there the source is the release URL, here the
+          # local file).
           cat > "${BUILD}/PKGBUILD" <<'PKGBUILD_EOF'
           pkgname=betterfleet-bin
           pkgver=__PKGVER__
@@ -521,106 +409,6 @@ jobs:
           fi
           gh release upload "${{ needs.resolve-version.outputs.tag }}" "${PKG}" \
             --repo "${{ github.repository }}" --clobber
-
-  publish-aur:
-    needs: [resolve-version, publish-tauri]
-    # Only stable goes to the public AUR: an RC would hand `paru -S betterfleet-bin` a pre-release to
-    # every Arch user. Add-on, never a gate on the release, and a no-op until the AUR SSH key is
-    # configured (see deployment/aur/README.md), exactly like the APT publish's GPG secret. Unlike the
-    # publish-arch package attached to every release, this one goes to third-party infrastructure.
-    if: ${{ !inputs.dry_run && needs.resolve-version.outputs.prerelease != 'true' }}
-    name: AUR package
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    # makepkg --printsrcinfo only runs on Arch; base-devel already carries makepkg, sudo and bsdtar.
-    container:
-      image: archlinux:base-devel
-    steps:
-      - name: Check required secret
-        id: gate
-        env:
-          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-        run: |
-          if [ -n "${AUR_SSH_PRIVATE_KEY}" ]; then
-            echo "configured=true" >> "${GITHUB_OUTPUT}"
-          else
-            echo "configured=false" >> "${GITHUB_OUTPUT}"
-            echo "::warning::AUR_SSH_PRIVATE_KEY is not set, skipping the AUR publish. See deployment/aur/README.md to configure it."
-          fi
-
-      - name: Install git, gh and openssh
-        if: steps.gate.outputs.configured == 'true'
-        run: pacman -Sy --noconfirm --needed git github-cli openssh
-
-      - name: Checkout
-        if: steps.gate.outputs.configured == 'true'
-        uses: actions/checkout@v7
-
-      - name: Pin the PKGBUILD to this release and render .SRCINFO
-        if: steps.gate.outputs.configured == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          VERSION="${{ needs.resolve-version.outputs.version }}"
-
-          mkdir -p "${RUNNER_TEMP}/deb"
-          gh release download "${{ needs.resolve-version.outputs.tag }}" \
-            --repo "${{ github.repository }}" \
-            --pattern 'BetterFleet_*_amd64.deb' \
-            --dir "${RUNNER_TEMP}/deb"
-          DEB=$(find "${RUNNER_TEMP}/deb" -name 'BetterFleet_*_amd64.deb' | head -n1)
-          if [ -z "${DEB}" ]; then
-            echo "::error::No BetterFleet_*_amd64.deb release asset found." >&2
-            exit 1
-          fi
-          SHA=$(sha256sum "${DEB}" | cut -d' ' -f1)
-
-          WORK="${RUNNER_TEMP}/aur"
-          mkdir -p "${WORK}"
-          cp deployment/aur/betterfleet-bin/PKGBUILD "${WORK}/"
-          cp deployment/aur/betterfleet-bin/betterfleet-bin.install "${WORK}/"
-          # Pin the template (source URL is versioned, sha256 replaces the SKIP the local .pkg.tar.zst
-          # build uses); makepkg then derives the .SRCINFO the AUR requires alongside the PKGBUILD.
-          sed -i \
-            -e "s/^pkgver=.*/pkgver=${VERSION}/" \
-            -e "s/^pkgrel=.*/pkgrel=1/" \
-            -e "s/^sha256sums=.*/sha256sums=('${SHA}')/" \
-            "${WORK}/PKGBUILD"
-
-          # makepkg refuses to run as root; use a throwaway unprivileged user.
-          useradd -m builder
-          chown -R builder "${WORK}"
-          sudo -u builder bash -c "cd '${WORK}' && makepkg --printsrcinfo > .SRCINFO"
-
-      - name: Push to the AUR
-        if: steps.gate.outputs.configured == 'true'
-        env:
-          AUR_SSH_PRIVATE_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
-        run: |
-          set -euo pipefail
-          install -m 700 -d ~/.ssh
-          printf '%s\n' "${AUR_SSH_PRIVATE_KEY}" > ~/.ssh/aur
-          chmod 600 ~/.ssh/aur
-          ssh-keyscan -H aur.archlinux.org >> ~/.ssh/known_hosts 2>/dev/null
-          printf 'Host aur.archlinux.org\n  User aur\n  IdentityFile ~/.ssh/aur\n  IdentitiesOnly yes\n' > ~/.ssh/config
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global --add safe.directory '*'
-
-          REPO="${RUNNER_TEMP}/aur-repo"
-          # A never-published package clones as an empty repo; the first push creates it.
-          git clone ssh://aur@aur.archlinux.org/betterfleet-bin.git "${REPO}"
-          cp "${RUNNER_TEMP}/aur/PKGBUILD" "${RUNNER_TEMP}/aur/.SRCINFO" \
-             "${RUNNER_TEMP}/aur/betterfleet-bin.install" "${REPO}/"
-          cd "${REPO}"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "AUR already up to date for ${VERSION:-this release}."
-          else
-            git commit -m "betterfleet-bin ${{ needs.resolve-version.outputs.version }}"
-            git push origin HEAD:master
-          fi
 
   sync-version-to-master:
     needs:
