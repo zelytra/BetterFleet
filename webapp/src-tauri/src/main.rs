@@ -5,14 +5,14 @@
 use std::ffi::CString;
 use std::{fs, io, panic};
 use std::io::{BufRead, Cursor};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 #[cfg(windows)]
 use std::ptr::null_mut;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 #[cfg(windows)]
 use std::thread::sleep;
-use std::time::Duration;
+use std::time::{Duration, SystemTime};
 use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
 use serde::{Deserialize, Serialize};
@@ -513,26 +513,53 @@ async fn get_logs(max_lines: usize) -> tauri::Result<serde_json::Value> {
     let log_path = LOG_PATH.lock().unwrap().clone();
     info!("Exporting logs from file");
 
-    let mut output = String::new();
+    let output = collect_recent_log_lines(&log_path, max_lines).map_err(tauri::Error::from)?;
 
-    let entries = fs::read_dir(log_path).map_err(|e| tauri::Error::from(e))?;
-
-    for entry_result in entries {
-        let entry = entry_result.map_err(|e| tauri::Error::from(e))?;
-        if entry.path().is_file() {
-            let file = fs::File::open(entry.path()).map_err(|e| tauri::Error::from(e))?;
-            let reader = io::BufReader::new(file);
-            let lines: Vec<String> = reader.lines().take(max_lines).collect::<Result<_, _>>().map_err(|e| tauri::Error::from(e))?;
-
-            for line in lines {
-                output.push_str(&line);
-                output.push('\n');
-            }
-        }
-    }
     info!("Logs exported");
 
     Ok(serde_json::Value::String(output))
+}
+
+/// The last `max_lines` lines across every log file in `dir`, oldest kept line first. Logs rotate
+/// (2 MB x KeepSome(5), above), so a long session holds several times the export budget and the
+/// lines that matter for a bug report are the most recent ones. Files are read newest-first by
+/// mtime - rotation renames the current file and renaming preserves mtime, so mtime order is write
+/// order - and each file contributes its tail until the budget is spent.
+fn collect_recent_log_lines(dir: &Path, max_lines: usize) -> io::Result<String> {
+    let mut files: Vec<(SystemTime, PathBuf)> = Vec::new();
+    for entry in fs::read_dir(dir)? {
+        let path = entry?.path();
+        if path.is_file() {
+            let modified = fs::metadata(&path)?.modified()?;
+            files.push((modified, path));
+        }
+    }
+    files.sort_by(|a, b| b.0.cmp(&a.0));
+
+    // Walk newest file to oldest, keeping tails; the blocks come out newest-first, so emit them in
+    // reverse to keep the export chronological.
+    let mut blocks: Vec<Vec<String>> = Vec::new();
+    let mut kept = 0;
+    for (_, path) in &files {
+        if kept >= max_lines {
+            break;
+        }
+        let reader = io::BufReader::new(fs::File::open(path)?);
+        let mut lines: Vec<String> = reader.lines().collect::<Result<_, _>>()?;
+        let overflow = lines.len().saturating_sub(max_lines - kept);
+        lines.drain(..overflow);
+        kept += lines.len();
+        blocks.push(lines);
+    }
+
+    let mut output = String::new();
+    for block in blocks.iter().rev() {
+        for line in block {
+            output.push_str(line);
+            output.push('\n');
+        }
+    }
+    Ok(output)
 }
 
 /// Which processes to list in the support report. The identities are platform-specific: on Windows
@@ -852,5 +879,82 @@ mod overlay_layout_tests {
             (back.x, back.y, back.width, back.height),
             (layout.x, layout.y, layout.width, layout.height)
         );
+    }
+}
+
+#[cfg(test)]
+mod log_export_tests {
+    use super::*;
+    use std::io::Write;
+
+    /// A scratch directory of fake rotated logs. Files are written oldest-first and each gets an
+    /// explicit, strictly increasing mtime: mtime is what the export sorts on, and real writes in a
+    /// tight loop can land within the filesystem's timestamp granularity.
+    fn write_logs(tag: &str, files: &[(&str, &[&str])]) -> PathBuf {
+        let dir = std::env::temp_dir()
+            .join(format!("betterfleet-log-export-{}-{}", std::process::id(), tag));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).unwrap();
+        let base = SystemTime::now() - Duration::from_secs(files.len() as u64);
+        for (index, (name, lines)) in files.iter().enumerate() {
+            let mut file = fs::File::create(dir.join(name)).unwrap();
+            writeln!(file, "{}", lines.join("\n")).unwrap();
+            file.set_modified(base + Duration::from_secs(index as u64)).unwrap();
+        }
+        dir
+    }
+
+    fn export(dir: &Path, max_lines: usize) -> Vec<String> {
+        let output = collect_recent_log_lines(dir, max_lines).unwrap();
+        output.lines().map(str::to_owned).collect()
+    }
+
+    #[test]
+    fn keeps_the_newest_lines_across_rotated_files() {
+        // Alphabetical order contradicts age on purpose: read_dir order says nothing about which
+        // rotation is the most recent, only mtime does.
+        let dir = write_logs(
+            "across-files",
+            &[
+                ("z-oldest.log", &["old-1", "old-2", "old-3"]),
+                ("m-middle.log", &["mid-1", "mid-2", "mid-3"]),
+                ("a-newest.log", &["new-1", "new-2", "new-3"]),
+            ],
+        );
+        assert_eq!(export(&dir, 5), ["mid-2", "mid-3", "new-1", "new-2", "new-3"]);
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn keeps_the_tail_of_a_file_that_alone_exceeds_the_budget() {
+        let dir = write_logs(
+            "within-file",
+            &[
+                ("rotated.log", &["old-1", "old-2"]),
+                ("current.log", &["new-1", "new-2", "new-3", "new-4"]),
+            ],
+        );
+        assert_eq!(export(&dir, 2), ["new-3", "new-4"]);
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn exports_everything_in_write_order_when_under_the_budget() {
+        let dir = write_logs(
+            "under-budget",
+            &[
+                ("rotated.log", &["old-1", "old-2"]),
+                ("current.log", &["new-1", "new-2"]),
+            ],
+        );
+        assert_eq!(export(&dir, 5000), ["old-1", "old-2", "new-1", "new-2"]);
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn an_empty_log_dir_exports_an_empty_string() {
+        let dir = write_logs("empty", &[]);
+        assert_eq!(collect_recent_log_lines(&dir, 5000).unwrap(), "");
+        fs::remove_dir_all(&dir).unwrap();
     }
 }
