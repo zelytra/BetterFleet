@@ -7,7 +7,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Path("/report")
 public class ReportEndpoints {
@@ -36,7 +36,7 @@ public class ReportEndpoints {
     @Authenticated
     public Response sendReport(ReportEntity report) {
         Log.info("[GET] /report/send");
-        report.setReportingDate(new Date());
+        report.setReportingDate(LocalDate.now());
         report.persist();
         return Response.ok().build();
     }
