@@ -69,26 +69,31 @@ import { useI18n } from "vue-i18n";
 import PirateButton from "@/vue/form/PirateButton.vue";
 import { inject, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { BugReport, ReportInterface } from "@/objects/report/Report.ts";
+import {
+  attachDiagnostic,
+  BugReport,
+  MESSAGE_MAX_LENGTH,
+  ReportInterface,
+} from "@/objects/report/Report.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import { invoke } from "@tauri-apps/api/core";
 
 const { t } = useI18n();
 
-// A bug message is plain text in a Postgres `text` column, so the cap is only there to keep a stray
-// paste sane. Room for a player's note plus two pasted diagnostic captures (each a few KB of
-// pretty-printed JSON): 500 filled up the moment one capture was pasted in.
-const MESSAGE_MAX_LENGTH = 15000;
-
 const reportMessage = ref("");
 const alerts = inject<AlertProvider>("alertProvider");
 const diagRunning = ref(false);
 const diagOutput = ref("");
+// What sendReport() attaches: the last capture in compact JSON (or its failure line). Kept apart
+// from diagOutput, whose pretty print is for the panel and the copy button.
+let diagAttachment = "";
+// The in-flight capture, so a send during the ~20s window can wait for it instead of racing it.
+let diagCapture: Promise<void> | null = null;
 const route = useRoute();
 
 // Guided diagnostic (#688): arriving from the lobby banner runs the capture immediately and
-// pre-fills the message. The Rust side logs the full report, so sending the bug report attaches it
-// through the logs: the 500-character message never has to carry the JSON.
+// pre-fills the message. sendReport() waits for the capture and attaches it to the message, so the
+// report carries the scan even when the player hits send before the capture is done.
 onMounted(() => {
   if (route.query.diagnostic === "auto") {
     if (!reportMessage.value) {
@@ -98,21 +103,32 @@ onMounted(() => {
   }
 });
 
-async function runDiagnostic(note: string) {
+function runDiagnostic(note: string) {
   if (diagRunning.value) return;
   diagRunning.value = true;
   diagOutput.value = "";
-  try {
-    const report = await invoke("run_server_diagnostic", {
-      durationSecs: 20,
-      note,
-    });
-    diagOutput.value = JSON.stringify(report, null, 2);
-  } catch (error) {
-    diagOutput.value = t("diagnostic.capture.error", { error: String(error) });
-  } finally {
-    diagRunning.value = false;
-  }
+  diagAttachment = "";
+  diagCapture = (async () => {
+    try {
+      const report = await invoke("run_server_diagnostic", {
+        durationSecs: 20,
+        note,
+      });
+      diagOutput.value = JSON.stringify(report, null, 2);
+      // Compact on purpose: the same capture fits in roughly a third of its pretty-printed size,
+      // so it rarely has to be truncated to stay under MESSAGE_MAX_LENGTH.
+      diagAttachment = JSON.stringify(report);
+    } catch (error) {
+      diagOutput.value = t("diagnostic.capture.error", {
+        error: String(error),
+      });
+      // A capture that could not run is still signal for whoever reads the report; raw and
+      // untranslated, like the rest of the attachment.
+      diagAttachment = "auto-diagnostic capture failed: " + String(error);
+    } finally {
+      diagRunning.value = false;
+    }
+  })();
 }
 
 function copyDiag() {
@@ -134,10 +150,14 @@ async function sendReport() {
     return;
   }
 
+  // A capture may still be sniffing (the guided flow starts one on arrival and the player can
+  // reach Send well inside its 20 seconds): wait for it, the scan is the point of that report.
+  if (diagCapture) await diagCapture;
+
   const report: ReportInterface = {
     device: "",
     logs: "",
-    message: reportMessage.value,
+    message: attachDiagnostic(reportMessage.value, diagAttachment),
   };
   await invoke("get_logs", { maxLines: 5000 }).then((logs) => {
     report.logs = logs as string;
