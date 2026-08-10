@@ -10,6 +10,7 @@
  *  - REST  GET /public-sessions            -> PublicSessionsSnapshot
  *  - SSE   GET /public-sessions/stream     -> a snapshot per directory change
  *  - REST  GET /socket/register            -> a socket token
+ *  - REST  POST /report/send               -> records the bug report (see `reports`)
  *  - WS    /sessions/{token}/{sessionId}   -> CONNECT / UPDATE / RENAME_SESSION / SET_VISIBILITY,
  *                                             SESSION_NOT_FOUND and CONNECTION_REFUSED
  */
@@ -65,6 +66,8 @@ export class FakeBackend {
   streams: FakeEventSource[] = [];
   /** Every REST path requested, so tests can assert what the client actually called. */
   requests: string[] = [];
+  /** Every bug report POSTed to /report/send, parsed, so tests can assert what gets persisted. */
+  reports: { message: string; logs: string; device: string }[] = [];
   private nextId = 1;
 
   reset(): void {
@@ -72,6 +75,7 @@ export class FakeBackend {
     this.sockets = [];
     this.streams = [];
     this.requests = [];
+    this.reports = [];
     this.nextId = 1;
   }
 
@@ -156,6 +160,12 @@ export class FakeBackend {
     }
     if (url.endsWith("/socket/register")) {
       return respond("socket-token");
+    }
+    if (url.endsWith("/report/send")) {
+      // ReportEndpoints.sendReport: the body is persisted as-is and the answer carries nothing.
+      const body = (options as { body?: string } | undefined)?.body;
+      this.reports.push(JSON.parse(body ?? "null"));
+      return respond(null);
     }
     void options;
     throw new Error("FakeBackend: unhandled REST path " + url);
