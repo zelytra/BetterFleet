@@ -73,12 +73,19 @@ function proxyPayload(names: string[] = REAL_ASSET_NAMES) {
   };
 }
 
-/** GitHub's own shape: `tag_name` and `browser_download_url`. */
+/**
+ * GitHub's own shape, faithfully: every real asset carries BOTH `url` (the api.github.com JSON
+ * endpoint describing the asset) and `browser_download_url` (the actual file). An earlier version of
+ * this helper omitted `url`, which is exactly how a preference-order bug in the sanitizer slipped
+ * through: tests resolved the only URL present while production resolved the API one, and every
+ * download tile opened a JSON page instead of the file.
+ */
 function githubPayload(names: string[] = REAL_ASSET_NAMES) {
   return {
     tag_name: "v2.3.0-rc.3",
-    assets: names.map((name) => ({
+    assets: names.map((name, index) => ({
       name,
+      url: `https://api.github.example/repos/zelytra/BetterFleet/releases/assets/${index}`,
       browser_download_url: `https://github.example/${name}`,
       size: 20,
     })),
@@ -122,9 +129,22 @@ describe("fetchLatestRelease", () => {
       github: () => jsonResponse(githubPayload()),
     });
     const release = await fetchLatestRelease();
-    expect(findReleaseAsset(release!.assets, [".exe"])?.url).toContain(
-      "github",
+    expect(findReleaseAsset(release!.assets, [".exe"])?.url).toBe(
+      "https://github.example/BetterFleet_2.3.0-rc.3_x64-setup.exe",
     );
+  });
+
+  it("resolves GitHub assets to browser_download_url, never the API url", async () => {
+    // The regression this file exists for: with both fields present (as on the real API), the
+    // download link must be the file, not the api.github.com JSON page describing it.
+    mockFetch({
+      proxy: () => jsonResponse({}, false, 500),
+      github: () => jsonResponse(githubPayload()),
+    });
+    const release = await fetchLatestRelease();
+    for (const asset of release!.assets) {
+      expect(asset.url).not.toContain("api.github.example");
+    }
   });
 
   it("falls back to GitHub when the proxy fetch throws", async () => {
@@ -136,8 +156,8 @@ describe("fetchLatestRelease", () => {
     });
     const release = await fetchLatestRelease();
     expect(release).not.toBeNull();
-    expect(findReleaseAsset(release!.assets, [".deb"])?.url).toContain(
-      "github",
+    expect(findReleaseAsset(release!.assets, [".deb"])?.url).toBe(
+      "https://github.example/BetterFleet_2.3.0-rc.3_amd64.deb",
     );
   });
 
