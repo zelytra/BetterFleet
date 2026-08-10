@@ -99,7 +99,11 @@ jobs:
           # --auto-approve-imported: mark the uploaded translations approved so they become the version
           # Crowdin serves. Without it the upload is stored but the project's existing (older machine)
           # de/es/it stay the winning translation, and the next download reverts the repo's redo.
-          command_args: "--no-progress --auto-approve-imported"
+          # --import-eq-suggestions: also upload strings whose translation equals the English source,
+          # e.g. product terms ("Discord Rich Presence") and the app name. The CLI skips those by
+          # default, so Crowdin never holds them, machine-translates them on the next download, and the
+          # sync reverts "BetterFleet" to "Bessere Flotte". With the flag they upload and (above) win.
+          command_args: "--no-progress --auto-approve-imported --import-eq-suggestions"
           project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
           token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
         env:

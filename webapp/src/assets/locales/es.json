@@ -218,21 +218,6 @@
     "targetLoading": "Juego detectado. Preparando los barcos.",
     "tips": "Este proceso puede tardar un poco; asegúrate de que tu juego esté abierto"
   },
-  "locales": {
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "hi": "हिन्दी",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "pl": "Polski",
-    "pt": "Português (Brasil)",
-    "ru": "Русский",
-    "uk": "Українська",
-    "zh": "简体中文"
-  },
   "login": {
     "browser": {
       "title": "Continúa en tu navegador",

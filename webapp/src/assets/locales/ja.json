@@ -218,21 +218,6 @@
     "targetLoading": "ゲームを検出しました。船を準備しています。",
     "tips": "この処理には少し時間がかかる場合があります。ゲームが起動していることを確認してください"
   },
-  "locales": {
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "hi": "हिन्दी",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "pl": "Polski",
-    "pt": "Português (Brasil)",
-    "ru": "Русский",
-    "uk": "Українська",
-    "zh": "简体中文"
-  },
   "login": {
     "browser": {
       "title": "ブラウザで続行",

@@ -218,21 +218,6 @@
     "targetLoading": "게임을 감지했습니다. 배를 준비 중입니다.",
     "tips": "이 과정은 시간이 걸릴 수 있습니다. 게임이 실행되어 있는지 확인하세요"
   },
-  "locales": {
-    "de": "Deutsch",
-    "en": "English",
-    "es": "Español",
-    "fr": "Français",
-    "hi": "हिन्दी",
-    "it": "Italiano",
-    "ja": "日本語",
-    "ko": "한국어",
-    "pl": "Polski",
-    "pt": "Português (Brasil)",
-    "ru": "Русский",
-    "uk": "Українська",
-    "zh": "简体中文"
-  },
   "login": {
     "browser": {
       "title": "브라우저에서 계속하기",
