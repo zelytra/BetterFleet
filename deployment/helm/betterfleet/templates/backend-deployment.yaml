@@ -65,6 +65,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "betterfleet.secretName" . }}
                   key: PROXY_CHECK_API_KEY
+            - name: GITHUB_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: GITHUB_API_TOKEN
+                  # Pre-existing Secrets (secrets.existingSecret) may predate this key.
+                  optional: true
             {{- with .Values.backend.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

@@ -45,7 +45,8 @@ publicUrls:
 #   (b) fill the values below and let the chart render a Secret for you.
 # The Secret must expose these keys:
 #   POSTGRES_USER, POSTGRES_PASSWORD, KEYCLOAK_ADMIN, KEYCLOAK_ADMIN_PASSWORD,
-#   MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET, PROXY_CHECK_API_KEY
+#   MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET, PROXY_CHECK_API_KEY,
+#   GITHUB_API_TOKEN
 # As in docker-compose, POSTGRES_USER/POSTGRES_PASSWORD are shared by BOTH
 # databases and consumed by the backend (DB_USER/DB_PASSWORD) and Keycloak
 # (KC_DB_USERNAME/KC_DB_PASSWORD).
@@ -69,6 +70,11 @@ secrets:
 
   # proxycheck.io API key used by the backend anti-VPN check.
   proxyCheckApiKey: ""
+
+  # Optional GitHub token for the backend release proxy: fine-grained, "Public
+  # repositories" read-only, no extra permission. Empty = anonymous (60 req/h
+  # shared per IP); set = 5000 req/h.
+  githubApiToken: ""
 
 # =============================================================================
 # backend - Quarkus API (zelytra/better-fleet-backend)

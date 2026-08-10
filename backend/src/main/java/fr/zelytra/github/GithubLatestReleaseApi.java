@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.LongSupplier;
 
@@ -29,8 +30,10 @@ import java.util.function.LongSupplier;
  * actually ships (any OS, any package format: .exe / .deb / .rpm / .pkg.tar.zst and anything a future
  * release adds) is served, rather than guessing a fixed set of file names. Each asset maps 1:1 onto a
  * {@link ReleaseAsset} from its {@code name}, {@code size} and {@code browser_download_url}. The one
- * network call needs a {@code User-Agent} (GitHub rejects requests without one) but no token, since a
- * public repository's releases are readable anonymously.
+ * network call needs a {@code User-Agent} (GitHub rejects requests without one); a token is not
+ * required (public releases read anonymously) but {@code github.api.token} should be set in
+ * production: anonymous calls share 60 req/h across everything on the server's IP, and hitting that
+ * limit made this proxy serve an empty release - the token raises the quota to 5000 req/h.
  * <p>
  * {@code releases/latest} resolves to the newest NON-pre-release, so a release candidate is never
  * served; a pre-release version that somehow reaches the parser is rejected as a second guard. The
@@ -78,6 +81,12 @@ public class GithubLatestReleaseApi {
 
     @ConfigProperty(name = "github.release.read-timeout-millis", defaultValue = "5000")
     int readTimeoutMillis;
+
+    // Optional GitHub token (GITHUB_API_TOKEN): absent or blank means anonymous, which works but
+    // shares the 60 req/h per-IP quota; present raises it to 5000 req/h. Read-only public access is
+    // all it needs - see application.properties.
+    @ConfigProperty(name = "github.api.token")
+    Optional<String> apiToken;
 
     // Clock seam so the cache TTL is unit-testable without sleeping: tests swap in a controllable
     // supplier, production reads the wall clock.
@@ -234,6 +243,8 @@ public class GithubLatestReleaseApi {
             connection.setInstanceFollowRedirects(true);
             connection.setRequestProperty("User-Agent", USER_AGENT);
             connection.setRequestProperty("Accept", "application/vnd.github+json");
+            apiToken.filter(token -> !token.isBlank()).ifPresent(
+                    token -> connection.setRequestProperty("Authorization", "Bearer " + token));
             connection.setConnectTimeout(connectTimeoutMillis);
             connection.setReadTimeout(readTimeoutMillis);
             try (Reader in = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)) {
