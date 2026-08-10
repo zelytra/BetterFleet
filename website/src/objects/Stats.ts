@@ -13,3 +13,14 @@ export async function incrementDownload() {
     .then()
     .catch((e) => console.log(e));
 }
+
+/**
+ * The per-day statistics rows, oldest first. The backend stores one row per UTC day (downloads,
+ * sessions opened, set-sail tries); `date` arrives as "yyyy-MM-dd" and is revived to a Date here so
+ * chart code never re-parses it.
+ */
+export async function fetchStatsHistory(): Promise<Stats[]> {
+  const response = await new HTTPAxios("stats/history").get();
+  const rows = response.data as (Omit<Stats, "date"> & { date: string })[];
+  return rows.map((row) => ({ ...row, date: new Date(row.date) }));
+}

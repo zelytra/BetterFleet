@@ -346,6 +346,12 @@
     "stats": "항해 일지를 읽는 중…",
     "globe": "해도를 펼치는 중…"
   },
+  "downloads": {
+    "title": "다운로드",
+    "note": "이 사이트에서 시작된 앱 다운로드 수를 일 단위로 집계합니다 (UTC).",
+    "total": "총 {count}회",
+    "tooltipCount": "다운로드 {count}회"
+  },
   "downloadPage": {
     "title": "BetterFleet 다운로드",
     "lead": "시스템에 맞는 다운로드를 골라 드렸습니다 — 아래에서 다른 것을 선택할 수도 있습니다.",

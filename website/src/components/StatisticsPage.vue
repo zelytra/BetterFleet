@@ -10,6 +10,7 @@ import {
 import { useDelayedLoading } from "@/objects/DelayedLoading.ts";
 import BoatLoader from "@/vue/BoatLoader.vue";
 import GlobeLoading from "@/vue/GlobeLoading.vue";
+import DownloadsCard from "@/components/DownloadsCard.vue";
 
 // Lazy: globe.gl bundles three.js, so it stays out of the main bundle and loads only here. It is
 // ~575 KB gzipped, so on anything but a fast connection the wait is long enough to need saying,
@@ -253,6 +254,11 @@ const hasData = computed(() => (stats.value?.totalAttempts ?? 0) > 0);
         </div>
       </transition>
     </div>
+
+    <!-- App adoption, not alliance analytics: fetched and rendered on its own, outside the
+         swap-area, so the region filter's reloads never redraw it and an empty alliance dashboard
+         doesn't hide it. -->
+    <DownloadsCard />
   </section>
 </template>
 
