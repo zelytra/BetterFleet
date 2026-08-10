@@ -12,7 +12,9 @@ export default defineConfig({
     // doesn't answer (#654), which silently blanked every API-fed widget in dev.
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:8080",
+        // Overridable so a second backend instance (another port) can be tried without editing
+        // this file: VITE_DEV_BACKEND=http://127.0.0.1:8081 npm run dev
+        target: process.env.VITE_DEV_BACKEND ?? "http://127.0.0.1:8080",
         changeOrigin: true,
         // Upgrade WebSocket connections too, so the mobile lobby's /api/sessions socket works in dev
         // (#682). Production is same-origin, so this only matters for the proxy.

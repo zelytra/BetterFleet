@@ -346,6 +346,12 @@
     "stats": "Das Logbuch wird gelesen…",
     "globe": "Die Seekarte wird entrollt…"
   },
+  "downloads": {
+    "title": "Downloads",
+    "note": "Von dieser Seite gestartete App-Downloads, gezählt pro Tag (UTC).",
+    "total": "{count} insgesamt",
+    "tooltipCount": "{count} Downloads"
+  },
   "downloadPage": {
     "title": "BetterFleet herunterladen",
     "lead": "Wir haben den passenden Download für dein System ausgewählt — oder wähle unten einen anderen.",

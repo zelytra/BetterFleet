@@ -346,6 +346,12 @@
     "stats": "Odczytywanie dziennika pokładowego…",
     "globe": "Rozwijanie mapy…"
   },
+  "downloads": {
+    "title": "Pobrania",
+    "note": "Pobrania aplikacji rozpoczęte z tej strony, liczone dziennie (UTC).",
+    "total": "Łącznie: {count}",
+    "tooltipCount": "Pobrań: {count}"
+  },
   "downloadPage": {
     "title": "Pobierz BetterFleet",
     "lead": "Wybraliśmy plik pasujący do twojego systemu — albo wskaż inny poniżej.",

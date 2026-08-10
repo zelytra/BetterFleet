@@ -346,6 +346,12 @@
     "stats": "正在读取日志…",
     "globe": "正在展开图表…"
   },
+  "downloads": {
+    "title": "下载量",
+    "note": "从本站发起的应用下载次数，按天统计（UTC）。",
+    "total": "共 {count} 次",
+    "tooltipCount": "{count} 次下载"
+  },
   "downloadPage": {
     "title": "下载 BetterFleet",
     "lead": "我们为你挑选了适合你系统的下载版本——你也可以在下方另选其他版本。",

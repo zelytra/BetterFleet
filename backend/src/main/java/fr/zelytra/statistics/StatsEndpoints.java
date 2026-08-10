@@ -2,6 +2,7 @@ package fr.zelytra.statistics;
 
 import fr.zelytra.session.SessionManager;
 import io.quarkus.logging.Log;
+import io.quarkus.panache.common.Sort;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
@@ -33,6 +34,14 @@ public class StatsEndpoints {
             totalUser.addAndGet(value.getPlayers().size());
         });
         return Response.ok(totalUser.get()).build();
+    }
+
+    @GET
+    @Path("/history")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getStatsHistory() {
+        Log.info("[GET] /stats/history");
+        return Response.ok(statisticsRepository.listAll(Sort.by("date"))).build();
     }
 
     @GET

@@ -346,6 +346,12 @@
     "stats": "Reading the logs…",
     "globe": "Unrolling the chart…"
   },
+  "downloads": {
+    "title": "Downloads",
+    "note": "App downloads started from this site, counted per day (UTC).",
+    "total": "{count} total",
+    "tooltipCount": "{count} downloads"
+  },
   "downloadPage": {
     "title": "Download BetterFleet",
     "lead": "We picked the download that fits your system — or choose another below.",

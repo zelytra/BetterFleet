@@ -346,6 +346,12 @@
     "stats": "Lettura del giornale di bordo…",
     "globe": "La carta viene srotolata…"
   },
+  "downloads": {
+    "title": "Download",
+    "note": "Download dell'app avviati da questo sito, contati per giorno (UTC).",
+    "total": "{count} in totale",
+    "tooltipCount": "{count} download"
+  },
   "downloadPage": {
     "title": "Scarica BetterFleet",
     "lead": "Abbiamo scelto il download adatto al tuo sistema — oppure scegline un altro qui sotto.",

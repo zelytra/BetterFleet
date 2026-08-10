@@ -346,6 +346,12 @@
     "stats": "Leyendo el cuaderno de bitácora…",
     "globe": "Desplegando la carta…"
   },
+  "downloads": {
+    "title": "Descargas",
+    "note": "Descargas de la aplicación iniciadas desde este sitio, contadas por día (UTC).",
+    "total": "{count} en total",
+    "tooltipCount": "{count} descargas"
+  },
   "downloadPage": {
     "title": "Descargar BetterFleet",
     "lead": "Hemos elegido la descarga que se adapta a tu sistema, o elige otra más abajo.",
