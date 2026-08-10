@@ -140,7 +140,11 @@ function sanitizeRelease(
   )
     .map((asset: Record<string, unknown>) => ({
       name: String(asset?.name ?? ""),
-      url: String(asset?.url ?? asset?.browser_download_url ?? ""),
+      // browser_download_url FIRST: GitHub's payload carries both, and its `url` is the
+      // api.github.com JSON endpoint describing the asset, not the file - preferring it sent
+      // every download click to a JSON page whenever the GitHub fallback engaged. The proxy's
+      // payload has only `url`, which is already the direct download.
+      url: String(asset?.browser_download_url ?? asset?.url ?? ""),
       size: Number(asset?.size ?? 0),
     }))
     .filter((asset: GithubReleaseAsset) => asset.name && asset.url);
