@@ -47,12 +47,17 @@ export const GITHUB_RELEASES_URL = `https://github.com/${OWNER}/${REPO}/releases
  * the browser, the original path, so a broken proxy can't strand the page on "coming soon" while
  * GitHub has the files.
  *
- * Failure is signalled distinctly from emptiness. When neither source can be reached - offline
- * backend and no GitHub either, network error, or the 8s timeout - this returns `null` so the caller
- * shows a real error ("couldn't reach the release server") instead of a page of "coming soon" that
- * would tell a visitor the software doesn't exist. A source that *is* reached but genuinely carries
- * no assets resolves to an empty release, not `null`, so "not published yet" stays the "coming soon"
- * branch.
+ * When neither live source can enumerate the assets, the page must still hand out downloads: the
+ * site knows which release it shipped with (`VITE_VERSION`, stamped at build time by the release
+ * pipeline that publishes the site and the installers together), and release-asset names are
+ * deterministic, so {@link constructedRelease} rebuilds the catalog offline. Its links go through
+ * GitHub's release-download CDN, which is NOT governed by the api.github.com rate limit - the
+ * anonymous 60 req/h quota (shared across a NAT) whose 403 used to leave the Windows tile on
+ * "coming soon" while the installer was perfectly reachable. No size labels on that path, but every
+ * download works. The page therefore never depends on the GitHub API being available.
+ *
+ * `null` - the caller's error panel - is only reached when even the build-time version is somehow
+ * absent AND both live sources failed: effectively never in a real build.
  */
 export async function fetchLatestRelease(): Promise<GithubLatestRelease | null> {
   const fromProxy = await fetchLatestReleaseFromProxy();
@@ -61,10 +66,65 @@ export async function fetchLatestRelease(): Promise<GithubLatestRelease | null> 
   const fromGithub = await fetchLatestReleaseFromGithub();
   if (hasResolvableAssets(fromGithub)) return fromGithub;
 
-  // Neither source carried resolvable downloads. Prefer whichever one actually answered so a
-  // genuinely asset-less release still reads as "reached" (an empty release -> "coming soon")
-  // rather than a failure; `null` from both means nothing answered -> the caller's error state.
+  // Neither live source enumerated the downloads (backend down or empty, GitHub API rate-limited
+  // or unreachable). Serve the offline catalog built from the site's own release version instead:
+  // deterministic asset names on the release CDN, immune to the API rate limit.
+  const constructed = constructedRelease();
+  if (constructed) return constructed;
+
+  // No build-time version either. Prefer whichever live source actually answered so a genuinely
+  // asset-less release still reads as "reached" rather than a failure; null from both means
+  // nothing answered -> the caller's error state.
   return fromProxy ?? fromGithub;
+}
+
+/**
+ * The release catalog rebuilt offline from the site's own build-time version, or `null` when no
+ * version was stamped. Every release publishes the site image and the installers from one pipeline,
+ * so `VITE_VERSION` names a release whose assets exist, and Tauri/CI asset names are deterministic:
+ *
+ * - `BetterFleet_<v>_x64-setup.exe` - Windows, every release ever
+ * - `BetterFleet_<v>_amd64.deb`, `BetterFleet-<v>-1.x86_64.rpm`,
+ *   `betterfleet-bin-<v'>-1-x86_64.pkg.tar.zst` - Linux, from 2.3.0 on (the first release that
+ *   ships them; constructing them for an older version would link to a 404)
+ *
+ * where `<v'>` is the version with `-` mapped to `.` (pacman's pkgver forbids hyphens - the same
+ * substitution `publish-arch` applies). Sizes are unknown offline and left at 0; the tiles simply
+ * omit the size label. Exported for tests, which pin these exact shapes against real release
+ * asset names.
+ */
+export function constructedRelease(
+  version = String(import.meta.env.VITE_VERSION ?? "").replace(/^v/i, ""),
+): GithubLatestRelease | null {
+  if (!version) return null;
+  const download = (name: string) =>
+    `https://github.com/${OWNER}/${REPO}/releases/download/v${version}/${name}`;
+  const asset = (name: string): GithubReleaseAsset => ({
+    name,
+    url: download(name),
+    size: 0,
+  });
+
+  const assets: GithubReleaseAsset[] = [
+    asset(`BetterFleet_${version}_x64-setup.exe`),
+  ];
+  if (hasLinuxPackages(version)) {
+    const pacmanVersion = version.replace(/-/g, ".");
+    assets.push(
+      asset(`BetterFleet_${version}_amd64.deb`),
+      asset(`BetterFleet-${version}-1.x86_64.rpm`),
+      asset(`betterfleet-bin-${pacmanVersion}-1-x86_64.pkg.tar.zst`),
+    );
+  }
+  return { version, assets };
+}
+
+/** Whether a release version ships the Linux packages: 2.3.0 is the first that does. */
+function hasLinuxPackages(version: string): boolean {
+  const [major = 0, minor = 0] = version
+    .split(".")
+    .map((part) => parseInt(part, 10) || 0);
+  return major > 2 || (major === 2 && minor >= 3);
 }
 
 /**

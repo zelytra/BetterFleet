@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  constructedRelease,
   fetchLatestRelease,
   findReleaseAsset,
   type GithubReleaseAsset,
@@ -113,7 +114,10 @@ function mockFetch(handlers: {
 }
 
 describe("fetchLatestRelease", () => {
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.unstubAllEnvs();
+  });
 
   it("uses the proxy when it answers with resolvable assets", async () => {
     mockFetch({ proxy: () => jsonResponse(proxyPayload()) });
@@ -186,7 +190,43 @@ describe("fetchLatestRelease", () => {
     );
   });
 
-  it("signals failure with null when neither source can be reached", async () => {
+  it("serves the constructed catalog when neither source can be reached", async () => {
+    // The rate-limit scenario this file exists for: backend down AND api.github.com answering 403.
+    // The page must still hand out downloads, built from the site's own release version - never a
+    // "coming soon" for an installer that exists, never a dependency on the GitHub API. The version
+    // is stubbed because $npm_package_version only expands under npm scripts, not bare vitest.
+    vi.stubEnv("VITE_VERSION", "2.3.0");
+    mockFetch({
+      proxy: () => {
+        throw new Error("proxy down");
+      },
+      github: () => jsonResponse({}, false, 403),
+    });
+    const release = await fetchLatestRelease();
+    expect(release).not.toBeNull();
+    expect(release!.version).toBe("2.3.0");
+    expect(findReleaseAsset(release!.assets, [".exe"])?.url).toBe(
+      "https://github.com/zelytra/BetterFleet/releases/download/v2.3.0/BetterFleet_2.3.0_x64-setup.exe",
+    );
+  });
+
+  it("prefers the constructed catalog over a reached-but-empty source", async () => {
+    // An empty enumeration while our own build version names a real release is a degraded source
+    // (rate-limited proxy serving its EMPTY fallback), not "nothing published yet": the offline
+    // catalog wins so the tiles never regress to "coming soon".
+    vi.stubEnv("VITE_VERSION", "2.4.0");
+    mockFetch({
+      proxy: () => jsonResponse({ version: "v2.4.0", assets: [] }),
+      github: () => jsonResponse({ tag_name: "v2.4.0", assets: [] }),
+    });
+    const release = await fetchLatestRelease();
+    expect(release).not.toBeNull();
+    expect(release!.assets.length).toBeGreaterThan(0);
+    expect(findReleaseAsset(release!.assets, [".exe"])).toBeDefined();
+  });
+
+  it("signals failure with null only when even the build version is absent", async () => {
+    vi.stubEnv("VITE_VERSION", "");
     mockFetch({
       proxy: () => {
         throw new Error("proxy down");
@@ -195,15 +235,47 @@ describe("fetchLatestRelease", () => {
     });
     expect(await fetchLatestRelease()).toBeNull();
   });
+});
 
-  it("returns an empty release (not null) when a source is reached but carries nothing yet", async () => {
-    // Reached, just nothing published: this is the "coming soon" branch, not the error branch.
-    mockFetch({
-      proxy: () => jsonResponse({ version: "v2.4.0", assets: [] }),
-      github: () => jsonResponse({ tag_name: "v2.4.0", assets: [] }),
-    });
-    const release = await fetchLatestRelease();
-    expect(release).not.toBeNull();
-    expect(release!.assets).toEqual([]);
+describe("constructedRelease", () => {
+  it("builds all four packages for a stable release from 2.3.0 on", () => {
+    const release = constructedRelease("2.3.0");
+    expect(release!.version).toBe("2.3.0");
+    expect(release!.assets.map((a) => a.name)).toEqual([
+      "BetterFleet_2.3.0_x64-setup.exe",
+      "BetterFleet_2.3.0_amd64.deb",
+      "BetterFleet-2.3.0-1.x86_64.rpm",
+      "betterfleet-bin-2.3.0-1-x86_64.pkg.tar.zst",
+    ]);
+    for (const asset of release!.assets) {
+      expect(asset.url).toBe(
+        `https://github.com/zelytra/BetterFleet/releases/download/v2.3.0/${asset.name}`,
+      );
+      expect(asset.size).toBe(0);
+    }
+  });
+
+  it("matches the real rc.3 asset names, pacman dash-to-dot substitution included", () => {
+    // Cross-checked against REAL_ASSET_NAMES above - the names v2.3.0-rc.3 actually shipped.
+    const names = constructedRelease("2.3.0-rc.3")!.assets.map((a) => a.name);
+    expect(names).toContain("BetterFleet_2.3.0-rc.3_x64-setup.exe");
+    expect(names).toContain("BetterFleet_2.3.0-rc.3_amd64.deb");
+    expect(names).toContain("BetterFleet-2.3.0-rc.3-1.x86_64.rpm");
+    expect(names).toContain("betterfleet-bin-2.3.0.rc.3-1-x86_64.pkg.tar.zst");
+    for (const name of names) {
+      expect(REAL_ASSET_NAMES).toContain(name);
+    }
+  });
+
+  it("builds only the Windows installer for releases before 2.3.0", () => {
+    // Linux packages first shipped with 2.3.0; constructing them for 2.2.2 would link to a 404.
+    const release = constructedRelease("2.2.2");
+    expect(release!.assets.map((a) => a.name)).toEqual([
+      "BetterFleet_2.2.2_x64-setup.exe",
+    ]);
+  });
+
+  it("returns null without a version", () => {
+    expect(constructedRelease("")).toBeNull();
   });
 });
