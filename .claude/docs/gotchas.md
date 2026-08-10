@@ -118,10 +118,10 @@ back into the problem.
 - **A pre-release tag suppresses everything "latest".** Any semver pre-release suffix on the tag
   (`v2.3.0-rc.1`) sets `prerelease=true` in the `resolve-version` job
   (`.github/workflows/release.yml`), and the pipeline keys off it: no updater `latest.json`, no Docker
-  `:latest` (the RC images are tagged by version only), `publish-apt` and `publish-aur` skip, and
-  `sync-version-to-master` does not bump the version on `master`. The exception is `publish-arch`: it
-  still attaches the pacman package to the pre-release, by design (nobody's `pacman -U`/`paru` picks
-  it up by surprise). A stable tag turns all of that back on.
+  `:latest` (the RC images are tagged by version only), and `sync-version-to-master` does not bump the
+  version on `master`. The exception is `publish-arch`: it still attaches the pacman package to the
+  pre-release, by design (nobody's `pacman -U` picks it up by surprise). A stable tag turns all of
+  that back on.
 
 ## Backend concurrency (`SessionManager`)
 
