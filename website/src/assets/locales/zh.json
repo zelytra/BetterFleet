@@ -350,7 +350,14 @@
     "title": "下载量",
     "note": "从本站发起的应用下载次数，按天统计（UTC）。",
     "total": "共 {count} 次",
-    "tooltipCount": "{count} 次下载"
+    "tooltipCount": "{count} 次下载",
+    "range": {
+      "label": "时间范围",
+      "all": "全部时间",
+      "year": "近 12 个月",
+      "quarter": "近 3 个月",
+      "month": "近 1 个月"
+    }
   },
   "downloadPage": {
     "title": "下载 BetterFleet",

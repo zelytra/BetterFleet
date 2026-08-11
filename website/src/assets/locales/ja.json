@@ -350,7 +350,14 @@
     "title": "ダウンロード数",
     "note": "このサイトから開始されたアプリのダウンロード数を日別に集計しています（UTC）。",
     "total": "合計 {count} 件",
-    "tooltipCount": "{count} 件のダウンロード"
+    "tooltipCount": "{count} 件のダウンロード",
+    "range": {
+      "label": "期間",
+      "all": "全期間",
+      "year": "過去12か月",
+      "quarter": "過去3か月",
+      "month": "過去1か月"
+    }
   },
   "downloadPage": {
     "title": "BetterFleetをダウンロード",

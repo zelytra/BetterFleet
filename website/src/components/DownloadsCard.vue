@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { fetchStatsHistory, Stats } from "@/objects/Stats.ts";
 
@@ -33,7 +33,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * a row the first time something happens on a day, so a silent day is a missing row - and a chart
  * that skips it would splice time and hide the very dips a release chart is read for.
  */
-const days = computed<{ date: Date; count: number }[]>(() => {
+const allDays = computed<{ date: Date; count: number }[]>(() => {
   if (rows.value.length === 0) return [];
   const byDay = new Map<number, number>();
   for (const row of rows.value) {
@@ -48,8 +48,29 @@ const days = computed<{ date: Date; count: number }[]>(() => {
   return filled;
 });
 
+// The pickable windows, all-time first and default. `days: null` means the full series; the others
+// slice the last N days off the zero-filled series, anchored on the LAST recorded day rather than
+// the wall clock so lagging stats still show a full window. The card's own visibility stays keyed
+// on the full series, so switching to a window can never blank the card it lives in.
+const RANGES = [
+  { id: "all", days: null },
+  { id: "year", days: 365 },
+  { id: "quarter", days: 90 },
+  { id: "month", days: 30 },
+] as const;
+type RangeId = (typeof RANGES)[number]["id"];
+const selectedRange = ref<RangeId>("all");
+
+const days = computed<{ date: Date; count: number }[]>(() => {
+  const all = allDays.value;
+  const range = RANGES.find((entry) => entry.id === selectedRange.value);
+  if (!range?.days) return all;
+  return all.slice(Math.max(0, all.length - range.days));
+});
+
+// Sum over the DISPLAYED window, so the headline always agrees with the curve under it.
 const total = computed(() =>
-  rows.value.reduce((sum, row) => sum + row.download, 0),
+  days.value.reduce((sum, day) => sum + day.count, 0),
 );
 
 // Y ceiling snapped to 1/2/5 x 10^k, so gridline labels land on round numbers.
@@ -123,6 +144,10 @@ const totalLabel = computed(() =>
 const hovered = ref<number | null>(null);
 const svgEl = ref<SVGSVGElement | null>(null);
 
+// A hovered index belongs to the previous window's geometry; drop it on a switch rather than let
+// it point at the wrong (or a missing) day for one frame.
+watch(selectedRange, () => (hovered.value = null));
+
 function onMove(event: MouseEvent) {
   if (!svgEl.value || days.value.length < 2) return;
   const rect = svgEl.value.getBoundingClientRect();
@@ -161,12 +186,30 @@ const ariaLabel = computed(
 </script>
 
 <template>
-  <div v-if="days.length >= 2" class="card downloads-card">
+  <div v-if="allDays.length >= 2" class="card downloads-card">
     <div class="head">
       <h3>{{ t("downloads.title") }}</h3>
       <span class="total">{{ totalLabel }}</span>
     </div>
     <p class="muted note">{{ t("downloads.note") }}</p>
+
+    <div
+      class="range-picker"
+      role="group"
+      :aria-label="t('downloads.range.label')"
+    >
+      <button
+        v-for="range in RANGES"
+        :key="range.id"
+        type="button"
+        class="range-pill"
+        :class="{ active: selectedRange === range.id }"
+        :aria-pressed="selectedRange === range.id"
+        @click="selectedRange = range.id"
+      >
+        {{ t("downloads.range." + range.id) }}
+      </button>
+    </div>
 
     <div class="chart-scroll">
       <div class="chart-wrap">
@@ -270,7 +313,42 @@ const ariaLabel = computed(
   .note {
     text-align: left;
     font-size: 14px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+  }
+
+  // The window pills: quiet by default, the active one carries the accent - same family as the
+  // command strips and tiles, sized to stay one comfortable row on desktop and wrap on a phone.
+  .range-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+
+    .range-pill {
+      all: unset;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      color: var(--secondary-text);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+
+      &:hover {
+        color: var(--primary-text);
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+      }
+
+      &.active {
+        color: var(--primary);
+        border-color: rgba(50, 212, 153, 0.5);
+        background: rgba(50, 212, 153, 0.1);
+      }
+    }
   }
 
   .muted {
