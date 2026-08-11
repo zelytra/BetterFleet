@@ -2,6 +2,8 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { fetchStatsHistory, Stats } from "@/objects/Stats.ts";
+import { type RangeId, sliceLastDays } from "@/objects/ChartRange.ts";
+import RangePicker from "@/vue/RangePicker.vue";
 
 // Downloads over time, one point per UTC day, drawn as a hand-rolled SVG area chart - the page has
 // no chart library on purpose (the heatmap and region bars are plain CSS too) and one series needs
@@ -48,25 +50,12 @@ const allDays = computed<{ date: Date; count: number }[]>(() => {
   return filled;
 });
 
-// The pickable windows, all-time first and default. `days: null` means the full series; the others
-// slice the last N days off the zero-filled series, anchored on the LAST recorded day rather than
-// the wall clock so lagging stats still show a full window. The card's own visibility stays keyed
-// on the full series, so switching to a window can never blank the card it lives in.
-const RANGES = [
-  { id: "all", days: null },
-  { id: "year", days: 365 },
-  { id: "quarter", days: 90 },
-  { id: "month", days: 30 },
-] as const;
-type RangeId = (typeof RANGES)[number]["id"];
+// The displayed window (ChartRange.ts holds the shared windows and slicing rule; RangePicker the
+// pills). The card's own visibility stays keyed on the full series, so switching to a window can
+// never blank the card it lives in.
 const selectedRange = ref<RangeId>("all");
 
-const days = computed<{ date: Date; count: number }[]>(() => {
-  const all = allDays.value;
-  const range = RANGES.find((entry) => entry.id === selectedRange.value);
-  if (!range?.days) return all;
-  return all.slice(Math.max(0, all.length - range.days));
-});
+const days = computed(() => sliceLastDays(allDays.value, selectedRange.value));
 
 // Sum over the DISPLAYED window, so the headline always agrees with the curve under it.
 const total = computed(() =>
@@ -193,23 +182,7 @@ const ariaLabel = computed(
     </div>
     <p class="muted note">{{ t("downloads.note") }}</p>
 
-    <div
-      class="range-picker"
-      role="group"
-      :aria-label="t('downloads.range.label')"
-    >
-      <button
-        v-for="range in RANGES"
-        :key="range.id"
-        type="button"
-        class="range-pill"
-        :class="{ active: selectedRange === range.id }"
-        :aria-pressed="selectedRange === range.id"
-        @click="selectedRange = range.id"
-      >
-        {{ t("downloads.range." + range.id) }}
-      </button>
-    </div>
+    <RangePicker v-model="selectedRange" />
 
     <div class="chart-scroll">
       <div class="chart-wrap">
@@ -314,41 +287,6 @@ const ariaLabel = computed(
     text-align: left;
     font-size: 14px;
     margin-bottom: 12px;
-  }
-
-  // The window pills: quiet by default, the active one carries the accent - same family as the
-  // command strips and tiles, sized to stay one comfortable row on desktop and wrap on a phone.
-  .range-picker {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 14px;
-
-    .range-pill {
-      all: unset;
-      cursor: pointer;
-      font-size: 12px;
-      padding: 4px 12px;
-      border-radius: 999px;
-      color: var(--secondary-text);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-
-      &:hover {
-        color: var(--primary-text);
-        border-color: rgba(255, 255, 255, 0.25);
-      }
-
-      &:focus-visible {
-        outline: 2px solid var(--primary);
-        outline-offset: 2px;
-      }
-
-      &.active {
-        color: var(--primary);
-        border-color: rgba(50, 212, 153, 0.5);
-        background: rgba(50, 212, 153, 0.1);
-      }
-    }
   }
 
   .muted {

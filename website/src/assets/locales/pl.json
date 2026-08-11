@@ -361,14 +361,14 @@
     "title": "Pobrania",
     "note": "Pobrania aplikacji rozpoczęte z tej strony, liczone dziennie (UTC).",
     "total": "Łącznie: {count}",
-    "tooltipCount": "Pobrań: {count}",
-    "range": {
-      "label": "Zakres",
-      "all": "Od początku",
-      "year": "Ostatnie 12 miesięcy",
-      "quarter": "Ostatnie 3 miesiące",
-      "month": "Ostatni miesiąc"
-    }
+    "tooltipCount": "Pobrań: {count}"
+  },
+  "chartRange": {
+    "label": "Zakres",
+    "all": "Od początku",
+    "year": "Ostatnie 12 miesięcy",
+    "quarter": "Ostatnie 3 miesiące",
+    "month": "Ostatni miesiąc"
   },
   "activity": {
     "title": "Dzienna aktywność",

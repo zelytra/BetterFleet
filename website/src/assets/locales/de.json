@@ -361,14 +361,14 @@
     "title": "Downloads",
     "note": "Von dieser Seite gestartete App-Downloads, gezählt pro Tag (UTC).",
     "total": "{count} insgesamt",
-    "tooltipCount": "{count} Downloads",
-    "range": {
-      "label": "Zeitraum",
-      "all": "Gesamter Zeitraum",
-      "year": "Letzte 12 Monate",
-      "quarter": "Letzte 3 Monate",
-      "month": "Letzter Monat"
-    }
+    "tooltipCount": "{count} Downloads"
+  },
+  "chartRange": {
+    "label": "Zeitraum",
+    "all": "Gesamter Zeitraum",
+    "year": "Letzte 12 Monate",
+    "quarter": "Letzte 3 Monate",
+    "month": "Letzter Monat"
   },
   "activity": {
     "title": "Tägliche Aktivität",

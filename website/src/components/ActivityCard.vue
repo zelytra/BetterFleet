@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { fetchStatsHistory, Stats } from "@/objects/Stats.ts";
+import { type RangeId, sliceLastDays } from "@/objects/ChartRange.ts";
+import RangePicker from "@/vue/RangePicker.vue";
 
 // Usage over time: fleet sessions opened and set-sail tries per UTC day, the two other series
 // /stats/history has always carried but nothing charted. Same hand-rolled SVG pattern as
@@ -35,7 +37,7 @@ interface Day {
 
 // One value per day, zero-filled, for the same reason as the downloads chart: a silent day is a
 // missing row, and skipping it would splice time.
-const days = computed<Day[]>(() => {
+const allDays = computed<Day[]>(() => {
   if (rows.value.length === 0) return [];
   const byDay = new Map<number, { sessions: number; tries: number }>();
   for (const row of rows.value) {
@@ -58,11 +60,18 @@ const days = computed<Day[]>(() => {
   return filled;
 });
 
+// The displayed window, same shared windows and slicing as the downloads chart (ChartRange.ts).
+// Card visibility stays keyed on the full series, so a window switch can never blank the card.
+const selectedRange = ref<RangeId>("all");
+
+const days = computed(() => sliceLastDays(allDays.value, selectedRange.value));
+
+// Totals over the DISPLAYED window, so the ratio headline describes the curves on screen.
 const totalSessions = computed(() =>
-  rows.value.reduce((sum, row) => sum + row.sessionsOpen, 0),
+  days.value.reduce((sum, day) => sum + day.sessions, 0),
 );
 const totalTries = computed(() =>
-  rows.value.reduce((sum, row) => sum + row.sessionTry, 0),
+  days.value.reduce((sum, day) => sum + day.tries, 0),
 );
 
 // The one number the two curves make together: set-sail tries per session opened.
@@ -160,6 +169,9 @@ const xTicks = computed(() => {
 const hovered = ref<number | null>(null);
 const svgEl = ref<SVGSVGElement | null>(null);
 
+// A hovered index belongs to the previous window's geometry; drop it on a switch.
+watch(selectedRange, () => (hovered.value = null));
+
 function onMove(event: MouseEvent) {
   if (!svgEl.value || days.value.length < 2) return;
   const rect = svgEl.value.getBoundingClientRect();
@@ -199,12 +211,14 @@ const ariaLabel = computed(
 </script>
 
 <template>
-  <div v-if="days.length >= 2" class="card activity-card">
+  <div v-if="allDays.length >= 2" class="card activity-card">
     <div class="head">
       <h3>{{ t("activity.title") }}</h3>
       <span v-if="perSessionLabel" class="ratio">{{ perSessionLabel }}</span>
     </div>
     <p class="muted note">{{ t("activity.note") }}</p>
+
+    <RangePicker v-model="selectedRange" />
 
     <!-- Legend: identity is never color-alone; the line ends are direct-labeled too. -->
     <div class="legend">
