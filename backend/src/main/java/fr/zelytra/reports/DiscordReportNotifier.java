@@ -55,8 +55,8 @@ public class DiscordReportNotifier {
     // Appended to any excerpt that was cut, so the reader knows to open the website for the rest.
     static final String TRUNCATION_MARK = "… [truncated]";
 
-    // The website lists reports at /reports (ReportsComponent.vue); it has no per-report anchor, so
-    // the page itself is the most direct link there is.
+    // The website lists reports at /reports (ReportsComponent.vue); each card carries a
+    // #report-<id> anchor, which the page opens and scrolls to, so the link lands on THE report.
     static final String REPORTS_PAGE_PATH = "/reports";
 
     // BetterFleet green (#32d499), the accent colour the website already uses.
@@ -117,11 +117,11 @@ public class DiscordReportNotifier {
      * Pure and static, so the shape and limits unit-test offline.
      */
     static String buildPayload(ReportEntity report, String websiteBaseUrl) {
-        String reportsUrl = reportsPageUrl(websiteBaseUrl);
+        String reportUrl = reportUrl(websiteBaseUrl, report.getId());
 
         JsonObject embed = new JsonObject();
         embed.addProperty("title", "New bug report #" + report.getId());
-        embed.addProperty("url", reportsUrl);
+        embed.addProperty("url", reportUrl);
         embed.addProperty("color", EMBED_COLOR);
 
         String message = truncate(nullToEmpty(report.getMessage()).trim(), MESSAGE_EXCERPT_MAX_CHARS);
@@ -134,11 +134,15 @@ public class DiscordReportNotifier {
         if (date != null) {
             fields.add(field("Submitted", date.toString(), true));
         }
+        String version = nullToEmpty(report.getVersion()).trim();
+        if (!version.isEmpty()) {
+            fields.add(field("Version", version, true));
+        }
         String device = truncate(nullToEmpty(report.getDevice()).trim(), DEVICE_MAX_CHARS);
         if (!device.isEmpty()) {
             fields.add(field("Device", codeBlock(device), true));
         }
-        fields.add(field("Quick access", reportsUrl, false));
+        fields.add(field("Quick access", reportUrl, false));
         embed.add("fields", fields);
 
         JsonArray embeds = new JsonArray();
@@ -158,6 +162,11 @@ public class DiscordReportNotifier {
                 ? websiteBaseUrl.substring(0, websiteBaseUrl.length() - 1)
                 : websiteBaseUrl;
         return base + REPORTS_PAGE_PATH;
+    }
+
+    /** The direct link to one report: the page plus its card's #report-&lt;id&gt; anchor. */
+    static String reportUrl(String websiteBaseUrl, int reportId) {
+        return reportsPageUrl(websiteBaseUrl) + "#report-" + reportId;
     }
 
     private static String nullToEmpty(String text) {

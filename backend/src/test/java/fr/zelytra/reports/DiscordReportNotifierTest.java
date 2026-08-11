@@ -62,18 +62,32 @@ public class DiscordReportNotifierTest {
         JsonObject embed = onlyEmbed(payload);
 
         assertEquals("New bug report #42", embed.get("title").getAsString());
-        assertEquals("https://betterfleet.fr/reports", embed.get("url").getAsString());
+        // The link lands on THE report: the page plus the card's own #report-<id> anchor.
+        assertEquals("https://betterfleet.fr/reports#report-42", embed.get("url").getAsString());
         assertTrue(embed.get("description").getAsString().contains("The overlay froze mid-countdown"));
         assertEquals("2026-08-11", fieldValue(embed, "Submitted"));
         assertTrue(fieldValue(embed, "Device").contains("Windows 11 x64"));
-        assertEquals("https://betterfleet.fr/reports", fieldValue(embed, "Quick access"));
+        assertEquals("https://betterfleet.fr/reports#report-42", fieldValue(embed, "Quick access"));
     }
 
     @Test
     public void payload_linkSurvivesATrailingSlashOnTheBase() {
         String payload = DiscordReportNotifier.buildPayload(
                 report(1, LocalDate.now(), "msg", null), "https://my-fleet.example/");
-        assertEquals("https://my-fleet.example/reports", onlyEmbed(payload).get("url").getAsString());
+        assertEquals("https://my-fleet.example/reports#report-1", onlyEmbed(payload).get("url").getAsString());
+    }
+
+    @Test
+    public void payload_carriesTheClientVersionWhenPresentAndOmitsItOtherwise() {
+        ReportEntity versioned = report(9, LocalDate.now(), "msg", "pc");
+        versioned.setVersion("2.3.2");
+        assertEquals("2.3.2", fieldValue(onlyEmbed(
+                DiscordReportNotifier.buildPayload(versioned, "https://betterfleet.fr")), "Version"));
+
+        // Old clients send no version: the field simply does not appear, rather than an empty box.
+        String withoutVersion = DiscordReportNotifier.buildPayload(
+                report(9, LocalDate.now(), "msg", "pc"), "https://betterfleet.fr");
+        assertEquals(null, fieldValue(onlyEmbed(withoutVersion), "Version"));
     }
 
     @Test

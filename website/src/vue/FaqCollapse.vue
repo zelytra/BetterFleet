@@ -28,6 +28,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import { onMounted, ref } from "vue";
+import { copyText } from "@/objects/Clipboard.ts";
 
 const { t } = useI18n();
 const deploy = ref<boolean>(false);
@@ -38,10 +39,13 @@ const props = defineProps({
   url: String,
 });
 
-function copyLink() {
-  navigator.clipboard.writeText(
+async function copyLink() {
+  // copyText falls back to execCommand when the async Clipboard API is refused (the in-the-wild
+  // "copy shows an error" case), so the tooltip only ever confirms a copy that really happened.
+  const copied = await copyText(
     "https://" + window.location.host + "/" + props.url + "#" + props.id,
   );
+  if (!copied) return;
   displayCopy.value = true;
   setTimeout(() => {
     displayCopy.value = false;
@@ -49,8 +53,12 @@ function copyLink() {
 }
 
 onMounted(() => {
-  if (window.location.href.includes("#" + props.id)) {
+  // Exact hash match, not includes(): "#report-80" must not open "#report-801". Matching cards
+  // also scroll into view - reports mount after an async fetch, long past the browser's own
+  // hash-scroll attempt, so without this a shared deep link landed at the top of the page.
+  if (props.id && window.location.hash === "#" + props.id) {
     deploy.value = true;
+    document.getElementById(props.id)?.scrollIntoView({ block: "start" });
   }
 });
 </script>

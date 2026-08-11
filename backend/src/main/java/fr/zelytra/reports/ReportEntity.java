@@ -30,6 +30,11 @@ public class ReportEntity extends PanacheEntityBase {
     @Column(name = "device", columnDefinition = "text")
     private String device;
 
+    // The client version the report came from, e.g. "2.3.2". Nullable on purpose: rows predating
+    // the field, and older clients that do not send it, stay valid.
+    @Column(name = "version", length = 32)
+    private String version;
+
     public ReportEntity() {
     }
 
@@ -71,5 +76,13 @@ public class ReportEntity extends PanacheEntityBase {
 
     public void setDevice(String device) {
         this.device = device;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

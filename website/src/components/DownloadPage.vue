@@ -7,6 +7,7 @@ import { AppStore } from "@/objects/stores/appStore.ts";
 import { incrementDownload } from "@/objects/Stats.ts";
 import { useDelayedLoading } from "@/objects/DelayedLoading.ts";
 import { detectPlatform, type Platform } from "@/objects/PlatformDetection.ts";
+import { copyText } from "@/objects/Clipboard.ts";
 import {
   fetchLatestRelease,
   findReleaseAsset,
@@ -253,15 +254,12 @@ let copyTimer: number | undefined;
 
 async function copyCommand(id: string, command?: string) {
   if (!command) return;
-  try {
-    await navigator.clipboard.writeText(command);
-    copyResult.value = { id, ok: true };
-  } catch {
-    // Clipboard blocked (http origin / denied permission). The strip opts back into text selection
-    // (see the style block), so the fallback is to select the command by hand - the swapped label and
-    // the live region say so, rather than the click silently doing nothing.
-    copyResult.value = { id, ok: false };
-  }
+  // copyText tries the async Clipboard API, then the legacy execCommand path - the async API alone
+  // rejects in real configurations (strict Firefox, focus races), which players reported as "copy
+  // shows an error". Only when BOTH fail does the strip fall into its failed state, where the
+  // command stays selectable by hand (see the style block) and the live region says so.
+  const copied = await copyText(command);
+  copyResult.value = { id, ok: copied };
   clearTimeout(copyTimer);
   // A failure lingers longer: it asks the visitor to do something, so it shouldn't vanish as quickly
   // as a "Copied!" that just confirms.

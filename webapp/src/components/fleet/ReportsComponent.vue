@@ -158,6 +158,8 @@ async function sendReport() {
     device: "",
     logs: "",
     message: attachDiagnostic(reportMessage.value, diagAttachment),
+    // The build's own version, so triage knows which release the report describes.
+    version: String(import.meta.env.VITE_VERSION ?? ""),
   };
   await invoke("get_logs", { maxLines: 5000 }).then((logs) => {
     report.logs = logs as string;

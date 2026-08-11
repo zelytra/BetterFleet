@@ -6,6 +6,8 @@ export interface ReportInterface {
   // A plain calendar date ("2024-11-02"): the backend column is a SQL date, there is no time or
   // timezone to this value.
   reportingDate: string;
+  // The client version the report came from; absent on rows predating the field.
+  version?: string;
 }
 
 // Renders a report's calendar date in the viewer's language. Formatting is pinned to UTC because
