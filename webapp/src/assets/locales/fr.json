@@ -473,6 +473,17 @@
       "home": "Page d'accueil"
     }
   },
+  "update": {
+    "available": "Mise à jour disponible",
+    "title": "Mettre à jour vers {version}",
+    "install": "Mettre à jour",
+    "retry": "Réessayer",
+    "downloading": "Téléchargement…",
+    "restarting": "Installation et redémarrage…",
+    "noNotes": "Une nouvelle version est prête à être installée.",
+    "failed": "La mise à jour n'a pas pu être installée.",
+    "manual": "La télécharger manuellement"
+  },
   "whatsnew": {
     "full": "Voir le journal des modifications complet",
     "offline": "Échec du chargement des notes - le journal des modifications complet en ligne les a.",

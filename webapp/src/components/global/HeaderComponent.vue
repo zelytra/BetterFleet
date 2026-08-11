@@ -26,13 +26,16 @@
       </router-link>
     </nav>
     <div class="bottom-header">
-      <!-- Maybe will be use in a later version
+      <!-- Shown only once the startup check found a newer release (#735 follow-up); opens the
+           update modal mounted in the authed shell. -->
       <img
+        v-if="UpdateStore.status !== 'idle'"
         class="update"
         src="@/assets/icons/update.svg"
         alt="update-button"
-      >
-      -->
+        :title="t('update.available')"
+        @click="UpdateStore.modalOpen = true"
+      />
       <img
         class="question"
         src="@/assets/icons/question.svg"
@@ -57,6 +60,7 @@
 import { router, routes } from "@/router";
 import { ref } from "vue";
 import { UserStore } from "@/objects/stores/UserStore.ts";
+import { UpdateStore } from "@/objects/Updater.ts";
 import { Utils } from "@/objects/utils/Utils.ts";
 import { useI18n } from "vue-i18n";
 
@@ -121,6 +125,7 @@ const { t } = useI18n();
 
     .update {
       width: 24px;
+      cursor: pointer;
     }
 
     .question {

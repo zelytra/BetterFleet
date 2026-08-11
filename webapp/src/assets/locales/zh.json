@@ -473,6 +473,17 @@
       "home": "主页"
     }
   },
+  "update": {
+    "available": "有可用更新",
+    "title": "更新到 {version}",
+    "install": "立即更新",
+    "retry": "重试",
+    "downloading": "正在下载…",
+    "restarting": "正在安装并重启…",
+    "noNotes": "新版本已准备好安装。",
+    "failed": "无法安装更新。",
+    "manual": "手动下载"
+  },
   "whatsnew": {
     "full": "查看完整更新日志",
     "offline": "无法加载更新说明——完整的更新日志可在线查看。",

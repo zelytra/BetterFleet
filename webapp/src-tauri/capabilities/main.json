@@ -20,6 +20,8 @@
     "log:default",
     "shell:allow-open",
     "oauth:allow-start",
-    "oauth:allow-cancel"
+    "oauth:allow-cancel",
+    "updater:default",
+    "process:allow-restart"
   ]
 }

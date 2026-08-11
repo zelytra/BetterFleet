@@ -12,11 +12,14 @@
   <!-- What's new (#686): mounted in the authed shell, so it can only appear once the player is
        past the login screen, never over the auth page. -->
   <WhatsNewModal />
+  <!-- Update prompt (#735 follow-up): same shell, opened from the header's update button. -->
+  <UpdateModal />
 </template>
 
 <script setup lang="ts">
 import HeaderComponent from "@/components/global/HeaderComponent.vue";
 import WhatsNewModal from "@/components/WhatsNewModal.vue";
+import UpdateModal from "@/components/UpdateModal.vue";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 import { LocalKey } from "@/objects/stores/LocalStore.ts";
 import { onUnmounted, watch } from "vue";

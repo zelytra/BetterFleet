@@ -473,6 +473,17 @@
       "home": "Startseite"
     }
   },
+  "update": {
+    "available": "Update verfügbar",
+    "title": "Auf {version} aktualisieren",
+    "install": "Jetzt aktualisieren",
+    "retry": "Erneut versuchen",
+    "downloading": "Wird heruntergeladen…",
+    "restarting": "Installation und Neustart…",
+    "noNotes": "Eine neue Version ist installationsbereit.",
+    "failed": "Das Update konnte nicht installiert werden.",
+    "manual": "Manuell herunterladen"
+  },
   "whatsnew": {
     "full": "Vollständiges Änderungsprotokoll ansehen",
     "offline": "Die Notizen konnten nicht geladen werden – das vollständige Änderungsprotokoll online enthält sie.",
