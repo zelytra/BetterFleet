@@ -403,6 +403,11 @@
       "copied": "Kopiert!",
       "copyFailed": "Kopieren fehlgeschlagen — markieren und kopieren",
       "copyCommand": "Installationsbefehl kopieren",
+      "terminal": {
+        "title": "Oder installiere direkt im Terminal",
+        "desc": "Ein Befehl lädt die neueste Version herunter und installiert sie.",
+        "managers": "Wähle deinen Paketmanager"
+      },
       "updates": "Updates unter Linux erfolgen manuell — es gibt keine automatische Aktualisierung. Zum Aktualisieren lädst du das neueste Paket von dieser Seite herunter und installierst es über deine aktuelle Version."
     }
   }

@@ -403,6 +403,11 @@
       "copied": "Copiato!",
       "copyFailed": "Copia non riuscita — seleziona e copia",
       "copyCommand": "Copia il comando di installazione",
+      "terminal": {
+        "title": "Oppure installa dal terminale",
+        "desc": "Un solo comando scarica l'ultima versione e la installa.",
+        "managers": "Scegli il tuo gestore di pacchetti"
+      },
       "updates": "Su Linux gli aggiornamenti sono manuali — non c'è aggiornamento automatico. Per aggiornare, scarica l'ultimo pacchetto da questa pagina e reinstallalo sopra la versione attuale."
     }
   }

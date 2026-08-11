@@ -403,6 +403,11 @@
       "copied": "Copié !",
       "copyFailed": "Échec de la copie — sélectionnez puis copiez",
       "copyCommand": "Copier la commande d'installation",
+      "terminal": {
+        "title": "Ou installez depuis votre terminal",
+        "desc": "Une seule commande télécharge la dernière version et l'installe.",
+        "managers": "Choisissez votre gestionnaire de paquets"
+      },
       "updates": "Sur Linux, les mises à jour sont manuelles — il n'y a pas de mise à jour automatique. Pour mettre à jour, téléchargez le dernier paquet depuis cette page et réinstallez-le par-dessus votre version actuelle."
     }
   }
