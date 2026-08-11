@@ -18,6 +18,7 @@ import { onMounted } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { error } from "@tauri-apps/plugin-log";
 import { UserStore } from "@/objects/stores/UserStore.ts";
+import { checkForUpdate } from "@/objects/Updater.ts";
 import { DEFAULT_OVERLAY_HOTKEY } from "@/objects/fleet/Overlay.ts";
 import {
   BoatSize,
@@ -52,6 +53,9 @@ onMounted(() => {
       accelerator: UserStore.player.overlayHotkey,
     }).catch((e) => error("[App] failed to bind saved overlay hotkey: " + e));
   }
+  // Restore the boot-time update check the Tauri v2 migration silently dropped (#735). Fire and
+  // forget: it never blocks startup and surfaces the update button only if a newer release exists.
+  checkForUpdate();
 });
 </script>
 

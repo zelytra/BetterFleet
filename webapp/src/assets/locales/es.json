@@ -473,6 +473,17 @@
       "home": "Página de inicio"
     }
   },
+  "update": {
+    "available": "Actualización disponible",
+    "title": "Actualizar a {version}",
+    "install": "Actualizar ahora",
+    "retry": "Reintentar",
+    "downloading": "Descargando…",
+    "restarting": "Instalando y reiniciando…",
+    "noNotes": "Hay una nueva versión lista para instalar.",
+    "failed": "No se pudo instalar la actualización.",
+    "manual": "Descargarla manualmente"
+  },
   "whatsnew": {
     "full": "Ver el registro de cambios completo",
     "offline": "No se pudieron cargar las notas: el registro de cambios completo en línea las tiene.",

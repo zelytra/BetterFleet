@@ -473,6 +473,17 @@
       "home": "Strona główna"
     }
   },
+  "update": {
+    "available": "Dostępna aktualizacja",
+    "title": "Zaktualizuj do {version}",
+    "install": "Zaktualizuj teraz",
+    "retry": "Spróbuj ponownie",
+    "downloading": "Pobieranie…",
+    "restarting": "Instalowanie i ponowne uruchamianie…",
+    "noNotes": "Nowa wersja jest gotowa do zainstalowania.",
+    "failed": "Nie udało się zainstalować aktualizacji.",
+    "manual": "Pobierz ręcznie"
+  },
   "whatsnew": {
     "full": "Zobacz pełną listę zmian",
     "offline": "Nie udało się wczytać informacji — pełna lista zmian online je zawiera.",

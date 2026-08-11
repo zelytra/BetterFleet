@@ -23,7 +23,9 @@
     "@tauri-apps/api": "^2.0.0",
     "@tauri-apps/plugin-http": "^2.0.0",
     "@tauri-apps/plugin-log": "^2.0.0",
+    "@tauri-apps/plugin-process": "^2.0.0",
     "@tauri-apps/plugin-shell": "^2.3.5",
+    "@tauri-apps/plugin-updater": "^2.0.0",
     "keycloak-js": "^26.2.4",
     "vue": "^3.5.39",
     "vue-i18n": "^11.4.6"

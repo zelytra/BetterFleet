@@ -473,6 +473,17 @@
       "home": "Pagina iniziale"
     }
   },
+  "update": {
+    "available": "Aggiornamento disponibile",
+    "title": "Aggiorna alla {version}",
+    "install": "Aggiorna ora",
+    "retry": "Riprova",
+    "downloading": "Download in corso…",
+    "restarting": "Installazione e riavvio…",
+    "noNotes": "Una nuova versione è pronta per l'installazione.",
+    "failed": "Impossibile installare l'aggiornamento.",
+    "manual": "Scaricalo manualmente"
+  },
   "whatsnew": {
     "full": "Vedi il changelog completo",
     "offline": "Impossibile caricare le note — il changelog completo online le contiene.",

@@ -473,6 +473,17 @@
       "home": "Home page"
     }
   },
+  "update": {
+    "available": "Update available",
+    "title": "Update to {version}",
+    "install": "Update now",
+    "retry": "Try again",
+    "downloading": "Downloading…",
+    "restarting": "Installing and restarting…",
+    "noNotes": "A new version is ready to install.",
+    "failed": "The update could not be installed.",
+    "manual": "Download it manually"
+  },
   "whatsnew": {
     "full": "See the full changelog",
     "offline": "Could not load the notes — the full changelog online has them.",
