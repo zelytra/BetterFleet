@@ -253,20 +253,53 @@ let copyTimer: number | undefined;
 
 async function copyCommand(id: string, command?: string) {
   if (!command) return;
-  try {
-    await navigator.clipboard.writeText(command);
-    copyResult.value = { id, ok: true };
-  } catch {
-    // Clipboard blocked (http origin / denied permission). The strip opts back into text selection
-    // (see the style block), so the fallback is to select the command by hand - the swapped label and
-    // the live region say so, rather than the click silently doing nothing.
-    copyResult.value = { id, ok: false };
-  }
+  copyResult.value = { id, ok: await copyToClipboard(command) };
   clearTimeout(copyTimer);
   // A failure lingers longer: it asks the visitor to do something, so it shouldn't vanish as quickly
   // as a "Copied!" that just confirms.
   const linger = copyResult.value.ok ? 2000 : 5000;
   copyTimer = window.setTimeout(() => (copyResult.value = null), linger);
+}
+
+/**
+ * Copies text to the clipboard, tolerating the many ways the async Clipboard API refuses a genuine
+ * click: an unfocused document, a denied clipboard-write permission, a browser that gates it (this
+ * is what left visitors staring at "copy failed" on the HTTPS site). When writeText throws or isn't
+ * there, fall back to the legacy hidden-textarea + execCommand("copy"), which still works from inside
+ * this click's user activation almost everywhere. Only if BOTH fail does the caller show the
+ * select-and-copy-by-hand state.
+ */
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // Fall through to the legacy path below.
+  }
+  return legacyCopy(text);
+}
+
+/** Last-resort copy: a throwaway off-screen textarea, selected and copied with execCommand. */
+function legacyCopy(text: string): boolean {
+  try {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    // Off-screen but still selectable; fixed so the page doesn't scroll to it.
+    textarea.style.position = "fixed";
+    textarea.style.top = "-1000px";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    textarea.setSelectionRange(0, text.length);
+    const ok = document.execCommand("copy");
+    document.body.removeChild(textarea);
+    return ok;
+  } catch {
+    return false;
+  }
 }
 
 // The one polite live region's text - announced when a copy resolves, then cleared. The visible
