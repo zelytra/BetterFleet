@@ -160,10 +160,14 @@ function shellQuote(value: string): string {
 
 // The terminal block's one-paste commands, one per package manager: each downloads the package
 // straight from the release URL *and* installs it, assuming nothing about a file already sitting in
-// some download folder. dnf and pacman both install from a URL directly; apt only takes a local
-// path, so the .deb goes through curl into /tmp (present and writable on every distro, cleaned by
-// the OS) under the asset's real name first. Built only from assets the release actually carries, so
-// a listed command always points at a real file - a format that isn't published simply has no chip.
+// some download folder. dnf installs from a URL directly (localpkg_gpgcheck is off by default, so
+// the unsigned .rpm passes). apt only takes a local path, and pacman must NOT be given the URL:
+// for remote files pacman's built-in default is RemoteFileSigLevel = Required, so it fetches
+// "<url>.sig", gets a 404 (releases ship no signatures) and aborts - while a local file goes
+// through LocalFileSigLevel = Optional and installs. Both therefore go through curl into /tmp
+// (present and writable on every distro, cleaned by the OS) under the asset's real name. Built
+// only from assets the release actually carries, so a listed command always points at a real
+// file - a format that isn't published simply has no chip.
 const installCommands = computed<InstallCommand[]>(() => {
   const commands: InstallCommand[] = [];
   const deb = resolve(".deb");
@@ -184,11 +188,12 @@ const installCommands = computed<InstallCommand[]>(() => {
     });
   }
   const arch = resolve(".pkg.tar.zst");
-  if (arch.url) {
+  if (arch.url && arch.name) {
+    const file = shellQuote(`/tmp/${arch.name}`);
     commands.push({
       id: "arch",
       manager: "pacman",
-      command: `sudo pacman -U ${shellQuote(arch.url)}`,
+      command: `curl -fL ${shellQuote(arch.url)} -o ${file} && sudo pacman -U ${file}`,
     });
   }
   return commands;
