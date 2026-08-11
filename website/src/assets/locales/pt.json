@@ -350,7 +350,14 @@
     "title": "Downloads",
     "note": "Downloads do aplicativo iniciados neste site, contados por dia (UTC).",
     "total": "{count} no total",
-    "tooltipCount": "{count} downloads"
+    "tooltipCount": "{count} downloads",
+    "range": {
+      "label": "Período",
+      "all": "Desde o início",
+      "year": "Últimos 12 meses",
+      "quarter": "Últimos 3 meses",
+      "month": "Último mês"
+    }
   },
   "downloadPage": {
     "title": "Baixar o BetterFleet",

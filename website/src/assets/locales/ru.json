@@ -350,7 +350,14 @@
     "title": "Загрузки",
     "note": "Загрузки приложения, начатые с этого сайта, по дням (UTC).",
     "total": "Всего: {count}",
-    "tooltipCount": "Загрузок: {count}"
+    "tooltipCount": "Загрузок: {count}",
+    "range": {
+      "label": "Период",
+      "all": "За всё время",
+      "year": "Последние 12 месяцев",
+      "quarter": "Последние 3 месяца",
+      "month": "Последний месяц"
+    }
   },
   "downloadPage": {
     "title": "Скачать BetterFleet",
