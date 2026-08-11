@@ -7,6 +7,8 @@
 
 use std::collections::{HashMap, HashSet};
 use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
+#[cfg(windows)]
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
@@ -40,7 +42,14 @@ pub struct DiagnosticReport {
     pub udp_ports_netstat2: Vec<u16>,
     /// Game UDP ports as returned by `Get-NetUDPEndpoint` (kept in emission order).
     pub udp_ports_powershell: Vec<u16>,
+    /// Packets on the game's ports, i.e. those that fed the ranking below.
     pub total_packets: u32,
+    /// Every packet the capture socket(s) actually received, BEFORE the game-port filter, or `null`
+    /// where it is not measured (Linux captures in a separate helper process). This is what tells
+    /// "the capture is blocked" (0 - e.g. a VPN or an Npcap/Wireshark NDIS filter starving the
+    /// SIO_RCVALL raw socket) apart from "the capture works but the game exposed no matching UDP
+    /// ports" (>0 while `total_packets` is 0, which points at the port enumeration instead).
+    pub raw_packets: Option<u64>,
     pub distinct_flows: usize,
     /// Flows whose remote port looks like a SoT server, ranked by volume: the
     /// server should stand out here.
@@ -57,6 +66,7 @@ async fn sniff_interface(
     game_ports: HashSet<u16>,
     aggregator: Arc<Mutex<FlowAggregator>>,
     duration: Duration,
+    raw_packets: Arc<AtomicU64>,
 ) {
     let socket: UdpSocket = match create_raw_socket(addr).await {
         Ok(socket) => socket,
@@ -75,6 +85,10 @@ async fn sniff_interface(
                     if len == 0 {
                         continue;
                     }
+                    // Count every packet the socket saw, before the game-port filter: a zero here
+                    // over a full window means the capture itself received nothing (a filter driver
+                    // starving SIO_RCVALL), not that the game merely had no matching ports.
+                    raw_packets.fetch_add(1, Ordering::Relaxed);
                     if let Some((local_port, remote_ip, remote_port, inbound)) =
                         parse_game_flow(&buf[..len], &game_ports)
                     {
@@ -96,6 +110,19 @@ async fn sniff_interface(
 /// the diagnostic report and by live detection, so both observe traffic identically.
 #[cfg(windows)]
 pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
+    // Live detection does not need the raw count; give it a throwaway counter.
+    capture_flows_counted(game_ports, window, Arc::new(AtomicU64::new(0))).await
+}
+
+/// The Windows capture, also incrementing `raw_packets` for every packet the socket(s) received
+/// (before the game-port filter). Both `capture_flows` (live) and the diagnostic go through here so
+/// they capture identically; only the diagnostic keeps the count.
+#[cfg(windows)]
+async fn capture_flows_counted(
+    game_ports: Vec<u16>,
+    window: Duration,
+    raw_packets: Arc<AtomicU64>,
+) -> Vec<FlowStat> {
     let port_set: HashSet<u16> = game_ports.into_iter().collect();
     let aggregator = Arc::new(Mutex::new(FlowAggregator::default()));
 
@@ -115,8 +142,9 @@ pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowSt
         let addr = SocketAddr::new(ip, 0);
         let aggregator = Arc::clone(&aggregator);
         let ports = port_set.clone();
+        let raw = Arc::clone(&raw_packets);
         handles.push(tokio::spawn(async move {
-            sniff_interface(addr, ports, aggregator, window).await;
+            sniff_interface(addr, ports, aggregator, window, raw).await;
         }));
     }
     for handle in handles {
@@ -125,6 +153,28 @@ pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowSt
 
     let flows = aggregator.lock().unwrap().take_sorted_flows();
     flows
+}
+
+/// Captures for the diagnostic, additionally returning how many packets the capture actually
+/// received before the game-port filter (`Some` on Windows; `None` elsewhere, where capture runs in
+/// a separate helper process and the raw count is not surfaced). Live detection uses `capture_flows`
+/// and never pays for this.
+#[cfg(windows)]
+async fn capture_for_diagnostic(
+    game_ports: Vec<u16>,
+    window: Duration,
+) -> (Vec<FlowStat>, Option<u64>) {
+    let raw_packets = Arc::new(AtomicU64::new(0));
+    let flows = capture_flows_counted(game_ports, window, Arc::clone(&raw_packets)).await;
+    (flows, Some(raw_packets.load(Ordering::Relaxed)))
+}
+
+#[cfg(not(windows))]
+async fn capture_for_diagnostic(
+    game_ports: Vec<u16>,
+    window: Duration,
+) -> (Vec<FlowStat>, Option<u64>) {
+    (capture_flows(game_ports, window).await, None)
 }
 
 /// Linux raw-capture backend (#725, #726). Server detection needs an `AF_PACKET` socket, which needs
@@ -348,7 +398,7 @@ pub async fn run_diagnostic(
     udp_ports_powershell: Vec<u16>,
 ) -> DiagnosticReport {
     let started = Instant::now();
-    let flows = capture_flows(game_ports, duration).await;
+    let (flows, raw_packets) = capture_for_diagnostic(game_ports, duration).await;
     let total_packets: u32 = flows.iter().map(|flow| flow.packets).sum();
     let top_candidates: Vec<FlowStat> = flows
         .iter()
@@ -365,6 +415,7 @@ pub async fn run_diagnostic(
         udp_ports_netstat2,
         udp_ports_powershell,
         total_packets,
+        raw_packets,
         distinct_flows: flows.len(),
         top_candidates,
         flows,
@@ -378,6 +429,33 @@ mod tests {
     // tests below still use it to derive plausibility, and Deserialize backs the #364 corpus structs.
     use better_fleet::capture::is_plausible_sot_port;
     use serde::Deserialize;
+
+    #[test]
+    fn raw_packets_is_reported_and_distinct_from_game_packets() {
+        let report = |raw: Option<u64>| DiagnosticReport {
+            note: "in game".into(),
+            game_status: "Started".into(),
+            pid: Some(7976),
+            duration_ms: 20000,
+            main_menu_port: 0,
+            udp_ports_netstat2: vec![],
+            udp_ports_powershell: vec![],
+            total_packets: 0,
+            raw_packets: raw,
+            distinct_flows: 0,
+            top_candidates: vec![],
+            flows: vec![],
+        };
+        // The socket saw traffic but none on the game ports: capture works, the ports are the
+        // problem. total_packets (game-matched) and raw_packets (all) must be independent fields.
+        let measured = serde_json::to_string(&report(Some(4213))).unwrap();
+        assert!(measured.contains("\"raw_packets\":4213"), "{measured}");
+        assert!(measured.contains("\"total_packets\":0"), "{measured}");
+        // Not measured (the Linux helper does not surface it) serializes as null, never 0, so
+        // "capture blocked" is never inferred where it was simply not counted.
+        let unmeasured = serde_json::to_string(&report(None)).unwrap();
+        assert!(unmeasured.contains("\"raw_packets\":null"), "{unmeasured}");
+    }
 
     // Real capture from issue #364 (in game): two flows, BOTH in the SoT port
     // range, but the real server carries 1247 packets vs 8. Volume must decide.
