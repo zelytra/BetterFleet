@@ -3,15 +3,20 @@
     <!-- The row number is the report's position in the list, not its database id: Hibernate hands
          out ids from a sequence in blocks of 50, so raw ids jump after every backend restart and
          read like missing reports. Position stays dense, and stable as new reports are appended. -->
+    <!-- The anchor uses the DATABASE id (#report-801), not the row number: the number shifts as
+         reports are appended, the id never does, so shared links and the Discord webhook's quick
+         access stay pointed at the same report forever. -->
     <FaqCollapse
       v-for="(report, index) of reports"
+      :id="'report-' + report.id"
       :key="report.id"
       url="reports"
       :title="
         'Report n°' +
         (index + 1) +
         ' | ' +
-        formatReportDate(report.reportingDate, locale)
+        formatReportDate(report.reportingDate, locale) +
+        (report.version ? ' | v' + report.version : '')
       "
     >
       <div class="content-wrapper">
