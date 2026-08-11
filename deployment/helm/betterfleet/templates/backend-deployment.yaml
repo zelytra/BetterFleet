@@ -72,6 +72,15 @@ spec:
                   key: GITHUB_API_TOKEN
                   # Pre-existing Secrets (secrets.existingSecret) may predate this key.
                   optional: true
+            - name: DISCORD_REPORT_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "betterfleet.secretName" . }}
+                  key: DISCORD_REPORT_WEBHOOK_URL
+                  # Pre-existing Secrets (secrets.existingSecret) may predate this key.
+                  optional: true
+            - name: PUBLIC_WEBSITE_URL
+              value: {{ include "betterfleet.websitePublicUrl" . | quote }}
             {{- with .Values.backend.extraEnv }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

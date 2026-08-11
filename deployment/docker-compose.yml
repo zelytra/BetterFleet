@@ -67,6 +67,9 @@ services:
       # Optional: a fine-grained GitHub token (public repositories, read-only) so the release proxy
       # gets 5000 req/h instead of the anonymous 60/h shared by everything on the server's IP.
       GITHUB_API_TOKEN: ${GITHUB_API_TOKEN:-}
+      # Optional: Discord webhook pinged (fire-and-forget) whenever a bug report is submitted.
+      # Empty = notifications off; the report endpoint behaves identically either way.
+      DISCORD_REPORT_WEBHOOK_URL: ${DISCORD_REPORT_WEBHOOK_URL:-}
     healthcheck:
       # No curl/wget in the UBI OpenJDK image; /bin/sh is bash, so probe the "/" (Pong!) endpoint
       # over /dev/tcp like the Keycloak check does.

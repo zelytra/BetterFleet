@@ -31,11 +31,15 @@ serviceAccount:
 # Leave empty to derive them automatically from `ingress.host` and the TLS setting:
 #   backend  -> <http|https>://<ingress.host>/api
 #   keycloak -> <http|https>://<ingress.host>/auth
+#   website  -> <http|https>://<ingress.host>
 # Set explicitly only when the public hostname differs from the ingress host
 # (e.g. split DNS, an external edge proxy, or per-service subdomains).
 publicUrls:
   backend: ""
   keycloak: ""
+  # Base for browser-facing links the backend builds (e.g. the reports page link
+  # in Discord bug-report notifications).
+  website: ""
 
 # -----------------------------------------------------------------------------
 # Secrets - credentials shared across workloads.
@@ -46,7 +50,7 @@ publicUrls:
 # The Secret must expose these keys:
 #   POSTGRES_USER, POSTGRES_PASSWORD, KEYCLOAK_ADMIN, KEYCLOAK_ADMIN_PASSWORD,
 #   MICROSOFT_CLIENT_ID, MICROSOFT_CLIENT_SECRET, PROXY_CHECK_API_KEY,
-#   GITHUB_API_TOKEN
+#   GITHUB_API_TOKEN, DISCORD_REPORT_WEBHOOK_URL
 # As in docker-compose, POSTGRES_USER/POSTGRES_PASSWORD are shared by BOTH
 # databases and consumed by the backend (DB_USER/DB_PASSWORD) and Keycloak
 # (KC_DB_USERNAME/KC_DB_PASSWORD).
@@ -75,6 +79,12 @@ secrets:
   # repositories" read-only, no extra permission. Empty = anonymous (60 req/h
   # shared per IP); set = 5000 req/h.
   githubApiToken: ""
+
+  # Optional Discord webhook pinged (fire-and-forget) whenever a bug report is
+  # submitted. Empty = notifications off; the report endpoint behaves
+  # identically either way. The URL is a credential: anyone holding it can post
+  # to the channel.
+  discordReportWebhookUrl: ""
 
 # =============================================================================
 # backend - Quarkus API (zelytra/better-fleet-backend)

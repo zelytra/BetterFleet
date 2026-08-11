@@ -2,6 +2,7 @@ package fr.zelytra.reports;
 
 import io.quarkus.logging.Log;
 import io.quarkus.security.Authenticated;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -11,6 +12,9 @@ import java.time.LocalDate;
 
 @Path("/report")
 public class ReportEndpoints {
+
+    @Inject
+    DiscordReportNotifier discordReportNotifier;
 
     @GET
     @Path("/list/all")
@@ -35,9 +39,13 @@ public class ReportEndpoints {
     @Transactional
     @Authenticated
     public Response sendReport(ReportEntity report) {
-        Log.info("[GET] /report/send");
+        Log.info("[POST] /report/send");
         report.setReportingDate(LocalDate.now());
         report.persist();
+        // Fire-and-forget: builds the payload here (cheap, never throws out) and hands delivery to
+        // the notifier's own thread, so the response below is identical with the webhook on, off,
+        // or Discord down.
+        discordReportNotifier.notifyReport(report);
         return Response.ok().build();
     }
 }
