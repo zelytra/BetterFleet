@@ -361,7 +361,14 @@
     "title": "Downloads",
     "note": "App downloads started from this site, counted per day (UTC).",
     "total": "{count} total",
-    "tooltipCount": "{count} downloads"
+    "tooltipCount": "{count} downloads",
+    "range": {
+      "label": "Time range",
+      "all": "All time",
+      "year": "Last 12 months",
+      "quarter": "Last 3 months",
+      "month": "Last month"
+    }
   },
   "activity": {
     "title": "Daily activity",

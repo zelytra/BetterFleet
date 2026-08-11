@@ -361,7 +361,14 @@
     "title": "다운로드",
     "note": "이 사이트에서 시작된 앱 다운로드 수를 일 단위로 집계합니다 (UTC).",
     "total": "총 {count}회",
-    "tooltipCount": "다운로드 {count}회"
+    "tooltipCount": "다운로드 {count}회",
+    "range": {
+      "label": "기간",
+      "all": "전체 기간",
+      "year": "최근 12개월",
+      "quarter": "최근 3개월",
+      "month": "최근 1개월"
+    }
   },
   "activity": {
     "title": "일일 활동",

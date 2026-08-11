@@ -361,7 +361,14 @@
     "title": "Descargas",
     "note": "Descargas de la aplicación iniciadas desde este sitio, contadas por día (UTC).",
     "total": "{count} en total",
-    "tooltipCount": "{count} descargas"
+    "tooltipCount": "{count} descargas",
+    "range": {
+      "label": "Período",
+      "all": "Desde el inicio",
+      "year": "Últimos 12 meses",
+      "quarter": "Últimos 3 meses",
+      "month": "Último mes"
+    }
   },
   "activity": {
     "title": "Actividad diaria",
