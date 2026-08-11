@@ -84,6 +84,7 @@ Either way the Secret must expose these keys:
 | `MICROSOFT_CLIENT_SECRET`  | keycloak (`${MICROSOFT_CLIENT_SECRET}` in realm JSON)|
 | `PROXY_CHECK_API_KEY`      | backend `PROXY_CHECK_API_KEY`                       |
 | `GITHUB_API_TOKEN`         | backend `GITHUB_API_TOKEN` (optional, release proxy quota) |
+| `DISCORD_REPORT_WEBHOOK_URL` | backend `DISCORD_REPORT_WEBHOOK_URL` (optional, Discord ping on new bug reports) |
 
 As in docker-compose, a single `POSTGRES_USER` / `POSTGRES_PASSWORD` pair is
 shared by both databases.
@@ -101,6 +102,7 @@ not the in-cluster Service names. These map to `PUBLIC_QUARKUS_HOSTNAME` /
 | --------------------- | -------------------------------------------------- | ----------------------------- |
 | `publicUrls.backend`  | website `VITE_BACKEND_HOST`                         | `http(s)://<host>/api`        |
 | `publicUrls.keycloak` | website `VITE_KEYCLOAK_HOST`; backend `KEYCLOAK_HOST` (OIDC issuer) | `http(s)://<host>/auth` |
+| `publicUrls.website`  | backend `PUBLIC_WEBSITE_URL` (links it builds, e.g. in Discord report pings) | `http(s)://<host>` |
 
 Leave them empty to derive from `ingress.host` and `ingress.tls.enabled`. Set
 them explicitly only when the public hostname differs from the ingress host.

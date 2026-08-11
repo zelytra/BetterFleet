@@ -177,3 +177,17 @@ Mirrors PUBLIC_KEYCLOAK_HOSTNAME from docker-compose.
 {{- printf "%s://%s/auth" (include "betterfleet.publicScheme" .) .Values.ingress.host -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Public URL of the website (browser -> ingress "/"), used by the backend for the
+browser-facing links it builds (e.g. the reports quick-access link in Discord
+bug-report notifications). Explicit publicUrls.website wins; otherwise derived
+from the ingress host.
+*/}}
+{{- define "betterfleet.websitePublicUrl" -}}
+{{- if .Values.publicUrls.website -}}
+{{- .Values.publicUrls.website -}}
+{{- else -}}
+{{- printf "%s://%s" (include "betterfleet.publicScheme" .) .Values.ingress.host -}}
+{{- end -}}
+{{- end -}}
