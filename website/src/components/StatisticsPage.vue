@@ -5,12 +5,15 @@ import {
   AllianceStats,
   fetchAllianceStats,
   fetchRegions,
+  fetchServerRegions,
   RegionCount,
 } from "@/objects/AllianceStats.ts";
 import { useDelayedLoading } from "@/objects/DelayedLoading.ts";
 import BoatLoader from "@/vue/BoatLoader.vue";
 import GlobeLoading from "@/vue/GlobeLoading.vue";
 import DownloadsCard from "@/components/DownloadsCard.vue";
+import ActivityCard from "@/components/ActivityCard.vue";
+import TriesCard from "@/components/TriesCard.vue";
 
 // Lazy: globe.gl bundles three.js, so it stays out of the main bundle and loads only here. It is
 // ~575 KB gzipped, so on anything but a fast connection the wait is long enough to need saying,
@@ -28,6 +31,7 @@ const { t } = useI18n();
 
 const stats = ref<AllianceStats | null>(null);
 const regions = ref<RegionCount[]>([]);
+const serverRegions = ref<RegionCount[]>([]);
 const ownerRegion = ref<string>("");
 const loading = ref(true);
 const showLoader = useDelayedLoading(loading);
@@ -45,10 +49,18 @@ async function load() {
 }
 
 onMounted(async () => {
+  // Both region breakdowns are global, like the globe: fetched once, never re-fetched by the
+  // owner-region filter (filtering "where fleets land" by "who searched" would silently change
+  // what the bars mean).
   try {
     regions.value = await fetchRegions();
   } catch {
     regions.value = [];
+  }
+  try {
+    serverRegions.value = await fetchServerRegions();
+  } catch {
+    serverRegions.value = [];
   }
   await load();
 });
@@ -102,6 +114,18 @@ const bestHoursLabel = computed(() => {
 const topRegions = computed(() => {
   const max = regions.value[0]?.attempts ?? 1;
   return regions.value.slice(0, 12).map((r) => ({
+    region: r.region.toUpperCase(),
+    attempts: r.attempts,
+    width: Math.max(4, Math.round((r.attempts / max) * 100)),
+  }));
+});
+
+// Same bars for the other end of the trip: the country of the server the biggest group landed on.
+// The game only hosts in a handful of datacenter countries, so this list is short by nature and
+// reads against the owner list above it: where the community searches from vs. where it ends up.
+const topServerRegions = computed(() => {
+  const max = serverRegions.value[0]?.attempts ?? 1;
+  return serverRegions.value.slice(0, 12).map((r) => ({
     region: r.region.toUpperCase(),
     attempts: r.attempts,
     width: Math.max(4, Math.round((r.attempts / max) * 100)),
@@ -251,13 +275,41 @@ const hasData = computed(() => (stats.value?.totalAttempts ?? 0) > 0);
               <span class="region-count">{{ r.attempts }}</span>
             </div>
           </div>
+
+          <!-- The other end of the trip: server countries are the game's datacenters, so the fill
+               changes hue to say "different dimension" next to the owner bars above. -->
+          <div v-if="topServerRegions.length" class="card server-regions-card">
+            <h3>{{ t("alliance.serverRegions.title") }}</h3>
+            <p class="muted note">{{ t("alliance.serverRegions.note") }}</p>
+            <div
+              v-for="r in topServerRegions"
+              :key="r.region"
+              class="region-row"
+            >
+              <span class="region-name">{{ r.region }}</span>
+              <span class="region-bar">
+                <span
+                  class="region-fill server"
+                  :style="{ width: r.width + '%' }"
+                ></span>
+              </span>
+              <span class="region-count">{{ r.attempts }}</span>
+            </div>
+          </div>
         </div>
       </transition>
     </div>
 
-    <!-- App adoption, not alliance analytics: fetched and rendered on its own, outside the
-         swap-area, so the region filter's reloads never redraw it and an empty alliance dashboard
-         doesn't hide it. -->
+    <!-- Global alliance insight (all regions, all time): self-fetching like DownloadsCard, so the
+         region filter's reloads never redraw it and it stands whether or not the filtered dashboard
+         above has data. -->
+    <TriesCard />
+
+    <!-- App adoption and usage, not alliance analytics: fetched and rendered on their own, outside
+         the swap-area, so the region filter's reloads never redraw them and an empty alliance
+         dashboard doesn't hide them. Both read /stats/history: activity (sessions and tries per
+         day), then adoption (downloads). -->
+    <ActivityCard />
     <DownloadsCard />
   </section>
 </template>
@@ -555,6 +607,17 @@ header {
   height: 100%;
   background: var(--primary);
   border-radius: 6px;
+
+  // Server-country bars: the site's own blue (the scrollbar accent, and the activity chart's
+  // second series), so the two adjacent bar lists can't be misread as one dimension.
+  &.server {
+    background: #4ba7de;
+  }
+}
+
+.server-regions-card .note {
+  margin: -8px 0 16px;
+  font-size: 14px;
 }
 
 .region-row .region-count {

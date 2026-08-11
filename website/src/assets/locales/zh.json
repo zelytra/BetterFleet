@@ -340,6 +340,17 @@
       "note": "同时搜索的船只越多，两艘船相遇就越容易；而一支大船队通常想凑齐五艘，而不是两艘。每个区间都会按其实际可能达成的目标来评分。",
       "band": "正在搜索的玩家",
       "attempts": "尝试次数"
+    },
+    "triesChart": {
+      "title": "联盟在第几次尝试时结成",
+      "note": "在所有最终结成联盟的倒计时中，各次尝试所占的比例。涵盖所有地区、全部时间。",
+      "firstTry": "{percent} 首次尝试即结成",
+      "tryLabel": "第 {n} 次尝试",
+      "tooltip": "{count} 个联盟（{percent}）"
+    },
+    "serverRegions": {
+      "title": "联盟最终落在哪里",
+      "note": "汇聚人数最多的服务器所在国家——那是游戏数据中心的位置，而非玩家的居住地。"
     }
   },
   "loading": {
@@ -351,6 +362,13 @@
     "note": "从本站发起的应用下载次数，按天统计（UTC）。",
     "total": "共 {count} 次",
     "tooltipCount": "{count} 次下载"
+  },
+  "activity": {
+    "title": "每日活跃度",
+    "note": "每日统计的新开船队会话数与“启航”尝试数（UTC）。",
+    "sessions": "开启的会话",
+    "tries": "启航尝试",
+    "perSession": "每次会话约 {count} 次启航"
   },
   "downloadPage": {
     "title": "下载 BetterFleet",

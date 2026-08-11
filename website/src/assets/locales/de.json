@@ -340,6 +340,17 @@
       "note": "Zwei Schiffe zusammenzubringen wird leichter, je mehr suchen, und eine große Crew will meist fünf davon, nicht zwei. Jede Gruppe wird daran gemessen, was sie tatsächlich erreichen konnte.",
       "band": "Suchende Spieler",
       "attempts": "Versuche"
+    },
+    "triesChart": {
+      "title": "Beim wievielten Versuch die Allianz zustande kommt",
+      "note": "Von allen Countdowns, die mit einer Allianz endeten: der Anteil, der bei jedem Versuch geklappt hat. Alle Regionen, gesamter Zeitraum.",
+      "firstTry": "{percent} gleich beim ersten Versuch",
+      "tryLabel": "Versuch {n}",
+      "tooltip": "{count} Allianzen ({percent})"
+    },
+    "serverRegions": {
+      "title": "Wo Allianzen landen",
+      "note": "Land des Servers, auf dem die größte Gruppe zusammenkam — die Rechenzentren des Spiels, nicht der Wohnort der Spieler."
     }
   },
   "loading": {
@@ -351,6 +362,13 @@
     "note": "Von dieser Seite gestartete App-Downloads, gezählt pro Tag (UTC).",
     "total": "{count} insgesamt",
     "tooltipCount": "{count} Downloads"
+  },
+  "activity": {
+    "title": "Tägliche Aktivität",
+    "note": "Geöffnete Flotten-Sessions und gestartete „Leinen los“-Versuche, gezählt pro Tag (UTC).",
+    "sessions": "Geöffnete Sessions",
+    "tries": "„Leinen los“-Versuche",
+    "perSession": "≈ {count} Versuche pro Session"
   },
   "downloadPage": {
     "title": "BetterFleet herunterladen",

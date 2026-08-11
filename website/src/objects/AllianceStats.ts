@@ -43,6 +43,17 @@ export interface RegionCount {
   attempts: number;
 }
 
+/**
+ * One bucket of the tries histogram (/stats/tries): countdowns recorded at that try number, and how
+ * many of them formed an alliance. One bucket per try number seen in the data, sorted ascending;
+ * folding the long tail into a final "N+" band is the chart's job.
+ */
+export interface TryCount {
+  tryNumber: number;
+  attempts: number;
+  converged: number;
+}
+
 export async function fetchAllianceStats(
   ownerRegion?: string,
   serverRegion?: string,
@@ -64,4 +75,21 @@ export async function fetchRegions(): Promise<RegionCount[]> {
     null,
   ).get();
   return response.data as RegionCount[];
+}
+
+/** Same shape as {@link fetchRegions}, but counting the country the biggest group landed on. */
+export async function fetchServerRegions(): Promise<RegionCount[]> {
+  const response: AxiosResponse = await new HTTPAxios(
+    "stats/regions?dimension=server",
+    null,
+  ).get();
+  return response.data as RegionCount[];
+}
+
+export async function fetchTriesHistogram(): Promise<TryCount[]> {
+  const response: AxiosResponse = await new HTTPAxios(
+    "stats/tries",
+    null,
+  ).get();
+  return response.data as TryCount[];
 }

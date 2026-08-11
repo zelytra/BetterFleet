@@ -340,6 +340,17 @@
       "note": "Reunir dos barcos es más fácil cuantos más estén buscando, y una tripulación grande suele querer cinco, no dos. Cada franja se puntúa según lo que realmente podía alcanzar.",
       "band": "Jugadores buscando",
       "attempts": "Intentos"
+    },
+    "triesChart": {
+      "title": "En qué intento se forma la alianza",
+      "note": "De todas las cuentas atrás que acabaron en alianza, la parte que se logró en cada intento. Todas las regiones, todo el período.",
+      "firstTry": "{percent} al primer intento",
+      "tryLabel": "Intento {n}",
+      "tooltip": "{count} alianzas ({percent})"
+    },
+    "serverRegions": {
+      "title": "Dónde acaban las alianzas",
+      "note": "País del servidor que reunió al grupo más grande: los centros de datos del juego, no el lugar donde viven los jugadores."
     }
   },
   "loading": {
@@ -351,6 +362,13 @@
     "note": "Descargas de la aplicación iniciadas desde este sitio, contadas por día (UTC).",
     "total": "{count} en total",
     "tooltipCount": "{count} descargas"
+  },
+  "activity": {
+    "title": "Actividad diaria",
+    "note": "Sesiones de flota abiertas e intentos de «Zarpar», contados por día (UTC).",
+    "sessions": "Sesiones abiertas",
+    "tries": "Intentos de zarpar",
+    "perSession": "≈ {count} intentos por sesión"
   },
   "downloadPage": {
     "title": "Descargar BetterFleet",

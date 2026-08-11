@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Read-only, anonymous aggregations over {@link AllianceAttempt} for the public statistics
@@ -77,6 +78,13 @@ public class AllianceStatsEndpoints {
 
     /** Owner-region attempt counts for the globe. */
     public record RegionCount(String region, long attempts) {
+    }
+
+    /**
+     * One try-number bucket of the tries histogram: how many countdowns were recorded at that try,
+     * and how many of them formed an alliance (today's rule, like everything else here).
+     */
+    public record TryCount(int tryNumber, long attempts, long converged) {
     }
 
     @GET
@@ -183,18 +191,48 @@ public class AllianceStatsEndpoints {
         return out;
     }
 
+    /**
+     * Attempt counts by country, busiest first. {@code dimension=server} counts the country of the
+     * server the biggest group ended up on (the game's datacenters); anything else counts the
+     * session owner's country, which is what the globe has always shown. Rows with no resolved
+     * country are skipped rather than shown as a fake "unknown" region.
+     */
     @GET
     @Path("/regions")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response regions() {
+    public Response regions(@QueryParam("dimension") String dimension) {
+        boolean byServer = "server".equalsIgnoreCase(dimension);
         Map<String, Long> counts = new LinkedHashMap<>();
         for (AllianceAttempt a : repository.listAll()) {
-            if (a.ownerRegion == null || a.ownerRegion.isBlank()) continue;
-            counts.merge(a.ownerRegion.toLowerCase(), 1L, Long::sum);
+            String region = byServer ? a.serverRegion : a.ownerRegion;
+            if (region == null || region.isBlank()) continue;
+            counts.merge(region.toLowerCase(), 1L, Long::sum);
         }
         List<RegionCount> out = new ArrayList<>();
         counts.forEach((region, n) -> out.add(new RegionCount(region, n)));
         out.sort((x, y) -> Long.compare(y.attempts(), x.attempts()));
+        return Response.ok(out).build();
+    }
+
+    /**
+     * The tries histogram: for each recorded try number, how many countdowns happened on that try
+     * and how many of them formed an alliance. One bucket per try number seen in the data, sorted
+     * ascending; the website folds the long tail into a final band itself. Deliberately unfiltered:
+     * it backs a global "which try finally clicks" chart, not the region-filtered dashboard.
+     */
+    @GET
+    @Path("/tries")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response tries() {
+        Map<Integer, long[]> byTry = new TreeMap<>();
+        for (AllianceAttempt a : repository.listAll()) {
+            if (a.tryNumber < 1) continue; // pre-#673 malformed rows carry no usable try number
+            long[] bucket = byTry.computeIfAbsent(a.tryNumber, k -> new long[2]);
+            bucket[0]++;
+            if (converged(a)) bucket[1]++;
+        }
+        List<TryCount> out = new ArrayList<>();
+        byTry.forEach((tryNumber, bucket) -> out.add(new TryCount(tryNumber, bucket[0], bucket[1])));
         return Response.ok(out).build();
     }
 

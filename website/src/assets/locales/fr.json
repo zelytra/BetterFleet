@@ -28,6 +28,17 @@
       "note": "Réunir deux bateaux est d'autant plus facile qu'il y a de chercheurs, et un grand équipage en vise souvent cinq, pas deux. Chaque tranche est notée sur ce qu'elle pouvait réellement atteindre.",
       "band": "Joueurs en recherche",
       "attempts": "Tentatives"
+    },
+    "triesChart": {
+      "title": "À quel essai l'alliance se forme",
+      "note": "Parmi les comptes à rebours qui ont abouti à une alliance, la part conclue à chaque essai. Toutes régions, toute période.",
+      "firstTry": "{percent} dès le premier essai",
+      "tryLabel": "Essai {n}",
+      "tooltip": "{count} alliances ({percent})"
+    },
+    "serverRegions": {
+      "title": "Où les alliances accostent",
+      "note": "Pays du serveur qui a réuni le plus grand groupe — les centres de données du jeu, pas le domicile des joueurs."
     }
   },
   "button": {
@@ -351,6 +362,13 @@
     "note": "Téléchargements de l'application lancés depuis ce site, comptés par jour (UTC).",
     "total": "{count} au total",
     "tooltipCount": "{count} téléchargements"
+  },
+  "activity": {
+    "title": "Activité quotidienne",
+    "note": "Sessions de flotte ouvertes et essais de \"Lever l'ancre\", comptés par jour (UTC).",
+    "sessions": "Sessions ouvertes",
+    "tries": "Levers d'ancre",
+    "perSession": "≈ {count} levers d'ancre par session"
   },
   "downloadPage": {
     "title": "Télécharger BetterFleet",

@@ -340,6 +340,17 @@
       "note": "Dois navios se encontrarem é mais fácil quanto mais barcos estão buscando, e uma tripulação grande geralmente quer cinco deles, não dois. Cada faixa é avaliada com base no que ela realmente poderia alcançar.",
       "band": "Jogadores buscando",
       "attempts": "Tentativas"
+    },
+    "triesChart": {
+      "title": "Em qual tentativa a aliança se forma",
+      "note": "De todas as contagens regressivas que terminaram em aliança, a parcela que deu certo em cada tentativa. Todas as regiões, todo o período.",
+      "firstTry": "{percent} na primeira tentativa",
+      "tryLabel": "Tentativa {n}",
+      "tooltip": "{count} alianças ({percent})"
+    },
+    "serverRegions": {
+      "title": "Onde as alianças se formam",
+      "note": "País do servidor que reuniu o maior grupo — os data centers do jogo, não onde os jogadores moram."
     }
   },
   "loading": {
@@ -351,6 +362,13 @@
     "note": "Downloads do aplicativo iniciados neste site, contados por dia (UTC).",
     "total": "{count} no total",
     "tooltipCount": "{count} downloads"
+  },
+  "activity": {
+    "title": "Atividade diária",
+    "note": "Sessões de frota abertas e tentativas de \"Zarpar\", contadas por dia (UTC).",
+    "sessions": "Sessões abertas",
+    "tries": "Tentativas de zarpar",
+    "perSession": "≈ {count} tentativas por sessão"
   },
   "downloadPage": {
     "title": "Baixar o BetterFleet",

@@ -340,6 +340,17 @@
       "note": "Spotkanie dwóch statków jest tym łatwiejsze, im więcej łodzi szuka, a duża załoga zwykle celuje w pięć, a nie dwie. Każdy przedział jest oceniany względem tego, co faktycznie mógł osiągnąć.",
       "band": "Szukający gracze",
       "attempts": "Próby"
+    },
+    "triesChart": {
+      "title": "Za którą próbą powstaje sojusz",
+      "note": "Ze wszystkich odliczań zakończonych sojuszem — odsetek udanych przy każdej próbie. Wszystkie regiony, cały okres.",
+      "firstTry": "{percent} za pierwszą próbą",
+      "tryLabel": "Próba {n}",
+      "tooltip": "Sojuszy: {count} ({percent})"
+    },
+    "serverRegions": {
+      "title": "Gdzie lądują sojusze",
+      "note": "Kraj serwera, na którym zebrała się największa grupa — centra danych gry, a nie miejsce zamieszkania graczy."
     }
   },
   "loading": {
@@ -351,6 +362,13 @@
     "note": "Pobrania aplikacji rozpoczęte z tej strony, liczone dziennie (UTC).",
     "total": "Łącznie: {count}",
     "tooltipCount": "Pobrań: {count}"
+  },
+  "activity": {
+    "title": "Dzienna aktywność",
+    "note": "Otwarte sesje floty i próby „Postaw żagle”, liczone dziennie (UTC).",
+    "sessions": "Otwarte sesje",
+    "tries": "Próby „Postaw żagle”",
+    "perSession": "Prób na sesję: ≈ {count}"
   },
   "downloadPage": {
     "title": "Pobierz BetterFleet",
