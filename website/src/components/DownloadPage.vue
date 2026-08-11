@@ -853,7 +853,11 @@ onUnmounted(() => clearTimeout(copyTimer));
   display: grid;
   // Same clamp as .columns, for the same reason: a tile's content must never widen its track.
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
+  // Every row the same height (the tallest tile sets it), and items stretch to fill it: three
+  // tiles whose descriptions wrap differently still land as equal boxes, the lone one on the
+  // second row included. The old `align-items: start` predates the terminal block, when a tile
+  // stacked its own command strip and equal heights were undesirable.
+  grid-auto-rows: 1fr;
   gap: 10px;
 }
 
