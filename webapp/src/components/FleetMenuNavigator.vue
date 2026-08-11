@@ -35,7 +35,9 @@ import router from "@/router";
 import { HTTPAxios } from "@/objects/utils/HTTPAxios.ts";
 
 const tokenRefresher = setInterval(() => {
-  HTTPAxios.updateToken();
+  // updateToken never rejects (a failed refresh clears the bearer and alerts once, #803), so this
+  // fire-and-forget can no longer leak an unhandled rejection every second.
+  void HTTPAxios.updateToken();
 }, 1000);
 const gameStatusRefresh: number = setInterval(() => {
   invoke("get_game_object").then((response: any) => {
