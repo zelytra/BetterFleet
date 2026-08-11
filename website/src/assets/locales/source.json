@@ -340,6 +340,17 @@
       "note": "Two ships meeting is easier the more boats are searching, and a big crew is usually after five of them, not two. Each band is scored against what it could actually reach.",
       "band": "Players searching",
       "attempts": "Attempts"
+    },
+    "triesChart": {
+      "title": "Which try forms the alliance",
+      "note": "Of every countdown that ended with an alliance, the share that clicked on each try. All regions, all time.",
+      "firstTry": "{percent} on the first try",
+      "tryLabel": "Try {n}",
+      "tooltip": "{count} alliances ({percent})"
+    },
+    "serverRegions": {
+      "title": "Where alliances land",
+      "note": "Country of the server that hosted the biggest group — the game's datacenters, not where players live."
     }
   },
   "loading": {
@@ -350,14 +361,21 @@
     "title": "Downloads",
     "note": "App downloads started from this site, counted per day (UTC).",
     "total": "{count} total",
-    "tooltipCount": "{count} downloads",
-    "range": {
-      "label": "Time range",
-      "all": "All time",
-      "year": "Last 12 months",
-      "quarter": "Last 3 months",
-      "month": "Last month"
-    }
+    "tooltipCount": "{count} downloads"
+  },
+  "chartRange": {
+    "label": "Time range",
+    "all": "All time",
+    "year": "Last 12 months",
+    "quarter": "Last 3 months",
+    "month": "Last month"
+  },
+  "activity": {
+    "title": "Daily activity",
+    "note": "Fleet sessions opened and \"Set sail\" tries, counted per day (UTC).",
+    "sessions": "Sessions opened",
+    "tries": "Set sail tries",
+    "perSession": "≈ {count} tries per session"
   },
   "downloadPage": {
     "title": "Download BetterFleet",

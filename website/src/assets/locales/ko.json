@@ -340,6 +340,17 @@
       "note": "탐색하는 배가 많을수록 두 배가 만나기는 더 쉬워지며, 큰 선원단은 보통 둘이 아니라 다섯 척을 노립니다. 각 구간은 실제로 도달할 수 있었던 목표에 견주어 평가됩니다.",
       "band": "탐색 중인 플레이어",
       "attempts": "시도"
+    },
+    "triesChart": {
+      "title": "몇 번째 시도에서 동맹이 맺어질까",
+      "note": "동맹으로 끝난 모든 카운트다운 중 각 시도에서 성사된 비율입니다. 모든 지역, 전체 기간 기준입니다.",
+      "firstTry": "{percent}는 첫 시도에 성사",
+      "tryLabel": "시도 {n}",
+      "tooltip": "동맹 {count}건 ({percent})"
+    },
+    "serverRegions": {
+      "title": "동맹은 어디에 모일까",
+      "note": "가장 큰 그룹이 모인 서버의 국가입니다. 게임 데이터 센터의 위치이며, 플레이어의 거주지가 아닙니다."
     }
   },
   "loading": {
@@ -350,14 +361,21 @@
     "title": "다운로드",
     "note": "이 사이트에서 시작된 앱 다운로드 수를 일 단위로 집계합니다 (UTC).",
     "total": "총 {count}회",
-    "tooltipCount": "다운로드 {count}회",
-    "range": {
-      "label": "기간",
-      "all": "전체 기간",
-      "year": "최근 12개월",
-      "quarter": "최근 3개월",
-      "month": "최근 1개월"
-    }
+    "tooltipCount": "다운로드 {count}회"
+  },
+  "chartRange": {
+    "label": "기간",
+    "all": "전체 기간",
+    "year": "최근 12개월",
+    "quarter": "최근 3개월",
+    "month": "최근 1개월"
+  },
+  "activity": {
+    "title": "일일 활동",
+    "note": "일 단위로 집계한 새로 열린 함대 세션 수와 \"출항\" 시도 횟수입니다 (UTC).",
+    "sessions": "열린 세션",
+    "tries": "출항 시도",
+    "perSession": "세션당 약 {count}회 시도"
   },
   "downloadPage": {
     "title": "BetterFleet 다운로드",

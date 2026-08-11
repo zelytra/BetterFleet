@@ -340,6 +340,17 @@
       "note": "Far incontrare due navi è tanto più facile quante più ne cercano, e una ciurma numerosa ne vuole di solito cinque, non due. Ogni fascia è valutata su ciò che poteva davvero raggiungere.",
       "band": "Giocatori in ricerca",
       "attempts": "Tentativi"
+    },
+    "triesChart": {
+      "title": "A quale tentativo nasce l'alleanza",
+      "note": "Di tutti i conti alla rovescia finiti con un'alleanza, la quota riuscita a ogni tentativo. Tutte le regioni, tutto il periodo.",
+      "firstTry": "{percent} al primo tentativo",
+      "tryLabel": "Tentativo {n}",
+      "tooltip": "{count} alleanze ({percent})"
+    },
+    "serverRegions": {
+      "title": "Dove approdano le alleanze",
+      "note": "Paese del server che ha riunito il gruppo più numeroso — i data center del gioco, non dove vivono i giocatori."
     }
   },
   "loading": {
@@ -350,14 +361,21 @@
     "title": "Download",
     "note": "Download dell'app avviati da questo sito, contati per giorno (UTC).",
     "total": "{count} in totale",
-    "tooltipCount": "{count} download",
-    "range": {
-      "label": "Periodo",
-      "all": "Dall'inizio",
-      "year": "Ultimi 12 mesi",
-      "quarter": "Ultimi 3 mesi",
-      "month": "Ultimo mese"
-    }
+    "tooltipCount": "{count} download"
+  },
+  "chartRange": {
+    "label": "Periodo",
+    "all": "Dall'inizio",
+    "year": "Ultimi 12 mesi",
+    "quarter": "Ultimi 3 mesi",
+    "month": "Ultimo mese"
+  },
+  "activity": {
+    "title": "Attività giornaliera",
+    "note": "Sessioni di flotta aperte e tentativi di «Salpa», contati per giorno (UTC).",
+    "sessions": "Sessioni aperte",
+    "tries": "Tentativi di salpare",
+    "perSession": "≈ {count} tentativi per sessione"
   },
   "downloadPage": {
     "title": "Scarica BetterFleet",
