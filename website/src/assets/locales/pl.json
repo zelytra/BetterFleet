@@ -410,6 +410,11 @@
       "copied": "Skopiowano!",
       "copyFailed": "Kopiowanie nie powiodło się — zaznacz i skopiuj",
       "copyCommand": "Skopiuj polecenie instalacji",
+      "terminal": {
+        "title": "Albo zainstaluj z terminala",
+        "desc": "Jedno polecenie pobiera najnowszą wersję i ją instaluje.",
+        "managers": "Wybierz swój menedżer pakietów"
+      },
       "updates": "Aktualizacje na Linuksie są ręczne — nie ma automatycznych aktualizacji. Aby zaktualizować, pobierz najnowszy pakiet z tej strony i zainstaluj go na obecnej wersji."
     }
   }

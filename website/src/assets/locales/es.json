@@ -410,6 +410,11 @@
       "copied": "¡Copiado!",
       "copyFailed": "Error al copiar: selecciona y copia",
       "copyCommand": "Copiar el comando de instalación",
+      "terminal": {
+        "title": "O instala desde tu terminal",
+        "desc": "Un solo comando descarga la última versión y la instala.",
+        "managers": "Elige tu gestor de paquetes"
+      },
       "updates": "En Linux las actualizaciones son manuales: no hay actualización automática. Para actualizar, descarga el último paquete de esta página y reinstálalo sobre tu versión actual."
     }
   }

@@ -96,10 +96,6 @@ interface DownloadItem {
   // A direct GitHub asset download; undefined => the release doesn't carry this format yet.
   url?: string;
   size?: number;
-  // The command to run *after* downloading this package (e.g. `sudo pacman -U ~/Downloads/…`), built
-  // from the resolved asset's real filename. Undefined when this format has no such step, or isn't
-  // published yet - so it renders only alongside a real, present download.
-  command?: string;
 }
 
 const windowsRows = computed<DownloadItem[]>(() => {
@@ -128,12 +124,6 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.linux.deb.desc"),
       url: deb.url,
       size: deb.size,
-      // Install the freshly downloaded .deb. `~/Downloads/` targets where the browser saved it (a
-      // bare `./name` would assume the terminal is already sitting in the download folder), and the
-      // leading path makes apt treat it as a file rather than a repo name.
-      command: deb.name
-        ? `sudo apt install ~/Downloads/${deb.name}`
-        : undefined,
     },
     {
       id: "rpm",
@@ -141,10 +131,6 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.linux.rpm.desc"),
       url: rpm.url,
       size: rpm.size,
-      // Install the downloaded .rpm with dnf, giving rpm the same copy-and-run parity as .deb/Arch.
-      command: rpm.name
-        ? `sudo dnf install ~/Downloads/${rpm.name}`
-        : undefined,
     },
     {
       id: "arch",
@@ -152,13 +138,71 @@ const linuxTiles = computed<DownloadItem[]>(() => {
       desc: t("downloadPage.linux.arch.desc"),
       url: arch.url,
       size: arch.size,
-      // Install the downloaded package file directly with pacman, from the browser's download folder.
-      command: arch.name
-        ? `sudo pacman -U ~/Downloads/${arch.name}`
-        : undefined,
     },
   ];
 });
+
+interface InstallCommand {
+  id: string;
+  // The package manager the command drives, shown on its selector chip. A tool's proper name (apt,
+  // dnf, pacman), so it is never translated.
+  manager: string;
+  command: string;
+}
+
+// Wraps a value in single quotes for a POSIX shell, closing/escaping/reopening around any embedded
+// quote. Asset names and URLs come from release metadata - external input - and today they are plain
+// enough not to need this, but quoting rigorously means a weird character in some future asset name
+// ends up inside a string, not spliced into the visitor's shell.
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, "'\\''")}'`;
+}
+
+// The terminal block's one-paste commands, one per package manager: each downloads the package
+// straight from the release URL *and* installs it, assuming nothing about a file already sitting in
+// some download folder. dnf and pacman both install from a URL directly; apt only takes a local
+// path, so the .deb goes through curl into /tmp (present and writable on every distro, cleaned by
+// the OS) under the asset's real name first. Built only from assets the release actually carries, so
+// a listed command always points at a real file - a format that isn't published simply has no chip.
+const installCommands = computed<InstallCommand[]>(() => {
+  const commands: InstallCommand[] = [];
+  const deb = resolve(".deb");
+  if (deb.url && deb.name) {
+    const file = shellQuote(`/tmp/${deb.name}`);
+    commands.push({
+      id: "deb",
+      manager: "apt",
+      command: `curl -fL ${shellQuote(deb.url)} -o ${file} && sudo apt install ${file}`,
+    });
+  }
+  const rpm = resolve(".rpm");
+  if (rpm.url) {
+    commands.push({
+      id: "rpm",
+      manager: "dnf",
+      command: `sudo dnf install ${shellQuote(rpm.url)}`,
+    });
+  }
+  const arch = resolve(".pkg.tar.zst");
+  if (arch.url) {
+    commands.push({
+      id: "arch",
+      manager: "pacman",
+      command: `sudo pacman -U ${shellQuote(arch.url)}`,
+    });
+  }
+  return commands;
+});
+
+// Which package manager's command the terminal block shows. Starts on apt/.deb - the most common
+// desktop family - and `activeCommand` falls back to the first command the release does carry, so a
+// release missing the .deb still shows something rather than an empty block.
+const selectedCommand = ref("deb");
+const activeCommand = computed(
+  () =>
+    installCommands.value.find((c) => c.id === selectedCommand.value) ??
+    installCommands.value[0],
+);
 
 interface Recommended {
   platform: Platform;
@@ -195,9 +239,10 @@ const leadText = computed(() => {
   return t("downloadPage.leadUnknown");
 });
 
-// Per-package install commands (the .deb, .rpm and Arch tiles): each tile carries its own `command`,
-// copied to the clipboard on click. `copyResult` records which tile was last acted on and whether the
-// write succeeded, driving the brief acknowledgement on that tile and the single live region.
+// Copy-on-click for the terminal block. `copyResult` records which format's command was last copied
+// and whether the write succeeded, driving the brief acknowledgement on the block and the single
+// live region; keying it by format id means switching to another chip naturally resets the label to
+// "Copy" without a timer race.
 const copyResult = ref<{ id: string; ok: boolean } | null>(null);
 let copyTimer: number | undefined;
 
@@ -228,8 +273,8 @@ const copyAnnouncement = computed(() => {
     : t("downloadPage.linux.copyFailed");
 });
 
-// The visible label on a tile's command strip: "Copy", then "Copied!" / "Copy failed…" for the tile
-// just used.
+// The visible label on the terminal block: "Copy", then "Copied!" / "Copy failed…" while the result
+// for the format currently shown lingers.
 function commandLabel(id: string): string {
   if (copyResult.value?.id === id) {
     return copyResult.value.ok
@@ -450,90 +495,121 @@ onUnmounted(() => clearTimeout(copyTimer));
           </header>
           <div class="tiles">
             <template v-for="tile in linuxTiles" :key="tile.id">
-              <div class="tile-cell">
-                <a
-                  v-if="tile.url"
-                  class="dl tile"
-                  :href="tile.url"
-                  :aria-label="downloadAria(tile.label)"
-                  @click="incrementDownload"
-                >
-                  <span class="dl-text">
-                    <span class="dl-label">{{ tile.label }}</span>
-                    <span class="dl-desc">{{ tile.desc }}</span>
-                  </span>
-                  <span class="dl-meta">
-                    <span v-if="sizeLabel(tile.size)" class="dl-size">{{
-                      sizeLabel(tile.size)
-                    }}</span>
-                    <svg
-                      class="dl-icon"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8"
-                        stroke="currentColor"
-                        stroke-width="1.6"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M4.5 15.5h11"
-                        stroke="currentColor"
-                        stroke-width="1.6"
-                        stroke-linecap="round"
-                      />
-                    </svg>
-                  </span>
-                </a>
-                <div
-                  v-else-if="loading"
-                  class="dl tile loading"
-                  role="status"
-                  :aria-label="t('downloadPage.loading')"
-                  aria-busy="true"
-                >
-                  <span class="dl-text">
-                    <span class="dl-label">{{ tile.label }}</span>
-                    <span class="dl-desc">{{ tile.desc }}</span>
-                  </span>
-                  <span class="dl-meta">
-                    <span
-                      v-if="showSpinner"
-                      class="spinner"
-                      aria-hidden="true"
-                    ></span>
-                  </span>
-                </div>
-                <div v-else class="dl tile soon">
-                  <span class="dl-text">
-                    <span class="dl-label">{{ tile.label }}</span>
-                    <span class="dl-desc">{{ tile.desc }}</span>
-                  </span>
-                  <span class="badge">{{ t("downloadPage.comingSoon") }}</span>
-                </div>
-
-                <!-- The command to run after downloading this package. Rendered only when the release
-                     actually carries the file, so its name (and the command) are real; click anywhere on
-                     the strip to copy it, or select and copy it by hand if the clipboard is blocked. -->
-                <button
-                  v-if="tile.url && tile.command"
-                  type="button"
-                  class="tile-cmd"
-                  :class="{ 'copy-failed': copyFailedOn(tile.id) }"
-                  :aria-label="t('downloadPage.linux.copyCommand')"
-                  @click="copyCommand(tile.id, tile.command)"
-                >
-                  <code>{{ tile.command }}</code>
-                  <span class="tile-cmd-copy" aria-hidden="true">{{
-                    commandLabel(tile.id)
+              <a
+                v-if="tile.url"
+                class="dl tile"
+                :href="tile.url"
+                :aria-label="downloadAria(tile.label)"
+                @click="incrementDownload"
+              >
+                <span class="dl-text">
+                  <span class="dl-label">{{ tile.label }}</span>
+                  <span class="dl-desc">{{ tile.desc }}</span>
+                </span>
+                <span class="dl-meta">
+                  <span v-if="sizeLabel(tile.size)" class="dl-size">{{
+                    sizeLabel(tile.size)
                   }}</span>
-                </button>
+                  <svg
+                    class="dl-icon"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 3v9m0 0 3.2-3.2M10 12 6.8 8.8"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M4.5 15.5h11"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </span>
+              </a>
+              <div
+                v-else-if="loading"
+                class="dl tile loading"
+                role="status"
+                :aria-label="t('downloadPage.loading')"
+                aria-busy="true"
+              >
+                <span class="dl-text">
+                  <span class="dl-label">{{ tile.label }}</span>
+                  <span class="dl-desc">{{ tile.desc }}</span>
+                </span>
+                <span class="dl-meta">
+                  <span
+                    v-if="showSpinner"
+                    class="spinner"
+                    aria-hidden="true"
+                  ></span>
+                </span>
+              </div>
+              <div v-else class="dl tile soon">
+                <span class="dl-text">
+                  <span class="dl-label">{{ tile.label }}</span>
+                  <span class="dl-desc">{{ tile.desc }}</span>
+                </span>
+                <span class="badge">{{ t("downloadPage.comingSoon") }}</span>
               </div>
             </template>
+          </div>
+
+          <!-- The terminal alternative to the tiles: one full-width command that downloads the package
+               from the release URL and installs it, switched between package managers by the chips.
+               Rendered only once the release has resolved and actually carries a Linux package, so the
+               command always points at a real file. Click anywhere on the command to copy it, or select
+               and copy it by hand if the clipboard is blocked. -->
+          <div v-if="activeCommand" class="terminal">
+            <div class="terminal-head">
+              <div class="terminal-text">
+                <p class="terminal-title">
+                  {{ t("downloadPage.linux.terminal.title") }}
+                </p>
+                <p class="terminal-desc">
+                  {{ t("downloadPage.linux.terminal.desc") }}
+                </p>
+              </div>
+              <div
+                class="terminal-tabs"
+                role="group"
+                :aria-label="t('downloadPage.linux.terminal.managers')"
+              >
+                <button
+                  v-for="cmd in installCommands"
+                  :key="cmd.id"
+                  type="button"
+                  class="terminal-tab"
+                  :class="{ active: cmd.id === activeCommand.id }"
+                  :aria-pressed="cmd.id === activeCommand.id"
+                  @click="selectedCommand = cmd.id"
+                >
+                  {{ cmd.manager }}
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="terminal-cmd"
+              :class="{ 'copy-failed': copyFailedOn(activeCommand.id) }"
+              :aria-label="t('downloadPage.linux.copyCommand')"
+              @click="copyCommand(activeCommand.id, activeCommand.command)"
+            >
+              <code
+                ><span class="prompt" aria-hidden="true">$</span
+                >{{ activeCommand.command }}</code
+              >
+              <span class="terminal-copy" aria-hidden="true">{{
+                commandLabel(activeCommand.id)
+              }}</span>
+            </button>
           </div>
           <p class="update-note">
             <svg
@@ -727,7 +803,10 @@ onUnmounted(() => clearTimeout(copyTimer));
 
 .columns {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  // minmax(0, 1fr), not a bare 1fr: a bare track's min-size is its content, so one long unbreakable
+  // line anywhere inside a card (a nowrap command, a filename) would blow its column open and push
+  // the page sideways. Clamping the minimum keeps both columns exactly half the row no matter what.
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
 
@@ -772,8 +851,13 @@ onUnmounted(() => clearTimeout(copyTimer));
 
 .tiles {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: start;
+  // Same clamp as .columns, for the same reason: a tile's content must never widen its track.
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  // Every row the same height (the tallest tile sets it), and items stretch to fill it: three
+  // tiles whose descriptions wrap differently still land as equal boxes, the lone one on the
+  // second row included. The old `align-items: start` predates the terminal block, when a tile
+  // stacked its own command strip and equal heights were undesirable.
+  grid-auto-rows: 1fr;
   gap: 10px;
 }
 
@@ -915,40 +999,102 @@ onUnmounted(() => clearTimeout(copyTimer));
   }
 }
 
-// Each Linux tile is a small vertical stack: the download tile, and - for the packages that ship one -
-// a copyable install command beneath it. `align-items: start` on the grid keeps a stack without a
-// command from stretching to a taller neighbour's height, so no tile grows blank space.
-.tile-cell {
+// The one-paste install block under the Linux tiles: a chip row picking the package manager, and the
+// matching command in a full-width monospace panel. Full-width because the commands now carry the
+// whole release URL - inside a ~200px tile they could only ever scroll; across the card they wrap
+// into a few readable lines, and a visitor can read the entire command before pasting it.
+.terminal {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-width: 0;
+  gap: 10px;
+
+  .terminal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 14px;
+    flex-wrap: wrap;
+  }
+
+  .terminal-text {
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+
+  // Mirrors a tile's own type scale (.dl-label / .dl-desc), so the block reads as a sibling of the
+  // downloads above it, not a new section.
+  .terminal-title {
+    font-size: 15px;
+    color: var(--primary-text);
+  }
+
+  .terminal-desc {
+    font-size: 12.5px;
+    color: var(--secondary-text);
+    line-height: 1.35;
+    margin-top: 2px;
+  }
+
+  .terminal-tabs {
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 4px;
+    padding: 3px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .terminal-tab {
+    all: unset;
+    cursor: pointer;
+    // The chips name the tools themselves (apt, dnf, pacman), so they wear the code face.
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: var(--secondary-text);
+    padding: 4px 10px;
+    border-radius: 6px;
+
+    &:hover {
+      color: var(--primary-text);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 1px;
+    }
+
+    &.active {
+      background: rgba(50, 212, 153, 0.12);
+      color: var(--primary);
+    }
+  }
 }
 
-// The command to paste after downloading a native package (.deb, .rpm, Arch .pkg.tar.zst): a
-// copy-on-click monospace strip, recessed against the darker static background so it reads as a code
-// line rather than a second download. Long commands scroll inside it instead of widening the tile.
-.tile-cmd {
+// The command itself: copy-on-click, recessed against the darker static background so it reads as a
+// terminal line rather than another download. Long commands wrap - `anywhere` may break mid-URL, but
+// every character stays visible at every width, and what's copied is the untouched string.
+.terminal-cmd {
   all: unset;
-  // Opt this strip back into text selection: style.scss sets `user-select: none` on everything, which
-  // would otherwise make the promised "select and copy it by hand" clipboard fallback impossible.
+  // Opt the command back into text selection: style.scss sets `user-select: none` on everything,
+  // which would otherwise make the promised "select and copy it by hand" clipboard fallback
+  // impossible.
   user-select: text;
   box-sizing: border-box;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: 8px;
   background: var(--primary-background-static);
   border: 1px solid rgba(50, 212, 153, 0.25);
-  overflow-x: auto;
 
   &:hover {
     border-color: rgba(50, 212, 153, 0.5);
 
-    .tile-cmd-copy {
+    .terminal-copy {
       color: var(--primary);
     }
   }
@@ -958,25 +1104,37 @@ onUnmounted(() => clearTimeout(copyTimer));
     outline-offset: 2px;
   }
 
-  // Clipboard write failed: turn the strip amber and colour its label so the "Copy failed - select and
-  // copy" swap reads as a state change, not just different words.
+  // Clipboard write failed: turn the panel amber and colour its label so the "Copy failed - select
+  // and copy" swap reads as a state change, not just different words.
   &.copy-failed {
     border-color: rgba(255, 190, 92, 0.6);
 
-    .tile-cmd-copy {
+    .terminal-copy {
       color: var(--warning);
     }
   }
 
   code {
+    flex: 1 1 auto;
+    min-width: 0;
     font-family: "JetBrains Mono", monospace;
     font-size: 12.5px;
+    line-height: 1.6;
     color: var(--primary);
-    white-space: nowrap;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
     user-select: text;
   }
 
-  .tile-cmd-copy {
+  // Decorative prompt: aria-hidden in the markup and unselectable here, so neither a screen reader
+  // nor a hand-selected copy ever picks up a stray "$".
+  .prompt {
+    color: var(--secondary-text);
+    margin-right: 8px;
+    user-select: none;
+  }
+
+  .terminal-copy {
     flex: 0 0 auto;
     font-size: 11px;
     color: var(--secondary-text);
