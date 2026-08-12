@@ -44,7 +44,7 @@ const app = createApp(overlay ? OverlayView : App);
 app.use(i18n);
 
 if (!overlay) {
-  keycloakStore.init(window.location.origin);
+  keycloakStore.init();
   app.provide("alertProvider", alertProvider);
   app.directive("click-outside", {
     mounted(el, binding) {

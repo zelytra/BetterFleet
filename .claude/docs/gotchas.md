@@ -102,16 +102,17 @@ back into the problem.
 - **Login is a self-registered Keycloak account.** The realm also has a Microsoft/Xbox identity
   provider configured, but it has never worked, so don't treat it as the sign-in path or document it as
   one. Keycloak realm `Betterfleet`, OIDC client `application`.
-- **Linux can't sign in through the webview; it uses a loopback OAuth on a fixed port.** Keycloak
-  rejects the desktop webview's `tauri://localhost` redirect as a non-HTTP(S) scheme ("Redirection to
-  URL with a scheme that is not HTTP(S)"), so the Linux build signs in the RFC 8252 way
-  (`webapp/src/objects/stores/LinuxAuth.ts`): it opens the hosted Keycloak page in the **system
-  browser**, captures the code on a **loopback server at the fixed port 47823** (`REDIRECT_PORT`,
-  redirect `http://localhost:47823/callback`) with **PKCE**, and runs the token exchange from **Rust
-  via `@tauri-apps/plugin-http`** to avoid the webview's CORS against the custom scheme. The realm
-  must therefore register `http://localhost:47823/callback` as a valid redirect URI. Windows/macOS
-  keep in-webview `keycloak-js` (WebView2 serves `https://tauri.localhost`, which Keycloak accepts):
-  don't route them through the loopback, and don't drop the Linux redirect-URI registration.
+- **Sign-in is the system browser + a loopback OAuth on a fixed port — on every platform.** The app
+  signs in the RFC 8252 way (`webapp/src/objects/stores/BrowserAuth.ts`, formerly `LinuxAuth.ts`):
+  it opens the hosted Keycloak page in the **system browser**, captures the code on a **loopback
+  server at the fixed port 47823** (`REDIRECT_PORT`, redirect `http://localhost:47823/callback`)
+  with **PKCE**, and runs the token exchange from **Rust via `@tauri-apps/plugin-http`**. The
+  `offline_access` scope yields a refresh token that survives restarts and slides Keycloak's 30-day
+  offline-idle window on every refresh — that is what fixed the recurring "session dead after ~10h"
+  reports: the old in-webview `keycloak-js` login (Windows/macOS) had nothing outliving SSO Session
+  Max, and `keycloak-js` is now gone entirely (`keycloakStore.keycloak` is a plain token holder with
+  the same shape). The realm must register `http://localhost:47823/callback` as a valid redirect
+  URI; don't reintroduce a webview-hosted login.
 
 ## Release & packaging
 
