@@ -109,7 +109,7 @@
     "macro": {
       "check": "Lancement assisté",
       "description": "Clique automatiquement sur « Lever l'ancre » à la fin du décompte.",
-      "linuxUnavailable": "Indisponible sous Linux : Wayland bloque le clic automatique — cliquez vous-même sur « Lever l'ancre »."
+      "linuxUnavailable": "Indisponible sous Linux : Wayland bloque le clic automatique. Cliquez vous-même sur « Lever l'ancre »."
     },
     "overlay": {
       "hotkey": {
