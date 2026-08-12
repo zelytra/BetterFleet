@@ -8,6 +8,8 @@ export interface ReportInterface {
   reportingDate: string;
   // The client version the report came from; absent on rows predating the field.
   version?: string;
+  // The in-app username of the player who filed it; absent on old rows and anonymous reports.
+  username?: string;
 }
 
 // Renders a report's calendar date in the viewer's language. Formatting is pinned to UTC because

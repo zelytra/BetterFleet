@@ -1,5 +1,11 @@
 {
   "alert": {
+    "auth": {
+      "expired": {
+        "title": "会话已过期",
+        "content": "你的会话已过期——请重启应用或重新登录。"
+      }
+    },
     "alreadyConnected": {
       "content": "你已在另一个窗口或设备上加入了此会话。请先关闭它，然后重试。",
       "title": "已连接"

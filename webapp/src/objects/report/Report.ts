@@ -7,6 +7,8 @@ export interface ReportInterface {
   device: string;
   /** The app version the report was written from (VITE_VERSION), for triage. */
   version: string;
+  /** The player's in-app username; "" when not signed in. */
+  username: string;
 }
 
 // The bug-report message cap. The column is Postgres `text`, so this is only a client-side sanity

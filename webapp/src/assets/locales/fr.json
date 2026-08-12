@@ -1,5 +1,11 @@
 {
   "alert": {
+    "auth": {
+      "expired": {
+        "title": "Session expirée",
+        "content": "Votre session a expiré — redémarrez l'application ou reconnectez-vous."
+      }
+    },
     "alreadyConnected": {
       "content": "Tu es déjà dans cette session sur une autre fenêtre ou un autre appareil. Ferme-la, puis réessaie.",
       "title": "Déjà connecté"
@@ -91,11 +97,11 @@
   },
   "config": {
     "banner": {
-      "description": "La bannière que portent les sessions que tu héberges, dans le salon comme dans la liste.",
+      "description": "La bannière affichée par les sessions que vous hébergez, dans le salon comme dans la liste publique.",
       "pick": "Bannière {number}",
       "shuffle": {
         "check": "Bannière aléatoire",
-        "description": "Choisit une bannière différente à chaque session que tu héberges"
+        "description": "Choisit une bannière différente à chaque session que vous hébergez."
       }
     },
     "device": {
@@ -108,12 +114,12 @@
     },
     "macro": {
       "check": "Lancement assisté",
-      "description": "Clique automatiquement sur \"Lever l'ancre\" à la fin du décompte",
-      "linuxUnavailable": "Indisponible sous Linux : Wayland bloque le clic automatique, cliquez vous-même sur « Lever l'ancre »."
+      "description": "Clique automatiquement sur « Lever l'ancre » à la fin du décompte.",
+      "linuxUnavailable": "Indisponible sous Linux : Wayland bloque le clic automatique. Cliquez vous-même sur « Lever l'ancre »."
     },
     "overlay": {
       "hotkey": {
-        "hint": "Cliquez, puis pressez sur une combinaison de touche. Une seule touche ne fonctionne pas, un modificateur (Ctrl, Alt ou Shift) est nécessaire.",
+        "hint": "Cliquez, puis appuyez sur une combinaison de touches. Une touche seule ne suffit pas : il faut un modificateur (Ctrl, Alt ou Maj).",
         "invalid": "Ce raccourci ne peut pas être utilisé",
         "label": "Activer / désactiver le raccourci",
         "recording": "Appuyez sur une combinaison…",
@@ -135,11 +141,11 @@
     },
     "presence": {
       "check": "Présence Enrichie sur Discord",
-      "description": "Montrez votre session sur votre profil Discord - taille de lobby, nombre de personnes prêtes et le code des sessions publiques."
+      "description": "Affiche votre session sur votre profil Discord: taille du salon, joueurs prêts et, pour les sessions publiques, le code."
     },
     "recap": {
       "check": "Carte d'alliance formée",
-      "description": "Affiche une carte dans le salon quand ton équipage se regroupe sur un serveur, avec les essais, la taille de l'équipage et le temps mis."
+      "description": "Affiche une carte dans le salon quand votre équipage se regroupe sur un serveur, avec le nombre d'essais, la taille de l'équipage et le temps écoulé."
     },
     "savebar": {
       "cancel": "Annuler les modifications",
@@ -157,11 +163,11 @@
     },
     "stats": {
       "check": "Statistiques d'alliance anonymes",
-      "description": "Partagez les résultats anonymes de votre session (succès, régions, jamais qui vous êtes) à la page publique des statistiques."
+      "description": "Partage les résultats anonymes de vos sessions (réussite, régions — jamais votre identité) sur la page publique des statistiques."
     },
     "statsHint": {
-      "check": "Best-time hint",
-      "description": "Suggest the hours when alliances form most often, drawn from the anonymous statistics and shown in your local time."
+      "check": "Suggestion du meilleur créneau",
+      "description": "Suggère les heures où les alliances se forment le plus souvent, d'après les statistiques anonymes et dans votre fuseau horaire."
     },
     "subtitle": "Options de préférence",
     "title": "Paramètres"
@@ -451,8 +457,8 @@
     },
     "statsHint": {
       "dismiss": "Cacher",
-      "text": "Meilleure fenêtre : {range} ({best}% des alliances réussissent - actuellement {now}%)",
-      "textNoNow": "Meilleure fenêtre : {range} ({best}% des alliances réussissent)"
+      "text": "Meilleure fenêtre : {range} ({best} % des alliances réussissent. En ce moment : {now} %)",
+      "textNoNow": "Meilleure fenêtre : {range} ({best} % des alliances réussissent)"
     },
     "status": {
       "countdown": "Lancement dans",

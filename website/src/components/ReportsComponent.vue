@@ -16,7 +16,8 @@
         (index + 1) +
         ' | ' +
         formatReportDate(report.reportingDate, locale) +
-        (report.version ? ' | v' + report.version : '')
+        (report.version ? ' | v' + report.version : '') +
+        (report.username ? ' | ' + report.username : '')
       "
     >
       <div class="content-wrapper">

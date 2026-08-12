@@ -1,5 +1,11 @@
 {
   "alert": {
+    "auth": {
+      "expired": {
+        "title": "Sessione scaduta",
+        "content": "La tua sessione è scaduta: riavvia l'app o accedi di nuovo."
+      }
+    },
     "alreadyConnected": {
       "content": "Sei già in questa sessione su un'altra finestra o dispositivo. Chiudila, poi riprova.",
       "title": "Già connesso"

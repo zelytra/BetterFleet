@@ -1,5 +1,11 @@
 {
   "alert": {
+    "auth": {
+      "expired": {
+        "title": "Sesja wygasła",
+        "content": "Twoja sesja wygasła — uruchom aplikację ponownie lub zaloguj się jeszcze raz."
+      }
+    },
     "alreadyConnected": {
       "content": "Jesteś już w tej sesji w innym oknie lub na innym urządzeniu. Zamknij ją i spróbuj ponownie.",
       "title": "Już połączono"

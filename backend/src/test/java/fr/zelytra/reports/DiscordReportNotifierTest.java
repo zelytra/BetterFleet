@@ -91,6 +91,35 @@ public class DiscordReportNotifierTest {
     }
 
     @Test
+    public void payload_carriesThePlayerUsernameNeutralizedWhenPresentAndOmitsItOtherwise() {
+        ReportEntity signed = report(9, LocalDate.now(), "msg", "pc");
+        signed.setUsername("CaptainFlameheart");
+        assertEquals("CaptainFlameheart", fieldValue(onlyEmbed(
+                DiscordReportNotifier.buildPayload(signed, "https://betterfleet.fr")), "Player"));
+
+        // The username is user text in a plain (unfenced) field: a mention must be broken up, and
+        // an absurdly long name is cut at the column's own cap.
+        ReportEntity hostile = report(9, LocalDate.now(), "msg", "pc");
+        hostile.setUsername("@everyone" + "x".repeat(500));
+        String player = fieldValue(onlyEmbed(
+                DiscordReportNotifier.buildPayload(hostile, "https://betterfleet.fr")), "Player");
+        assertNotNull(player);
+        assertFalse(player.contains("@everyone"), "@everyone must be broken up");
+        assertTrue(player.contains(DiscordReportNotifier.TRUNCATION_MARK));
+        assertTrue(player.length() < 100,
+                "The field must stay near the 64-char username cap, was " + player.length());
+
+        // Not signed in (the client sends ""), or an old client that sends nothing: no field.
+        ReportEntity anonymous = report(9, LocalDate.now(), "msg", "pc");
+        anonymous.setUsername("");
+        assertEquals(null, fieldValue(onlyEmbed(
+                DiscordReportNotifier.buildPayload(anonymous, "https://betterfleet.fr")), "Player"));
+        String withoutUsername = DiscordReportNotifier.buildPayload(
+                report(9, LocalDate.now(), "msg", "pc"), "https://betterfleet.fr");
+        assertEquals(null, fieldValue(onlyEmbed(withoutUsername), "Player"));
+    }
+
+    @Test
     public void payload_truncatesTheMessageWellUnderDiscordsLimit() {
         String payload = DiscordReportNotifier.buildPayload(
                 report(7, LocalDate.now(), "x".repeat(20_000), "pc"), "https://betterfleet.fr");

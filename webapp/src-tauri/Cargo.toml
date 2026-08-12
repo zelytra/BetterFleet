@@ -31,6 +31,9 @@ tauri-plugin-updater = "2"
 # Relaunch the app after an update installs (the updater flow's final step).
 tauri-plugin-process = "2"
 tauri-plugin-http = "2"
+# Clipboard writes through Rust: WebKitGTK's async Clipboard API rejects on Linux (field report),
+# so the webview API can never be the only path.
+tauri-plugin-clipboard-manager = "2"
 tauri-plugin-shell = "2"
 # Loopback OAuth server for the Linux login (#740): the webview's tauri://localhost origin cannot be
 # an OIDC redirect target (webviews block redirects to non-HTTP(S) schemes), so on Linux the hosted

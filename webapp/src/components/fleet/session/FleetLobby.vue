@@ -363,6 +363,7 @@ import {
 } from "@/objects/fleet/SessionRecap.ts";
 import NoticeBanner from "@/vue/templates/NoticeBanner.vue";
 import { isLinux } from "@/objects/utils/platform.ts";
+import { copyText } from "@/objects/utils/Clipboard.ts";
 import LocalStore, { LocalKey } from "@/objects/stores/LocalStore.ts";
 
 const { t } = useI18n();
@@ -584,8 +585,10 @@ function getFilteredSotServer() {
   );
 }
 
-function copyIdToClipboard(id: string) {
-  navigator.clipboard.writeText(id);
+async function copyIdToClipboard(id: string) {
+  // Through the Tauri clipboard plugin (WebKitGTK's own API rejects on Linux); confirm only a
+  // copy that actually happened.
+  if (!(await copyText(id))) return;
   displayIdCopy.value = true;
   setTimeout(() => (displayIdCopy.value = false), 2000);
 }
@@ -608,10 +611,10 @@ function consoleInviteBase(): string {
   }
 }
 
-function copyConsoleInvite() {
+async function copyConsoleInvite() {
   const link =
     consoleInviteBase() + "/s/" + props.session.sessionId.toUpperCase();
-  navigator.clipboard.writeText(link);
+  if (!(await copyText(link))) return;
   displayInviteCopy.value = true;
   setTimeout(() => (displayInviteCopy.value = false), 2000);
 }
@@ -620,11 +623,11 @@ function copyConsoleInvite() {
 // labels are translated here so the message reads in the language the crew plays in.
 const displayRecapCopy = ref<boolean>(false);
 
-function copyRecapShare() {
+async function copyRecapShare() {
   if (!sessionRecap.data) {
     return;
   }
-  navigator.clipboard.writeText(
+  const copied = await copyText(
     buildShareText(
       sessionRecap.data,
       {
@@ -636,6 +639,7 @@ function copyRecapShare() {
       consoleInviteBase(),
     ),
   );
+  if (!copied) return;
   displayRecapCopy.value = true;
   setTimeout(() => (displayRecapCopy.value = false), 2000);
 }

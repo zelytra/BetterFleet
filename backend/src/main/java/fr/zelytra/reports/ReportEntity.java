@@ -35,6 +35,11 @@ public class ReportEntity extends PanacheEntityBase {
     @Column(name = "version", length = 32)
     private String version;
 
+    // The in-app username of the player who filed the report. Nullable on purpose, same contract
+    // as version: rows predating the field, and older clients that do not send it, stay valid.
+    @Column(name = "username", length = 64)
+    private String username;
+
     public ReportEntity() {
     }
 
@@ -84,5 +89,13 @@ public class ReportEntity extends PanacheEntityBase {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
