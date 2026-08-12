@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import PirateButton from "@/vue/PirateButton.vue";
 import PlatformIcon from "@/vue/PlatformIcon.vue";
@@ -251,15 +251,32 @@ const leadText = computed(() => {
 // "Copy" without a timer race.
 const copyResult = ref<{ id: string; ok: boolean } | null>(null);
 let copyTimer: number | undefined;
+// The rendered command text (without the decorative "$" prompt), so a blocked copy can select it.
+const commandTextEl = ref<HTMLElement | null>(null);
 
 async function copyCommand(id: string, command?: string) {
   if (!command) return;
   // copyText tries the async Clipboard API, then the legacy execCommand path - the async API alone
   // rejects in real configurations (strict Firefox, focus races), which players reported as "copy
-  // shows an error". Only when BOTH fail does the strip fall into its failed state, where the
-  // command stays selectable by hand (see the style block) and the live region says so.
+  // shows an error". Both can ALSO be blocked deliberately: browsers now ship anti-"ClickFix"
+  // clipboard protection that refuses programmatic writes of terminal-command-looking text (our
+  // `curl ... && sudo ...` is the exact signature), even from a genuine click. So when both paths
+  // fail, select the visible command ourselves: a manual Ctrl+C over a selection is a native copy
+  // the protection never blocks, and the strip's failed state tells the visitor exactly that.
   const copied = await copyText(command);
   copyResult.value = { id, ok: copied };
+  if (!copied) {
+    // Wait for the failed state to render, then hand the visitor a ready-made selection.
+    await nextTick();
+    const el = commandTextEl.value;
+    const selection = window.getSelection();
+    if (el && selection) {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+  }
   clearTimeout(copyTimer);
   // A failure lingers longer: it asks the visitor to do something, so it shouldn't vanish as quickly
   // as a "Copied!" that just confirms.
@@ -607,7 +624,9 @@ onUnmounted(() => clearTimeout(copyTimer));
             >
               <code
                 ><span class="prompt" aria-hidden="true">$</span
-                >{{ activeCommand.command }}</code
+                ><span ref="commandTextEl">{{
+                  activeCommand.command
+                }}</span></code
               >
               <span class="terminal-copy" aria-hidden="true">{{
                 commandLabel(activeCommand.id)
@@ -1127,6 +1146,13 @@ onUnmounted(() => clearTimeout(copyTimer));
     white-space: pre-wrap;
     overflow-wrap: anywhere;
     user-select: text;
+
+    // The command text lives in its own span (so a blocked copy can select it without the
+    // prompt) - the global style.scss `user-select: none` re-matches that child, so opt it
+    // back in explicitly; `user-select` does not cascade through the code element's opt-in.
+    span {
+      user-select: text;
+    }
   }
 
   // Decorative prompt: aria-hidden in the markup and unselectable here, so neither a screen reader

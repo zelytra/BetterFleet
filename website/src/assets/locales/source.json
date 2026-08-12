@@ -426,7 +426,7 @@
       },
       "copy": "Copy",
       "copied": "Copied!",
-      "copyFailed": "Copy failed — select and copy",
+      "copyFailed": "Copy blocked — press Ctrl+C to copy",
       "copyCommand": "Copy install command",
       "terminal": {
         "title": "Or install from your terminal",
