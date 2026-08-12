@@ -77,6 +77,7 @@ import {
 } from "@/objects/report/Report.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import { invoke } from "@tauri-apps/api/core";
+import { UserStore } from "@/objects/stores/UserStore.ts";
 
 const { t } = useI18n();
 
@@ -160,6 +161,8 @@ async function sendReport() {
     message: attachDiagnostic(reportMessage.value, diagAttachment),
     // The build's own version, so triage knows which release the report describes.
     version: String(import.meta.env.VITE_VERSION ?? ""),
+    // Who filed it, so triage can follow up in-app; "" when the player is not signed in.
+    username: UserStore.player.username ?? "",
   };
   await invoke("get_logs", { maxLines: 5000 }).then((logs) => {
     report.logs = logs as string;

@@ -51,6 +51,8 @@ public class DiscordReportNotifier {
     // construction with a wide margin rather than by trusting sanitising not to expand.
     static final int MESSAGE_EXCERPT_MAX_CHARS = 1500;
     static final int DEVICE_MAX_CHARS = 300;
+    // Matches the entity column: anything longer than that was never a legitimate username.
+    static final int USERNAME_MAX_CHARS = 64;
 
     // Appended to any excerpt that was cut, so the reader knows to open the website for the rest.
     static final String TRUNCATION_MARK = "… [truncated]";
@@ -133,6 +135,12 @@ public class DiscordReportNotifier {
         LocalDate date = report.getReportingDate();
         if (date != null) {
             fields.add(field("Submitted", date.toString(), true));
+        }
+        // User text in a plain (unfenced) field: short by construction, and mention-neutralised so
+        // a username like "@everyone" stays inert even when copied out of the embed.
+        String username = truncate(nullToEmpty(report.getUsername()).trim(), USERNAME_MAX_CHARS);
+        if (!username.isEmpty()) {
+            fields.add(field("Player", neutralizeMentions(username), true));
         }
         String version = nullToEmpty(report.getVersion()).trim();
         if (!version.isEmpty()) {
