@@ -2,12 +2,15 @@
 //! privilege-separated capture helper is built on (#726).
 //!
 //! Sea of Thieves server detection watches the game's UDP flows and ranks them by volume to tell the
-//! real game server apart from the many sparse Steam Datagram Relay flows. On Linux that means an
-//! `AF_PACKET` capture socket, which needs `CAP_NET_RAW`. To spare the unprivileged Tauri GUI from
-//! holding that capability, everything that touches the raw socket lives here, in a crate that never
-//! links Tauri, and the GUI drives it out-of-process through the `betterfleet-netcap` binary. The
-//! same aggregation and ranking are reused verbatim by the Windows in-process sniff, so both
-//! platforms observe traffic identically.
+//! real game server apart from the many sparse Steam Datagram Relay flows. Reaching those packets
+//! needs a privileged socket on every OS: `AF_PACKET` (`CAP_NET_RAW`) on Linux, a promiscuous
+//! `SOCK_RAW` driven by `WSAIoctl(SIO_RCVALL)` (Administrator) on Windows. Both backends live here,
+//! in a crate that never links Tauri, behind one entry point - [`run_capture`] - so the privileged
+//! work can run outside the GUI: the `betterfleet-netcap` binary already does that on Linux, and
+//! #732 gives Windows the same shape through a service.
+//!
+//! Everything below the socket - [`parse_game_flow`], [`FlowAggregator`], the ranking - is shared
+//! verbatim, so a capture is identical whichever OS and whichever process runs it.
 
 use std::collections::{HashMap, HashSet};
 use std::time::Duration;
@@ -15,12 +18,19 @@ use std::time::Duration;
 use etherparse::PacketHeaders;
 use serde::{Deserialize, Serialize};
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 use log::error;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 use socket2::{Domain, Protocol, Socket, Type};
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", windows))]
 use std::time::Instant;
+
+#[cfg(windows)]
+use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
+#[cfg(windows)]
+use std::sync::atomic::{AtomicU64, Ordering};
+#[cfg(windows)]
+use std::sync::{Arc, Mutex};
 
 /// One observed UDP conversation between a game-owned local port and a remote peer.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -142,10 +152,266 @@ pub fn run_capture(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
     capture_af_packet(game_ports.into_iter().collect(), window)
 }
 
-/// Non-Linux stub: there is no `AF_PACKET` backend, so there is no in-process capture here. The
-/// desktop app ships for Windows and Linux; Windows captures in-process with a promiscuous socket
-/// that lives in the GUI crate, and macOS has no capture backend yet.
-#[cfg(not(target_os = "linux"))]
+/// What one capture window observed: the ranked flows, and how many packets the socket(s) received
+/// *before* the game-port filter where the backend can count them.
+///
+/// The count is what tells "the capture itself received nothing" (a filter driver starving
+/// `SIO_RCVALL`, a missing privilege) apart from "the game simply had no matching traffic" - both
+/// otherwise yield zero flows. `None` means the backend cannot report it, which is deliberately
+/// distinct from `Some(0)`.
+#[derive(Debug, Clone, PartialEq)]
+pub struct CaptureOutcome {
+    pub flows: Vec<FlowStat>,
+    pub raw_packets: Option<u64>,
+}
+
+/// Runs one Windows capture over `window` for the given game ports and returns the flows ranked by
+/// volume (desc). Same entry point as the Linux arm, so the GUI, the helper and (from #732) the
+/// capture service all drive an identical capture.
+#[cfg(windows)]
+pub fn run_capture(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
+    // Live detection does not need the raw count; give it a throwaway counter.
+    capture_raw_sockets(
+        game_ports.into_iter().collect(),
+        window,
+        &AtomicU64::new(0),
+    )
+}
+
+/// Windows capture that also reports the raw packet count backing [`CaptureOutcome::raw_packets`].
+#[cfg(windows)]
+pub fn run_capture_counted(game_ports: Vec<u16>, window: Duration) -> CaptureOutcome {
+    let raw_packets = AtomicU64::new(0);
+    let flows = capture_raw_sockets(game_ports.into_iter().collect(), window, &raw_packets);
+    CaptureOutcome {
+        flows,
+        raw_packets: Some(raw_packets.load(Ordering::Relaxed)),
+    }
+}
+
+/// Non-Windows: the raw count is not available (Linux captures through a helper process that does
+/// not surface it), so it stays `None` - never `Some(0)`, which would read as "capture blocked".
+#[cfg(not(windows))]
+pub fn run_capture_counted(game_ports: Vec<u16>, window: Duration) -> CaptureOutcome {
+    CaptureOutcome {
+        flows: run_capture(game_ports, window),
+        raw_packets: None,
+    }
+}
+
+/// True when this process can open a promiscuous capture socket, i.e. it runs elevated. The twin of
+/// the Linux `CAP_NET_RAW` probe: creating the socket and running `SIO_RCVALL` is the only honest
+/// test, since both steps are the ones that require Administrator.
+#[cfg(windows)]
+pub fn can_open_capture_socket() -> bool {
+    // Bind to the unspecified address: the probe only has to prove the privilege, and it must not
+    // depend on which interfaces happen to exist.
+    let addr = SocketAddr::new(IpAddr::V4(std::net::Ipv4Addr::UNSPECIFIED), 0);
+    match open_promiscuous_socket(addr) {
+        Ok(_) => true,
+        Err(e) => {
+            error!("[capture] promiscuous socket probe failed: {e}");
+            false
+        }
+    }
+}
+
+/// Opens one promiscuous `SOCK_RAW` socket bound to `addr`, ready to read whole IP packets.
+///
+/// `Type::RAW` + `WSAIoctl(SIO_RCVALL)` both require Administrator; that pair is the entire reason
+/// the Windows GUI still ships a `requireAdministrator` manifest, and the reason this lives in the
+/// Tauri-free crate: #732 moves it into a service so the GUI can drop the manifest.
+#[cfg(windows)]
+fn open_promiscuous_socket(addr: SocketAddr) -> std::io::Result<Socket> {
+    use std::os::windows::io::AsRawSocket;
+    use winapi::shared::minwindef::DWORD;
+    use winapi::um::winsock2;
+
+    // SIO_RCVALL: receive every packet the interface sees, not just those addressed to us.
+    const SIO_RCVALL: DWORD = 0x9800_0001;
+
+    let domain = match addr.ip() {
+        IpAddr::V4(_) => Domain::IPV4,
+        IpAddr::V6(_) => Domain::IPV6,
+    };
+    let socket = Socket::new(domain, Type::RAW, Some(Protocol::UDP))?;
+    socket.bind(&addr.into())?;
+
+    let rc = unsafe {
+        let in_value: DWORD = 1;
+        let mut returned: DWORD = 0;
+        winsock2::WSAIoctl(
+            socket.as_raw_socket() as usize,
+            SIO_RCVALL,
+            &in_value as *const _ as *mut _,
+            std::mem::size_of_val(&in_value) as DWORD,
+            std::ptr::null_mut(),
+            0,
+            &mut returned as *mut _,
+            std::ptr::null_mut(),
+            None,
+        )
+    };
+    if rc == winsock2::SOCKET_ERROR {
+        return Err(std::io::Error::from_raw_os_error(unsafe {
+            winsock2::WSAGetLastError()
+        }));
+    }
+
+    // A read timeout lets the loop honour the window deadline even when no packet arrives, the same
+    // way the Linux arm does. Blocking reads, not the GUI's old non-blocking socket driven by
+    // tokio::select!: this crate has no async runtime, and a service cannot assume one.
+    socket.set_read_timeout(Some(Duration::from_millis(200)))?;
+    Ok(socket)
+}
+
+/// The local addresses to watch. Windows has no single socket that sees every interface (the Linux
+/// `AF_PACKET` arm does), so the capture fans out: one promiscuous socket per local IP, merged into
+/// one ranking.
+#[cfg(windows)]
+fn local_capture_ips() -> Vec<IpAddr> {
+    let host = match hostname::get() {
+        Ok(name) => name.into_string().unwrap_or_else(|_| "localhost".into()),
+        Err(e) => {
+            error!("[capture] cannot read the hostname: {e}");
+            "localhost".into()
+        }
+    };
+    // A hostname with non-ASCII characters does not resolve as-is; punycode it first, exactly as the
+    // GUI's get_hostname does, so those machines keep capturing.
+    let host = match idna::domain_to_ascii(&host) {
+        Ok(ascii) => ascii,
+        Err(e) => {
+            error!("[capture] cannot punycode the hostname: {e}");
+            host
+        }
+    };
+    match format!("{host}:0").to_socket_addrs() {
+        Ok(addrs) => dedup_capture_ips(addrs.map(|addr| addr.ip())),
+        Err(e) => {
+            error!("[capture] cannot resolve local IPs: {e}");
+            Vec::new()
+        }
+    }
+}
+
+/// Pure half of [`local_capture_ips`]: keeps resolution order and drops duplicates, so an address
+/// listed twice does not get two sockets (and double-count every packet it sees).
+///
+/// Deliberately platform-neutral rather than `#[cfg(windows)]`: the logic is worth unit-testing on
+/// the Linux CI leg too, where nothing calls it.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn dedup_capture_ips(ips: impl Iterator<Item = std::net::IpAddr>) -> Vec<std::net::IpAddr> {
+    let mut seen = HashSet::new();
+    ips.filter(|ip| seen.insert(*ip)).collect()
+}
+
+/// Blocking promiscuous capture backing [`run_capture`] on Windows: one thread per local IP, each
+/// feeding the SAME [`parse_game_flow`] + [`FlowAggregator`] the Linux arm uses, so ranking is
+/// shared verbatim.
+///
+/// A failure to open one socket is logged and skipped rather than fatal: an interface that refuses
+/// the promiscuous ioctl should not cost us the ones that accept it.
+#[cfg(windows)]
+fn capture_raw_sockets(
+    game_ports: HashSet<u16>,
+    window: Duration,
+    raw_packets: &AtomicU64,
+) -> Vec<FlowStat> {
+    let aggregator = Arc::new(Mutex::new(FlowAggregator::default()));
+    let start = Instant::now();
+
+    std::thread::scope(|scope| {
+        for ip in local_capture_ips() {
+            let aggregator = Arc::clone(&aggregator);
+            let ports = game_ports.clone();
+            scope.spawn(move || {
+                let socket = match open_promiscuous_socket(SocketAddr::new(ip, 0)) {
+                    Ok(socket) => socket,
+                    Err(e) => {
+                        error!("[capture] raw socket on {ip} failed: {e}");
+                        return;
+                    }
+                };
+                sniff_socket(&socket, &ports, &aggregator, window, raw_packets, start);
+            });
+        }
+    });
+
+    let flows = aggregator.lock().unwrap().take_sorted_flows();
+    flows
+}
+
+/// Reads one promiscuous socket until the window closes, counting every packet before the game-port
+/// filter.
+#[cfg(windows)]
+fn sniff_socket(
+    socket: &Socket,
+    game_ports: &HashSet<u16>,
+    aggregator: &Arc<Mutex<FlowAggregator>>,
+    window: Duration,
+    raw_packets: &AtomicU64,
+    start: Instant,
+) {
+    use std::mem::MaybeUninit;
+
+    // A full IP datagram fits in 64 KiB; one buffer, reused per packet.
+    let mut buf = [MaybeUninit::<u8>::uninit(); 65535];
+    while start.elapsed() < window {
+        match socket.recv(&mut buf) {
+            Ok(0) => {}
+            Ok(len) => {
+                // Counted before the game-port filter: a zero here over a full window means the
+                // capture received nothing at all, not that the game had no matching ports.
+                raw_packets.fetch_add(1, Ordering::Relaxed);
+                // SAFETY: recv reports `len` bytes written, so the first `len` bytes are
+                // initialised; MaybeUninit<u8> and u8 share layout, so viewing them as `&[u8]` is
+                // sound.
+                let data = unsafe { std::slice::from_raw_parts(buf.as_ptr() as *const u8, len) };
+                if let Some((local_port, remote_ip, remote_port, inbound)) =
+                    parse_game_flow(data, game_ports)
+                {
+                    let t_ms = start.elapsed().as_millis() as u64;
+                    aggregator
+                        .lock()
+                        .unwrap()
+                        .observe(local_port, &remote_ip, remote_port, len, inbound, t_ms);
+                }
+            }
+            Err(e) if is_recoverable_capture_error(&e) => {}
+            Err(e) => {
+                error!("[capture] promiscuous recv error, stopping this interface: {e}");
+                break;
+            }
+        }
+    }
+}
+
+/// Whether a `recv` error is one to keep reading through rather than abandon the interface for.
+///
+/// This is the trap the Linux arm does not have. Beyond the read timeout, a promiscuous `SOCK_RAW`
+/// routinely surfaces two Winsock errors that are NOT fatal: `WSAEMSGSIZE` (10040) when a datagram
+/// is larger than the buffer - the packet is truncated, the socket stays usable - and
+/// `WSAECONNRESET` (10054), which Windows delivers on a UDP socket after an ICMP port-unreachable
+/// for an unrelated peer. Treating either as fatal would silently kill capture on that interface
+/// for the rest of the window, and detection would degrade to "no server" with nothing in the logs.
+///
+/// Platform-neutral for the same reason as [`dedup_capture_ips`]: this classification is the single
+/// most dangerous line in the Windows backend, so it is unit-tested on every CI leg.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn is_recoverable_capture_error(e: &std::io::Error) -> bool {
+    const WSAEMSGSIZE: i32 = 10040;
+    const WSAECONNRESET: i32 = 10054;
+    matches!(
+        e.kind(),
+        std::io::ErrorKind::WouldBlock
+            | std::io::ErrorKind::TimedOut
+            | std::io::ErrorKind::Interrupted
+    ) || matches!(e.raw_os_error(), Some(WSAEMSGSIZE) | Some(WSAECONNRESET))
+}
+
+/// No capture backend on this OS (macOS): detection reports "no server" rather than crashing.
+#[cfg(not(any(target_os = "linux", windows)))]
 pub fn run_capture(_game_ports: Vec<u16>, _window: Duration) -> Vec<FlowStat> {
     Vec::new()
 }
@@ -162,8 +428,8 @@ pub fn can_open_capture_socket() -> bool {
     Socket::new(Domain::PACKET, Type::DGRAM, Some(protocol)).is_ok()
 }
 
-/// Non-Linux stub: there is no `AF_PACKET` socket to open, so the helper reports it cannot capture.
-#[cfg(not(target_os = "linux"))]
+/// No capture backend on this OS (macOS), so the helper reports it cannot capture.
+#[cfg(not(any(target_os = "linux", windows)))]
 pub fn can_open_capture_socket() -> bool {
     false
 }
@@ -237,6 +503,54 @@ fn capture_af_packet(game_ports: HashSet<u16>, window: Duration) -> Vec<FlowStat
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
+
+    #[test]
+    fn dedup_capture_ips_keeps_order_and_drops_repeats() {
+        let v4 = IpAddr::V4(Ipv4Addr::new(192, 168, 1, 10));
+        let v6 = IpAddr::V6(Ipv6Addr::LOCALHOST);
+        let other = IpAddr::V4(Ipv4Addr::new(10, 0, 0, 2));
+        // Resolution routinely lists the same address twice (one entry per socket type); one socket
+        // each, in the order the resolver gave them.
+        let ips = dedup_capture_ips(vec![v4, v6, v4, other, v6].into_iter());
+        assert_eq!(ips, vec![v4, v6, other]);
+    }
+
+    #[test]
+    fn dedup_capture_ips_handles_an_empty_resolution() {
+        assert!(dedup_capture_ips(Vec::new().into_iter()).is_empty());
+    }
+
+    #[test]
+    fn read_timeouts_and_winsock_noise_never_stop_a_capture() {
+        use std::io::{Error, ErrorKind};
+        // SO_RCVTIMEO surfaces as one of these two, depending on the platform.
+        assert!(is_recoverable_capture_error(&Error::from(
+            ErrorKind::WouldBlock
+        )));
+        assert!(is_recoverable_capture_error(&Error::from(
+            ErrorKind::TimedOut
+        )));
+        assert!(is_recoverable_capture_error(&Error::from(
+            ErrorKind::Interrupted
+        )));
+        // WSAEMSGSIZE: a datagram larger than the buffer. Truncated, socket still fine.
+        assert!(is_recoverable_capture_error(&Error::from_raw_os_error(10040)));
+        // WSAECONNRESET: an ICMP port-unreachable for an unrelated peer, delivered on our UDP
+        // socket. Treating it as fatal would silently kill capture for the rest of the window.
+        assert!(is_recoverable_capture_error(&Error::from_raw_os_error(10054)));
+    }
+
+    #[test]
+    fn a_real_socket_failure_still_stops_the_capture() {
+        use std::io::{Error, ErrorKind};
+        // WSAENOTSOCK: the handle is gone; reading forever would spin on a dead socket.
+        assert!(!is_recoverable_capture_error(&Error::from_raw_os_error(10038)));
+        assert!(!is_recoverable_capture_error(&Error::from(
+            ErrorKind::PermissionDenied
+        )));
+    }
 
     #[test]
     fn plausible_sot_ports_are_in_the_expected_range() {

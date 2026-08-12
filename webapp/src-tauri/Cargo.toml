@@ -55,16 +55,12 @@ rodio = "0.20.1"
 # Discord Rich Presence over the local client's IPC (#684): no bot, no OAuth.
 discord-rich-presence = "0.2.5"
 
-# winapi backs the Windows-only native pieces - the raw promiscuous capture socket in
-# fetch_informations.rs (WSAIoctl/SIO_RCVALL) and the Sea of Thieves window focus/click in
-# window_interaction.rs. Linux does its packet capture with AF_PACKET instead, in the better_fleet_netcap
-# crate (#725, #726), so winapi stays Windows-only.
+# winapi backs the Windows-only native pieces. Only `winuser` now - the Sea of Thieves window
+# focus/click (window_interaction.rs, main.rs): the promiscuous capture socket and its
+# WSAIoctl(SIO_RCVALL) moved into the Tauri-free better_fleet_netcap crate (#732), taking the
+# winsock2 feature and socket2 with them, so every capture backend now sits behind one interface.
 [target.'cfg(windows)'.dependencies]
-winapi = { version = "0.3.9", features = ["winsock2", "winuser"] }
-# socket2 backs the raw capture socket on Windows: the promiscuous UDP socket (create_raw_socket).
-# Type::RAW is behind its `all` feature - v1 got it transitively, the v2 dependency graph no longer
-# does. (The Linux port declares socket2 separately below, for Domain::PACKET.)
-socket2 = { version = "0.5.6", features = ["all"] }
+winapi = { version = "0.3.9", features = ["winuser"] }
 
 # x11rb backs the Linux native integration (#731): the Sea of Thieves auto-click (EWMH focus + XTEST
 # synthetic input) and keeping the in-game overlay above the game. Pure-Rust connection, so it adds

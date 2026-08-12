@@ -102,9 +102,13 @@ images too) is `deployment/docker-compose.yml`; the app schema seed is `deployme
   windows: timers stall and audio mutes. The fix is `additionalBrowserArgs` in `tauri.conf.json`
   (the `WEBVIEW2_*` env var is ignored by wry). Don't reintroduce timer/audio logic that assumes the
   overlay keeps ticking while covered.
-- **Linux server detection needs `CAP_NET_RAW`, isolated in a helper (#726).** The `AF_PACKET` UDP
-  capture runs in a tiny Tauri-free binary, `betterfleet-netcap`, so the GUI stays unprivileged (it
-  falls back to in-process capture when the helper is missing or uncapped). `npm run tauri:dev`
+- **Packet capture lives in one Tauri-free crate, `better_fleet_netcap`, with a backend per OS
+  (#726, #732).** `run_capture` is the single entry point: `AF_PACKET`/`CAP_NET_RAW` on Linux,
+  promiscuous `SOCK_RAW`/`SIO_RCVALL`/Administrator on Windows; both blocking, the GUI wraps them in
+  `spawn_blocking`. On Linux the privileged half already runs out-of-process in the tiny
+  `betterfleet-netcap` binary, so the GUI stays unprivileged (it falls back to in-process capture
+  when the helper is missing or uncapped); Windows still runs it in-process behind its admin
+  manifest until the service in #732 lands. `npm run tauri:dev`
   builds and `setcap`s it for you; the `.deb` post-install and the pacman package's `.install` do it
   at install time, so end users never run setcap. Under Proton the game spreads its UDP sockets across ~100
   `sotgame.exe` task PIDs plus `wineserver`, so candidate ports are unioned across all of them (#725).

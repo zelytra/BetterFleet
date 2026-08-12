@@ -177,7 +177,7 @@ checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
 name = "better_fleet"
-version = "2.3.2"
+version = "2.3.3"
 dependencies = [
  "anyhow",
  "better_fleet_netcap",
@@ -190,7 +190,6 @@ dependencies = [
  "rodio",
  "serde",
  "serde_json",
- "socket2 0.5.10",
  "sysinfo",
  "tauri",
  "tauri-build",
@@ -212,10 +211,13 @@ name = "better_fleet_netcap"
 version = "2.2.2"
 dependencies = [
  "etherparse",
+ "hostname",
+ "idna 1.1.0",
  "log",
  "serde",
  "serde_json",
  "socket2 0.5.10",
+ "winapi",
 ]
 
 [[package]]

@@ -1,10 +1,15 @@
 //! Privilege-separated packet-capture helper (#726).
 //!
-//! On Linux, server detection needs an `AF_PACKET` socket, which needs `CAP_NET_RAW`. Running that
-//! inside the Tauri GUI would force the whole app to hold the capability; instead this tiny binary
-//! holds it alone. It captures one window of the game's UDP flows and prints them, ranked, as JSON
-//! for the GUI to read. It links only the pure capture core (better_fleet_netcap), std and
-//! serde_json, never Tauri.
+//! Server detection needs a privileged socket: `AF_PACKET` (`CAP_NET_RAW`) on Linux, a promiscuous
+//! `SOCK_RAW` (Administrator) on Windows. Running that inside the Tauri GUI would force the whole
+//! app to hold the privilege; instead this tiny binary holds it alone. It captures one window of the
+//! game's UDP flows and prints them, ranked, as JSON for the GUI to read. It links only the pure
+//! capture core (better_fleet_netcap), std and serde_json, never Tauri.
+//!
+//! Linux drives it today. On Windows the capture backend now lives in the same crate (#732), so this
+//! binary builds and behaves identically there; what is still missing is the privileged host that
+//! runs it without a UAC prompt - the service in #816. Until then the Windows GUI keeps capturing
+//! in-process behind its `requireAdministrator` manifest.
 //!
 //! Usage: `betterfleet-netcap <comma-separated-ports> <window-secs>`
 //!   e.g. `betterfleet-netcap 59639,51485 20`
@@ -36,6 +41,13 @@ fn main() {
     // "no traffic" (both otherwise yield zero flows).
     if !better_fleet_netcap::can_open_capture_socket() {
         println!("[]");
+        // The privilege differs per OS, so name the one the reader can actually act on.
+        #[cfg(windows)]
+        eprintln!(
+            "betterfleet-netcap: cannot open the promiscuous capture socket (SIO_RCVALL needs \
+             Administrator; run this from the capture service or an elevated process)"
+        );
+        #[cfg(not(windows))]
         eprintln!(
             "betterfleet-netcap: cannot open the AF_PACKET capture socket (needs CAP_NET_RAW; run \
              `sudo setcap cap_net_raw+ep` on this binary)"
