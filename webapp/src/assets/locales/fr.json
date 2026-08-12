@@ -135,7 +135,7 @@
     },
     "presence": {
       "check": "Présence Enrichie sur Discord",
-      "description": "Affiche votre session sur votre profil Discord — taille du salon, joueurs prêts et, pour les sessions publiques, le code."
+      "description": "Affiche votre session sur votre profil Discord: taille du salon, joueurs prêts et, pour les sessions publiques, le code."
     },
     "recap": {
       "check": "Carte d'alliance formée",
