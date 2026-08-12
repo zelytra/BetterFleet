@@ -9,14 +9,38 @@
 //! guarantee and no game traffic, so the only honest assertions are about the shape of the output
 //! and the exit codes.
 
-use std::process::{Command, Output};
+use std::process::{Command, Output, Stdio};
+use std::sync::mpsc;
+use std::time::Duration;
 
-/// Runs the helper binary Cargo built for this test, with the given arguments.
+/// How long the helper gets before a test declares it wedged. Generous next to the 1s capture the
+/// longest case asks for, tight next to the CI job limit: without it a helper blocked on a hung
+/// resolver or a stuck socket would burn the whole job instead of failing this test.
+const HELPER_TIMEOUT: Duration = Duration::from_secs(60);
+
+/// Runs the helper binary Cargo built for this test, with the given arguments, failing rather than
+/// hanging if it does not exit.
 fn run(args: &[&str]) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_betterfleet-netcap"))
+    let child = Command::new(env!("CARGO_BIN_EXE_betterfleet-netcap"))
         .args(args)
-        .output()
-        .expect("the helper binary should be spawnable")
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("the helper binary should be spawnable");
+
+    // wait_with_output has no deadline, so it runs on its own thread and the test waits on a
+    // channel instead.
+    let (tx, rx) = mpsc::channel();
+    let handle = std::thread::spawn(move || {
+        let _ = tx.send(child.wait_with_output());
+    });
+    match rx.recv_timeout(HELPER_TIMEOUT) {
+        Ok(result) => {
+            handle.join().expect("the waiter thread should not panic");
+            result.expect("the helper's output should be readable")
+        }
+        Err(_) => panic!("betterfleet-netcap did not exit within {HELPER_TIMEOUT:?} for {args:?}"),
+    }
 }
 
 /// Exit code 2 is "bad arguments" - distinct from 1, "could not capture", because only the latter

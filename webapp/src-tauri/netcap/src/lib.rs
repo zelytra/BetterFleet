@@ -27,10 +27,11 @@ use std::time::Instant;
 
 #[cfg(windows)]
 use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
-#[cfg(windows)]
+// Used by the Windows backend and by the tests that pin its read loop on every platform.
 use std::sync::atomic::{AtomicU64, Ordering};
 #[cfg(windows)]
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
 
 /// One observed UDP conversation between a game-owned local port and a remote peer.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
@@ -176,16 +177,21 @@ pub fn run_capture(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
         window,
         &AtomicU64::new(0),
     )
+    .0
 }
 
 /// Windows capture that also reports the raw packet count backing [`CaptureOutcome::raw_packets`].
 #[cfg(windows)]
 pub fn run_capture_counted(game_ports: Vec<u16>, window: Duration) -> CaptureOutcome {
     let raw_packets = AtomicU64::new(0);
-    let flows = capture_raw_sockets(game_ports.into_iter().collect(), window, &raw_packets);
+    let (flows, opened) =
+        capture_raw_sockets(game_ports.into_iter().collect(), window, &raw_packets);
     CaptureOutcome {
         flows,
-        raw_packets: Some(raw_packets.load(Ordering::Relaxed)),
+        // No socket ever opened - no interface resolved, or every one refused the ioctl. That is
+        // "we could not listen", not "we listened and heard nothing": reporting Some(0) here would
+        // have the diagnostic accuse something of starving a capture that never ran.
+        raw_packets: (opened > 0).then(|| raw_packets.load(Ordering::Relaxed)),
     }
 }
 
@@ -204,13 +210,17 @@ pub fn run_capture_counted(game_ports: Vec<u16>, window: Duration) -> CaptureOut
 /// test, since both steps are the ones that require Administrator.
 #[cfg(windows)]
 pub fn can_open_capture_socket() -> bool {
-    // Bind to the unspecified address: the probe only has to prove the privilege, and it must not
-    // depend on which interfaces happen to exist.
-    let addr = SocketAddr::new(IpAddr::V4(std::net::Ipv4Addr::UNSPECIFIED), 0);
-    match open_promiscuous_socket(addr) {
+    // Must probe against a REAL local address: SIO_RCVALL requires the socket to be bound to an
+    // explicit interface, and binding the unspecified address fails the ioctl outright - a probe
+    // that did so would answer "cannot capture" even for an elevated process.
+    let Some(ip) = local_capture_ips().into_iter().next() else {
+        error!("[capture] no local interface resolved; cannot probe the capture socket");
+        return false;
+    };
+    match open_promiscuous_socket(SocketAddr::new(ip, 0)) {
         Ok(_) => true,
         Err(e) => {
-            error!("[capture] promiscuous socket probe failed: {e}");
+            error!("[capture] promiscuous socket probe on {ip} failed: {e}");
             false
         }
     }
@@ -317,54 +327,78 @@ fn capture_raw_sockets(
     game_ports: HashSet<u16>,
     window: Duration,
     raw_packets: &AtomicU64,
-) -> Vec<FlowStat> {
+) -> (Vec<FlowStat>, usize) {
+    // Resolve BEFORE starting the clock. Enumeration is a blocking getaddrinfo, and on a
+    // domain-joined or VPN-attached machine a suffix search list can take hundreds of milliseconds;
+    // counting that against the window would shorten every capture, and a resolution slower than the
+    // window would leave every thread exiting before its first read - reported as "we captured and
+    // saw nothing", which is exactly the wrong conclusion.
+    let ips = local_capture_ips();
     let aggregator = Arc::new(Mutex::new(FlowAggregator::default()));
+    // One clock shared by every interface, so the flow timestamps land on a single timeline and
+    // spans stay comparable when the flows are merged.
     let start = Instant::now();
+    let opened = AtomicU64::new(0);
 
     std::thread::scope(|scope| {
-        for ip in local_capture_ips() {
+        for ip in ips {
             let aggregator = Arc::clone(&aggregator);
             let ports = game_ports.clone();
+            let opened = &opened;
             scope.spawn(move || {
                 let socket = match open_promiscuous_socket(SocketAddr::new(ip, 0)) {
                     Ok(socket) => socket,
                     Err(e) => {
+                        // One interface refusing the ioctl must not cost us the ones that accept it.
                         error!("[capture] raw socket on {ip} failed: {e}");
                         return;
                     }
                 };
-                sniff_socket(&socket, &ports, &aggregator, window, raw_packets, start);
+                opened.fetch_add(1, Ordering::Relaxed);
+                let mut buf = [std::mem::MaybeUninit::<u8>::uninit(); 65535];
+                drain_capture(
+                    |b| socket.recv(b),
+                    &mut buf,
+                    &ports,
+                    &aggregator,
+                    window,
+                    raw_packets,
+                    start,
+                );
             });
         }
     });
 
     let flows = aggregator.lock().unwrap().take_sorted_flows();
-    flows
+    (flows, opened.load(Ordering::Relaxed) as usize)
 }
 
-/// Reads one promiscuous socket until the window closes, counting every packet before the game-port
+/// Reads one capture source until the window closes, counting every packet before the game-port
 /// filter.
-#[cfg(windows)]
-fn sniff_socket(
-    socket: &Socket,
+///
+/// Takes the read as a closure rather than a socket so the error handling below - the part that can
+/// silently cost a player their detection - is unit-testable without a privileged socket, which no
+/// CI runner can open.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn drain_capture<R>(
+    mut read: R,
+    buf: &mut [std::mem::MaybeUninit<u8>],
     game_ports: &HashSet<u16>,
-    aggregator: &Arc<Mutex<FlowAggregator>>,
+    aggregator: &Mutex<FlowAggregator>,
     window: Duration,
     raw_packets: &AtomicU64,
     start: Instant,
-) {
-    use std::mem::MaybeUninit;
-
-    // A full IP datagram fits in 64 KiB; one buffer, reused per packet.
-    let mut buf = [MaybeUninit::<u8>::uninit(); 65535];
+) where
+    R: FnMut(&mut [std::mem::MaybeUninit<u8>]) -> std::io::Result<usize>,
+{
     while start.elapsed() < window {
-        match socket.recv(&mut buf) {
+        match read(buf) {
             Ok(0) => {}
             Ok(len) => {
                 // Counted before the game-port filter: a zero here over a full window means the
                 // capture received nothing at all, not that the game had no matching ports.
                 raw_packets.fetch_add(1, Ordering::Relaxed);
-                // SAFETY: recv reports `len` bytes written, so the first `len` bytes are
+                // SAFETY: the reader reports `len` bytes written, so the first `len` bytes are
                 // initialised; MaybeUninit<u8> and u8 share layout, so viewing them as `&[u8]` is
                 // sound.
                 let data = unsafe { std::slice::from_raw_parts(buf.as_ptr() as *const u8, len) };
@@ -390,24 +424,34 @@ fn sniff_socket(
 /// Whether a `recv` error is one to keep reading through rather than abandon the interface for.
 ///
 /// This is the trap the Linux arm does not have. Beyond the read timeout, a promiscuous `SOCK_RAW`
-/// routinely surfaces two Winsock errors that are NOT fatal: `WSAEMSGSIZE` (10040) when a datagram
-/// is larger than the buffer - the packet is truncated, the socket stays usable - and
-/// `WSAECONNRESET` (10054), which Windows delivers on a UDP socket after an ICMP port-unreachable
-/// for an unrelated peer. Treating either as fatal would silently kill capture on that interface
-/// for the rest of the window, and detection would degrade to "no server" with nothing in the logs.
+/// routinely surfaces Winsock errors that are NOT fatal: `WSAEMSGSIZE` (10040) when a datagram is
+/// larger than the buffer - truncated, socket still usable; `WSAECONNRESET` (10054) and
+/// `WSAENETRESET` (10052), which Windows delivers on a UDP socket after an ICMP unreachable/TTL
+/// expiry for an unrelated peer; and `WSAENOBUFS` (10055) when the driver's receive buffers are
+/// momentarily exhausted under load - exactly when a busy game host matters most. Treating any of
+/// them as fatal would silently kill capture on that interface for the rest of the window, and
+/// detection would degrade to "no server" with nothing in the logs.
+///
+/// The predecessor of this loop ignored *every* recv error and simply kept reading, so the bar to
+/// clear is high: only errors that mean the socket itself is gone stop a capture.
 ///
 /// Platform-neutral for the same reason as [`dedup_capture_ips`]: this classification is the single
 /// most dangerous line in the Windows backend, so it is unit-tested on every CI leg.
 #[cfg_attr(not(windows), allow(dead_code))]
 fn is_recoverable_capture_error(e: &std::io::Error) -> bool {
     const WSAEMSGSIZE: i32 = 10040;
+    const WSAENETRESET: i32 = 10052;
     const WSAECONNRESET: i32 = 10054;
+    const WSAENOBUFS: i32 = 10055;
     matches!(
         e.kind(),
         std::io::ErrorKind::WouldBlock
             | std::io::ErrorKind::TimedOut
             | std::io::ErrorKind::Interrupted
-    ) || matches!(e.raw_os_error(), Some(WSAEMSGSIZE) | Some(WSAECONNRESET))
+    ) || matches!(
+        e.raw_os_error(),
+        Some(WSAEMSGSIZE) | Some(WSAENETRESET) | Some(WSAECONNRESET) | Some(WSAENOBUFS)
+    )
 }
 
 /// No capture backend on this OS (macOS): detection reports "no server" rather than crashing.
@@ -520,6 +564,58 @@ mod tests {
     #[test]
     fn dedup_capture_ips_handles_an_empty_resolution() {
         assert!(dedup_capture_ips(Vec::new().into_iter()).is_empty());
+    }
+
+    /// Drives the real read loop with a scripted sequence of results and reports how many packets
+    /// it counted before giving up. `Ok(1)` stands for a packet: one byte never parses as a game
+    /// flow, so the aggregator stays empty and the raw counter is what the assertions read.
+    fn drive_loop(script: Vec<std::io::Result<usize>>) -> u64 {
+        let mut remaining = script.into_iter();
+        let ports: HashSet<u16> = HashSet::new();
+        let aggregator = Mutex::new(FlowAggregator::default());
+        let counted = AtomicU64::new(0);
+        let mut buf = [std::mem::MaybeUninit::<u8>::uninit(); 64];
+        drain_capture(
+            // Once the script runs out, report a timeout: the loop then spins harmlessly until the
+            // window closes, exactly as a quiet interface does.
+            |_| remaining.next().unwrap_or(Err(std::io::ErrorKind::TimedOut.into())),
+            &mut buf,
+            &ports,
+            &aggregator,
+            // Short window: these tests are about control flow, not duration.
+            Duration::from_millis(30),
+            &counted,
+            Instant::now(),
+        );
+        counted.load(Ordering::Relaxed)
+    }
+
+    #[test]
+    fn winsock_noise_does_not_end_the_capture_window() {
+        // The regression this whole classification exists for: a promiscuous socket raises these
+        // routinely, and the packet AFTER them must still be captured.
+        let counted = drive_loop(vec![
+            Err(std::io::Error::from_raw_os_error(10040)), // WSAEMSGSIZE
+            Err(std::io::Error::from_raw_os_error(10054)), // WSAECONNRESET
+            Err(std::io::Error::from_raw_os_error(10052)), // WSAENETRESET
+            Err(std::io::Error::from_raw_os_error(10055)), // WSAENOBUFS
+            Ok(1),
+        ]);
+        assert_eq!(counted, 1, "the read loop must survive routine Winsock noise");
+    }
+
+    #[test]
+    fn a_dead_socket_ends_the_capture_window() {
+        // WSAENOTSOCK: the handle is gone. Reading on would spin until the window closes.
+        let counted = drive_loop(vec![Err(std::io::Error::from_raw_os_error(10038)), Ok(1)]);
+        assert_eq!(counted, 0, "a dead socket must stop the loop, not be read through");
+    }
+
+    #[test]
+    fn every_packet_is_counted_before_the_port_filter() {
+        // The counter must not depend on a packet parsing as a game flow: that is what tells
+        // "captured nothing" apart from "captured, nothing matched".
+        assert_eq!(drive_loop(vec![Ok(1), Ok(1), Ok(0), Ok(1)]), 3);
     }
 
     #[test]
