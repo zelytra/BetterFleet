@@ -14,6 +14,8 @@
     "shots": "node tools/lobby-shots/capture.mjs",
     "tauri:dev": "node scripts/netcap-dev.mjs && tauri dev",
     "tauri:build": "tauri build",
+    "tauri:build:linux": "NO_STRIP=true tauri build",
+    "tauri:build:windows": "node scripts/build-windows.mjs",
     "prettier:write": "npx prettier . --write",
     "prettier:check": "npx prettier . --check"
   },

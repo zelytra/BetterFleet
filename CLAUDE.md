@@ -45,7 +45,11 @@ Run these from inside the module directory. Node scripts are the same shape in `
 
 **Desktop shell (`webapp/`)**
 - `npm run tauri:dev`: run the full native app (spawns the Vite dev server itself).
-- `npm run tauri:build`: production bundle.
+- `npm run tauri:build`: production bundle for the host platform.
+- `npm run tauri:build:linux`: the Linux artifacts CI ships (`.deb` + `.rpm`, no signing key needed).
+- `npm run tauri:build:windows`: the Windows `.exe`, cross-compiled from Linux via `cargo-xwin`
+  (raw exe, no NSIS installer). One-time setup: `rustup target add x86_64-pc-windows-msvc` and
+  `cargo install --locked cargo-xwin`; the script echoes these when missing.
 - `cargo check` / `cargo test` (from `webapp/src-tauri/`): see the Windows note under Gotchas.
 
 **Backend (`backend/`)**
