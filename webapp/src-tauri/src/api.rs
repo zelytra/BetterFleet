@@ -12,11 +12,11 @@ pub struct Api {
     #[cfg_attr(not(windows), allow(dead_code))]
     pub main_menu_port: u16,
     /// Consecutive detection cycles where the game process existed but its UDP socket enumeration
-    /// came back EMPTY (#801). One-off empty cycles are ordinary enumeration hiccups; a count that
-    /// keeps rising for minutes is the signature of a gaming VPN / ping optimizer (ExitLag,
-    /// WTFast, ...) terminating the game's UDP in its own process - detection is structurally blind
-    /// and the frontend uses this to say so. Platform-neutral: maintained by the shared detection
-    /// loop on every OS, reset to 0 whenever the enumeration returns ports or the game closes.
+    /// came back EMPTY (report id 801). One-off empty cycles are ordinary enumeration hiccups; a
+    /// count that keeps rising for minutes means detection is structurally blind - the frontend's
+    /// socketless watchdog then offers the neutral #688 diagnostic, which gathers the evidence.
+    /// No cause is asserted anywhere. Platform-neutral: maintained by the shared detection loop on
+    /// every OS, reset to 0 whenever the enumeration returns ports or the game closes.
     pub no_udp_cycles: u32,
 }
 

@@ -29,7 +29,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { RustSotServer } from "@/objects/fleet/SotServer.ts";
 import { syncGameState } from "@/objects/fleet/GameSync.ts";
 import { observeDetection } from "@/objects/fleet/DetectionWatchdog.ts";
-import { observeInterceptor } from "@/objects/fleet/InterceptorWatchdog.ts";
+import { observeSocketless } from "@/objects/fleet/SocketlessWatchdog.ts";
 import { observeConvergence } from "@/objects/fleet/SessionRecap.ts";
 import { Utils } from "@/objects/utils/Utils.ts";
 import router from "@/router";
@@ -55,8 +55,9 @@ const gameStatusRefresh: number = setInterval(() => {
     );
     // Guided diagnostic (#688): the same poll feeds the silent-detection watchdog.
     observeDetection(UserStore.player as Player);
-    // Interceptor hint (#801): and the socketless-game watchdog behind the VPN banner.
-    observeInterceptor(rustSotServer, UserStore.player as Player);
+    // Socketless watchdog (report id 801): raises the #688 diagnostic offer when the game runs
+    // with no visible UDP sockets for minutes. Neutral by design: no cause is asserted.
+    observeSocketless(rustSotServer, UserStore.player as Player);
     // Shareable recap (#685): and the convergence watchdog behind the "alliance formed" card.
     observeConvergence(UserStore.player as Player);
   });

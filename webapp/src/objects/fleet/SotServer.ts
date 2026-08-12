@@ -21,8 +21,8 @@ export interface RustSotServer {
   status: PlayerStates;
   /**
    * Consecutive detection cycles with the game process alive but its UDP enumeration empty (#801).
-   * A count that keeps rising is the VPN/ping-optimizer interceptor signature the lobby hint is
-   * built on. Optional: older payloads (and most test stubs) simply omit it.
+   * A count that keeps rising means the game exposes no UDP sockets to enumeration; the
+   * socketless watchdog turns that into the #688 diagnostic offer (cause deliberately not asserted). Optional: older payloads (and most test stubs) simply omit it.
    */
   noUdpCycles?: number;
 }

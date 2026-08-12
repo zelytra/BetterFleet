@@ -206,10 +206,6 @@
       "title": "Diagnostica del rilevamento del server"
     },
     "dismiss": "Non ora",
-    "interceptor": {
-      "banner": "Una VPN o un ottimizzatore di ping (ExitLag, WTFast…) sembra intercettare il traffico di gioco — il rilevamento del server non può funzionare finché è attivo.",
-      "dismiss": "Chiudi"
-    },
     "prefill": "Il rilevamento del server è rimasto in silenzio in gioco — diagnostica automatica allegata nei log.",
     "run": "Esegui la diagnostica"
   },

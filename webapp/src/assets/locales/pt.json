@@ -206,10 +206,6 @@
       "title": "Diagnóstico de detecção de servidor"
     },
     "dismiss": "Agora não",
-    "interceptor": {
-      "banner": "Uma VPN ou um otimizador de ping (ExitLag, WTFast…) parece estar interceptando o tráfego do jogo — a detecção de servidor não consegue funcionar enquanto ele estiver ativo.",
-      "dismiss": "Fechar"
-    },
     "prefill": "A detecção de servidor ficou em silêncio em jogo — diagnóstico automático anexado nos logs.",
     "run": "Executar o diagnóstico"
   },

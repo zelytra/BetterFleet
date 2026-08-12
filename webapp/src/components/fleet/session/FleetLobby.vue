@@ -87,16 +87,6 @@
         </button>
       </div>
     </div>
-    <!-- Interceptor hint (#801): shows once when the game runs socketless for minutes - a gaming
-         VPN / ping optimizer owns its UDP, and detection is structurally blind until it is off. -->
-    <div v-if="interceptorHint.visible" class="detection-banner">
-      <p>{{ t("diagnostic.interceptor.banner") }}</p>
-      <div class="actions">
-        <button type="button" class="later" @click="dismissInterceptorHint()">
-          {{ t("diagnostic.interceptor.dismiss") }}
-        </button>
-      </div>
-    </div>
     <!-- Shareable recap (#685): appears once when the alliance converges onto one server. -->
     <div v-if="sessionRecap.visible && sessionRecap.data" class="recap-card">
       <div class="summary">
@@ -344,10 +334,6 @@ import {
   detectionPrompt,
   dismissDetectionPrompt,
 } from "@/objects/fleet/DetectionWatchdog.ts";
-import {
-  dismissInterceptorHint,
-  interceptorHint,
-} from "@/objects/fleet/InterceptorWatchdog.ts";
 import {
   AllianceHint,
   computeHint,
@@ -851,9 +837,9 @@ function onContextAction(action: string) {
     }
   }
 
-  // Guided diagnostic offer (#688): a quiet warning strip between the banner and the tables. The
-  // VPN-interceptor hint (#801) wears the same strip (text + dismiss, no run action) - their
-  // trigger states are mutually exclusive, so they never compete for the slot.
+  // Guided diagnostic offer (#688): a quiet warning strip between the banner and the tables.
+  // Raised by either watchdog - in-game silence (#688) or a socketless game (report id 801) -
+  // always with the same neutral "run a diagnostic?" copy.
   .detection-banner {
     display: flex;
     align-items: center;

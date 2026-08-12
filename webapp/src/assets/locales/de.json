@@ -206,10 +206,6 @@
       "title": "Diagnose der Servererkennung"
     },
     "dismiss": "Nicht jetzt",
-    "interceptor": {
-      "banner": "Ein VPN oder Ping-Optimierer (ExitLag, WTFast…) scheint den Datenverkehr des Spiels abzufangen – die Servererkennung kann nicht funktionieren, solange er aktiv ist.",
-      "dismiss": "Schließen"
-    },
     "prefill": "Die Servererkennung blieb im Spiel stumm – automatische Diagnose in den Logs angehängt.",
     "run": "Diagnose ausführen"
   },

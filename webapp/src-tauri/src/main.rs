@@ -63,7 +63,7 @@ struct GameObject {
     port: u16,
     status: GameStatus,
     /// Consecutive detection cycles with the game process alive but its UDP enumeration empty
-    /// (#801) - the raw signal behind the frontend's VPN/ping-optimizer interceptor hint.
+    /// (report id 801) - the raw signal behind the frontend's socketless diagnostic offer.
     #[serde(rename = "noUdpCycles")]
     no_udp_cycles: u32
 }
