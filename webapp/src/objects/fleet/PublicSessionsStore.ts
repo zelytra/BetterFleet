@@ -32,6 +32,13 @@ let lastFrameAt = 0;
 // session appearing or closing does not feel missed.
 const POLL_INTERVAL_MS = 5000;
 
+// Backoff on repeated refresh failures (#803): a fixed 5s cadence against a failing endpoint is a
+// silent hammer that never heals. Each consecutive failure doubles the wait, capped here; one
+// success snaps back to the normal cadence. The manual Refresh button bypasses the gate on purpose.
+const MAX_BACKOFF_MS = 60_000;
+let consecutiveFailures = 0;
+let nextAttemptAt = 0;
+
 /**
  * The backend sends the session list and the connected-players count together, so both stay in
  * sync whether the snapshot arrives by REST or over the SSE stream.
@@ -57,8 +64,20 @@ async function refresh(): Promise<void> {
   try {
     const response = await new HTTPAxios("public-sessions").get();
     applySnapshot(await response.json());
-  } catch {
-    /* keep the last known snapshot */
+    consecutiveFailures = 0;
+    nextAttemptAt = 0;
+  } catch (e) {
+    // Keep the last known snapshot, but never silently (#803: this catch swallowed a 401 loop for
+    // hours). Say what failed and when the poll will try again; the growing gap keeps it readable.
+    consecutiveFailures += 1;
+    const backoff = Math.min(
+      POLL_INTERVAL_MS * 2 ** consecutiveFailures,
+      MAX_BACKOFF_MS,
+    );
+    nextAttemptAt = Date.now() + backoff;
+    error(
+      `[PublicSessionsStore] refresh failed (${e}); retrying in ${Math.round(backoff / 1000)}s`,
+    );
   }
   state.loading = false;
 }
@@ -123,6 +142,9 @@ function startPolling(): void {
   poll = setInterval(() => {
     if (Date.now() - lastFrameAt < POLL_INTERVAL_MS) {
       return; // the stream is delivering; nothing to do
+    }
+    if (Date.now() < nextAttemptAt) {
+      return; // backing off after failures; the manual Refresh button is not gated
     }
     void refresh();
   }, POLL_INTERVAL_MS) as unknown as number;
