@@ -77,6 +77,7 @@ import {
 } from "@/objects/report/Report.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import { invoke } from "@tauri-apps/api/core";
+import { copyText } from "@/objects/utils/Clipboard.ts";
 import { UserStore } from "@/objects/stores/UserStore.ts";
 
 const { t } = useI18n();
@@ -132,8 +133,10 @@ function runDiagnostic(note: string) {
   })();
 }
 
-function copyDiag() {
-  navigator.clipboard.writeText(diagOutput.value);
+async function copyDiag() {
+  // Through the Tauri clipboard plugin (WebKitGTK's own API rejects on Linux); only a copy that
+  // actually happened earns the confirmation alert.
+  if (!(await copyText(diagOutput.value))) return;
   alerts?.sendAlert({
     title: t("diagnostic.capture.copied"),
     content: "",

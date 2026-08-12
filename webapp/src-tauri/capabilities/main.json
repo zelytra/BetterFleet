@@ -21,6 +21,7 @@
     "shell:allow-open",
     "oauth:allow-start",
     "oauth:allow-cancel",
+    "clipboard-manager:allow-write-text",
     "updater:default",
     "process:allow-restart"
   ]
