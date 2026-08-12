@@ -11,6 +11,13 @@ pub struct Api {
     // Populated and read only on the Windows capture path; reserved on Linux until the port (#725).
     #[cfg_attr(not(windows), allow(dead_code))]
     pub main_menu_port: u16,
+    /// Consecutive detection cycles where the game process existed but its UDP socket enumeration
+    /// came back EMPTY (report id 801). One-off empty cycles are ordinary enumeration hiccups; a
+    /// count that keeps rising for minutes means detection is structurally blind - the frontend's
+    /// socketless watchdog then offers the neutral #688 diagnostic, which gathers the evidence.
+    /// No cause is asserted anywhere. Platform-neutral: maintained by the shared detection loop on
+    /// every OS, reset to 0 whenever the enumeration returns ports or the game closes.
+    pub no_udp_cycles: u32,
 }
 
 #[derive(PartialEq, Debug, Clone, Serialize)]
@@ -30,6 +37,7 @@ impl Api {
             server_port: 0,
             last_updated_server_ip: Instant::now(),
             main_menu_port: 0,
+            no_udp_cycles: 0,
         }
     }
 
@@ -63,6 +71,13 @@ impl Api {
     */
     pub async fn get_last_updated_server_ip(&self) -> Instant {
         self.last_updated_server_ip
+    }
+
+    /**
+    * Consecutive empty-UDP-enumeration cycles while the game process exists (#801); see the field.
+    */
+    pub async fn get_no_udp_cycles(&self) -> u32 {
+        self.no_udp_cycles
     }
 }
 

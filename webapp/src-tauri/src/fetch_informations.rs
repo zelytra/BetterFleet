@@ -127,6 +127,21 @@ pub(crate) fn drop_quarantined(
         .collect()
 }
 
+/// Next value of the consecutive empty-UDP-enumeration counter (#801), the raw signal behind the
+/// frontend's socketless watchdog (which raises the neutral #688 diagnostic offer). Counts cycles where the
+/// game process exists but its UDP port enumeration came back empty; any cycle that finds ports
+/// (or the game closing) resets it. One or two empty cycles are ordinary enumeration hiccups
+/// (get_udp_connections returns empty on error too) - the field logs of #801 show the real
+/// socketless signature as an empty enumeration EVERY cycle for many minutes, which is what a
+/// monotonically rising count encodes. Pure so the reset/increment rules are unit-tested.
+pub(crate) fn track_no_udp_cycles(prev: u32, game_running: bool, ports_empty: bool) -> u32 {
+    if game_running && ports_empty {
+        prev.saturating_add(1)
+    } else {
+        0
+    }
+}
+
 pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
     let api_base = Arc::new(RwLock::new(Api::new()));
     let api = Arc::clone(&api_base);
@@ -165,6 +180,8 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             // No game process -> closed.
             if pids.is_empty() {
                 let mut api_lock = api.write().await;
+                api_lock.no_udp_cycles =
+                    track_no_udp_cycles(api_lock.no_udp_cycles, false, true);
                 if api_lock.game_status != GameStatus::Closed {
                     api_lock.game_status = GameStatus::Closed;
                     api_lock.server_ip = String::new();
@@ -204,6 +221,13 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             // failed netstat call. Hold the InGame state instead and let the 12s host-silence
             // grace decide, exactly as for a quiet capture window.
             let udp_ports = game_udp_candidate_ports(&game_pids);
+            {
+                // Socketless signal (report id 801): count consecutive empty enumerations while the game
+                // process exists; any cycle that finds ports resets it right below.
+                let mut api_lock = api.write().await;
+                api_lock.no_udp_cycles =
+                    track_no_udp_cycles(api_lock.no_udp_cycles, true, udp_ports.is_empty());
+            }
             if udp_ports.is_empty() {
                 if game_connection.is_none() {
                     let mut api_lock = api.write().await;
@@ -772,6 +796,24 @@ pub async fn create_raw_socket(socket_addr: SocketAddr) -> Result<UdpSocket> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // The socketless signal (report id 801): the counter must ride through the whole "game process alive,
+    // enumeration empty" stretch and reset the moment either half stops holding.
+    #[test]
+    fn empty_enumerations_accumulate_only_while_the_game_runs() {
+        // A blind stretch: the count rises cycle after cycle - the socketless signature.
+        let mut cycles = 0;
+        for _ in 0..3 {
+            cycles = track_no_udp_cycles(cycles, true, true);
+        }
+        assert_eq!(cycles, 3);
+        // Ports enumerated again: an ordinary launch finishing (or a one-off hiccup ending) resets.
+        assert_eq!(track_no_udp_cycles(cycles, true, false), 0);
+        // Game gone: whatever was accumulated dies with the process.
+        assert_eq!(track_no_udp_cycles(cycles, false, true), 0);
+        // Saturating, not wrapping: a blindness lasting days must not reset the signal.
+        assert_eq!(track_no_udp_cycles(u32::MAX, true, true), u32::MAX);
+    }
 
     #[test]
     fn dynamic_sleep_matches_game_state() {

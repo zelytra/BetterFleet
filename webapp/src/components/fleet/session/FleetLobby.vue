@@ -838,6 +838,8 @@ function onContextAction(action: string) {
   }
 
   // Guided diagnostic offer (#688): a quiet warning strip between the banner and the tables.
+  // Raised by either watchdog - in-game silence (#688) or a socketless game (report id 801) -
+  // always with the same neutral "run a diagnostic?" copy.
   .detection-banner {
     display: flex;
     align-items: center;

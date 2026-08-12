@@ -19,4 +19,10 @@ export interface RustSotServer {
   ip: string;
   port: number;
   status: PlayerStates;
+  /**
+   * Consecutive detection cycles with the game process alive but its UDP enumeration empty (#801).
+   * A count that keeps rising means the game exposes no UDP sockets to enumeration; the
+   * socketless watchdog turns that into the #688 diagnostic offer (cause deliberately not asserted). Optional: older payloads (and most test stubs) simply omit it.
+   */
+  noUdpCycles?: number;
 }
