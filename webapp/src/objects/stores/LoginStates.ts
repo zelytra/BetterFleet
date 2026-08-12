@@ -80,8 +80,12 @@ export const keycloakStore = reactive({
       const tokens = await BrowserAuth.restore();
       if (tokens) this.applyTokens(tokens);
     } catch (e) {
+      // Includes RefreshUnavailableError - starting offline, or before the VPN is up. The stored
+      // token is deliberately kept in that case, so the session comes back on the next refresh
+      // (or the moment the player presses "sign in", which restores before opening a browser).
       logError(`OIDC restore failed: ${e}`);
     } finally {
+      // Either way the screen must move on, or an offline player waits on a ship forever.
       this.isReady = true;
     }
   },
@@ -145,6 +149,12 @@ export const keycloakStore = reactive({
     if (!refreshInFlight) {
       refreshInFlight = (async () => {
         try {
+          // Two failure shapes, deliberately different: restore() returns null when Keycloak
+          // REJECTED the token - the session is over - and throws RefreshUnavailableError when it
+          // could not be reached at all. Only the first signs the player out. A thrown error just
+          // propagates: the caller drops its stale bearer rather than replaying it (#803), the
+          // store stays signed in, and the next tick recovers - where a reset() here would end a
+          // session over a Wi-Fi blip or a VPN re-handshake.
           const tokens = await BrowserAuth.restore();
           if (!tokens) {
             this.reset();

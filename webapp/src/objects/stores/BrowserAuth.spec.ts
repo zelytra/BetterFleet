@@ -97,6 +97,7 @@ import {
   accessTokenExpiry,
   usernameFromIdToken,
   LoginAbortedError,
+  RefreshUnavailableError,
 } from "@/objects/stores/BrowserAuth.ts";
 
 const REFRESH_KEY = "kc-refresh-token";
@@ -198,6 +199,23 @@ describe("restore", () => {
     expect(httpCalls[0].body.get("refresh_token")).toBe("rt-linux");
     expect(localStorage.getItem(REFRESH_KEY)).toBe("rt-rotated");
     expect(localStorage.getItem(LEGACY_REFRESH_KEY)).toBeNull();
+  });
+
+  it("keeps the stored token when Keycloak cannot be reached", async () => {
+    // The distinction the whole flow rests on: an unreachable server says nothing about the
+    // session, so deleting the token here would turn a Wi-Fi blip into a full browser re-login.
+    localStorage.setItem(REFRESH_KEY, "rt-live");
+    httpQueue.push({ ok: false, status: 0, payload: {}, reject: true });
+    await expect(restore()).rejects.toBeInstanceOf(RefreshUnavailableError);
+    expect(localStorage.getItem(REFRESH_KEY)).toBe("rt-live");
+  });
+
+  it("keeps the stored token when Keycloak answers 5xx", async () => {
+    // A restarting Keycloak, or a proxy 502: the server is failing, not judging the session.
+    localStorage.setItem(REFRESH_KEY, "rt-live");
+    httpQueue.push({ ok: false, status: 503, payload: {} });
+    await expect(restore()).rejects.toBeInstanceOf(RefreshUnavailableError);
+    expect(localStorage.getItem(REFRESH_KEY)).toBe("rt-live");
   });
 
   it("clears the stored token and answers null when Keycloak rejects it", async () => {

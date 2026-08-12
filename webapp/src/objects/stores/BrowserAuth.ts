@@ -87,18 +87,45 @@ function storedRefreshToken(): string | null {
   return legacy;
 }
 
+/**
+ * Keycloak could not be reached, or answered that it is having a bad day - as opposed to answering
+ * that the session is over. The distinction decides whether the stored refresh token survives, so
+ * it is a type rather than a flag: losing a 30-day session to a Wi-Fi blip would be worse than the
+ * expiry this flow exists to prevent.
+ */
+export class RefreshUnavailableError extends Error {
+  constructor(cause: string) {
+    super(`refresh unavailable: ${cause}`);
+    this.name = "RefreshUnavailableError";
+  }
+}
+
 // `plugin-http` issues the request from Rust, so it is not subject to the webview's CORS on its
 // custom-scheme origin, the reason the exchange lives here rather than in a browser OIDC library.
+//
+// Throws RefreshUnavailableError when the answer says nothing about the session (no route, DNS,
+// TLS, a proxy 502, Keycloak restarting) and a plain Error when Keycloak actively rejected the
+// request. The connect is bounded: without it, an unreachable host leaves the caller - and the
+// startup restore behind it - awaiting forever, which shows as an auth screen that never resolves.
 async function tokenRequest(body: Record<string, string>): Promise<OidcTokens> {
-  const response = await fetch(`${oidcBase()}/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams(body).toString(),
-  });
+  let response;
+  try {
+    response = await fetch(`${oidcBase()}/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(body).toString(),
+      connectTimeout: 8000,
+    });
+  } catch (e) {
+    throw new RefreshUnavailableError(`${e}`);
+  }
   if (!response.ok) {
-    throw new Error(
-      `Keycloak token endpoint returned ${response.status}: ${await response.text()}`,
-    );
+    const detail = `${response.status}: ${await response.text()}`;
+    // 5xx (and anything above) is the server failing, not a verdict on the session.
+    if (response.status >= 500) {
+      throw new RefreshUnavailableError(detail);
+    }
+    throw new Error(`Keycloak token endpoint returned ${detail}`);
   }
   return (await response.json()) as OidcTokens;
 }
@@ -285,7 +312,8 @@ export async function abort(): Promise<void> {
 }
 
 // Silent restore on startup / refresh: trade the persisted refresh token for fresh ones. Returns null
-// (and clears the stored token) when there is no session or it has expired.
+// (and clears the stored token) when there is no session or Keycloak rejected it; throws
+// RefreshUnavailableError - keeping the token - when Keycloak could not be reached at all.
 export async function restore(): Promise<OidcTokens | null> {
   const refreshToken = storedRefreshToken();
   if (!refreshToken) return null;
@@ -297,7 +325,13 @@ export async function restore(): Promise<OidcTokens | null> {
     });
     localStorage.setItem(REFRESH_KEY, tokens.refresh_token);
     return tokens;
-  } catch {
+  } catch (e) {
+    if (e instanceof RefreshUnavailableError) {
+      // Keep the token: the session may well still be valid, and the caller can try again on the
+      // next tick. Deleting it here would turn a network blip into a full browser re-login.
+      throw e;
+    }
+    // Keycloak rejected the token (expired, revoked, realm reset): the session is over.
     localStorage.removeItem(REFRESH_KEY);
     return null;
   }

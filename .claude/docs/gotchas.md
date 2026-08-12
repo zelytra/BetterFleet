@@ -107,12 +107,16 @@ back into the problem.
   it opens the hosted Keycloak page in the **system browser**, captures the code on a **loopback
   server at the fixed port 47823** (`REDIRECT_PORT`, redirect `http://localhost:47823/callback`)
   with **PKCE**, and runs the token exchange from **Rust via `@tauri-apps/plugin-http`**. The
-  `offline_access` scope yields a refresh token that survives restarts and slides Keycloak's 30-day
-  offline-idle window on every refresh — that is what fixed the recurring "session dead after ~10h"
-  reports: the old in-webview `keycloak-js` login (Windows/macOS) had nothing outliving SSO Session
-  Max, and `keycloak-js` is now gone entirely (`keycloakStore.keycloak` is a plain token holder with
-  the same shape). The realm must register `http://localhost:47823/callback` as a valid redirect
-  URI; don't reintroduce a webview-hosted login.
+  `offline_access` scope yields a refresh token **persisted to localStorage**, so a session survives
+  a restart and slides Keycloak's 30-day offline-idle window on every refresh. That is the fix for
+  the recurring dead-session reports: the old in-webview `keycloak-js` login kept nothing on disk
+  and leaned on the webview's SSO cookie, so anything that dropped it (a cleared webview profile, a
+  session cap, a reinstall) meant a full re-login. `keycloak-js` is gone entirely
+  (`keycloakStore.keycloak` is a plain token holder with the same shape). A refresh that fails
+  because Keycloak is **unreachable** must never delete the stored token or sign the player out —
+  only an actual rejection ends a session (`RefreshUnavailableError`). The realm must register
+  `http://localhost:47823/callback` as a valid redirect URI; don't reintroduce a webview-hosted
+  login.
 
 ## Release & packaging
 

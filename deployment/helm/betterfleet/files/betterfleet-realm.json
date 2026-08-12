@@ -634,7 +634,7 @@
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
         "http://localhost:47823/callback",
-        "https://tauri.localhost/*",
+        "http://tauri.localhost/*",
         "http://localhost:5173/*"
       ],
       "webOrigins": [
