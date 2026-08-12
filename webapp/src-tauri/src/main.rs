@@ -61,7 +61,11 @@ const LOG_LEVEL: LevelFilter = LevelFilter::Info;
 struct GameObject {
     ip: String,
     port: u16,
-    status: GameStatus
+    status: GameStatus,
+    /// Consecutive detection cycles with the game process alive but its UDP enumeration empty
+    /// (#801) - the raw signal behind the frontend's VPN/ping-optimizer interceptor hint.
+    #[serde(rename = "noUdpCycles")]
+    no_udp_cycles: u32
 }
 
 // Here's how to call Rust functions from frontend : https://tauri.app/v1/guides/features/command/
@@ -449,7 +453,8 @@ async fn get_game_object(api: State<'_, Arc<RwLock<Api>>>) -> Result<GameObject,
     let game_object = GameObject {
         ip: api_lock.get_server_ip().await,
         port: api_lock.get_server_port().await,
-        status: api_lock.get_game_status().await
+        status: api_lock.get_game_status().await,
+        no_udp_cycles: api_lock.get_no_udp_cycles().await
     };
 
     Ok(game_object.into())

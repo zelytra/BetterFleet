@@ -200,6 +200,10 @@
       "title": "Diagnostyka wykrywania serwera"
     },
     "dismiss": "Nie teraz",
+    "interceptor": {
+      "banner": "Wygląda na to, że VPN lub optymalizator pingu (ExitLag, WTFast…) przechwytuje ruch gry — dopóki jest aktywny, wykrywanie serwera nie może działać.",
+      "dismiss": "Zamknij"
+    },
     "prefill": "Wykrywanie serwera milczało w grze — automatyczna diagnostyka dołączona do logów.",
     "run": "Uruchom diagnostykę"
   },

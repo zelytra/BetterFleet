@@ -200,6 +200,10 @@
       "title": "Server detection diagnostic"
     },
     "dismiss": "Not now",
+    "interceptor": {
+      "banner": "A VPN or ping optimizer (ExitLag, WTFast…) seems to be intercepting the game's traffic — server detection cannot work while it is active.",
+      "dismiss": "Dismiss"
+    },
     "prefill": "Server detection stayed silent in game — automatic diagnostic attached in the logs.",
     "run": "Run the diagnostic"
   },
