@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "Sesión expirada",
-        "content": "Tu sesión ha expirado: reinicia la aplicación o vuelve a iniciar sesión."
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {

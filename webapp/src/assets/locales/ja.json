@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "セッションの有効期限切れ",
-        "content": "セッションの有効期限が切れました。アプリを再起動するか、再度ログインしてください。"
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {

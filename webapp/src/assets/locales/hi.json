@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "सत्र समाप्त हो गया",
-        "content": "आपका सत्र समाप्त हो गया है — ऐप को पुनः आरंभ करें या फिर से लॉगिन करें।"
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {

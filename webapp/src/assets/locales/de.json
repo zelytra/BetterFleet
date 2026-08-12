@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "Sitzung abgelaufen",
-        "content": "Deine Sitzung ist abgelaufen – starte die App neu oder melde dich erneut an."
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {
