@@ -317,6 +317,17 @@ async fn main() {
     #[cfg(target_os = "linux")]
     std::env::set_var("GDK_BACKEND", "x11");
 
+    // WebKitGTK's DMABUF renderer (2.42+) glitches whole windows to black on a range of
+    // driver/compositor stacks - typically after the window was occluded or moved across
+    // screens/workspaces - and only a relaunch repaints. Fall back to the shared-memory path, which
+    // trades a little compositing throughput for windows that reliably repaint. Guarded so a user
+    // (or a future us) can override with WEBKIT_DISABLE_DMABUF_RENDERER=0; must also run before GTK
+    // initialises.
+    #[cfg(target_os = "linux")]
+    if std::env::var_os("WEBKIT_DISABLE_DMABUF_RENDERER").is_none() {
+        std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+    }
+
     let api_arc = fetch_informations::init().await.expect("Failed to initialize API");
 
     // Rich Presence stays entirely dormant until a Discord Application ID is provided (#684).

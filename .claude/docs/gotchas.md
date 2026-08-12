@@ -22,6 +22,12 @@ back into the problem.
   in the config). Native audio is played from Rust (`rodio`, embedded mp3) precisely because the
   webview can't be relied on to play sound while occluded. Don't move timer/audio logic back into the
   webview assuming it keeps ticking while covered.
+- **WebKitGTK can glitch the whole Linux window to black until relaunch.** Its DMABUF renderer
+  (webkit2gtk 2.42+) fails to repaint on a range of driver/compositor stacks, typically after the
+  window was occluded or moved across screens/workspaces. `main.rs` sets
+  `WEBKIT_DISABLE_DMABUF_RENDERER=1` (before GTK init, only when unset, so it stays overridable) to
+  fall back to the shared-memory path. Don't remove it because "it works on my GPU" - the glitch is
+  stack-dependent and reported from the field.
 - **Linux native integration is X11-first, and the overlay needs active stacking help (#731).** The
   set-sail auto-click (`rise_anchor`) and the overlay float are Linux paths gated to `target_os =
   "linux"` (`window_interaction_linux.rs`, `overlay_x11.rs`, shared `x11_support.rs`); Windows/macOS
