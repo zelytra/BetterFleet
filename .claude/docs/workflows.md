@@ -28,7 +28,9 @@ Commands are run from inside each module's directory unless noted. Frontend modu
 | Command | Does |
 |---|---|
 | `npm run tauri:dev` | Run the whole native app (it starts its own Vite dev server) |
-| `npm run tauri:build` | Production bundle |
+| `npm run tauri:build` | Production bundle for the host platform |
+| `npm run tauri:build:linux` | The `.deb`/`.rpm` CI ships (`NO_STRIP=true`, like the release job) |
+| `npm run tauri:build:windows` | Windows `.exe` cross-compiled from Linux (`scripts/build-windows.mjs`, cargo-xwin) |
 | `cargo check` / `cargo test` (in `webapp/src-tauri/`) | Rust: see the Windows note in [gotchas.md](gotchas.md) |
 
 **Backend: `backend/`**
