@@ -447,7 +447,7 @@
     },
     "statsHint": {
       "dismiss": "Cacher",
-      "text": "Meilleure fenêtre : {range} ({best} % des alliances réussissent — en ce moment : {now} %)",
+      "text": "Meilleure fenêtre : {range} ({best} % des alliances réussissent. En ce moment : {now} %)",
       "textNoNow": "Meilleure fenêtre : {range} ({best} % des alliances réussissent)"
     },
     "status": {
