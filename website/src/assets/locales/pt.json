@@ -355,7 +355,8 @@
   },
   "loading": {
     "stats": "Lendo o diário de bordo…",
-    "globe": "Desenrolando o mapa…"
+    "globe": "Desenrolando o mapa…",
+    "reports": "Buscando os relatórios…"
   },
   "downloads": {
     "title": "Downloads",
@@ -435,5 +436,14 @@
       },
       "updates": "No Linux, as atualizações são manuais — não há atualização automática. Para atualizar, baixe o pacote mais recente nesta página e reinstale-o por cima da sua versão atual."
     }
+  },
+  "reports": {
+    "entry": "Relatório n.º {number}",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "page": "Página {page} de {total}",
+    "empty": "Ainda não há relatórios.",
+    "pagination": "Paginação dos relatórios",
+    "error": "Não foi possível carregar os relatórios. Tente novamente mais tarde."
   }
 }

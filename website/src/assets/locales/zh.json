@@ -355,7 +355,8 @@
   },
   "loading": {
     "stats": "正在读取日志…",
-    "globe": "正在展开图表…"
+    "globe": "正在展开图表…",
+    "reports": "正在获取报告…"
   },
   "downloads": {
     "title": "下载量",
@@ -435,5 +436,14 @@
       },
       "updates": "Linux 上的更新需要手动进行——没有自动更新。要更新，请从本页面下载最新的安装包，并覆盖安装到你当前的版本之上。"
     }
+  },
+  "reports": {
+    "entry": "报告第 {number} 号",
+    "previous": "上一页",
+    "next": "下一页",
+    "page": "第 {page} 页 / 共 {total} 页",
+    "empty": "暂无报告。",
+    "pagination": "报告分页",
+    "error": "无法加载报告，请稍后再试。"
   }
 }

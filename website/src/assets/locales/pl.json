@@ -355,7 +355,8 @@
   },
   "loading": {
     "stats": "Odczytywanie dziennika pokładowego…",
-    "globe": "Rozwijanie mapy…"
+    "globe": "Rozwijanie mapy…",
+    "reports": "Pobieranie zgłoszeń…"
   },
   "downloads": {
     "title": "Pobrania",
@@ -435,5 +436,14 @@
       },
       "updates": "Aktualizacje na Linuksie są ręczne — nie ma automatycznych aktualizacji. Aby zaktualizować, pobierz najnowszy pakiet z tej strony i zainstaluj go na obecnej wersji."
     }
+  },
+  "reports": {
+    "entry": "Zgłoszenie nr {number}",
+    "previous": "Poprzednia",
+    "next": "Następna",
+    "page": "Strona {page} z {total}",
+    "empty": "Brak zgłoszeń.",
+    "pagination": "Paginacja zgłoszeń",
+    "error": "Nie udało się wczytać zgłoszeń. Spróbuj ponownie później."
   }
 }

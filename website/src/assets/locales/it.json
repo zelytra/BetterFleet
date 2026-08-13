@@ -355,7 +355,8 @@
   },
   "loading": {
     "stats": "Lettura del giornale di bordo…",
-    "globe": "La carta viene srotolata…"
+    "globe": "La carta viene srotolata…",
+    "reports": "Recupero delle segnalazioni…"
   },
   "downloads": {
     "title": "Download",
@@ -435,5 +436,14 @@
       },
       "updates": "Su Linux gli aggiornamenti sono manuali — non c'è aggiornamento automatico. Per aggiornare, scarica l'ultimo pacchetto da questa pagina e reinstallalo sopra la versione attuale."
     }
+  },
+  "reports": {
+    "entry": "Segnalazione n. {number}",
+    "previous": "Precedente",
+    "next": "Successivo",
+    "page": "Pagina {page} di {total}",
+    "empty": "Ancora nessuna segnalazione.",
+    "pagination": "Paginazione delle segnalazioni",
+    "error": "Non è stato possibile caricare le segnalazioni. Riprova più tardi."
   }
 }
