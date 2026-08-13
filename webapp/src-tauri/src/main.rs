@@ -558,8 +558,14 @@ fn rise_anchor() -> ClickOutcome {
 }
 
 /// Whether a window handle belongs to a running `SoTGame.exe`.
+///
+/// Asks about that one process rather than listing them all: `find_pid_of` builds a
+/// `System::new_all()` and refreshes everything - processes, disks, networks - which is far too
+/// heavy here. This runs at countdown zero, in front of the click, and the click's timing is the
+/// whole feature.
 #[cfg(windows)]
 fn window_belongs_to_game(window_handle: winapi::shared::windef::HWND) -> bool {
+    use sysinfo::{Pid, ProcessRefreshKind, System};
     use winapi::um::winuser::GetWindowThreadProcessId;
 
     let mut pid: u32 = 0;
@@ -567,9 +573,15 @@ fn window_belongs_to_game(window_handle: winapi::shared::windef::HWND) -> bool {
     if pid == 0 {
         return false;
     }
-    fetch_informations::find_pid_of("SoTGame.exe")
-        .iter()
-        .any(|game_pid| game_pid.parse::<u32>().ok() == Some(pid))
+
+    let pid = Pid::from_u32(pid);
+    let mut system = System::new();
+    // Just the name: no command line, no environment, no disk usage.
+    system.refresh_process_specifics(pid, ProcessRefreshKind::new());
+    match system.process(pid) {
+        Some(process) => process.name().eq_ignore_ascii_case("SoTGame.exe"),
+        None => false,
+    }
 }
 
 // Linux/X11 port (#731): locate the Sea of Thieves window and click "raise anchor" via XTEST. The
