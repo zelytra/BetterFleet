@@ -355,7 +355,8 @@
   },
   "loading": {
     "stats": "Leyendo el cuaderno de bitácora…",
-    "globe": "Desplegando la carta…"
+    "globe": "Desplegando la carta…",
+    "reports": "Recuperando los informes…"
   },
   "downloads": {
     "title": "Descargas",
@@ -435,5 +436,12 @@
       },
       "updates": "En Linux las actualizaciones son manuales: no hay actualización automática. Para actualizar, descarga el último paquete de esta página y reinstálalo sobre tu versión actual."
     }
+  },
+  "reports": {
+    "entry": "Informe n.º {number}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "page": "Página {page} de {total}",
+    "empty": "Aún no hay informes."
   }
 }

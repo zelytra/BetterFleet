@@ -355,7 +355,8 @@
   },
   "loading": {
     "stats": "Das Logbuch wird gelesen…",
-    "globe": "Die Seekarte wird entrollt…"
+    "globe": "Die Seekarte wird entrollt…",
+    "reports": "Berichte werden geholt…"
   },
   "downloads": {
     "title": "Downloads",
@@ -435,5 +436,12 @@
       },
       "updates": "Updates unter Linux erfolgen manuell — es gibt keine automatische Aktualisierung. Zum Aktualisieren lädst du das neueste Paket von dieser Seite herunter und installierst es über deine aktuelle Version."
     }
+  },
+  "reports": {
+    "entry": "Bericht Nr. {number}",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "page": "Seite {page} von {total}",
+    "empty": "Noch keine Berichte."
   }
 }

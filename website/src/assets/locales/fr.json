@@ -355,7 +355,8 @@
   },
   "loading": {
     "stats": "Lecture du journal de bord…",
-    "globe": "Déroulage de la carte…"
+    "globe": "Déroulage de la carte…",
+    "reports": "Récupération des rapports…"
   },
   "downloads": {
     "title": "Téléchargements",
@@ -435,5 +436,12 @@
       },
       "updates": "Sur Linux, les mises à jour sont manuelles — il n'y a pas de mise à jour automatique. Pour mettre à jour, téléchargez le dernier paquet depuis cette page et réinstallez-le par-dessus votre version actuelle."
     }
+  },
+  "reports": {
+    "entry": "Rapport n°{number}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {page} sur {total}",
+    "empty": "Aucun rapport pour le moment."
   }
 }

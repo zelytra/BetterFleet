@@ -355,7 +355,8 @@
   },
   "loading": {
     "stats": "Reading the logs…",
-    "globe": "Unrolling the chart…"
+    "globe": "Unrolling the chart…",
+    "reports": "Fetching the reports…"
   },
   "downloads": {
     "title": "Downloads",
@@ -435,5 +436,12 @@
       },
       "updates": "Updates on Linux are manual — there's no auto-update. To update, download the latest package from this page and reinstall it over your current version."
     }
+  },
+  "reports": {
+    "entry": "Report n°{number}",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page} of {total}",
+    "empty": "No reports yet."
   }
 }

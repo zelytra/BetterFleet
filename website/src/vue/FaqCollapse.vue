@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { copyText } from "@/objects/Clipboard.ts";
 
 const { t } = useI18n();
@@ -52,15 +52,24 @@ async function copyLink() {
   }, 1000);
 }
 
-onMounted(() => {
-  // Exact hash match, not includes(): "#report-80" must not open "#report-801". Matching cards
-  // also scroll into view - reports mount after an async fetch, long past the browser's own
-  // hash-scroll attempt, so without this a shared deep link landed at the top of the page.
+// Exact hash match, not includes(): "#report-80" must not open "#report-801". Matching cards also
+// scroll into view - reports mount after an async fetch, long past the browser's own hash-scroll
+// attempt, so without this a shared deep link landed at the top of the page.
+function openIfTargeted() {
   if (props.id && window.location.hash === "#" + props.id) {
     deploy.value = true;
     document.getElementById(props.id)?.scrollIntoView({ block: "start" });
   }
+}
+
+onMounted(() => {
+  openIfTargeted();
+  // Also on hashchange, not just on mount: following a link to another card on a page already open
+  // changes the hash without remounting anything, so the card would otherwise stay shut.
+  window.addEventListener("hashchange", openIfTargeted);
 });
+
+onUnmounted(() => window.removeEventListener("hashchange", openIfTargeted));
 </script>
 
 <style scoped lang="scss">
