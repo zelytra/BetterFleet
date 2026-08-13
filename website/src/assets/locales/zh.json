@@ -442,6 +442,8 @@
     "previous": "上一页",
     "next": "下一页",
     "page": "第 {page} 页 / 共 {total} 页",
-    "empty": "暂无报告。"
+    "empty": "暂无报告。",
+    "pagination": "报告分页",
+    "error": "无法加载报告，请稍后再试。"
   }
 }

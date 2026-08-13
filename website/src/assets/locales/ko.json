@@ -356,7 +356,7 @@
   "loading": {
     "stats": "항해 일지를 읽는 중…",
     "globe": "해도를 펼치는 중…",
-    "reports": "리포트를 가져오는 중…"
+    "reports": "신고를 가져오는 중…"
   },
   "downloads": {
     "title": "다운로드",
@@ -438,10 +438,12 @@
     }
   },
   "reports": {
-    "entry": "리포트 {number}번",
+    "entry": "신고 {number}번",
     "previous": "이전",
     "next": "다음",
     "page": "{total}페이지 중 {page}페이지",
-    "empty": "아직 리포트가 없습니다."
+    "empty": "아직 신고가 없습니다.",
+    "pagination": "신고 페이지 이동",
+    "error": "신고를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."
   }
 }

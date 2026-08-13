@@ -7,43 +7,51 @@
     <!-- The anchor uses the DATABASE id (#report-801), not the rank: the rank of a given report is
          stable, but the anchor has to survive being computed from a different page size, so shared
          links and the Discord webhook's quick access stay pointed at the same report forever. -->
-    <FaqCollapse
-      v-for="(report, index) of reports"
-      :id="'report-' + report.id"
-      :key="report.id"
-      url="reports"
-      :title="
-        t('reports.entry', { number: rankOf(index) }) +
-        ' | ' +
-        formatReportDate(report.reportingDate, locale) +
-        (report.version ? ' | v' + report.version : '') +
-        (report.username ? ' | ' + report.username : '')
-      "
-    >
-      <div class="content-wrapper">
-        <p class="message">
-          {{ report.message }}
-        </p>
-        <p class="logs">
-          {{ report.logs }}
-        </p>
-        <p class="os">
-          {{ report.device }}
-        </p>
-      </div>
-    </FaqCollapse>
+    <div class="rows" :class="{ swapping: loading && reports.length > 0 }">
+      <FaqCollapse
+        v-for="(report, index) of reports"
+        :id="'report-' + report.id"
+        :key="report.id"
+        url="reports"
+        :title="
+          t('reports.entry', { number: rankOf(index) }) +
+          ' | ' +
+          formatReportDate(report.reportingDate, locale) +
+          (report.version ? ' | v' + report.version : '') +
+          (report.username ? ' | ' + report.username : '')
+        "
+      >
+        <div class="content-wrapper">
+          <p class="message">
+            {{ report.message }}
+          </p>
+          <p class="logs">
+            {{ report.logs }}
+          </p>
+          <p class="os">
+            {{ report.device }}
+          </p>
+        </div>
+      </FaqCollapse>
+    </div>
 
-    <!-- The wait has its own box so the page does not jump when a page swaps in, and the ship
-         inside it rides `showLoader`, so a warm response swaps the rows in without a flicker. -->
-    <div v-if="loading" class="loading" aria-busy="true">
+    <!-- The ship only takes over when there is nothing to keep on screen (the first load). A page
+         turn leaves the previous rows in place, dimmed and aria-busy, so the list swaps rather than
+         collapsing to a loader and back - which is the jump this box used to cause. -->
+    <div v-if="loading && !reports.length" class="loading" aria-busy="true">
       <BoatLoader v-if="showLoader" :label="t('loading.reports')" :size="140" />
     </div>
-    <p v-else-if="!reports.length" class="empty">{{ t("reports.empty") }}</p>
+    <p v-else-if="failed" class="empty" role="alert">
+      {{ t("reports.error") }}
+    </p>
+    <p v-else-if="!loading && !reports.length" class="empty">
+      {{ t("reports.empty") }}
+    </p>
 
     <nav
       v-if="pageCount > 1"
       class="pager"
-      :aria-label="t('reports.page', { page: page + 1, total: pageCount })"
+      :aria-label="t('reports.pagination')"
     >
       <button
         type="button"
@@ -52,9 +60,17 @@
       >
         {{ t("reports.previous") }}
       </button>
-      <span class="position">{{
-        t("reports.page", { page: page + 1, total: pageCount })
-      }}</span>
+      <!-- Focus lands here after a page turn: the button that was clicked can become disabled on
+           the first or last page, which would otherwise drop keyboard focus to <body>. It doubles
+           as the live region announcing the swap. -->
+      <span
+        ref="position"
+        class="position"
+        tabindex="-1"
+        role="status"
+        aria-live="polite"
+        >{{ t("reports.page", { page: page + 1, total: pageCount }) }}</span
+      >
       <button
         type="button"
         :disabled="page >= pageCount - 1 || loading"
@@ -69,7 +85,7 @@
 <script setup lang="ts">
 import FaqCollapse from "@/vue/FaqCollapse.vue";
 import BoatLoader from "@/vue/BoatLoader.vue";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { formatReportDate, ReportInterface } from "@/objects/BugReport.ts";
 import { HTTPAxios } from "@/objects/HTTPAxios.ts";
@@ -90,7 +106,14 @@ const reports = ref<ReportInterface[]>([]);
 const page = ref(0);
 const total = ref(0);
 const loading = ref(true);
+const failed = ref(false);
 const showLoader = useDelayedLoading(loading);
+const position = ref<HTMLElement | null>(null);
+
+// Only the newest request may write the state. Two quick page turns, or a deep link arriving while
+// a page is in flight, otherwise race: the slower response lands last and the reader ends up on a
+// page the pager no longer claims.
+let latestRequest = 0;
 
 const pageCount = computed(() => Math.ceil(total.value / PAGE_SIZE) || 1);
 
@@ -112,25 +135,37 @@ function rankOf(index: number): number {
 }
 
 async function load(target: number) {
+  const ticket = ++latestRequest;
   loading.value = true;
+  failed.value = false;
   try {
     const response: AxiosResponse = await new HTTPAxios(
       `report/list/${target}/${PAGE_SIZE}`,
     ).get();
+    if (ticket !== latestRequest) return;
     const body = response.data as ReportPage;
     reports.value = body.items ?? [];
     total.value = body.total ?? 0;
     page.value = body.page ?? target;
   } catch (e) {
+    if (ticket !== latestRequest) return;
     console.error("[reports] could not load page " + target, e);
+    // Distinct from "no reports yet": telling a reader the list is empty when the request failed
+    // sends them away from a page that is merely offline.
+    failed.value = true;
     reports.value = [];
   } finally {
-    loading.value = false;
+    if (ticket === latestRequest) loading.value = false;
   }
 }
 
 async function goTo(target: number) {
   await load(target);
+  await nextTick();
+  // Keyboard focus would otherwise fall to <body>: reaching the first or last page disables the
+  // button that was just pressed. The status text takes it instead, which is also what a screen
+  // reader announces.
+  position.value?.focus();
   // A page swap keeps the reader at the top of the list rather than wherever the previous page's
   // scroll left them, which on a long report is well past the pager.
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -168,12 +203,16 @@ async function followDeepLink() {
   if (target !== null && target !== page.value) await load(target);
 }
 
-onMounted(async () => {
-  await load((await pageOfDeepLink()) ?? 0);
+onMounted(() => {
+  // Registered before the first await, not after it: a listener added late is both deaf to a hash
+  // change during the initial load and, if the visitor leaves in that window, never removed - the
+  // unmount hook would run first and take nothing off.
+  //
   // A link to a report on another page changes the hash without remounting anything - pasting a
   // shared link while already on /reports, or following the webhook's link from an open tab - so
   // the page has to be fetched again or the target simply is not in the list.
   window.addEventListener("hashchange", followDeepLink);
+  void (async () => load((await pageOfDeepLink()) ?? 0))();
 });
 
 onUnmounted(() => window.removeEventListener("hashchange", followDeepLink));
@@ -207,6 +246,21 @@ onUnmounted(() => window.removeEventListener("hashchange", followDeepLink));
     white-space: pre-wrap;
     word-break: break-word;
     font-family: "JetBrains Mono", sans-serif;
+  }
+
+  .rows {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    transition: opacity 0.15s ease;
+
+    // A page in flight keeps its predecessor on screen, faded: the list swaps in place instead of
+    // collapsing to a loader and pushing the pager up the page.
+    &.swapping {
+      opacity: 0.45;
+    }
   }
 
   .loading {

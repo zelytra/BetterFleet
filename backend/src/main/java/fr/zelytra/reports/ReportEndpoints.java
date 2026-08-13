@@ -31,6 +31,10 @@ public class ReportEndpoints {
     public record ReportPosition(long position) {
     }
 
+    /** A rejected request, as JSON: the method declares it produces JSON, so its errors do too. */
+    public record ApiError(String error) {
+    }
+
     @GET
     @Path("/list/all")
     @Transactional
@@ -59,13 +63,16 @@ public class ReportEndpoints {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getReports(@PathParam("page") int page, @PathParam("amount") int amount) {
         Log.info("[GET] /report/list/" + page + "/" + amount);
-        if (page < 0 || amount < 1 || amount > MAX_PAGE_SIZE) {
-            // Panache throws IllegalArgumentException on a page size of 0, which surfaces as a 500:
-            // a caller's bad input is a 400, and the cap keeps one request from serving the whole
-            // table (a report carries its full log capture, so a page is measured in megabytes).
+        // Panache throws IllegalArgumentException on a page size of 0, which surfaces as a 500: a
+        // caller's bad input is a 400. The cap keeps one request from serving the whole table (a
+        // report carries its full log capture, so a page is measured in megabytes), and the page
+        // index needs an upper bound of its own: Panache computes the offset as `index * size` in
+        // int arithmetic, so anything above MAX_VALUE/size wraps negative and Hibernate rejects it
+        // with the same 500 this guard exists to prevent.
+        if (page < 0 || amount < 1 || amount > MAX_PAGE_SIZE || page > (Integer.MAX_VALUE - amount) / amount) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("page must be >= 0 and amount between 1 and " + MAX_PAGE_SIZE)
-                    .type(MediaType.TEXT_PLAIN)
+                    .entity(new ApiError("page must be >= 0 and amount between 1 and " + MAX_PAGE_SIZE
+                            + ", and page * amount must fit in an int"))
                     .build();
         }
         PanacheQuery<ReportEntity> query = ReportEntity.findAll(Sort.by("id", Sort.Direction.Descending));

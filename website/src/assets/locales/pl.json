@@ -442,6 +442,8 @@
     "previous": "Poprzednia",
     "next": "Następna",
     "page": "Strona {page} z {total}",
-    "empty": "Brak zgłoszeń."
+    "empty": "Brak zgłoszeń.",
+    "pagination": "Paginacja zgłoszeń",
+    "error": "Nie udało się wczytać zgłoszeń. Spróbuj ponownie później."
   }
 }

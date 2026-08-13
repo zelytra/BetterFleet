@@ -442,6 +442,8 @@
     "previous": "Previous",
     "next": "Next",
     "page": "Page {page} of {total}",
-    "empty": "No reports yet."
+    "empty": "No reports yet.",
+    "pagination": "Reports pagination",
+    "error": "The reports could not be loaded. Please try again later."
   }
 }

@@ -438,10 +438,12 @@
     }
   },
   "reports": {
-    "entry": "Rapport n°{number}",
+    "entry": "Rapport n° {number}",
     "previous": "Précédent",
     "next": "Suivant",
     "page": "Page {page} sur {total}",
-    "empty": "Aucun rapport pour le moment."
+    "empty": "Aucun rapport pour le moment.",
+    "pagination": "Pagination des rapports",
+    "error": "Les rapports n'ont pas pu être chargés. Veuillez réessayer plus tard."
   }
 }

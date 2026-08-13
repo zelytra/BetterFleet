@@ -438,10 +438,12 @@
     }
   },
   "reports": {
-    "entry": "Segnalazione n° {number}",
+    "entry": "Segnalazione n. {number}",
     "previous": "Precedente",
     "next": "Successivo",
     "page": "Pagina {page} di {total}",
-    "empty": "Ancora nessuna segnalazione."
+    "empty": "Ancora nessuna segnalazione.",
+    "pagination": "Paginazione delle segnalazioni",
+    "error": "Non è stato possibile caricare le segnalazioni. Riprova più tardi."
   }
 }

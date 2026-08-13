@@ -442,6 +442,8 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "page": "Página {page} de {total}",
-    "empty": "Aún no hay informes."
+    "empty": "Aún no hay informes.",
+    "pagination": "Paginación de informes",
+    "error": "No se han podido cargar los informes. Inténtalo de nuevo más tarde."
   }
 }

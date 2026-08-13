@@ -356,7 +356,7 @@
   "loading": {
     "stats": "Das Logbuch wird gelesen…",
     "globe": "Die Seekarte wird entrollt…",
-    "reports": "Berichte werden geholt…"
+    "reports": "Die Berichte werden abgerufen…"
   },
   "downloads": {
     "title": "Downloads",
@@ -442,6 +442,8 @@
     "previous": "Zurück",
     "next": "Weiter",
     "page": "Seite {page} von {total}",
-    "empty": "Noch keine Berichte."
+    "empty": "Noch keine Berichte.",
+    "pagination": "Berichte-Seitennavigation",
+    "error": "Die Berichte konnten nicht geladen werden. Bitte versuche es später erneut."
   }
 }

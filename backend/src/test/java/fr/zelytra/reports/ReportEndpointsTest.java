@@ -62,12 +62,67 @@ public class ReportEndpointsTest {
     }
 
     @Test
+    public void listReportsPaged_slicesAndOrdersNewestFirst() {
+        // The half of #823 a shape-only assertion cannot catch: the swap "silently served the wrong
+        // slice". Seeding three reports pins the actual contract - newest first, and the second page
+        // continuing where the first stopped - so an off-by-one offset or an ascending sort fails
+        // here instead of shipping.
+        int first = sendReport("oldest");
+        int second = sendReport("middle");
+        int third = sendReport("newest");
+
+        given()
+                .when().get("/report/list/0/2")
+                .then()
+                .statusCode(200)
+                .body("items.size()", equalTo(2))
+                .body("items[0].id", equalTo(third))
+                .body("items[1].id", equalTo(second))
+                .body("total", greaterThanOrEqualTo(3));
+
+        given()
+                .when().get("/report/list/1/2")
+                .then()
+                .statusCode(200)
+                .body("items[0].id", equalTo(first));
+    }
+
+    @Test
+    public void reportPosition_countsFromTheNewest() {
+        int older = sendReport("older");
+        int newer = sendReport("newer");
+
+        given().when().get("/report/" + newer + "/position")
+                .then().statusCode(200).body("position", equalTo(0));
+        given().when().get("/report/" + older + "/position")
+                .then().statusCode(200).body("position", equalTo(1));
+    }
+
+    @Test
     public void listReportsPaged_rejectsUnusableArguments() {
         // A caller's bad input is a 400, not the IllegalArgumentException-turned-500 Panache raised.
         given().when().get("/report/list/0/0").then().statusCode(400);
         given().when().get("/report/list/-1/5").then().statusCode(400);
         // Above the cap: a page is measured in megabytes, so the whole table is not on offer.
         given().when().get("/report/list/0/500").then().statusCode(400);
+        // The offset overflows int above MAX_VALUE/amount and Hibernate rejects the negative first
+        // result: a 400, not the 500 it used to be.
+        given().when().get("/report/list/43000000/50").then().statusCode(400);
+    }
+
+    /** Files a report the way the app does and returns its id, so a test can seed an ordering. */
+    private int sendReport(String message) {
+        given()
+                .auth().oauth2(OidcWiremockTestResource.getAccessToken("alice", Set.of("user")))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body("{\"message\":\"" + message + "\",\"logs\":\"l\",\"device\":\"pc\"}")
+                .when().post("/report/send")
+                .then().statusCode(200);
+        // The newest report is the first of the newest-first listing, by definition of the ordering
+        // this endpoint guarantees.
+        return given().when().get("/report/list/0/1")
+                .then().statusCode(200)
+                .extract().path("items[0].id");
     }
 
     @Test
