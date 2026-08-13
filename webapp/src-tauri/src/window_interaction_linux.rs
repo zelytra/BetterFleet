@@ -34,8 +34,6 @@ const SOT_WINDOW_NEEDLE: &str = "sea of thieves";
 const RISE_ANCHOR_X_PROP: f32 = 700.0 / 1920.0;
 const RISE_ANCHOR_Y_PROP: f32 = 750.0 / 1080.0;
 
-/// The launch-countdown menu is always rendered at 16:9; letterboxing is computed against it.
-const GAME_ASPECT_RATIO: f32 = 16.0 / 9.0;
 
 /// Pure decision: does this X11 top-level window belong to the running Sea of Thieves game? The
 /// authoritative signal is the window's owning PID (`_NET_WM_PID`): when the window advertises one,
@@ -206,24 +204,7 @@ fn content_click_point(
     x_prop: f32,
     y_prop: f32,
 ) -> (f32, f32) {
-    let window_aspect_ratio = window_width / window_height;
-    let (game_content_width, game_content_height, black_bar_width, black_bar_height) =
-        if window_aspect_ratio < GAME_ASPECT_RATIO {
-            // Black bars top and bottom.
-            let game_content_height = window_width * 9.0 / 16.0;
-            let black_bar_height = (window_height - game_content_height) / 2.0;
-            (window_width, game_content_height, 0.0, black_bar_height)
-        } else {
-            // Black bars left and right.
-            let game_content_width = window_height * 16.0 / 9.0;
-            let black_bar_width = (window_width - game_content_width) / 2.0;
-            (game_content_width, window_height, black_bar_width, 0.0)
-        };
-
-    (
-        x_prop * game_content_width + black_bar_width,
-        y_prop * game_content_height + black_bar_height,
-    )
+    crate::window_geometry::content_click_point(window_width, window_height, x_prop, y_prop)
 }
 
 #[cfg(test)]

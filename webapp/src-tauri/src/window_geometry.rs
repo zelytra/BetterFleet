@@ -1,17 +1,48 @@
 //! Where the synchronized set-sail click lands inside the game window.
 //!
-//! Split out of the Windows-only `window_interaction` module on purpose: the arithmetic is the same
-//! everywhere and it is the part worth pinning. The click works in the field today, multi-monitor
-//! included, so these tests exist to keep it that way - de-elevating the GUI (#732) must not move
-//! it, and a regression here is otherwise invisible, since a mis-placed click lands somewhere
-//! harmless and nothing reports it (#815).
+//! One implementation for both platforms: the Windows path had it inline and Linux had its own copy
+//! of the same formula, so it now lives here and they both call it. The click works in the field
+//! today, multi-monitor included, so these tests exist to keep it that way - de-elevating the GUI
+//! (#732) must not move it, and a regression here is otherwise invisible, since a mis-placed click
+//! lands somewhere harmless and nothing reports it (#815).
 
-/// Where a proportional point lands inside a client area the game letterboxes to 16:9.
+/// The game's forced main-menu aspect ratio; everything else is black bars.
+pub(crate) const GAME_ASPECT_RATIO: f32 = 16.0 / 9.0;
+
+/// Where a proportional point on the game's 16:9 content lands inside a window of the given size,
+/// black bars accounted for.
 ///
-/// The main menu is always rendered at 16:9 whatever the window's shape, so the content sits
-/// centred inside black bars: on a taller window they are above and below, on a wider one left and
-/// right. A point given in game-content proportions therefore has to be scaled to the content, then
-/// pushed past the bar.
+/// The main menu is always rendered at 16:9 whatever the window's shape, so the content sits centred
+/// inside bars: on a taller window they are above and below, on a wider one left and right. A point
+/// given in content proportions therefore has to be scaled to the content, then pushed past the bar.
+pub(crate) fn content_click_point(
+    window_width: f32,
+    window_height: f32,
+    x_prop: f32,
+    y_prop: f32,
+) -> (f32, f32) {
+    let window_aspect_ratio = window_width / window_height;
+    let (game_content_width, game_content_height, black_bar_width, black_bar_height) =
+        if window_aspect_ratio < GAME_ASPECT_RATIO {
+            // Black bars top and bottom.
+            let game_content_height = window_width * 9.0 / 16.0;
+            let black_bar_height = (window_height - game_content_height) / 2.0;
+            (window_width, game_content_height, 0.0, black_bar_height)
+        } else {
+            // Black bars left and right.
+            let game_content_width = window_height * 16.0 / 9.0;
+            let black_bar_width = (window_width - game_content_width) / 2.0;
+            (game_content_width, window_height, black_bar_width, 0.0)
+        };
+
+    (
+        x_prop * game_content_width + black_bar_width,
+        y_prop * game_content_height + black_bar_height,
+    )
+}
+
+/// The same point in whole pixels, as the Win32 click needs it. Truncating, exactly as the `as
+/// c_int` cast it replaced did.
 // Only the Windows click calls it; the module stays platform-neutral so its tests run everywhere.
 #[cfg_attr(not(windows), allow(dead_code))]
 pub(crate) fn letterboxed_point(
@@ -20,26 +51,13 @@ pub(crate) fn letterboxed_point(
     x_prop: f32,
     y_prop: f32,
 ) -> (i32, i32) {
-    let window_aspect_ratio = window_width as f32 / window_height as f32;
-    let game_aspect_ratio = 16.0 / 9.0; //Main menu aspect ratio is always forced to 16/9
-
-    let (game_content_width, game_content_height, black_bar_width, black_bar_height) =
-        if window_aspect_ratio < game_aspect_ratio {
-            // Black bars at the top and bottom
-            let game_content_height = (window_width as f32 * 9.0) / 16.0;
-            let black_bar_height = (window_height as f32 - game_content_height) / 2.0;
-            (window_width as f32, game_content_height, 0.0, black_bar_height)
-        } else {
-            // Black bars on the left and right
-            let game_content_width = (window_height as f32 * 16.0) / 9.0;
-            let black_bar_width = (window_width as f32 - game_content_width) / 2.0;
-            (game_content_width, window_height as f32, black_bar_width, 0.0)
-        };
-
-    (
-        (x_prop * game_content_width + black_bar_width) as i32,
-        (y_prop * game_content_height + black_bar_height) as i32,
-    )
+    let (x, y) = content_click_point(
+        window_width as f32,
+        window_height as f32,
+        x_prop,
+        y_prop,
+    );
+    (x as i32, y as i32)
 }
 
 #[cfg(test)]

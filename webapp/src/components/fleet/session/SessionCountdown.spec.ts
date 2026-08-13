@@ -59,6 +59,11 @@ function makePlayer(overrides: Partial<Player> = {}): Player {
   };
 }
 
+/** Answers a given user agent without dropping the rest of navigator. */
+function stubUserAgent(userAgent: string) {
+  vi.stubGlobal("navigator", { ...navigator, userAgent });
+}
+
 let wrapper: VueWrapper | null = null;
 /** What the component told the player, so a test can assert the copy and not just the call. */
 const alerts: { title: string; content: string }[] = [];
@@ -146,11 +151,11 @@ describe("SessionCountdown set-sail click (#815)", () => {
     alerts.length = 0;
     rustResponses.clear();
     // The click is gated on !isLinux(), which reads the user agent - and the test environment's
-    // says Linux. Answer as WebView2 does, since this whole path is the Windows one.
-    vi.stubGlobal("navigator", {
-      userAgent:
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edg/120.0.0.0",
-    });
+    // says Linux. Answer as WebView2 does, since this whole path is the Windows one. Spread rather
+    // than replace: anything else reading navigator keeps working.
+    stubUserAgent(
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edg/120.0.0.0",
+    );
   });
   afterEach(() => {
     wrapper?.unmount();
@@ -206,6 +211,51 @@ describe("SessionCountdown set-sail click (#815)", () => {
       wrapper?.unmount();
       wrapper = null;
     }
+  });
+
+  it("fires the click with nothing awaited in front of it", () => {
+    // The countdown's whole promise is that every crew clicks at the same instant. An await added
+    // before the invoke would push it behind a microtask - invisible in behaviour, fatal to the
+    // feature - so advance the timers SYNCHRONOUSLY and require the call to already be there.
+    rustResponses.set("rise_anchor", "clicked");
+    UserStore.player = makePlayer({
+      status: PlayerStates.MAIN_MENU,
+      isReady: true,
+      macroEnable: true,
+      soundEnable: false,
+      countDown: { clickTime: LocalTime.now().plusNanos(1) },
+    });
+    mountCountdown();
+
+    vi.advanceTimersByTime(50);
+
+    expect(clickCalls()).toHaveLength(1);
+  });
+
+  it("does not click when the player turned the macro off", async () => {
+    rustResponses.set("rise_anchor", "clicked");
+    UserStore.player = makePlayer({
+      status: PlayerStates.MAIN_MENU,
+      isReady: true,
+      macroEnable: false,
+      soundEnable: false,
+      countDown: { clickTime: LocalTime.now().plusNanos(1) },
+    });
+    mountCountdown();
+
+    await vi.advanceTimersByTimeAsync(200);
+
+    expect(clickCalls()).toHaveLength(0);
+    expect(alerts).toHaveLength(0);
+  });
+
+  it("does not click on Linux, where the compositor blocks synthetic input", async () => {
+    stubUserAgent(
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)",
+    );
+    rustResponses.set("rise_anchor", "clicked");
+    await runCountdownToClick();
+    expect(clickCalls()).toHaveLength(0);
   });
 
   it("blames nothing and nobody", async () => {

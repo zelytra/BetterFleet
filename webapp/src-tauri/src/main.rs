@@ -532,9 +532,10 @@ fn rise_anchor() -> ClickOutcome {
 
     // A title match alone is not enough: any window can be called "Sea Of Thieves" - a browser tab,
     // a video player, a wiki page - and focusing it would send the click into someone's browser.
-    // The Linux path already checks the owning process through _NET_WM_PID; this is its equivalent.
-    if !window_belongs_to_game(window_handle) {
-        warn!("[auto-click] the window titled '{window_name}' is not owned by SoTGame.exe; refusing to click it");
+    // The Linux path already checks the owning process through _NET_WM_PID; this is its equivalent,
+    // fallback included: it refuses only on a POSITIVE mismatch.
+    if window_owner(window_handle) == WindowOwner::OtherProcess {
+        warn!("[auto-click] the window titled '{window_name}' belongs to another process; refusing to click it");
         return ClickOutcome::GameNotFound;
     }
 
@@ -557,21 +558,41 @@ fn rise_anchor() -> ClickOutcome {
     }
 }
 
-/// Whether a window handle belongs to a running `SoTGame.exe`.
-///
-/// Asks about that one process rather than listing them all: `find_pid_of` builds a
-/// `System::new_all()` and refreshes everything - processes, disks, networks - which is far too
-/// heavy here. This runs at countdown zero, in front of the click, and the click's timing is the
-/// whole feature.
+/// What owns a window, as far as we can tell.
 #[cfg(windows)]
-fn window_belongs_to_game(window_handle: winapi::shared::windef::HWND) -> bool {
+#[derive(PartialEq, Debug)]
+enum WindowOwner {
+    /// The owning process is `SoTGame.exe`.
+    Game,
+    /// The owning process was read and is something else.
+    OtherProcess,
+    /// The owner could not be read at all.
+    Unknown,
+}
+
+/// Who owns a window, by asking about that one process rather than listing them all.
+///
+/// `find_pid_of` builds a `System::new_all()` and refreshes everything - processes, disks, networks
+/// - which is far too heavy here: this runs at countdown zero, in front of the click, and the
+/// click's timing is the whole feature.
+///
+/// The cost of the cheap path is that it needs an openable process handle, where the full refresh
+/// tolerates a denied one and reads the name from the kernel snapshot. So `Unknown` is a real
+/// outcome, not a theoretical one - an anti-cheat that strips handle access, or the de-elevated GUI
+/// of #732, both land there while the game is plainly running. The caller must therefore refuse
+/// only on `OtherProcess`: treating `Unknown` as "not the game" would cancel a working click at
+/// countdown zero and report it as "game not found", which is worse than the browser tab this check
+/// exists to avoid. The Linux path makes the same distinction, falling back to the title when the
+/// window names no owner.
+#[cfg(windows)]
+fn window_owner(window_handle: winapi::shared::windef::HWND) -> WindowOwner {
     use sysinfo::{Pid, ProcessRefreshKind, System};
     use winapi::um::winuser::GetWindowThreadProcessId;
 
     let mut pid: u32 = 0;
     unsafe { GetWindowThreadProcessId(window_handle, &mut pid) };
     if pid == 0 {
-        return false;
+        return WindowOwner::Unknown;
     }
 
     let pid = Pid::from_u32(pid);
@@ -579,8 +600,16 @@ fn window_belongs_to_game(window_handle: winapi::shared::windef::HWND) -> bool {
     // Just the name: no command line, no environment, no disk usage.
     system.refresh_process_specifics(pid, ProcessRefreshKind::new());
     match system.process(pid) {
-        Some(process) => process.name().eq_ignore_ascii_case("SoTGame.exe"),
-        None => false,
+        Some(process) if process.name().eq_ignore_ascii_case("SoTGame.exe") => WindowOwner::Game,
+        Some(process) => {
+            warn!(
+                "[auto-click] the game window is owned by {} (pid {pid}), not SoTGame.exe",
+                process.name()
+            );
+            WindowOwner::OtherProcess
+        }
+        // Handle denied, or the process went away between the two calls: unknown, not a mismatch.
+        None => WindowOwner::Unknown,
     }
 }
 
