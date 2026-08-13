@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "会话已过期",
-        "content": "你的会话已过期——请重启应用或重新登录。"
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {

@@ -3,7 +3,7 @@
     "auth": {
       "expired": {
         "title": "Sitzung abgelaufen",
-        "content": "Deine Sitzung ist abgelaufen – starte die App neu oder melde dich erneut an."
+        "content": "Ihre Sitzung ist abgelaufen – starten Sie die App neu oder melden Sie sich erneut an."
       }
     },
     "alreadyConnected": {

@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "세션 만료",
-        "content": "세션이 만료되었습니다 — 앱을 다시 시작하거나 다시 로그인하세요."
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {
