@@ -63,8 +63,13 @@ vi.mock("@tauri-apps/plugin-http", () => ({
 /** What the fake loopback captured: the registered onUrl callback, and cancel() calls. */
 let capturedOnUrl: ((url: string) => void) | null = null;
 const cancelledPorts: number[] = [];
+/** The HTML the loopback server was told to serve once the redirect lands. */
+let servedPage = "";
 vi.mock("@fabianlars/tauri-plugin-oauth", () => ({
-  start: async (config: { ports: number[] }) => config.ports[0],
+  start: async (config: { ports: number[]; response?: string }) => {
+    servedPage = config.response ?? "";
+    return config.ports[0];
+  },
   onUrl: async (cb: (url: string) => void) => {
     capturedOnUrl = cb;
     return () => {
@@ -84,9 +89,9 @@ vi.mock("@tauri-apps/plugin-shell", () => ({
   },
 }));
 
-vi.mock("@/main.ts", () => ({
-  i18n: { global: { locale: { value: "en" } } },
-}));
+// The success page reads the app's own messages now, so the real i18n instance is used: mocking it
+// would hide the very thing these tests check.
+import { tsi18n } from "@/objects/i18n";
 
 import {
   login,
@@ -133,6 +138,8 @@ beforeEach(() => {
   openedUrls.length = 0;
   cancelledPorts.length = 0;
   capturedOnUrl = null;
+  servedPage = "";
+  tsi18n.global.locale.value = "en";
 });
 
 describe("accessTokenExpiry", () => {
@@ -269,6 +276,39 @@ describe("login", () => {
     expect(localStorage.getItem(REFRESH_KEY)).toBe("rt-rotated");
     // The loopback listener is released for the next attempt.
     expect(cancelledPorts).toContain(47823);
+  });
+
+  it("serves the browser success page in the player's language", async () => {
+    // The page is the last thing a player sees before coming back to the app: it has to speak the
+    // language they chose, not the five the flow used to carry.
+    tsi18n.global.locale.value = "ja";
+    const pending = login();
+    await vi.waitFor(() => {
+      expect(openedUrls).toHaveLength(1);
+    });
+    expect(servedPage).toContain('lang="ja"');
+    expect(servedPage).toContain("ログインに成功しました");
+    expect(servedPage).toContain("BetterFleet に戻ってください");
+
+    const state = new URL(openedUrls[0]).searchParams.get("state")!;
+    capturedOnUrl!(`http://localhost:47823/callback?state=${state}&code=c`);
+    await pending;
+  });
+
+  it("falls back to English for a locale the app does not carry", async () => {
+    // "source" is the translator-facing copy and never a language a player runs in; anything
+    // unknown must not reach the <html lang> attribute either.
+    tsi18n.global.locale.value = "source";
+    const pending = login();
+    await vi.waitFor(() => {
+      expect(openedUrls).toHaveLength(1);
+    });
+    expect(servedPage).toContain('lang="en"');
+    expect(servedPage).toContain("You can close this tab");
+
+    const state = new URL(openedUrls[0]).searchParams.get("state")!;
+    capturedOnUrl!(`http://localhost:47823/callback?state=${state}&code=c`);
+    await pending;
   });
 
   it("rejects a callback whose state does not match", async () => {

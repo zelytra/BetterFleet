@@ -229,7 +229,8 @@
       "title": "Kontynuuj w przeglądarce",
       "message": "W przeglądarce otworzyła się strona logowania. Dokończ je tam, a następnie wróć tutaj.",
       "cancel": "Anuluj",
-      "error": "Logowanie nie powiodło się. Spróbuj ponownie."
+      "error": "Logowanie nie powiodło się. Spróbuj ponownie.",
+      "done": "Możesz zamknąć tę kartę i wrócić do BetterFleet."
     },
     "continue": "Kontynuuj",
     "description": "Witaj w BetterFleet! Cieszymy się, że jesteś wśród nas. Aby uzyskać dostęp do aplikacji, zaloguj się na swoje konto lub utwórz nowe!",

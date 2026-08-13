@@ -33,6 +33,9 @@ export interface KeycloakSession {
 // churn, not the tokens invalidating one another. Module-level (not in the reactive store) so the
 // in-flight promise is never wrapped by Vue reactivity.
 let refreshInFlight: Promise<boolean> | null = null;
+// The interactive login in flight, if any. Module-level for the same reason as the refresh above:
+// the promise must never be wrapped by Vue reactivity.
+let loginInFlight: Promise<void> | null = null;
 
 export const keycloakStore = reactive({
   keycloak: {
@@ -89,14 +92,33 @@ export const keycloakStore = reactive({
       this.isReady = true;
     }
   },
-  async loginUser() {
-    if (this.isAuthenticated && this.keycloak.authenticated) return;
+  loginUser(): Promise<void> {
+    if (this.isAuthenticated && this.keycloak.authenticated) {
+      return Promise.resolve();
+    }
+    // One attempt at a time. Two fast clicks used to start two loopback servers: the second failed
+    // to bind the fixed port, and its rejection flipped awaitingBrowser back off while the first
+    // was still waiting on the browser, leaving the screen on a login button that does nothing.
+    if (!loginInFlight) {
+      loginInFlight = this.runLogin().finally(() => {
+        loginInFlight = null;
+      });
+    }
+    return loginInFlight;
+  },
+  async runLogin() {
     // Already signed in from another launch? Restore silently (persisted refresh token) rather than
-    // reopening the browser for a player who is effectively still connected.
-    const restored = await BrowserAuth.restore();
-    if (restored) {
-      this.applyTokens(restored);
-      return;
+    // reopening the browser for a player who is effectively still connected. An unreachable Keycloak
+    // throws here and must NOT abort the click: falling through opens the browser, which is exactly
+    // what the player asked for.
+    try {
+      const restored = await BrowserAuth.restore();
+      if (restored) {
+        this.applyTokens(restored);
+        return;
+      }
+    } catch (e) {
+      logError(`OIDC silent restore before login failed: ${e}`);
     }
     this.awaitingBrowser = true;
     try {

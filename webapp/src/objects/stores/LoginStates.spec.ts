@@ -12,7 +12,17 @@ const stub = vi.hoisted(() => {
   return {
     StubRefreshUnavailableError,
     /** What the stubbed BrowserAuth.restore() should do on its next call. */
-    behaviour: { restore: async (): Promise<unknown> => null },
+    behaviour: {
+      restore: async (): Promise<unknown> => null,
+      /** Resolves the interactive login; a test can leave it pending to model an open browser. */
+      login: async (): Promise<unknown> => ({
+        access_token: "at",
+        refresh_token: "rt",
+        id_token: "idt",
+        expires_in: 60,
+      }),
+    },
+    loginCalls: [] as number[],
     endSessionCalls: [] as number[],
     forgetCalls: [] as number[],
   };
@@ -22,12 +32,10 @@ const StubRefreshUnavailableError = stub.StubRefreshUnavailableError;
 
 vi.mock("@/objects/stores/BrowserAuth.ts", () => ({
   restore: () => stub.behaviour.restore(),
-  login: async () => ({
-    access_token: "at",
-    refresh_token: "rt",
-    id_token: "idt",
-    expires_in: 60,
-  }),
+  login: () => {
+    stub.loginCalls.push(1);
+    return stub.behaviour.login();
+  },
   endSession: async () => void stub.endSessionCalls.push(1),
   forget: () => void stub.forgetCalls.push(1),
   usernameFromIdToken: () => "gold_hoarder",
@@ -61,6 +69,13 @@ function signIn() {
 
 beforeEach(() => {
   stub.behaviour.restore = async () => null;
+  stub.behaviour.login = async () => ({
+    access_token: "at",
+    refresh_token: "rt",
+    id_token: "idt",
+    expires_in: 60,
+  });
+  stub.loginCalls.length = 0;
   stub.endSessionCalls.length = 0;
   stub.forgetCalls.length = 0;
   keycloakStore.reset();
@@ -168,6 +183,67 @@ describe("ensureFresh", () => {
       keycloakStore.ensureFresh(Number.MAX_SAFE_INTEGER),
     ).rejects.toBeInstanceOf(StubRefreshUnavailableError);
     expect(called).toBe(true);
+  });
+});
+
+describe("loginUser", () => {
+  it("opens one browser for a storm of clicks", async () => {
+    // Two fast clicks used to start two loopback servers: the second could not bind the fixed port,
+    // and its rejection flipped awaitingBrowser off while the first was still waiting.
+    let releaseBrowser!: (tokens: unknown) => void;
+    stub.behaviour.login = () =>
+      new Promise((resolve) => {
+        releaseBrowser = resolve;
+      });
+
+    const clicks = [
+      keycloakStore.loginUser(),
+      keycloakStore.loginUser(),
+      keycloakStore.loginUser(),
+    ];
+    await vi.waitFor(() => expect(stub.loginCalls.length).toBe(1));
+    expect(keycloakStore.awaitingBrowser).toBe(true);
+
+    releaseBrowser({
+      access_token: "at",
+      refresh_token: "rt",
+      id_token: "idt",
+      expires_in: 60,
+    });
+    await Promise.all(clicks);
+    expect(stub.loginCalls.length).toBe(1);
+    expect(keycloakStore.awaitingBrowser).toBe(false);
+    expect(keycloakStore.isAuthenticated).toBe(true);
+  });
+
+  it("still opens the browser when the silent restore cannot reach Keycloak", async () => {
+    // Clicking sign-in while offline must not fail silently: restore() throws there, and the click
+    // has to fall through to the interactive login rather than reject unhandled.
+    stub.behaviour.restore = async () => {
+      throw new StubRefreshUnavailableError("offline");
+    };
+    await keycloakStore.loginUser();
+    expect(stub.loginCalls.length).toBe(1);
+    expect(keycloakStore.isAuthenticated).toBe(true);
+  });
+
+  it("restores silently instead of opening a browser when a session is stored", async () => {
+    stub.behaviour.restore = async () => ({
+      access_token: "at",
+      refresh_token: "rt",
+      id_token: "idt",
+      expires_in: 60,
+    });
+    await keycloakStore.loginUser();
+    expect(stub.loginCalls.length).toBe(0);
+    expect(keycloakStore.isAuthenticated).toBe(true);
+  });
+
+  it("lets a second attempt through once the first has settled", async () => {
+    await keycloakStore.loginUser();
+    keycloakStore.reset();
+    await keycloakStore.loginUser();
+    expect(stub.loginCalls.length).toBe(2);
   });
 });
 

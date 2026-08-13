@@ -229,7 +229,8 @@
       "title": "Continue no seu navegador",
       "message": "Uma página de login abriu no seu navegador. Conclua por lá e depois volte aqui.",
       "cancel": "Cancelar",
-      "error": "Falha no login. Por favor, tente novamente."
+      "error": "Falha no login. Por favor, tente novamente.",
+      "done": "Você pode fechar esta aba e voltar ao BetterFleet."
     },
     "continue": "Continuar",
     "description": "Bem-vindo ao BetterFleet! Estamos muito felizes em ter você entre nós. Para acessar o aplicativo, faça login na sua conta ou crie uma!",
