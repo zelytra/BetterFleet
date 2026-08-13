@@ -12,6 +12,8 @@
 /// centred inside black bars: on a taller window they are above and below, on a wider one left and
 /// right. A point given in game-content proportions therefore has to be scaled to the content, then
 /// pushed past the bar.
+// Only the Windows click calls it; the module stays platform-neutral so its tests run everywhere.
+#[cfg_attr(not(windows), allow(dead_code))]
 pub(crate) fn letterboxed_point(
     window_width: i32,
     window_height: i32,
