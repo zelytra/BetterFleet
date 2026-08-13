@@ -15,6 +15,9 @@ use std::thread::sleep;
 use std::time::{Duration, SystemTime};
 use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
+// The auto-click's failure paths are Windows-only; every other platform reports its own way.
+#[cfg(windows)]
+use log::warn;
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, State, WindowEvent};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
@@ -38,6 +41,9 @@ mod fetch_informations;
 mod api;
 #[cfg(windows)]
 mod window_interaction;
+// Platform-neutral on purpose: the click's arithmetic is the same everywhere, and keeping it out of
+// the Windows-only module is what lets its tests run on both CI legs (#815).
+mod window_geometry;
 // Linux/X11 native integration (#731): the set-sail auto-click, the in-game overlay stacking fix,
 // and the shared X11 plumbing they build on. Gated to Linux - Windows/macOS keep their own paths.
 #[cfg(target_os = "linux")]
@@ -485,45 +491,106 @@ async fn get_last_updated_server_ip(api: State<'_, Arc<RwLock<Api>>>) -> Result<
     Ok(total_duration.as_secs())
 }
 
+/// How the synchronized set-sail click ended.
+///
+/// It used to be a bare `bool` that the frontend never read, and the failure paths only printed to
+/// a console a release build does not have - so a click that stopped working produced no signal
+/// anywhere: no alert, and nothing in the logs a player exports with a bug report (#815). Each
+/// variant names a distinct stage, because they need different answers - and because de-elevating
+/// the GUI (#732) can break exactly one of them, injection, through UIPI.
+#[derive(serde::Serialize, Debug, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+// One vocabulary for every platform, each constructing the subset it can distinguish: the frontend
+// then has a single contract to read, whichever OS answered.
+#[allow(dead_code)]
+enum ClickOutcome {
+    /// The click was injected into the game window.
+    Clicked,
+    /// No Sea of Thieves window belonging to the game process.
+    GameNotFound,
+    /// The window exists but refused to come to the foreground, so a click would land elsewhere.
+    FocusRefused,
+    /// Focus worked and the injection was refused - the UIPI signature.
+    InjectionRejected,
+    /// The platform reports a failure without saying which stage (Linux).
+    Failed,
+    /// No auto-click on this platform (macOS).
+    Unsupported,
+}
+
 #[cfg(windows)]
 #[tauri::command]
-fn rise_anchor() -> bool {
+fn rise_anchor() -> ClickOutcome {
     let window_name = "Sea Of Thieves";
     let window_name_cstring = CString::new(window_name).unwrap();
     let window_handle = unsafe { FindWindowA(null_mut(), window_name_cstring.as_ptr()) };
 
     if window_handle.is_null() {
-        println!("Could not find window with name: {}", window_name);
-    } else {
-        if set_focus_to_window(window_handle) {
-            sleep(Duration::from_millis(50)); // Wait for the window to focus
-
-            // Clic at 700;750 on a reference of 1920x1080
-            // This corresponds to the middle of "Rise anchor" button
-            let x_prop = 700.0 / 1920.0;
-            let y_prop = 750.0 / 1080.0;
-
-            click_in_window_proportionally(window_handle, x_prop, y_prop);
-            return true;
-        }
+        warn!("[auto-click] no window titled '{window_name}'; the game does not look open");
+        return ClickOutcome::GameNotFound;
     }
 
-    return false;
+    // A title match alone is not enough: any window can be called "Sea Of Thieves" - a browser tab,
+    // a video player, a wiki page - and focusing it would send the click into someone's browser.
+    // The Linux path already checks the owning process through _NET_WM_PID; this is its equivalent.
+    if !window_belongs_to_game(window_handle) {
+        warn!("[auto-click] the window titled '{window_name}' is not owned by SoTGame.exe; refusing to click it");
+        return ClickOutcome::GameNotFound;
+    }
+
+    if !set_focus_to_window(window_handle) {
+        warn!("[auto-click] the game window refused to come to the foreground; not clicking blind");
+        return ClickOutcome::FocusRefused;
+    }
+
+    sleep(Duration::from_millis(50)); // Wait for the window to focus
+
+    // Clic at 700;750 on a reference of 1920x1080
+    // This corresponds to the middle of "Rise anchor" button
+    let x_prop = 700.0 / 1920.0;
+    let y_prop = 750.0 / 1080.0;
+
+    if click_in_window_proportionally(window_handle, x_prop, y_prop) {
+        ClickOutcome::Clicked
+    } else {
+        ClickOutcome::InjectionRejected
+    }
+}
+
+/// Whether a window handle belongs to a running `SoTGame.exe`.
+#[cfg(windows)]
+fn window_belongs_to_game(window_handle: winapi::shared::windef::HWND) -> bool {
+    use winapi::um::winuser::GetWindowThreadProcessId;
+
+    let mut pid: u32 = 0;
+    unsafe { GetWindowThreadProcessId(window_handle, &mut pid) };
+    if pid == 0 {
+        return false;
+    }
+    fetch_informations::find_pid_of("SoTGame.exe")
+        .iter()
+        .any(|game_pid| game_pid.parse::<u32>().ok() == Some(pid))
 }
 
 // Linux/X11 port (#731): locate the Sea of Thieves window and click "raise anchor" via XTEST. The
 // command stays OS-agnostic for the frontend - `SessionCountdown.vue` just calls `rise_anchor`.
 #[cfg(target_os = "linux")]
 #[tauri::command]
-fn rise_anchor() -> bool {
-    window_interaction_linux::rise_anchor()
+fn rise_anchor() -> ClickOutcome {
+    // The X11 path already logs which stage failed; it reports one boolean, so the outcome stays
+    // unspecific rather than inventing a reason.
+    if window_interaction_linux::rise_anchor() {
+        ClickOutcome::Clicked
+    } else {
+        ClickOutcome::Failed
+    }
 }
 
 // Other platforms (macOS): no native auto-click yet - the frontend falls back to a manual set-sail.
 #[cfg(not(any(windows, target_os = "linux")))]
 #[tauri::command]
-fn rise_anchor() -> bool {
-    false
+fn rise_anchor() -> ClickOutcome {
+    ClickOutcome::Unsupported
 }
 
 #[tauri::command]

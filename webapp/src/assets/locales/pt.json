@@ -39,6 +39,10 @@
         "title": "Relatório enviado"
       }
     },
+    "macro": {
+      "title": "Zarpar não foi clicado",
+      "content": "O BetterFleet não conseguiu clicar em “Zarpar” por você. Clique você mesmo para sair com a sua tripulação."
+    },
     "research": {
       "notInMenu": {
         "content": "Você não está no menu do jogo",

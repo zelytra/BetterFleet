@@ -39,6 +39,10 @@
         "title": "Rapport envoyé"
       }
     },
+    "macro": {
+      "title": "Départ non cliqué",
+      "content": "BetterFleet n'a pas pu cliquer « Prendre la mer » à votre place. Cliquez-le vous-même pour partir avec votre équipage."
+    },
     "research": {
       "notInMenu": {
         "content": "Vous n'êtes pas dans le menu du jeu",

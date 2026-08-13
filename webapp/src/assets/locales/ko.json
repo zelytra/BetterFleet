@@ -39,6 +39,10 @@
         "title": "신고 전송됨"
       }
     },
+    "macro": {
+      "title": "출항이 클릭되지 않음",
+      "content": "BetterFleet이 대신 '출항'을 클릭하지 못했습니다. 선원들과 함께 떠나려면 직접 클릭해 주세요."
+    },
     "research": {
       "notInMenu": {
         "content": "게임 메뉴에 있지 않습니다",
