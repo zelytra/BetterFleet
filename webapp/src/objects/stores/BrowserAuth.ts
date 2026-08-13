@@ -3,14 +3,18 @@ import { open } from "@tauri-apps/plugin-shell";
 import { fetch } from "@tauri-apps/plugin-http";
 import { i18n } from "@/main.ts";
 
-// Loopback OIDC for the Linux desktop build (#740). The webview's `tauri://localhost` origin cannot
-// be an OAuth redirect target: webviews block redirects to non-HTTP(S) schemes, so Keycloak refuses
-// `tauri://localhost` with "Redirection to URL with a scheme that is not HTTP(S)" (Windows/macOS is
-// unaffected: WebView2 serves `https://tauri.localhost`, which Keycloak accepts). The native-app
-// standard (RFC 8252) is a loopback: open the hosted Keycloak login in the system browser with an
-// `http://localhost:<port>` redirect, capture the code with a tiny local server
-// (`tauri-plugin-oauth`), and run the PKCE token exchange from Rust through `plugin-http` so the
-// webview never makes the cross-origin call (no CORS against the custom scheme).
+// Loopback OIDC — the sign-in flow on every platform. This is the RFC 8252 native-app pattern:
+// open the hosted Keycloak login in the system browser with an `http://localhost:<port>` redirect,
+// capture the code with a tiny local server (`tauri-plugin-oauth`), and run the PKCE token exchange
+// from Rust through `plugin-http` so the webview never makes the cross-origin call (no CORS against
+// its custom-scheme origin).
+//
+// It began as the Linux-only path (#740): WebKitGTK's `tauri://localhost` origin cannot be an OAuth
+// redirect target (Keycloak refuses non-HTTP(S) schemes). It is now the flow everywhere because the
+// in-webview keycloak-js login Windows/macOS used instead had no refresh token that outlived
+// Keycloak's SSO Session Max (10h) — sessions silently died mid-play (#803/#805) — and because
+// RFC 8252 §8.12 discourages embedded-webview logins outright. Here the `offline_access` refresh
+// token survives restarts and slides its own 30-day idle window on every refresh.
 
 // Fixed loopback port, so the redirect URI to register in Keycloak is a single exact string:
 //   Valid redirect URIs -> http://localhost:47823/callback
@@ -19,8 +23,11 @@ const REDIRECT_URI = `http://localhost:${REDIRECT_PORT}/callback`;
 const REALM = "Betterfleet";
 const CLIENT_ID = "application";
 // The refresh token is persisted so login survives a restart (the desktop equivalent of the SSO
-// cookie the in-webview flow relies on elsewhere).
-const REFRESH_KEY = "kc-linux-refresh-token";
+// cookie the in-webview flow relied on before the loopback flow went cross-platform).
+const REFRESH_KEY = "kc-refresh-token";
+// Pre-unification Linux builds stored the token under this key; readers migrate it forward so the
+// rename does not sign existing Linux players out.
+const LEGACY_REFRESH_KEY = "kc-linux-refresh-token";
 
 export interface OidcTokens {
   access_token: string;
@@ -67,18 +74,58 @@ async function sha256(input: string): Promise<Uint8Array> {
   return new Uint8Array(digest);
 }
 
-// `plugin-http` issues the request from Rust, so it is not subject to the webview's CORS on the
-// `tauri://localhost` origin, the reason the exchange lives here rather than in keycloak-js.
+// Reads the persisted refresh token, migrating a pre-unification Linux token to the current key so
+// players signed in before the rename stay signed in.
+function storedRefreshToken(): string | null {
+  const token = localStorage.getItem(REFRESH_KEY);
+  if (token) return token;
+  const legacy = localStorage.getItem(LEGACY_REFRESH_KEY);
+  if (legacy) {
+    localStorage.setItem(REFRESH_KEY, legacy);
+    localStorage.removeItem(LEGACY_REFRESH_KEY);
+  }
+  return legacy;
+}
+
+/**
+ * Keycloak could not be reached, or answered that it is having a bad day - as opposed to answering
+ * that the session is over. The distinction decides whether the stored refresh token survives, so
+ * it is a type rather than a flag: losing a 30-day session to a Wi-Fi blip would be worse than the
+ * expiry this flow exists to prevent.
+ */
+export class RefreshUnavailableError extends Error {
+  constructor(cause: string) {
+    super(`refresh unavailable: ${cause}`);
+    this.name = "RefreshUnavailableError";
+  }
+}
+
+// `plugin-http` issues the request from Rust, so it is not subject to the webview's CORS on its
+// custom-scheme origin, the reason the exchange lives here rather than in a browser OIDC library.
+//
+// Throws RefreshUnavailableError when the answer says nothing about the session (no route, DNS,
+// TLS, a proxy 502, Keycloak restarting) and a plain Error when Keycloak actively rejected the
+// request. The connect is bounded: without it, an unreachable host leaves the caller - and the
+// startup restore behind it - awaiting forever, which shows as an auth screen that never resolves.
 async function tokenRequest(body: Record<string, string>): Promise<OidcTokens> {
-  const response = await fetch(`${oidcBase()}/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams(body).toString(),
-  });
+  let response;
+  try {
+    response = await fetch(`${oidcBase()}/token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(body).toString(),
+      connectTimeout: 8000,
+    });
+  } catch (e) {
+    throw new RefreshUnavailableError(`${e}`);
+  }
   if (!response.ok) {
-    throw new Error(
-      `Keycloak token endpoint returned ${response.status}: ${await response.text()}`,
-    );
+    const detail = `${response.status}: ${await response.text()}`;
+    // 5xx (and anything above) is the server failing, not a verdict on the session.
+    if (response.status >= 500) {
+      throw new RefreshUnavailableError(detail);
+    }
+    throw new Error(`Keycloak token endpoint returned ${detail}`);
   }
   return (await response.json()) as OidcTokens;
 }
@@ -265,9 +312,10 @@ export async function abort(): Promise<void> {
 }
 
 // Silent restore on startup / refresh: trade the persisted refresh token for fresh ones. Returns null
-// (and clears the stored token) when there is no session or it has expired.
+// (and clears the stored token) when there is no session or Keycloak rejected it; throws
+// RefreshUnavailableError - keeping the token - when Keycloak could not be reached at all.
 export async function restore(): Promise<OidcTokens | null> {
-  const refreshToken = localStorage.getItem(REFRESH_KEY);
+  const refreshToken = storedRefreshToken();
   if (!refreshToken) return null;
   try {
     const tokens = await tokenRequest({
@@ -277,7 +325,13 @@ export async function restore(): Promise<OidcTokens | null> {
     });
     localStorage.setItem(REFRESH_KEY, tokens.refresh_token);
     return tokens;
-  } catch {
+  } catch (e) {
+    if (e instanceof RefreshUnavailableError) {
+      // Keep the token: the session may well still be valid, and the caller can try again on the
+      // next tick. Deleting it here would turn a network blip into a full browser re-login.
+      throw e;
+    }
+    // Keycloak rejected the token (expired, revoked, realm reset): the session is over.
     localStorage.removeItem(REFRESH_KEY);
     return null;
   }
@@ -288,7 +342,7 @@ export async function restore(): Promise<OidcTokens | null> {
 // would otherwise let the next login silently reconnect). Swallows every error and bounds the connect
 // so an offline or unreachable logout still lets the local sign-out proceed.
 export async function endSession(): Promise<void> {
-  const refreshToken = localStorage.getItem(REFRESH_KEY);
+  const refreshToken = storedRefreshToken();
   if (!refreshToken) return;
   try {
     await fetch(`${oidcBase()}/logout`, {
@@ -307,4 +361,5 @@ export async function endSession(): Promise<void> {
 
 export function forget(): void {
   localStorage.removeItem(REFRESH_KEY);
+  localStorage.removeItem(LEGACY_REFRESH_KEY);
 }

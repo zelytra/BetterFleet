@@ -63,7 +63,7 @@
 
 <script setup lang="ts">
 import { keycloakStore } from "@/objects/stores/LoginStates.ts";
-import * as LinuxAuth from "@/objects/stores/LinuxAuth.ts";
+import * as BrowserAuth from "@/objects/stores/BrowserAuth.ts";
 import { useI18n } from "vue-i18n";
 import PirateButton from "@/vue/form/PirateButton.vue";
 import router from "@/router";
@@ -89,7 +89,7 @@ function keyPressEvent(event: KeyboardEvent) {
 
 function authUser() {
   if (!keycloakStore.isAuthenticated || !keycloakStore.keycloak.authenticated) {
-    keycloakStore.loginUser(window.location.origin);
+    void keycloakStore.loginUser();
   }
 }
 
@@ -99,7 +99,7 @@ async function cancelBrowser() {
   // context down mid-await, skipping login()'s cleanup and leaving the port bound, which then fails
   // the next login with EADDRINUSE. Rejecting the login flips awaitingBrowser back off, returning the
   // screen to the sign-in card without a full reload.
-  await LinuxAuth.abort();
+  await BrowserAuth.abort();
 }
 
 function leavePage() {

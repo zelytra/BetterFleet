@@ -35,10 +35,11 @@ tauri-plugin-http = "2"
 # so the webview API can never be the only path.
 tauri-plugin-clipboard-manager = "2"
 tauri-plugin-shell = "2"
-# Loopback OAuth server for the Linux login (#740): the webview's tauri://localhost origin cannot be
-# an OIDC redirect target (webviews block redirects to non-HTTP(S) schemes), so on Linux the hosted
-# Keycloak login opens in the system browser with an http://localhost:<port> redirect that this
-# captures. Windows/macOS keep the in-webview keycloak-js flow (https://tauri.localhost works there).
+# Loopback OAuth server for the sign-in on every platform. It began as the Linux path (#740): the
+# WebKitGTK webview's tauri://localhost origin cannot be an OIDC redirect target, since webviews
+# block redirects to non-HTTP(S) schemes. It is now the flow everywhere - the hosted Keycloak login
+# opens in the system browser with an http://localhost:<port> redirect that this captures - so the
+# refresh token is persisted by the app rather than living in a webview cookie.
 tauri-plugin-oauth = "2"
 anyhow = "1.0.80"
 tokio = { version = "1.43.1", features = ["full"] }

@@ -5,7 +5,8 @@ shell. The Rust side (`webapp/src-tauri/src/`) does the OS-level work; the Vue s
 the session logic. Entry point: `webapp/src/main.ts`.
 
 > This describes the code on `master`, which now includes the 2.3.0 wave: the full Linux desktop port
-> (system-browser loopback sign-in in `LinuxAuth.ts`, the `betterfleet-netcap` capture helper, the
+> (system-browser loopback sign-in in `BrowserAuth.ts` — now the flow on every platform, not just
+> Linux — the `betterfleet-netcap` capture helper, the
 > X11 overlay/set-sail paths, and `.deb`/`.rpm`/pacman packaging), on top of the 2.2.0 features still
 > present: the in-app "what's new" modal (#686), the configurable overlay hotkey (#687), the
 > guided-diagnostic detection watchdog (#688), the Rich Presence sync (#684), and the lobby alliance
@@ -15,7 +16,7 @@ the session logic. Entry point: `webapp/src/main.ts`.
 
 `main.ts` branches on `isOverlayWindow()` (Tauri window label `"overlay"`):
 - **Overlay window** → mounts `OverlayView.vue` bare: no router, no auth, no chrome.
-- **Main window** → mounts `App.vue`, initializes Keycloak (`keycloakStore.init`), registers the
+- **Main window** → mounts `App.vue`, restores the Keycloak session (`keycloakStore.init`), registers the
   `click-outside` directive, starts the router, and kicks off `startOverlayBroadcaster()` +
   `startPresenceSync()`.
 
@@ -31,9 +32,12 @@ when Keycloak isn't authenticated; `meta.displayInNav` drives the nav bar.
   user, all preferences, and the live `Fleet`. `init()` merges saved localStorage prefs over
   defaults and seeds locale/country from the browser. `setLang()` updates **both** i18n instances.
 - **`LocalStore.ts`**: a `customRef` factory over `localStorage` (`enum LocalKey`).
-- **`LoginStates.ts`**: Keycloak (`keycloak-js`). `keycloakStore` (realm `Betterfleet`, client
-  `application`, url from `VITE_KEYCLOAK_HOST`). `init()` does `check-sso`, loads the username;
-  `onTokenExpired` → `HTTPAxios.updateToken()`.
+- **`LoginStates.ts`**: the Keycloak session state (`keycloakStore`), backed by the loopback flow in
+  `BrowserAuth.ts` (realm `Betterfleet`, client `application`, url from `VITE_KEYCLOAK_HOST`) — no
+  `keycloak-js`; `keycloakStore.keycloak` is a plain token holder with the same `token`/
+  `authenticated`/`updateToken`/`logout` shape. `init()` silently restores the persisted
+  `offline_access` refresh token; `loginUser()` opens the system browser; `ensureFresh()` is the
+  single-flight refresh behind `HTTPAxios.updateToken()`.
 
 ### fleet/
 - **`Fleet.ts`**: **the WebSocket session client** and the richest object. `joinSession(id)` refreshes

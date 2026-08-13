@@ -43,6 +43,8 @@ async function lastRequestHeaders(): Promise<Record<string, string>> {
 describe("HTTPAxios.updateToken (#803)", () => {
   beforeEach(async () => {
     keycloakStore.keycloak.token = "fresh-token";
+    // Tests that model a real expiry sign the store out; put it back, or they leak into the next.
+    keycloakStore.keycloak.authenticated = true;
     keycloakStore.keycloak.updateToken = async () => true;
     // A successful refresh resets the class's static state (armed header, alert re-enabled), so
     // every test starts from a live session whatever the previous test left behind.
@@ -61,15 +63,32 @@ describe("HTTPAxios.updateToken (#803)", () => {
   it("clears the stale bearer when the refresh fails, so requests go out clean", async () => {
     await HTTPAxios.updateToken(); // armed
     keycloakStore.keycloak.updateToken = async () => {
-      throw new Error("Linux OIDC session expired");
+      throw new Error("OIDC session expired");
     };
     await HTTPAxios.updateToken(); // must not reject, must disarm
     expect("Authorization" in (await lastRequestHeaders())).toBe(false);
   });
 
+  it("stays quiet when the refresh failed but the session is still alive", async () => {
+    // An unreachable Keycloak (offline, VPN re-handshake, a restart behind the proxy) rejects the
+    // refresh without ending the session: ensureFresh rethrows and leaves the store signed in. The
+    // bearer must still be dropped - replaying a stale one is #803 - but telling the player their
+    // session expired would be a lie they cannot act on, and the next tick recovers.
+    await HTTPAxios.updateToken(); // armed
+    keycloakStore.keycloak.updateToken = async () => {
+      throw new Error("refresh unavailable: network unreachable");
+    };
+    await HTTPAxios.updateToken();
+    expect("Authorization" in (await lastRequestHeaders())).toBe(false);
+    expect(sentAlerts.length).toBe(0);
+    expect(keycloakStore.keycloak.authenticated).toBe(true);
+  });
+
   it("alerts the player once per expiry, not once per second", async () => {
     keycloakStore.keycloak.updateToken = async () => {
-      throw new Error("refresh token expired");
+      // A real expiry: the store signs itself out before rejecting, as ensureFresh does.
+      keycloakStore.keycloak.authenticated = false;
+      throw new Error("OIDC session expired");
     };
     await HTTPAxios.updateToken();
     await HTTPAxios.updateToken();
@@ -80,17 +99,20 @@ describe("HTTPAxios.updateToken (#803)", () => {
 
   it("re-arms the bearer and the alert after a recovery", async () => {
     keycloakStore.keycloak.updateToken = async () => {
-      throw new Error("down");
+      keycloakStore.keycloak.authenticated = false;
+      throw new Error("OIDC session expired");
     };
     await HTTPAxios.updateToken(); // first expiry: one alert
     keycloakStore.keycloak.token = "reborn-token";
+    keycloakStore.keycloak.authenticated = true;
     keycloakStore.keycloak.updateToken = async () => true;
     await HTTPAxios.updateToken(); // recovered
     expect((await lastRequestHeaders()).Authorization).toBe(
       "Bearer reborn-token",
     );
     keycloakStore.keycloak.updateToken = async () => {
-      throw new Error("down again");
+      keycloakStore.keycloak.authenticated = false;
+      throw new Error("OIDC session expired again");
     };
     await HTTPAxios.updateToken(); // second expiry: a second alert is due
     expect(sentAlerts.length).toBe(2);

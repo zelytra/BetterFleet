@@ -633,7 +633,9 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "*"
+        "http://localhost:47823/callback",
+        "http://tauri.localhost/*",
+        "http://localhost:5173/*"
       ],
       "webOrigins": [
         "*"

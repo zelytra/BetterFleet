@@ -21,11 +21,11 @@ if (typeof globalThis.localStorage === "undefined") {
   });
 }
 
-// LinuxAuth drives the Linux build's system browser + loopback sign-in (#740), so its edges are
-// all Tauri plugins: the loopback server (plugin-oauth), the browser opener (plugin-shell) and the
-// Rust-side HTTP client (plugin-http). Stub the three and record what crosses each one.
+// BrowserAuth drives the system browser + loopback sign-in every platform now uses, so its edges
+// are all Tauri plugins: the loopback server (plugin-oauth), the browser opener (plugin-shell) and
+// the Rust-side HTTP client (plugin-http). Stub the three and record what crosses each one.
 
-/** Every token-endpoint style request LinuxAuth issued, so a test can assert the OIDC contract. */
+/** Every token-endpoint style request BrowserAuth issued, so a test can assert the OIDC contract. */
 const httpCalls: { url: string; body: URLSearchParams }[] = [];
 /** The next responses to hand back, in order. Empty means respond 200 with `tokenResponse`; an
  *  entry with `reject` makes the fetch itself throw, like an unreachable Keycloak. */
@@ -97,11 +97,13 @@ import {
   accessTokenExpiry,
   usernameFromIdToken,
   LoginAbortedError,
-} from "@/objects/stores/LinuxAuth.ts";
+  RefreshUnavailableError,
+} from "@/objects/stores/BrowserAuth.ts";
 
-const REFRESH_KEY = "kc-linux-refresh-token";
+const REFRESH_KEY = "kc-refresh-token";
+const LEGACY_REFRESH_KEY = "kc-linux-refresh-token";
 
-/** An unsigned JWT carrying the given claims (signature irrelevant: LinuxAuth never verifies). */
+/** An unsigned JWT carrying the given claims (signature irrelevant: BrowserAuth never verifies). */
 function jwt(claims: Record<string, unknown>): string {
   const encode = (obj: unknown) =>
     btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(obj))))
@@ -188,6 +190,34 @@ describe("restore", () => {
     expect(localStorage.getItem(REFRESH_KEY)).toBe("rt-rotated");
   });
 
+  it("migrates a pre-unification Linux token to the current key", async () => {
+    // Linux players signed in before the rename hold the old key; reading it must move it forward,
+    // not sign them out.
+    localStorage.setItem(LEGACY_REFRESH_KEY, "rt-linux");
+    const tokens = await restore();
+    expect(tokens).toEqual(tokenResponse);
+    expect(httpCalls[0].body.get("refresh_token")).toBe("rt-linux");
+    expect(localStorage.getItem(REFRESH_KEY)).toBe("rt-rotated");
+    expect(localStorage.getItem(LEGACY_REFRESH_KEY)).toBeNull();
+  });
+
+  it("keeps the stored token when Keycloak cannot be reached", async () => {
+    // The distinction the whole flow rests on: an unreachable server says nothing about the
+    // session, so deleting the token here would turn a Wi-Fi blip into a full browser re-login.
+    localStorage.setItem(REFRESH_KEY, "rt-live");
+    httpQueue.push({ ok: false, status: 0, payload: {}, reject: true });
+    await expect(restore()).rejects.toBeInstanceOf(RefreshUnavailableError);
+    expect(localStorage.getItem(REFRESH_KEY)).toBe("rt-live");
+  });
+
+  it("keeps the stored token when Keycloak answers 5xx", async () => {
+    // A restarting Keycloak, or a proxy 502: the server is failing, not judging the session.
+    localStorage.setItem(REFRESH_KEY, "rt-live");
+    httpQueue.push({ ok: false, status: 503, payload: {} });
+    await expect(restore()).rejects.toBeInstanceOf(RefreshUnavailableError);
+    expect(localStorage.getItem(REFRESH_KEY)).toBe("rt-live");
+  });
+
   it("clears the stored token and answers null when Keycloak rejects it", async () => {
     localStorage.setItem(REFRESH_KEY, "rt-expired");
     httpQueue.push({ ok: false, status: 400, payload: {} });
@@ -211,8 +241,8 @@ describe("login", () => {
     expect(authorize.searchParams.get("redirect_uri")).toBe(
       "http://localhost:47823/callback",
     );
-    // offline_access is what lets the persisted refresh token survive restarts and Keycloak's SSO
-    // Session Max instead of dying with the SSO session.
+    // offline_access is the whole point of going cross-platform: the refresh token outlives
+    // Keycloak's SSO Session Max, so the session no longer dies after ~10h mid-play.
     expect(authorize.searchParams.get("scope")).toBe("openid offline_access");
     expect(authorize.searchParams.get("code_challenge_method")).toBe("S256");
     expect(authorize.searchParams.get("code_challenge")).toBeTruthy();
@@ -295,9 +325,11 @@ describe("endSession", () => {
 });
 
 describe("forget", () => {
-  it("clears the stored refresh token", () => {
+  it("clears the current and legacy stored tokens", () => {
     localStorage.setItem(REFRESH_KEY, "a");
+    localStorage.setItem(LEGACY_REFRESH_KEY, "b");
     forget();
     expect(localStorage.getItem(REFRESH_KEY)).toBeNull();
+    expect(localStorage.getItem(LEGACY_REFRESH_KEY)).toBeNull();
   });
 });

@@ -68,7 +68,7 @@ export class HTTPAxios {
 
   /**
    * Refreshes the access token and (re)arms the shared Authorization header. Never rejects: a
-   * failed refresh (expired Keycloak session, the Linux `ensureFreshLinux` throw) clears the
+   * failed refresh (an expired Keycloak session, or an unreachable one) clears the
    * header instead of leaving a dead bearer replayed forever (#803: the session browser 401'd
    * every 5s for hours on a token six hours past its exp), and tells the player once that the
    * session expired. The next successful refresh re-arms the header and re-enables the alert.
@@ -86,7 +86,12 @@ export class HTTPAxios {
           "[HTTPAxios] token refresh failed, cleared the stale bearer: " + e,
         );
       }
-      if (!HTTPAxios.sessionExpiredNotified) {
+      // Only tell the player their session ended when it actually did. An unreachable Keycloak
+      // (offline, VPN re-handshake, a restart behind the proxy) still clears the bearer above -
+      // replaying a stale one is what #803 was - but the store stays signed in and the next tick
+      // recovers, so announcing an expiry there would be a lie the player cannot act on.
+      const sessionIsOver = keycloakStore.keycloak.authenticated === false;
+      if (sessionIsOver && !HTTPAxios.sessionExpiredNotified) {
         HTTPAxios.sessionExpiredNotified = true;
         alertProvider.sendAlert({
           title: tsi18n.global.t("alert.auth.expired.title"),
