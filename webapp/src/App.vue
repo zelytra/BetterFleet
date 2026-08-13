@@ -14,10 +14,12 @@
 import LoadingVue from "@/vue/templates/LoadingVue.vue";
 import AlertComponent from "@/vue/alert/AlertComponent.vue";
 import { useI18n } from "vue-i18n";
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { error } from "@tauri-apps/plugin-log";
 import { UserStore } from "@/objects/stores/UserStore.ts";
+import { keycloakStore } from "@/objects/stores/LoginStates.ts";
+import router from "@/router";
 import { checkForUpdate } from "@/objects/Updater.ts";
 import { DEFAULT_OVERLAY_HOTKEY } from "@/objects/fleet/Overlay.ts";
 import {
@@ -27,6 +29,21 @@ import {
 } from "@/objects/fleet/Player.ts";
 
 const { t } = useI18n();
+
+// A session that ends mid-play - Keycloak rejected the refresh, so the store signed itself out -
+// used to leave the player exactly where they were: the router guard only runs on navigation, so
+// someone sitting on the fleet screen stayed on a dead page until they happened to click something.
+// Send them to the sign-in screen instead. HTTPAxios has already raised the "session expired"
+// alert, so this only moves them somewhere they can act on it. Watched here rather than in the
+// store because the router imports the store, and importing it back would be a cycle.
+watch(
+  () => keycloakStore.isAuthenticated,
+  (signedIn, wasSignedIn) => {
+    if (wasSignedIn && !signedIn && router.currentRoute.value.path !== "/") {
+      void router.push("/");
+    }
+  },
+);
 
 onMounted(() => {
   UserStore.init({

@@ -229,7 +229,8 @@
       "title": "Continuez dans votre navigateur",
       "message": "Une page de connexion s'est ouverte dans votre navigateur. Terminez-y la connexion, puis revenez ici.",
       "cancel": "Annuler",
-      "error": "Échec de la connexion. Veuillez réessayer."
+      "error": "Échec de la connexion. Veuillez réessayer.",
+      "done": "Vous pouvez fermer cet onglet et revenir à BetterFleet."
     },
     "continue": "Continuer",
     "description": "Bienvenue sur BetterFleet ! Nous sommes ravis de vous compter parmi nous. Afin d'utiliser l'application, merci de vous connecter à votre compte ou d'en créer un !",

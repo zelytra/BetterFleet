@@ -1,7 +1,10 @@
 import { start, onUrl, cancel } from "@fabianlars/tauri-plugin-oauth";
 import { open } from "@tauri-apps/plugin-shell";
 import { fetch } from "@tauri-apps/plugin-http";
-import { i18n } from "@/main.ts";
+// The TypeScript-side i18n instance (the same one alerts raised outside components use). Not the
+// app instance from main.ts: this module is imported by the auth store, and going through main.ts
+// would drag the whole app bootstrap into that graph.
+import { tsi18n } from "@/objects/i18n";
 
 // Loopback OIDC — the sign-in flow on every platform. This is the RFC 8252 native-app pattern:
 // open the hosted Keycloak login in the system browser with an `http://localhost:<port>` redirect,
@@ -158,34 +161,6 @@ export function accessTokenExpiry(accessToken: string): number {
   return typeof exp === "number" ? exp * 1000 : 0;
 }
 
-// Success page shown in the browser tab after the callback, in the app's current language and the
-// BetterFleet dark theme. Kept inline (not in the app locale files, which are for the in-app UI): it
-// renders in the system browser and travels with this flow. tauri-plugin-oauth injects its capture
-// <script> into <head>, so a full HTML document with <head> and <body> is required; it serves the
-// page without a Content-Type, so the <meta charset> declares the encoding.
-const SUCCESS_STRINGS: Record<string, { title: string; message: string }> = {
-  en: {
-    title: "Login successful",
-    message: "You can close this tab and return to BetterFleet.",
-  },
-  fr: {
-    title: "Connexion réussie",
-    message: "Vous pouvez fermer cet onglet et revenir à BetterFleet.",
-  },
-  de: {
-    title: "Anmeldung erfolgreich",
-    message: "Sie können diesen Tab schließen und zu BetterFleet zurückkehren.",
-  },
-  es: {
-    title: "Sesión iniciada",
-    message: "Puedes cerrar esta pestaña y volver a BetterFleet.",
-  },
-  it: {
-    title: "Accesso riuscito",
-    message: "Puoi chiudere questa scheda e tornare a BetterFleet.",
-  },
-};
-
 // Escapes for both element text and double/single-quoted attribute contexts (successPage puts the
 // locale in an attribute), so quotes must be escaped too, not only the angle brackets.
 function escapeHtml(value: string): string {
@@ -198,15 +173,20 @@ function escapeHtml(value: string): string {
 }
 
 function successPage(): string {
-  // Validate the active locale against the known set before interpolating it into the page (it lands
-  // in the <html lang> attribute), so only a known language tag is ever emitted.
-  const rawLocale = String(i18n.global.locale.value);
-  const locale = Object.keys(SUCCESS_STRINGS).includes(rawLocale)
-    ? rawLocale
-    : "en";
-  const strings = SUCCESS_STRINGS[locale];
-  const title = escapeHtml(strings.title);
-  const message = escapeHtml(strings.message);
+  // The copy comes from the app's own messages, so this page speaks every language the app does and
+  // stays in the Crowdin pipeline - it used to carry a private table covering five of thirteen, and
+  // a player in any of the other eight was sent to a page in a language they had not chosen.
+  const { t, locale: activeLocale, availableLocales } = tsi18n.global;
+  // Validate the active locale against the loaded set before interpolating it into the page (it
+  // lands in the <html lang> attribute), so only a known language tag is ever emitted. "source" is
+  // the translator-facing copy of English, never a language a player runs in.
+  const rawLocale = String(activeLocale.value);
+  // find() rather than a cast: it hands back the locale union vue-i18n types its messages with, so
+  // an unknown or removed language falls back to English instead of reaching t().
+  const locale =
+    availableLocales.find((l) => l === rawLocale && l !== "source") ?? "en";
+  const title = escapeHtml(t("login.succeed", locale));
+  const message = escapeHtml(t("login.browser.done", locale));
   const style =
     "*{box-sizing:border-box}html,body{margin:0;height:100%}" +
     'body{display:flex;align-items:center;justify-content:center;background:#171a21;color:#e6e6e6;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}' +
