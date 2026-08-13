@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "セッションの有効期限切れ",
-        "content": "セッションの有効期限が切れました。アプリを再起動するか、再度ログインしてください。"
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {
@@ -230,7 +230,7 @@
       "message": "ブラウザでサインインページが開きました。そちらでサインインを完了してから、こちらに戻ってください。",
       "cancel": "キャンセル",
       "error": "サインインに失敗しました。もう一度お試しください。",
-      "done": "このタブを閉じて、BetterFleet に戻ってください。"
+      "done": "You can close this tab and return to BetterFleet."
     },
     "continue": "続行",
     "description": "BetterFleetへようこそ！あなたを仲間に迎えられて嬉しく思います。アプリケーションを利用するには、アカウントにログインするか、新しく作成してください！",

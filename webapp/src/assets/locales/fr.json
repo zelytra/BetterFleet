@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "Session expirée",
-        "content": "Votre session a expiré — redémarrez l'application ou reconnectez-vous."
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {
@@ -230,7 +230,7 @@
       "message": "Une page de connexion s'est ouverte dans votre navigateur. Terminez-y la connexion, puis revenez ici.",
       "cancel": "Annuler",
       "error": "Échec de la connexion. Veuillez réessayer.",
-      "done": "Vous pouvez fermer cet onglet et revenir à BetterFleet."
+      "done": "You can close this tab and return to BetterFleet."
     },
     "continue": "Continuer",
     "description": "Bienvenue sur BetterFleet ! Nous sommes ravis de vous compter parmi nous. Afin d'utiliser l'application, merci de vous connecter à votre compte ou d'en créer un !",

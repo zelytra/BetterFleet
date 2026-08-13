@@ -3,7 +3,7 @@
     "auth": {
       "expired": {
         "title": "Sitzung abgelaufen",
-        "content": "Deine Sitzung ist abgelaufen – starte die App neu oder melde dich erneut an."
+        "content": "Ihre Sitzung ist abgelaufen – starten Sie die App neu oder melden Sie sich erneut an."
       }
     },
     "alreadyConnected": {
@@ -230,7 +230,7 @@
       "message": "In deinem Browser wurde eine Anmeldeseite geöffnet. Schließe die Anmeldung dort ab und komm dann hierher zurück.",
       "cancel": "Abbrechen",
       "error": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
-      "done": "Du kannst diesen Tab schließen und zu BetterFleet zurückkehren."
+      "done": "You can close this tab and return to BetterFleet."
     },
     "continue": "Weiter",
     "description": "Willkommen bei BetterFleet! Wir freuen uns riesig, dich bei uns zu haben. Um die Anwendung zu nutzen, melde dich bitte bei deinem Konto an oder erstelle ein neues!",

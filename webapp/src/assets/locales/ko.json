@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "세션 만료",
-        "content": "세션이 만료되었습니다 — 앱을 다시 시작하거나 다시 로그인하세요."
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {
@@ -230,7 +230,7 @@
       "message": "브라우저에 로그인 페이지가 열렸습니다. 그곳에서 로그인을 완료한 뒤 여기로 돌아오세요.",
       "cancel": "취소",
       "error": "로그인에 실패했습니다. 다시 시도하세요.",
-      "done": "이 탭을 닫고 BetterFleet으로 돌아가세요."
+      "done": "You can close this tab and return to BetterFleet."
     },
     "continue": "계속",
     "description": "BetterFleet에 오신 것을 환영합니다! 함께하게 되어 무척 기쁩니다. 애플리케이션을 사용하려면 계정에 로그인하거나 새로 만들어 주세요!",

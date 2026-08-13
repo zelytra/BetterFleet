@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "सत्र समाप्त हो गया",
-        "content": "आपका सत्र समाप्त हो गया है — ऐप को पुनः आरंभ करें या फिर से लॉगिन करें।"
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {
@@ -230,7 +230,7 @@
       "message": "आपके ब्राउज़र में एक साइन-इन पृष्ठ खुला है। उसे वहाँ पूरा करें, फिर यहाँ वापस आएँ।",
       "cancel": "रद्द करें",
       "error": "साइन-इन विफल रहा। कृपया दोबारा प्रयास करें।",
-      "done": "आप इस टैब को बंद करके BetterFleet पर वापस आ सकते हैं।"
+      "done": "You can close this tab and return to BetterFleet."
     },
     "continue": "जारी रखें",
     "description": "BetterFleet में आपका स्वागत है! आपको अपने बीच पाकर हम रोमांचित हैं। एप्लिकेशन का उपयोग करने के लिए, कृपया अपने खाते में लॉग इन करें या एक नया बनाएँ!",

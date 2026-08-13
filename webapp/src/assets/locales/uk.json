@@ -2,8 +2,8 @@
   "alert": {
     "auth": {
       "expired": {
-        "title": "Сесія завершилася",
-        "content": "Ваша сесія завершилася — перезапустіть застосунок або увійдіть знову."
+        "title": "Session expired",
+        "content": "Your session has expired — restart the app or sign in again."
       }
     },
     "alreadyConnected": {
@@ -230,7 +230,7 @@
       "message": "У вашому браузері відкрилася сторінка входу. Завершіть вхід там, а потім поверніться сюди.",
       "cancel": "Скасувати",
       "error": "Не вдалося увійти. Будь ласка, спробуйте ще раз.",
-      "done": "Ви можете закрити цю вкладку та повернутися до BetterFleet."
+      "done": "You can close this tab and return to BetterFleet."
     },
     "continue": "Продовжити",
     "description": "Ласкаво просимо до BetterFleet! Ми раді бачити вас серед нас. Щоб отримати доступ до застосунку, увійдіть у свій обліковий запис або створіть новий!",
