@@ -230,7 +230,8 @@
       "message": "Si è aperta una pagina di accesso nel tuo browser. Completa l'accesso lì, poi torna qui.",
       "cancel": "Annulla",
       "error": "Accesso non riuscito. Riprova.",
-      "done": "Puoi chiudere questa scheda e tornare a BetterFleet."
+      "done": "Puoi chiudere questa scheda e tornare a BetterFleet.",
+      "portBusy": "Impossibile avviare l'accesso: le porte 47823-47825 sono tutte occupate. Chiudi ogni altra finestra di BetterFleet e riprova."
     },
     "continue": "Continua",
     "description": "Benvenuto su BetterFleet! Siamo entusiasti di averti tra noi. Per accedere all'applicazione, accedi al tuo account o creane uno!",

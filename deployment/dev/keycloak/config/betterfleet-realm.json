@@ -634,6 +634,8 @@
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
         "http://localhost:47823/callback",
+        "http://localhost:47824/callback",
+        "http://localhost:47825/callback",
         "http://tauri.localhost/*",
         "http://localhost:5173/*"
       ],
@@ -651,6 +653,7 @@
       "frontchannelLogout": true,
       "protocol": "openid-connect",
       "attributes": {
+        "pkce.code.challenge.method": "S256",
         "oidc.ciba.grant.enabled": "false",
         "backchannel.logout.session.required": "true",
         "post.logout.redirect.uris": "+",

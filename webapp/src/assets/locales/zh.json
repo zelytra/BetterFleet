@@ -230,7 +230,8 @@
       "message": "登录页面已在你的浏览器中打开。请在那里完成登录，然后返回此处。",
       "cancel": "取消",
       "error": "登录失败，请重试。",
-      "done": "你可以关闭此标签页并返回 BetterFleet。"
+      "done": "你可以关闭此标签页并返回 BetterFleet。",
+      "portBusy": "无法开始登录：端口 47823-47825 均被占用。请关闭其他 BetterFleet 窗口后重试。"
     },
     "continue": "继续",
     "description": "欢迎来到 BetterFleet！我们很高兴有你的加入。请登录你的账户或创建一个新账户，以使用本应用！",
