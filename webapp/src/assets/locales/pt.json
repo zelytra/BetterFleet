@@ -231,7 +231,7 @@
       "cancel": "Cancelar",
       "error": "Falha no login. Por favor, tente novamente.",
       "done": "Você pode fechar esta aba e voltar ao BetterFleet.",
-      "portBusy": "Não foi possível iniciar o login: as portas 47823-47825 estão todas em uso. Feche qualquer outra janela do BetterFleet e tente novamente."
+      "portBusy": "Não foi possível iniciar o login: outro programa está usando as portas 47823-47825. Libere uma delas, ou reinicie o computador, e tente novamente."
     },
     "continue": "Continuar",
     "description": "Bem-vindo ao BetterFleet! Estamos muito felizes em ter você entre nós. Para acessar o aplicativo, faça login na sua conta ou crie uma!",

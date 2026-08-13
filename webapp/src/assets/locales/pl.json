@@ -231,7 +231,7 @@
       "cancel": "Anuluj",
       "error": "Logowanie nie powiodło się. Spróbuj ponownie.",
       "done": "Możesz zamknąć tę kartę i wrócić do BetterFleet.",
-      "portBusy": "Nie można rozpocząć logowania: porty 47823-47825 są zajęte. Zamknij pozostałe okna BetterFleet i spróbuj ponownie."
+      "portBusy": "Nie można rozpocząć logowania: inny program używa portów 47823-47825. Zwolnij jeden z nich lub uruchom ponownie komputer i spróbuj jeszcze raz."
     },
     "continue": "Kontynuuj",
     "description": "Witaj w BetterFleet! Cieszymy się, że jesteś wśród nas. Aby uzyskać dostęp do aplikacji, zaloguj się na swoje konto lub utwórz nowe!",

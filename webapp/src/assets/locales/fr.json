@@ -231,7 +231,7 @@
       "cancel": "Annuler",
       "error": "Échec de la connexion. Veuillez réessayer.",
       "done": "Vous pouvez fermer cet onglet et revenir à BetterFleet.",
-      "portBusy": "La connexion n'a pas pu démarrer : les ports 47823 à 47825 sont tous utilisés. Fermez toute autre fenêtre BetterFleet et réessayez."
+      "portBusy": "La connexion n'a pas pu démarrer : un autre programme utilise les ports 47823 à 47825. Libérez-en un, ou redémarrez votre ordinateur, puis réessayez."
     },
     "continue": "Continuer",
     "description": "Bienvenue sur BetterFleet ! Nous sommes ravis de vous compter parmi nous. Afin d'utiliser l'application, merci de vous connecter à votre compte ou d'en créer un !",
