@@ -39,6 +39,10 @@
         "title": "报告已发送"
       }
     },
+    "macro": {
+      "title": "未点击起航",
+      "content": "BetterFleet 未能替你点击“起航”。请自行点击，与船员一同出海。"
+    },
     "research": {
       "notInMenu": {
         "content": "你不在游戏菜单中",

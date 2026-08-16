@@ -39,6 +39,10 @@
         "title": "Segnalazione inviata"
       }
     },
+    "macro": {
+      "title": "Salpa non cliccato",
+      "content": "BetterFleet non è riuscito a cliccare «Salpa» al posto tuo. Cliccalo tu per partire con la ciurma."
+    },
     "research": {
       "notInMenu": {
         "content": "Non sei nel menu di gioco",
