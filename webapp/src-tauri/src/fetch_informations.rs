@@ -64,6 +64,13 @@ const MIN_SESSION_PACKETS: u32 = 3;
 /// Keep showing the last known server through brief gaps in traffic; only fall back to
 /// the main menu once no host flow has been seen for this long. Avoids flapping.
 const SERVER_LOST_GRACE_SECS: u64 = 12;
+/// How long a connection change's quarantine outlives it. Teardown stragglers die within seconds;
+/// afterwards the quarantine only costs us: the coordinator's local socket persists across servers,
+/// so if the game re-opened just its gameplay socket mid-game, the surviving coordinator's exact
+/// key would stay barred and the identity could never re-resolve for the rest of that game. (The
+/// pre-#832 loop cleared the quarantine on every grace expiry by accident; this is the same escape
+/// hatch, deterministic.)
+const QUARANTINE_TTL_SECS: u64 = 60;
 
 /// Decides which session endpoint `(local_port, remote_ip, remote_port)` to report for the CURRENT
 /// game connection, given the flows accumulated so far. Once an endpoint is locked it is sticky:
@@ -77,8 +84,13 @@ pub(crate) fn update_session_lock(
     locked: Option<(u16, String, u16)>,
     accumulated: &[better_fleet::capture::FlowStat],
     min_packets: u32,
+    game_local_port: Option<u16>,
 ) -> Option<(u16, String, u16)> {
-    let candidate = match crate::diagnostics::pick_session_flow(accumulated, min_packets) {
+    let candidate = match crate::diagnostics::pick_session_flow_excluding(
+        accumulated,
+        min_packets,
+        game_local_port,
+    ) {
         Some(c) => c,
         None => return locked,
     };
@@ -169,7 +181,7 @@ pub(crate) enum GameEvent {
     Entered,
     /// A different local socket cleared the host floor: a genuinely new game. The old
     /// accumulation was quarantined.
-    NewGame,
+    NewGame { local_port: u16 },
     /// Same socket, new host address: Steam Datagram Relay rerouted. The identity is untouched.
     HostMigrated { from: String },
     /// The connection cleared the floor again after a fallback: the exit was false (#832).
@@ -222,6 +234,8 @@ pub(crate) struct DetectionState {
     locked_session: Option<(u16, String, u16)>,
     /// Flow keys of the previous game, quarantined at the connection change (teardown lingers).
     quarantine: std::collections::HashSet<(u16, String, u16)>,
+    /// When the quarantine was set, so it can expire (see QUARANTINE_TTL_SECS).
+    quarantine_born: Option<Instant>,
     /// Last instant the connection's socket showed any plausible traffic.
     last_traffic: Option<Instant>,
     /// The status fell back to the menu past the grace; the identity above is being held.
@@ -235,6 +249,7 @@ impl DetectionState {
             connection: None,
             locked_session: None,
             quarantine: std::collections::HashSet::new(),
+            quarantine_born: None,
             last_traffic: None,
             fallen_back: false,
         }
@@ -254,14 +269,18 @@ impl DetectionState {
             .map(|(_, ip, port)| (ip.clone(), *port))
     }
 
-    /// Merges a window (minus quarantined old-game flows) and (re)settles the session lock.
-    fn accumulate(&mut self, window: &[better_fleet::capture::FlowStat]) {
-        let clean = drop_quarantined(window, &self.quarantine);
-        crate::diagnostics::merge_flows(&mut self.flows, &clean);
+    /// Merges an already-dequarantined window and (re)settles the session lock. The game socket's
+    /// local port is barred from candidacy: no flow on it is ever the identity (#832).
+    fn accumulate(&mut self, clean_window: &[better_fleet::capture::FlowStat]) {
+        crate::diagnostics::merge_flows(&mut self.flows, clean_window);
         let accumulated: Vec<better_fleet::capture::FlowStat> =
             self.flows.values().cloned().collect();
-        self.locked_session =
-            update_session_lock(self.locked_session.take(), &accumulated, MIN_SESSION_PACKETS);
+        self.locked_session = update_session_lock(
+            self.locked_session.take(),
+            &accumulated,
+            MIN_SESSION_PACKETS,
+            self.connection.as_ref().map(|(_, local_port)| *local_port),
+        );
     }
 
     /// Feeds one capture window at `now` and decides what it means.
@@ -270,7 +289,19 @@ impl DetectionState {
         window: &[better_fleet::capture::FlowStat],
         now: Instant,
     ) -> WindowOutcome {
-        match crate::diagnostics::pick_server_flow(window, MIN_SERVER_PACKETS) {
+        // Teardown stragglers die within seconds; past the TTL the quarantine only blocks a
+        // surviving coordinator from ever re-locking (see QUARANTINE_TTL_SECS).
+        if let Some(born) = self.quarantine_born {
+            if now.saturating_duration_since(born) > Duration::from_secs(QUARANTINE_TTL_SECS) {
+                self.quarantine.clear();
+                self.quarantine_born = None;
+            }
+        }
+        // The host pick ignores quarantined flows: the window that reveals a server switch (and
+        // the teardown after it) can still carry the OLD host louder than the new one, and picking
+        // it would flip the connection back and forth, re-quarantining each time (#832).
+        let clean_window = drop_quarantined(window, &self.quarantine);
+        match crate::diagnostics::pick_server_flow(&clean_window, MIN_SERVER_PACKETS) {
             Some(host) => {
                 let event = match &self.connection {
                     None => {
@@ -297,15 +328,18 @@ impl DetectionState {
                         // exact keys so the window that reveals the switch (captured while the old
                         // socket still tears down) cannot re-seed them into the fresh accumulator.
                         self.quarantine = self.flows.keys().cloned().collect();
+                        self.quarantine_born = Some(now);
                         self.flows.clear();
                         self.locked_session = None;
                         self.connection = Some((host.remote_ip.clone(), host.local_port));
-                        GameEvent::NewGame
+                        GameEvent::NewGame {
+                            local_port: host.local_port,
+                        }
                     }
                 };
                 self.fallen_back = false;
                 self.last_traffic = Some(now);
-                self.accumulate(window);
+                self.accumulate(&clean_window);
                 WindowOutcome::InGame {
                     host_ip: host.remote_ip.clone(),
                     session: self.locked_endpoint(),
@@ -323,7 +357,7 @@ impl DetectionState {
                 }
                 // The floor said "no host", but liveness is the socket's call: any plausible
                 // packet on the game's local port proves the game alive (#832).
-                let socket_alive = window.iter().any(|f| {
+                let socket_alive = clean_window.iter().any(|f| {
                     f.local_port == *local_port && f.plausible_sot_port && f.packets > 0
                 });
                 if socket_alive {
@@ -340,7 +374,7 @@ impl DetectionState {
                     // Holding: the game is deemed alive, so the window's packets count - the
                     // session flow drips a packet every few seconds, and discarding host-silent
                     // windows would throw away exactly what the identity is waiting for.
-                    self.accumulate(window);
+                    self.accumulate(&clean_window);
                     WindowOutcome::Holding {
                         session: self.locked_endpoint(),
                     }
@@ -376,6 +410,7 @@ impl DetectionState {
         self.connection = None;
         self.locked_session = None;
         self.quarantine.clear();
+        self.quarantine_born = None;
         self.last_traffic = None;
         self.fallen_back = false;
     }
@@ -490,9 +525,9 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     event,
                 } => {
                     match &event {
-                        GameEvent::NewGame => info!(
-                            "New game connection to {} (new local socket), dropping the previous game's flows",
-                            host_ip
+                        GameEvent::NewGame { local_port } => info!(
+                            "New game connection to {} (local port {}), dropping the previous game's flows",
+                            host_ip, local_port
                         ),
                         GameEvent::HostMigrated { from } => info!(
                             "Host migrated {} -> {} on the same game socket; same game, identity held",
@@ -1022,7 +1057,7 @@ mod tests {
     #[test]
     fn the_session_lock_is_acquired_once_a_candidate_qualifies() {
         let accumulated = [host(), flow(52354, "145.190.66.42", 30034, 4, 2, 2)];
-        let lock = update_session_lock(None, &accumulated, 3);
+        let lock = update_session_lock(None, &accumulated, 3, None);
         assert_eq!(lock, Some((52354, "145.190.66.42".to_string(), 30034)));
     }
 
@@ -1032,7 +1067,7 @@ mod tests {
         // drop the lock: identity is not liveness.
         let lock = Some((52354, "145.190.66.42".to_string(), 30034));
         let accumulated = [host()];
-        assert_eq!(update_session_lock(lock.clone(), &accumulated, 3), lock);
+        assert_eq!(update_session_lock(lock.clone(), &accumulated, 3, None), lock);
     }
 
     #[test]
@@ -1044,7 +1079,7 @@ mod tests {
             flow(52354, "145.190.66.42", 30034, 6, 3, 3),
             flow(52999, "20.33.49.115", 31260, 8, 4, 4), // busier, but < 2x
         ];
-        assert_eq!(update_session_lock(lock.clone(), &accumulated, 3), lock);
+        assert_eq!(update_session_lock(lock.clone(), &accumulated, 3, None), lock);
     }
 
     #[test]
@@ -1057,7 +1092,7 @@ mod tests {
             flow(52354, "145.190.66.42", 30034, 7, 4, 3), // >= 2x the locked flow
         ];
         assert_eq!(
-            update_session_lock(lock, &accumulated, 3),
+            update_session_lock(lock, &accumulated, 3, None),
             Some((52354, "145.190.66.42".to_string(), 30034))
         );
     }
@@ -1078,7 +1113,7 @@ mod tests {
         ];
         // Without clearing, the stale endpoint wins: the false merge observed live.
         assert_eq!(
-            update_session_lock(stale_lock, &accumulated, 3),
+            update_session_lock(stale_lock, &accumulated, 3, None),
             Some((52354, "145.190.66.42".to_string(), 30034))
         );
         // After the per-connection clear (what the loop now does), the new coordinator locks.
@@ -1087,7 +1122,7 @@ mod tests {
             flow(55329, "145.190.66.42", 30099, 8, 4, 4),
         ];
         assert_eq!(
-            update_session_lock(None, &cleared, 3),
+            update_session_lock(None, &cleared, 3, None),
             Some((55329, "145.190.66.42".to_string(), 30099))
         );
     }
@@ -1134,7 +1169,7 @@ mod tests {
 
         let clean = drop_quarantined(&window, &quarantine);
         assert_eq!(
-            update_session_lock(None, &clean, 3),
+            update_session_lock(None, &clean, 3, None),
             None,
             "nothing from the old game may be locked as the new game's session"
         );
@@ -1484,7 +1519,7 @@ mod tests {
             WindowOutcome::InGame {
                 host_ip: "51.103.72.36".into(),
                 session: None,
-                event: GameEvent::NewGame,
+                event: GameEvent::NewGame { local_port: 61000 },
             }
         );
         // The old session flow keeps dripping through teardown windows: quarantined, it never
@@ -1578,6 +1613,285 @@ mod tests {
             WindowOutcome::InGame {
                 host_ip: "20.43.56.25".into(),
                 session: None,
+                event: GameEvent::Entered,
+            }
+        );
+    }
+
+    // --- Hardening from the #832 review: the traps the first cut left open -------------------
+
+    #[test]
+    fn migration_never_relocks_onto_the_host_endpoint() {
+        // The review's probe: after an SDR reroute the accumulation holds TWO host-class flows
+        // for the first time, and the freshly-migrated one (a single window's volume, dwarfed by
+        // the old host's accumulation) used to sail under pick_session_flow's 4x cap, out-rank
+        // the sparse coordinator, and lock the fleet onto the per-client host endpoint - sticky,
+        // since the host flow then out-accumulates everything forever. No flow on the game socket
+        // is ever the identity.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        let mut now = t0;
+        // Let the pre-migration host accumulate well past 4x a window's volume.
+        for _ in 0..10 {
+            now += Duration::from_secs(3);
+            state.on_window(&[host_window(80), session_drip(1)], now);
+        }
+        // The reroute: same socket, new host address.
+        now += Duration::from_secs(3);
+        let outcome = state.on_window(&[flow(57084, "20.199.125.251", 30777, 70, 35, 35)], now);
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.199.125.251".into(),
+                session: Some((SESSION.0.into(), SESSION.1)),
+                event: GameEvent::HostMigrated {
+                    from: "20.43.56.25".into()
+                },
+            }
+        );
+        // And it must STAY the coordinator, however long both host flows keep accumulating.
+        for i in 0..20 {
+            now += Duration::from_secs(3);
+            let host_ip = if i % 2 == 0 { "20.199.125.251" } else { "20.43.56.25" };
+            let outcome = state.on_window(&[flow(57084, host_ip, 30777, 80, 40, 40)], now);
+            match outcome {
+                WindowOutcome::InGame { session, .. } => assert_eq!(
+                    session,
+                    Some((SESSION.0.into(), SESSION.1)),
+                    "window {i}: the identity must never move to a host endpoint"
+                ),
+                other => panic!("window {i}: expected InGame, got {other:?}"),
+            }
+        }
+    }
+
+    #[test]
+    fn an_established_rival_under_2x_does_not_steal_the_lock() {
+        // The stickiness must survive the accumulate call site: the held lock is passed back in,
+        // so a rival that merely out-accumulates the locked flow (without doubling it) stays a
+        // candidate, never the identity.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0); // locked flow has 4 packets accumulated
+        let outcome = state.on_window(
+            &[
+                host_window(60),
+                session_drip(1), // locked: 5 accumulated
+                flow(53730, "20.157.97.115", 30876, 8, 4, 4), // rival: 8 - more, but under 2x
+            ],
+            t0 + Duration::from_secs(3),
+        );
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.43.56.25".into(),
+                session: Some((SESSION.0.into(), SESSION.1)),
+                event: GameEvent::Steady,
+            }
+        );
+    }
+
+    #[test]
+    fn a_resume_rearms_the_whole_machine() {
+        // After a false exit and a resume, the machine must be fully back: sub-floor whispers
+        // hold again (fallen_back cleared) and a later true silence falls back again
+        // (last_traffic re-armed by the resume).
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        assert_eq!(
+            state.on_window(&[], t0 + Duration::from_secs(13)),
+            WindowOutcome::FellBack
+        );
+        assert!(matches!(
+            state.on_window(&[host_window(60)], t0 + Duration::from_secs(15)),
+            WindowOutcome::InGame {
+                event: GameEvent::Resumed,
+                ..
+            }
+        ));
+        // Whisper at 20s: holds, because the resume re-armed the machine.
+        assert!(matches!(
+            state.on_window(&[host_window(4)], t0 + Duration::from_secs(20)),
+            WindowOutcome::Holding { .. }
+        ));
+        // True silence again, 13s past the whisper: falls back a second time.
+        assert_eq!(
+            state.on_window(&[], t0 + Duration::from_secs(33)),
+            WindowOutcome::FellBack
+        );
+    }
+
+    #[test]
+    fn a_loud_teardown_does_not_flip_the_connection_back() {
+        // The window that reveals a server switch is captured while the old socket still tears
+        // down - and the OLD host can be the louder flow in it. Ranking the raw window used to
+        // flip the connection back to the old socket, re-quarantining everything each time.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        // New game: a fresh socket clears the floor.
+        assert!(matches!(
+            state.on_window(
+                &[flow(61000, "51.103.72.36", 30200, 90, 45, 45)],
+                t0 + Duration::from_secs(5),
+            ),
+            WindowOutcome::InGame {
+                event: GameEvent::NewGame { local_port: 61000 },
+                ..
+            }
+        ));
+        // Teardown window: the OLD host still louder than the new one. Quarantined, it must not
+        // win the pick - the connection stays on the new socket.
+        let outcome = state.on_window(
+            &[
+                host_window(120), // the old game's host, still draining
+                flow(61000, "51.103.72.36", 30200, 70, 35, 35),
+            ],
+            t0 + Duration::from_secs(8),
+        );
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "51.103.72.36".into(),
+                session: None,
+                event: GameEvent::Steady,
+            }
+        );
+    }
+
+    #[test]
+    fn implausible_traffic_on_the_socket_is_not_liveness() {
+        // DNS answers, QoS probes, anything outside the SoT port range: packets on the game's
+        // local port that cannot be game traffic must not keep a dead game alive.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        let outcome = state.on_window(
+            &[flow(57084, "8.8.8.8", 53, 6, 3, 3)],
+            t0 + Duration::from_secs(13),
+        );
+        assert_eq!(outcome, WindowOutcome::FellBack);
+    }
+
+    #[test]
+    fn the_grace_boundary_holds_at_exactly_twelve_seconds() {
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        // Exactly the grace: still holding (the check is strictly greater-than)...
+        assert!(matches!(
+            state.on_window(&[], t0 + Duration::from_secs(SERVER_LOST_GRACE_SECS)),
+            WindowOutcome::Holding { .. }
+        ));
+        // ...one second past it: falls back.
+        assert_eq!(
+            state.on_window(&[], t0 + Duration::from_secs(SERVER_LOST_GRACE_SECS + 1)),
+            WindowOutcome::FellBack
+        );
+    }
+
+    #[test]
+    fn the_quarantine_expires_so_a_surviving_coordinator_can_relock() {
+        // The coordinator's local socket persists across servers. If the game re-opens only its
+        // gameplay socket, the old quarantine holds the surviving coordinator's exact key - kept
+        // forever, it would bar the identity for the rest of the game. Teardown stragglers die in
+        // seconds; past the TTL the quarantine must lift.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        // The gameplay socket re-opens: NewGame, everything quarantined - including the
+        // coordinator's key, which in this scenario is still the right identity.
+        assert!(matches!(
+            state.on_window(
+                &[flow(61000, "20.43.56.25", 30777, 90, 45, 45)],
+                t0 + Duration::from_secs(5),
+            ),
+            WindowOutcome::InGame {
+                event: GameEvent::NewGame { .. },
+                ..
+            }
+        ));
+        // Within the TTL the surviving coordinator drips on: quarantined, it cannot lock.
+        let outcome = state.on_window(
+            &[flow(61000, "20.43.56.25", 30777, 80, 40, 40), session_drip(4)],
+            t0 + Duration::from_secs(30),
+        );
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.43.56.25".into(),
+                session: None,
+                event: GameEvent::Steady,
+            }
+        );
+        // Past the TTL it accumulates again and the identity re-resolves.
+        let outcome = state.on_window(
+            &[flow(61000, "20.43.56.25", 30777, 80, 40, 40), session_drip(4)],
+            t0 + Duration::from_secs(70),
+        );
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.43.56.25".into(),
+                session: Some((SESSION.0.into(), SESSION.1)),
+                event: GameEvent::Steady,
+            }
+        );
+    }
+
+    #[test]
+    fn the_identity_accrues_across_windows() {
+        // The 50-cycle test pins identity stability; this one pins that the accumulator really
+        // does accumulate - a machine that wiped it every window (keeping the lock only through
+        // update_session_lock's no-candidate arm) would pass the stability tests and still
+        // reproduce the 4-6-packet re-locks of #854 at the first relock decision.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0); // 4 session packets so far
+        for i in 1..=10 {
+            state.on_window(
+                &[host_window(60), session_drip(1)],
+                t0 + Duration::from_secs(3 * i),
+            );
+        }
+        assert_eq!(state.session_packets(), 14);
+    }
+
+    #[test]
+    fn relock_boundary_sits_exactly_at_twice_the_accumulation() {
+        let locked = Some((53728u16, "20.33.1.109".to_string(), 31411u16));
+        let host = host_window(400);
+        // 7 vs 4: more established, but under 2x - the lock holds.
+        let under = [host.clone(), session_drip(4), flow(53730, "20.157.97.115", 30876, 7, 4, 3)];
+        assert_eq!(
+            update_session_lock(locked.clone(), &under, 3, Some(57084)),
+            locked
+        );
+        // Exactly 2x: the relock fires (a genuine early mispick being corrected).
+        let at_2x = [host, session_drip(4), flow(53730, "20.157.97.115", 30876, 8, 4, 4)];
+        assert_eq!(
+            update_session_lock(locked, &at_2x, 3, Some(57084)),
+            Some((53730, "20.157.97.115".to_string(), 30876))
+        );
+    }
+
+    #[test]
+    fn closing_the_game_also_lifts_the_quarantine() {
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        // Populate the quarantine via a real switch...
+        assert!(matches!(
+            state.on_window(
+                &[flow(61000, "51.103.72.36", 30200, 90, 45, 45)],
+                t0 + Duration::from_secs(5),
+            ),
+            WindowOutcome::InGame {
+                event: GameEvent::NewGame { .. },
+                ..
+            }
+        ));
+        state.on_game_closed();
+        // A fresh game may legitimately reuse yesterday's keys: nothing may still be barred.
+        let outcome = state.on_window(&[host_window(60), session_drip(4)], t0 + Duration::from_secs(20));
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.43.56.25".into(),
+                session: Some((SESSION.0.into(), SESSION.1)),
                 event: GameEvent::Entered,
             }
         );
