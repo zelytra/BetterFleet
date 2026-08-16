@@ -5,11 +5,7 @@
 // relay flows. This is purely additive instrumentation: it never touches the
 // live detection state, it only observes.
 
-use std::collections::{HashMap, HashSet};
-use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
-#[cfg(windows)]
-use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, Mutex};
+use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
 use log::error;
@@ -17,17 +13,10 @@ use log::error;
 use log::info;
 use serde::Serialize;
 
-// The capture primitives now live in the Tauri-free better_fleet_netcap crate (#726), re-exported as
-// better_fleet::capture by src/lib.rs. FlowStat is used on every platform; the aggregator and the raw
-// packet parser are only needed by the Windows in-process sniff below.
+// Every capture backend lives in the Tauri-free better_fleet_netcap crate (#726, #732), re-exported
+// as better_fleet::capture by src/lib.rs: this module only decides which one to drive and how to
+// keep it off the async runtime.
 use better_fleet::capture::FlowStat;
-#[cfg(windows)]
-use better_fleet::capture::{parse_game_flow, FlowAggregator};
-
-#[cfg(windows)]
-use crate::fetch_informations::{create_raw_socket, get_hostname};
-#[cfg(windows)]
-use tokio::net::UdpSocket;
 
 /// The full result of a diagnostic capture, ready to be serialized and shared.
 #[derive(Serialize, Clone, Debug)]
@@ -58,101 +47,22 @@ pub struct DiagnosticReport {
     pub flows: Vec<FlowStat>,
 }
 
-/// Sniffs a single local interface for `duration`, feeding every game-owned UDP
-/// packet into the shared aggregator.
-#[cfg(windows)]
-async fn sniff_interface(
-    addr: SocketAddr,
-    game_ports: HashSet<u16>,
-    aggregator: Arc<Mutex<FlowAggregator>>,
-    duration: Duration,
-    raw_packets: Arc<AtomicU64>,
-) {
-    let socket: UdpSocket = match create_raw_socket(addr).await {
-        Ok(socket) => socket,
-        Err(e) => {
-            error!("[diagnostic] raw socket on {} failed: {}", addr.ip(), e);
-            return;
-        }
-    };
-
-    let mut buf = [0u8; (256 * 256) - 1];
-    let start = Instant::now();
-    while start.elapsed() < duration {
-        tokio::select! {
-            received = socket.recv(&mut buf) => {
-                if let Ok(len) = received {
-                    if len == 0 {
-                        continue;
-                    }
-                    // Count every packet the socket saw, before the game-port filter: a zero here
-                    // over a full window means the capture itself received nothing (a filter driver
-                    // starving SIO_RCVALL), not that the game merely had no matching ports.
-                    raw_packets.fetch_add(1, Ordering::Relaxed);
-                    if let Some((local_port, remote_ip, remote_port, inbound)) =
-                        parse_game_flow(&buf[..len], &game_ports)
-                    {
-                        let t_ms = start.elapsed().as_millis() as u64;
-                        aggregator
-                            .lock()
-                            .unwrap()
-                            .observe(local_port, &remote_ip, remote_port, len, inbound, t_ms);
-                    }
-                }
-            }
-            _ = tokio::time::sleep(Duration::from_millis(250)) => {}
-        }
-    }
-}
-
-/// Sniffs every local interface for `window`, aggregating per-flow UDP stats for
-/// the given game ports, and returns the flows ranked by volume (desc). Shared by
-/// the diagnostic report and by live detection, so both observe traffic identically.
+/// Sniffs every local interface for `window`, aggregating per-flow UDP stats for the given game
+/// ports, and returns the flows ranked by volume (desc). The capture itself lives in the Tauri-free
+/// better_fleet_netcap crate (#732), so the same code can run inside the GUI today and inside a
+/// privileged service tomorrow; here it only gets moved off the async runtime, since the promiscuous
+/// sockets block - exactly how the Linux arm calls its in-process fallback.
 #[cfg(windows)]
 pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
-    // Live detection does not need the raw count; give it a throwaway counter.
-    capture_flows_counted(game_ports, window, Arc::new(AtomicU64::new(0))).await
-}
-
-/// The Windows capture, also incrementing `raw_packets` for every packet the socket(s) received
-/// (before the game-port filter). Both `capture_flows` (live) and the diagnostic go through here so
-/// they capture identically; only the diagnostic keeps the count.
-#[cfg(windows)]
-async fn capture_flows_counted(
-    game_ports: Vec<u16>,
-    window: Duration,
-    raw_packets: Arc<AtomicU64>,
-) -> Vec<FlowStat> {
-    let port_set: HashSet<u16> = game_ports.into_iter().collect();
-    let aggregator = Arc::new(Mutex::new(FlowAggregator::default()));
-
-    // We don't know which interface carries the game traffic, so watch them all
-    // and merge the results into one ranking.
-    let host = format!("{}:0", get_hostname().unwrap_or_else(|_| "localhost".into()));
-    let ips: Vec<IpAddr> = match host.to_socket_addrs() {
-        Ok(addrs) => addrs.map(|socket_addr| socket_addr.ip()).collect(),
+    match tokio::task::spawn_blocking(move || better_fleet::capture::run_capture(game_ports, window))
+        .await
+    {
+        Ok(flows) => flows,
         Err(e) => {
-            error!("[capture] cannot resolve local IPs: {}", e);
+            error!("[capture] promiscuous capture thread failed: {e}");
             Vec::new()
         }
-    };
-
-    let mut handles = Vec::new();
-    for ip in ips {
-        let addr = SocketAddr::new(ip, 0);
-        let aggregator = Arc::clone(&aggregator);
-        let ports = port_set.clone();
-        let raw = Arc::clone(&raw_packets);
-        handles.push(tokio::spawn(async move {
-            sniff_interface(addr, ports, aggregator, window, raw).await;
-        }));
     }
-    for handle in handles {
-        let _ = handle.await;
-    }
-
-    let flows = aggregator.lock().unwrap().take_sorted_flows();
-    flows
 }
 
 /// Captures for the diagnostic, additionally returning how many packets the capture actually
@@ -164,9 +74,17 @@ async fn capture_for_diagnostic(
     game_ports: Vec<u16>,
     window: Duration,
 ) -> (Vec<FlowStat>, Option<u64>) {
-    let raw_packets = Arc::new(AtomicU64::new(0));
-    let flows = capture_flows_counted(game_ports, window, Arc::clone(&raw_packets)).await;
-    (flows, Some(raw_packets.load(Ordering::Relaxed)))
+    match tokio::task::spawn_blocking(move || {
+        better_fleet::capture::run_capture_counted(game_ports, window)
+    })
+    .await
+    {
+        Ok(outcome) => (outcome.flows, outcome.raw_packets),
+        Err(e) => {
+            error!("[capture] promiscuous capture thread failed: {e}");
+            (Vec::new(), None)
+        }
+    }
 }
 
 #[cfg(not(windows))]
@@ -424,6 +342,7 @@ pub async fn run_diagnostic(
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
     use super::*;
     // is_plausible_sot_port moved to the capture crate with the aggregator (#726); the ranking/pick
     // tests below still use it to derive plausibility, and Deserialize backs the #364 corpus structs.
