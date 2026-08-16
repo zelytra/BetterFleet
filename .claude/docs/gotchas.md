@@ -56,6 +56,16 @@ back into the problem.
   (`deployment/aur/betterfleet-bin/betterfleet-bin.install`) setcap the helper, so end users never
   touch it. Without the capability the socket fails `EPERM`, the capture returns no flows, and
   detection degrades to "no server" instead of crashing (the Help-tab report shows zero packets).
+- **Host silence never wipes the session identity (#832).** Detection separates STATUS from
+  IDENTITY: past the 12s grace the player is shown in the menu, but the locked session and its
+  accumulated flows are held (`DetectionState`, `fetch_informations.rs`) so a false exit resumes
+  with the same server - report #854 showed a client re-rolling its identity 50 times in one
+  continuous game when the reset also wiped the accumulator. Liveness is judged on the game's
+  SOCKET (any plausible packet on the connection's local port), not on the `MIN_SERVER_PACKETS`
+  per-window floor, and a host-IP change on the same local port is an SDR reroute, not a new game.
+  Only two things forget: the game process exiting, and a NEW local socket clearing the floor (a
+  genuinely new server - the #364 lesson, with its teardown quarantine and 2x relock intact). The
+  forgetting rules are unit-tested; don't reintroduce a wipe on the silence path.
 - **Proton spreads the game's UDP sockets, so candidate ports are unioned (#725).** Under Proton the
   ~100 `sotgame.exe` "task" PIDs share one command line but only one owns the UDP sockets, and
   `wineserver` (a sibling process) can own others. Detection resolves every game task PID plus

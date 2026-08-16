@@ -330,7 +330,28 @@ pub fn pick_server_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowSta
 /// Live detection accumulates flows across capture windows (see `merge_flows`) before calling
 /// this, because the session flow is only a handful of packets spread over the whole session and
 /// a single short window often misses it.
+// Production callers all know their game socket and use the _excluding variant; this shape is
+// kept for the capture-corpus tests, which validate the ranking without a live connection.
+#[cfg_attr(not(test), allow(dead_code))]
 pub fn pick_session_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowStat> {
+    pick_session_flow_excluding(flows, min_packets, None)
+}
+
+/// [`pick_session_flow`] with the game connection's LOCAL port barred from candidacy (#832).
+///
+/// Live detection knows which local socket carries the gameplay host, and no flow on that socket
+/// is ever the identity - the coordinator always lives on its own socket. The volume-based
+/// exclusions below cannot express that: after a Steam Datagram Relay reroute the accumulation
+/// holds TWO host-class flows on the game socket, and the freshly-migrated one (a single window's
+/// volume, dwarfed by the old host's accumulation) sails under the 4x cap and out-ranks the sparse
+/// coordinator - locking the fleet onto the per-client host endpoint this function exists to
+/// avoid. The diagnostic report has no connection to name and passes `None`, keeping its
+/// historical behaviour.
+pub fn pick_session_flow_excluding(
+    flows: &[FlowStat],
+    min_packets: u32,
+    excluded_local_port: Option<u16>,
+) -> Option<&FlowStat> {
     // The dominant plausible flow is the game host; exclude it so we pick the coordinator.
     let host = pick_server_flow(flows, 1);
     flows
@@ -340,6 +361,7 @@ pub fn pick_session_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowSt
                 && flow.packets >= min_packets
                 && flow.inbound > 0
                 && flow.outbound > 0
+                && excluded_local_port != Some(flow.local_port)
                 && host.map_or(true, |h| !std::ptr::eq(*flow, h))
                 // The coordinator is sparse BY DEFINITION: a handful of packets against the
                 // host's hundreds. Any flow within 4x of the host's volume is host-class traffic
