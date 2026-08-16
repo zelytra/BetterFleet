@@ -142,42 +142,259 @@ pub(crate) fn track_no_udp_cycles(prev: u32, game_running: bool, ports_empty: bo
     }
 }
 
+/// One capture window's verdict, produced by `DetectionState::on_window`. The loop only
+/// interprets it (api writes and log lines); every decision that can create or destroy a session
+/// identity lives in the state machine, where it is unit-tested (#832).
+#[derive(Debug, PartialEq)]
+pub(crate) enum WindowOutcome {
+    /// A floor-clearing host flow: the player is in a game on this connection.
+    InGame {
+        host_ip: String,
+        session: Option<(String, u16)>,
+        event: GameEvent,
+    },
+    /// No floor-clearing host this window, but the connection is within grace (its socket may even
+    /// still be whispering): the status holds. Carries the lock in case this window completed it.
+    Holding { session: Option<(String, u16)> },
+    /// The grace just expired: fall back to the menu - keeping the identity (#832).
+    FellBack,
+    /// Nothing to hold: plain main menu (no connection remembered, or already fallen back).
+    Menu,
+}
+
+/// What just happened to the game connection, for the loop's log lines.
+#[derive(Debug, PartialEq)]
+pub(crate) enum GameEvent {
+    /// First connection since launch or since the game closed.
+    Entered,
+    /// A different local socket cleared the host floor: a genuinely new game. The old
+    /// accumulation was quarantined.
+    NewGame,
+    /// Same socket, new host address: Steam Datagram Relay rerouted. The identity is untouched.
+    HostMigrated { from: String },
+    /// The connection cleared the floor again after a fallback: the exit was false (#832).
+    Resumed,
+    /// Business as usual.
+    Steady,
+}
+
+/// Verdict when the game process exists but enumerates no UDP ports (see the call site).
+#[derive(Debug, PartialEq)]
+pub(crate) enum SocketlessOutcome {
+    /// No connection yet: the game is still launching.
+    Launching,
+    /// Mid-game enumeration hiccup, within grace: hold everything.
+    Holding,
+    /// The grace expired: fall back to the menu - keeping the identity (#832).
+    FellBack,
+    /// Already fallen back (or never in a game): nothing to do.
+    Away,
+}
+
+/// Everything detection remembers about the current game, and the policy for when any of it may be
+/// forgotten. Extracted from the loop so the forgetting rules are unit-tested: report #854 showed a
+/// client wiping and re-picking its session identity 50 times inside one continuous game (#832),
+/// because the per-window packet floor was doubling as a liveness test and every false "left the
+/// game" threw the accumulated identity away - then re-locked on whatever 4-6 packets came first.
+///
+/// The rules, in one place:
+/// - The IDENTITY (locked session + accumulated flows) is wiped only when the game process exits
+///   or a NEW game socket appears (a different local port clearing the host floor). Host silence
+///   never wipes it.
+/// - Host silence past the grace demotes the STATUS only: the player is shown in the menu, but a
+///   false exit resumes with the same server instead of re-rolling a fresh one.
+/// - LIVENESS is judged on the game's socket, not on the floor: any plausible-SoT packet on the
+///   connection's local port proves the game alive, however far under MIN_SERVER_PACKETS the
+///   window dipped (report #854's diagnostic: 1056 packets over 20s on a flow the floor kept
+///   declaring absent). The floor keeps its one job - asserting "this flow is the busy host" when
+///   entering a game, and telling a new socket from the old one.
+/// - The host ADDRESS may move mid-game (SDR reroutes; #854's log alternates between three Azure
+///   IPs inside one session): same local port = same game, only the label moves. A new LOCAL port
+///   is what a new game looks like - the game opens a fresh socket per server (the #364 lesson,
+///   unchanged, as is the 2x session-relock rule and the teardown quarantine).
+pub(crate) struct DetectionState {
+    /// Accumulated flows for the current game (see `merge_flows`): the sparse session flow is only
+    /// caught across many windows.
+    flows: std::collections::HashMap<(u16, String, u16), better_fleet::capture::FlowStat>,
+    /// The game socket being accumulated for: (host remote ip, host LOCAL port).
+    connection: Option<(String, u16)>,
+    /// The session endpoint locked for this game (see `update_session_lock`).
+    locked_session: Option<(u16, String, u16)>,
+    /// Flow keys of the previous game, quarantined at the connection change (teardown lingers).
+    quarantine: std::collections::HashSet<(u16, String, u16)>,
+    /// Last instant the connection's socket showed any plausible traffic.
+    last_traffic: Option<Instant>,
+    /// The status fell back to the menu past the grace; the identity above is being held.
+    fallen_back: bool,
+}
+
+impl DetectionState {
+    pub(crate) fn new() -> Self {
+        DetectionState {
+            flows: std::collections::HashMap::new(),
+            connection: None,
+            locked_session: None,
+            quarantine: std::collections::HashSet::new(),
+            last_traffic: None,
+            fallen_back: false,
+        }
+    }
+
+    /// Accumulated packet count of the locked session flow, for the detection log line.
+    pub(crate) fn session_packets(&self) -> u32 {
+        self.locked_session
+            .as_ref()
+            .and_then(|(lp, ip, port)| self.flows.get(&(*lp, ip.clone(), *port)))
+            .map_or(0, |f| f.packets)
+    }
+
+    fn locked_endpoint(&self) -> Option<(String, u16)> {
+        self.locked_session
+            .as_ref()
+            .map(|(_, ip, port)| (ip.clone(), *port))
+    }
+
+    /// Merges a window (minus quarantined old-game flows) and (re)settles the session lock.
+    fn accumulate(&mut self, window: &[better_fleet::capture::FlowStat]) {
+        let clean = drop_quarantined(window, &self.quarantine);
+        crate::diagnostics::merge_flows(&mut self.flows, &clean);
+        let accumulated: Vec<better_fleet::capture::FlowStat> =
+            self.flows.values().cloned().collect();
+        self.locked_session =
+            update_session_lock(self.locked_session.take(), &accumulated, MIN_SESSION_PACKETS);
+    }
+
+    /// Feeds one capture window at `now` and decides what it means.
+    pub(crate) fn on_window(
+        &mut self,
+        window: &[better_fleet::capture::FlowStat],
+        now: Instant,
+    ) -> WindowOutcome {
+        match crate::diagnostics::pick_server_flow(window, MIN_SERVER_PACKETS) {
+            Some(host) => {
+                let event = match &self.connection {
+                    None => {
+                        self.connection = Some((host.remote_ip.clone(), host.local_port));
+                        GameEvent::Entered
+                    }
+                    Some((ip, local_port)) if *local_port == host.local_port => {
+                        // Same game socket: this is the same game, whatever the address says.
+                        let migrated = (*ip != host.remote_ip).then(|| ip.clone());
+                        if migrated.is_some() {
+                            self.connection = Some((host.remote_ip.clone(), host.local_port));
+                        }
+                        if self.fallen_back {
+                            GameEvent::Resumed
+                        } else if let Some(from) = migrated {
+                            GameEvent::HostMigrated { from }
+                        } else {
+                            GameEvent::Steady
+                        }
+                    }
+                    Some(_) => {
+                        // A different local socket clearing the floor: a genuinely new game.
+                        // Everything accumulated belongs to the previous one; quarantine those
+                        // exact keys so the window that reveals the switch (captured while the old
+                        // socket still tears down) cannot re-seed them into the fresh accumulator.
+                        self.quarantine = self.flows.keys().cloned().collect();
+                        self.flows.clear();
+                        self.locked_session = None;
+                        self.connection = Some((host.remote_ip.clone(), host.local_port));
+                        GameEvent::NewGame
+                    }
+                };
+                self.fallen_back = false;
+                self.last_traffic = Some(now);
+                self.accumulate(window);
+                WindowOutcome::InGame {
+                    host_ip: host.remote_ip.clone(),
+                    session: self.locked_endpoint(),
+                    event,
+                }
+            }
+            None => {
+                let Some((_, local_port)) = &self.connection else {
+                    return WindowOutcome::Menu;
+                };
+                if self.fallen_back {
+                    // Only a floor-clearing host resumes a fallen-back game: sub-floor strays must
+                    // not flip the status, and menu-time noise must not feed the held accumulator.
+                    return WindowOutcome::Menu;
+                }
+                // The floor said "no host", but liveness is the socket's call: any plausible
+                // packet on the game's local port proves the game alive (#832).
+                let socket_alive = window.iter().any(|f| {
+                    f.local_port == *local_port && f.plausible_sot_port && f.packets > 0
+                });
+                if socket_alive {
+                    self.last_traffic = Some(now);
+                }
+                let silent_for = self
+                    .last_traffic
+                    .map(|last| now.saturating_duration_since(last))
+                    .unwrap_or_default();
+                if silent_for > Duration::from_secs(SERVER_LOST_GRACE_SECS) {
+                    self.fallen_back = true;
+                    WindowOutcome::FellBack
+                } else {
+                    // Holding: the game is deemed alive, so the window's packets count - the
+                    // session flow drips a packet every few seconds, and discarding host-silent
+                    // windows would throw away exactly what the identity is waiting for.
+                    self.accumulate(window);
+                    WindowOutcome::Holding {
+                        session: self.locked_endpoint(),
+                    }
+                }
+            }
+        }
+    }
+
+    /// The game process exists but enumerated no UDP ports this cycle: usually a transient
+    /// socket-table failure mid-game, a real state only while launching or after an exit.
+    pub(crate) fn on_socketless(&mut self, now: Instant) -> SocketlessOutcome {
+        if self.connection.is_none() {
+            return SocketlessOutcome::Launching;
+        }
+        if self.fallen_back {
+            return SocketlessOutcome::Away;
+        }
+        let silent_for = self
+            .last_traffic
+            .map(|last| now.saturating_duration_since(last))
+            .unwrap_or_default();
+        if silent_for > Duration::from_secs(SERVER_LOST_GRACE_SECS) {
+            self.fallen_back = true;
+            SocketlessOutcome::FellBack
+        } else {
+            SocketlessOutcome::Holding
+        }
+    }
+
+    /// The game process is gone: this is the one exit that is certain, so everything resets.
+    pub(crate) fn on_game_closed(&mut self) {
+        self.flows.clear();
+        self.connection = None;
+        self.locked_session = None;
+        self.quarantine.clear();
+        self.last_traffic = None;
+        self.fallen_back = false;
+    }
+}
+
 pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
     let api_base = Arc::new(RwLock::new(Api::new()));
     let api = Arc::clone(&api_base);
 
     tokio::spawn(async move {
-        // Per-game accumulator of UDP flows. The sparse per-server session flow is only a handful of
-        // packets across the whole session, so a single capture window often misses it; merging
-        // windows lets us lock onto it reliably. Reset on leaving the game or when the connection
-        // changes.
-        let mut game_flows: std::collections::HashMap<(u16, String, u16), better_fleet::capture::FlowStat> =
-            std::collections::HashMap::new();
-        // The game CONNECTION we are accumulating for: (host remote ip, host LOCAL port). The local
-        // port (not the host IP) is what identifies a game: consecutive servers very often share
-        // one Azure host IP (the whole #364 story; live testing hit 51.103.72.36 across several
-        // distinct servers in a row), but the game opens a fresh socket per server, so a new local
-        // port means a new game even on an identical host IP. Keying the reset on the host IP alone
-        // let the previous game's session flow (which had the entire session to accumulate) stay
-        // in the map and outweigh the new server's coordinator forever (stale identity, seen live
-        // on 2026-07-21 as two split players still showing one shared card).
-        let mut game_connection: Option<(String, u16)> = None;
-        // The session endpoint locked for this connection (see update_session_lock).
-        let mut locked_session: Option<(u16, String, u16)> = None;
-        // Flow keys of the PREVIOUS game, quarantined at the connection change. The window that
-        // reveals a server switch was captured while the old socket was still open, so it carries
-        // the old host's teardown and the old coordinator's stragglers; merged unfiltered, they
-        // would re-seed the freshly cleared accumulator and get locked as the "session" (the old
-        // server's identity, or a phantom per-client host endpoint). Old flows keep their exact
-        // (local_port, remote_ip, remote_port) key, so key-level filtering removes them without
-        // touching the new game's flows, however long the teardown lingers.
-        let mut quarantine: std::collections::HashSet<(u16, String, u16)> =
-            std::collections::HashSet::new();
+        // The per-game memory and its forgetting rules (#832). The loop below only does IO: it
+        // captures windows, hands them to the state machine, and interprets the outcome into api
+        // writes and log lines.
+        let mut state = DetectionState::new();
 
         loop {
             let pids = find_game_pids();
 
-            // No game process -> closed.
+            // No game process -> closed. The one certain exit: forget everything.
             if pids.is_empty() {
                 let mut api_lock = api.write().await;
                 api_lock.no_udp_cycles =
@@ -186,10 +403,7 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     api_lock.game_status = GameStatus::Closed;
                     api_lock.server_ip = String::new();
                     api_lock.server_port = 0;
-                    game_flows.clear();
-                    game_connection = None;
-                    locked_session = None;
-                    quarantine.clear();
+                    state.on_game_closed();
                     info!("Game is closed");
                 }
                 drop(api_lock);
@@ -216,10 +430,10 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
 
             // Game process but no UDP sockets -> still launching. UNLESS we are mid-game: an empty
             // list there is almost always a transient socket-table enumeration failure
-            // (get_udp_connections returns empty on error too), and regressing the status to
-            // Started makes the frontend leave + rejoin the server: a fleet-visible flap from one
-            // failed netstat call. Hold the InGame state instead and let the 12s host-silence
-            // grace decide, exactly as for a quiet capture window.
+            // (get_udp_connections returns empty on error too), and regressing the status makes the
+            // frontend leave + rejoin the server: a fleet-visible flap from one failed netstat
+            // call. The state machine holds through the grace - and past it, only the STATUS falls
+            // back; the identity is held for a false exit (#832).
             let udp_ports = game_udp_candidate_ports(&game_pids);
             {
                 // Socketless signal (report id 801): count consecutive empty enumerations while the game
@@ -229,20 +443,15 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     track_no_udp_cycles(api_lock.no_udp_cycles, true, udp_ports.is_empty());
             }
             if udp_ports.is_empty() {
-                if game_connection.is_none() {
-                    let mut api_lock = api.write().await;
-                    if api_lock.game_status != GameStatus::Started {
-                        api_lock.game_status = GameStatus::Started;
-                        info!("Game is launching (no UDP sockets yet) on PID {}", pid);
+                match state.on_socketless(Instant::now()) {
+                    SocketlessOutcome::Launching => {
+                        let mut api_lock = api.write().await;
+                        if api_lock.game_status != GameStatus::Started {
+                            api_lock.game_status = GameStatus::Started;
+                            info!("Game is launching (no UDP sockets yet) on PID {}", pid);
+                        }
                     }
-                    drop(api_lock);
-                } else {
-                    let last_updated = api.read().await.last_updated_server_ip;
-                    if last_updated.elapsed() > Duration::from_secs(SERVER_LOST_GRACE_SECS) {
-                        game_flows.clear();
-                        game_connection = None;
-                        locked_session = None;
-                        quarantine.clear();
+                    SocketlessOutcome::FellBack => {
                         let mut api_lock = api.write().await;
                         api_lock.game_status = GameStatus::MainMenu;
                         api_lock.server_ip = String::new();
@@ -250,10 +459,11 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                         api_lock.last_updated_server_ip = Instant::now();
                         drop(api_lock);
                         info!(
-                            "Left the game (no UDP sockets for {}s), back to main menu",
+                            "No UDP sockets for {}s: showing the menu, keeping the session identity in case this exit is false",
                             SERVER_LOST_GRACE_SECS
                         );
                     }
+                    SocketlessOutcome::Holding | SocketlessOutcome::Away => {}
                 }
                 tokio::time::sleep(Duration::from_millis(dynamic_sleep_ms(&GameStatus::Started)))
                     .await;
@@ -273,46 +483,34 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             )
             .await;
 
-            match crate::diagnostics::pick_server_flow(&window_flows, MIN_SERVER_PACKETS) {
-                Some(host) => {
-                    // In a game. A new CONNECTION (host ip + local port) means a new game: drop the
-                    // old accumulation and lock. Comparing host IPs is not enough: different servers
-                    // share one Azure host, and the previous game's session flow would otherwise
-                    // out-accumulate the new one forever.
-                    let connection = (host.remote_ip.clone(), host.local_port);
-                    if game_connection.as_ref() != Some(&connection) {
-                        if game_connection.is_some() {
-                            info!(
-                                "New game connection to {} (local port {}), dropping the previous game's flows",
-                                host.remote_ip, host.local_port
-                            );
-                        }
-                        // Everything accumulated so far belongs to the previous game; quarantine
-                        // those exact flow keys so the very window that revealed the switch (and
-                        // any lingering teardown after it) cannot re-seed them into the fresh
-                        // accumulator. See the quarantine declaration for the failure this stops.
-                        quarantine = game_flows.keys().cloned().collect();
-                        game_flows.clear();
-                        locked_session = None;
-                        game_connection = Some(connection);
+            match state.on_window(&window_flows, Instant::now()) {
+                WindowOutcome::InGame {
+                    host_ip,
+                    session,
+                    event,
+                } => {
+                    match &event {
+                        GameEvent::NewGame => info!(
+                            "New game connection to {} (new local socket), dropping the previous game's flows",
+                            host_ip
+                        ),
+                        GameEvent::HostMigrated { from } => info!(
+                            "Host migrated {} -> {} on the same game socket; same game, identity held",
+                            from, host_ip
+                        ),
+                        GameEvent::Resumed => info!(
+                            "Host traffic is back on the same game socket: the exit was false, resuming with the held identity"
+                        ),
+                        GameEvent::Entered | GameEvent::Steady => {}
                     }
 
-                    // Accumulate this window (minus quarantined old-game flows) then (re)settle
-                    // the locked session endpoint.
-                    let clean_window = drop_quarantined(&window_flows, &quarantine);
-                    crate::diagnostics::merge_flows(&mut game_flows, &clean_window);
-                    let accumulated: Vec<better_fleet::capture::FlowStat> =
-                        game_flows.values().cloned().collect();
-                    locked_session =
-                        update_session_lock(locked_session.take(), &accumulated, MIN_SESSION_PACKETS);
-
-                    // Until the session flow resolves, report in-game with NO server rather than the
-                    // ambiguous host IP: the fleet must never group players merely by a shared host.
-                    let (ip, port) = match &locked_session {
-                        Some((_, ip, port)) => (ip.clone(), *port),
+                    // Until the session flow resolves, report in-game with NO server rather than
+                    // the ambiguous host IP: the fleet must never group players merely by a shared
+                    // host.
+                    let (ip, port) = match &session {
+                        Some((ip, port)) => (ip.clone(), *port),
                         None => (String::new(), 0),
                     };
-
                     let mut api_lock = api.write().await;
                     let changed = api_lock.game_status != GameStatus::InGame
                         || api_lock.server_ip != ip
@@ -326,78 +524,51 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                         if ip.is_empty() {
                             info!(
                                 "In game on host {}, resolving the session flow ({} game ports)",
-                                host.remote_ip, port_count
+                                host_ip, port_count
                             );
                         } else {
-                            let session_packets = locked_session
-                                .as_ref()
-                                .and_then(|(lp, sip, sport)| {
-                                    game_flows.get(&(*lp, sip.clone(), *sport))
-                                })
-                                .map_or(0, |f| f.packets);
                             info!(
                                 "Server detected: session {}:{} on host {} ({} pkts accumulated, {} game ports)",
-                                ip, port, host.remote_ip, session_packets, port_count
+                                ip,
+                                port,
+                                host_ip,
+                                state.session_packets(),
+                                port_count
                             );
                         }
                     }
                 }
-                None => {
-                    if game_connection.is_some() {
-                        // We were in a game; hold through brief gaps in host traffic to avoid flapping,
-                        // then fall back to the menu once the host has been silent past the grace.
-                        let last_updated = api.read().await.last_updated_server_ip;
-                        if last_updated.elapsed() > Duration::from_secs(SERVER_LOST_GRACE_SECS) {
-                            game_flows.clear();
-                            game_connection = None;
-                            locked_session = None;
-                            quarantine.clear();
-                            let mut api_lock = api.write().await;
-                            api_lock.game_status = GameStatus::MainMenu;
-                            api_lock.server_ip = String::new();
-                            api_lock.server_port = 0;
-                            api_lock.last_updated_server_ip = Instant::now();
-                            drop(api_lock);
-                            info!(
-                                "Left the game (no host traffic for {}s), back to main menu",
-                                SERVER_LOST_GRACE_SECS
-                            );
-                        } else {
-                            // Still holding: the game is deemed alive, so the window's packets count.
-                            // The session flow drips ~1 packet every 2.5-5s and the host is known to
-                            // gap: discarding host-silent windows would throw away exactly the
-                            // packets the identity is waiting for and stretch resolution.
-                            let clean_window = drop_quarantined(&window_flows, &quarantine);
-                            crate::diagnostics::merge_flows(&mut game_flows, &clean_window);
-                            let accumulated: Vec<better_fleet::capture::FlowStat> =
-                                game_flows.values().cloned().collect();
-                            locked_session = update_session_lock(
-                                locked_session.take(),
-                                &accumulated,
-                                MIN_SESSION_PACKETS,
-                            );
-                            // If this very window completed the lock, publish it: the status is
-                            // still InGame under the grace, only the identity was missing.
-                            if let Some((_, ip, port)) = &locked_session {
-                                let mut api_lock = api.write().await;
-                                if api_lock.game_status == GameStatus::InGame
-                                    && api_lock.server_ip.is_empty()
-                                {
-                                    api_lock.server_ip = ip.clone();
-                                    api_lock.server_port = *port;
-                                    info!(
-                                        "Server detected during a host gap: session {}:{}",
-                                        ip, port
-                                    );
-                                }
-                            }
-                        }
-                    } else {
+                WindowOutcome::Holding { session } => {
+                    // If this very window completed the lock, publish it: the status is still
+                    // InGame under the grace, only the identity was missing.
+                    if let Some((ip, port)) = session {
                         let mut api_lock = api.write().await;
-                        if api_lock.game_status != GameStatus::MainMenu {
-                            api_lock.game_status = GameStatus::MainMenu;
-                            info!("In main menu (no host flow on {} game ports)", port_count);
+                        if api_lock.game_status == GameStatus::InGame
+                            && api_lock.server_ip.is_empty()
+                        {
+                            api_lock.server_ip = ip.clone();
+                            api_lock.server_port = port;
+                            info!("Server detected during a host gap: session {}:{}", ip, port);
                         }
+                    }
+                }
+                WindowOutcome::FellBack => {
+                    let mut api_lock = api.write().await;
+                    api_lock.game_status = GameStatus::MainMenu;
+                    api_lock.server_ip = String::new();
+                    api_lock.server_port = 0;
+                    api_lock.last_updated_server_ip = Instant::now();
+                    drop(api_lock);
+                    info!(
+                        "No traffic on the game socket for {}s: showing the menu, keeping the session identity in case this exit is false",
+                        SERVER_LOST_GRACE_SECS
+                    );
+                }
+                WindowOutcome::Menu => {
+                    let mut api_lock = api.write().await;
+                    if api_lock.game_status != GameStatus::MainMenu {
+                        api_lock.game_status = GameStatus::MainMenu;
+                        info!("In main menu (no host flow on {} game ports)", port_count);
                     }
                 }
             }
@@ -1144,4 +1315,272 @@ mod tests {
             assert_eq!(resolve_wineserver(&procs, 6), Some(7));
         }
     }
+    // --- The forgetting rules (#832) ---------------------------------------------------------
+    //
+    // Report #854: one continuous game, 50 "left the game" resets, 49 distinct identities - the
+    // per-window floor doubling as a liveness test, and every false exit wiping the accumulator.
+    // These drive DetectionState through that field scenario and pin the rules that stop it.
+
+    use std::time::{Duration, Instant};
+
+    /// The busy gameplay host of #854's diagnostic: local socket 57084 to an Azure IP.
+    fn host_window(pkts: u32) -> FlowStat {
+        flow(57084, "20.43.56.25", 30777, pkts, pkts / 2, pkts - pkts / 2)
+    }
+
+    /// The sparse session-coordinator flow of #854's diagnostic: the identity.
+    fn session_drip(pkts: u32) -> FlowStat {
+        flow(53728, "20.33.1.109", 31411, pkts, pkts / 2 + 1, pkts / 2)
+    }
+
+    const SESSION: (&str, u16) = ("20.33.1.109", 31411);
+
+    /// Locks the session identity the way a real game start does: a busy host window carrying
+    /// enough session drips to clear MIN_SESSION_PACKETS.
+    fn locked_state(t0: Instant) -> DetectionState {
+        let mut state = DetectionState::new();
+        let outcome = state.on_window(&[host_window(60), session_drip(4)], t0);
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.43.56.25".into(),
+                session: Some((SESSION.0.into(), SESSION.1)),
+                event: GameEvent::Entered,
+            }
+        );
+        state
+    }
+
+    #[test]
+    fn a_continuous_game_with_sub_floor_windows_never_changes_identity() {
+        // The regression test the issue asks for: a dominant flow that keeps dipping under the
+        // per-window floor for stretches far longer than the grace. 50 cycles of it. The identity
+        // must never move and the status must never fall back: sub-floor packets on the game's
+        // socket ARE the game running.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        let mut now = t0;
+        for cycle in 0..50 {
+            // Eight windows of bursty, far-under-floor host traffic spanning ~24s: twice the
+            // grace, the exact shape the old wall-clock check declared "left the game".
+            for _ in 0..8 {
+                now += Duration::from_secs(3);
+                let outcome = state.on_window(&[host_window(5)], now);
+                assert_eq!(
+                    outcome,
+                    WindowOutcome::Holding {
+                        session: Some((SESSION.0.into(), SESSION.1))
+                    },
+                    "cycle {cycle}: a whispering game socket must hold, not reset"
+                );
+            }
+            // Then a healthy window: same socket, floor cleared.
+            now += Duration::from_secs(3);
+            let outcome = state.on_window(&[host_window(80), session_drip(1)], now);
+            assert_eq!(
+                outcome,
+                WindowOutcome::InGame {
+                    host_ip: "20.43.56.25".into(),
+                    session: Some((SESSION.0.into(), SESSION.1)),
+                    event: GameEvent::Steady,
+                },
+                "cycle {cycle}: the identity must ride through"
+            );
+        }
+    }
+
+    #[test]
+    fn true_silence_demotes_the_status_but_keeps_the_identity() {
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        // Total silence on the socket, past the grace: the status falls back exactly once...
+        let outcome = state.on_window(&[], t0 + Duration::from_secs(13));
+        assert_eq!(outcome, WindowOutcome::FellBack);
+        // ...then stays in the menu without flapping...
+        let outcome = state.on_window(&[], t0 + Duration::from_secs(16));
+        assert_eq!(outcome, WindowOutcome::Menu);
+        // ...and the host coming back on the SAME socket resumes the SAME identity: no
+        // re-resolution, no re-roll from a near-empty accumulator.
+        let outcome = state.on_window(&[host_window(60)], t0 + Duration::from_secs(19));
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.43.56.25".into(),
+                session: Some((SESSION.0.into(), SESSION.1)),
+                event: GameEvent::Resumed,
+            }
+        );
+    }
+
+    #[test]
+    fn sub_floor_socket_traffic_refreshes_the_grace() {
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        // 10s in: three packets on the game's socket. Under the floor, but alive.
+        assert!(matches!(
+            state.on_window(&[host_window(3)], t0 + Duration::from_secs(10)),
+            WindowOutcome::Holding { .. }
+        ));
+        // 20s after t0 - but only 10s after the last whisper: still holding.
+        assert!(matches!(
+            state.on_window(&[], t0 + Duration::from_secs(20)),
+            WindowOutcome::Holding { .. }
+        ));
+        // 13s of genuine silence after the whisper: now it falls back.
+        assert_eq!(
+            state.on_window(&[], t0 + Duration::from_secs(24)),
+            WindowOutcome::FellBack
+        );
+    }
+
+    #[test]
+    fn a_stray_on_another_port_is_not_liveness() {
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        // Plausible-SoT packets, but on a DIFFERENT local socket: not the game's connection, so
+        // they must not keep a dead game alive forever.
+        let outcome = state.on_window(
+            &[flow(50000, "40.1.2.3", 30500, 4, 2, 2)],
+            t0 + Duration::from_secs(13),
+        );
+        assert_eq!(outcome, WindowOutcome::FellBack);
+    }
+
+    #[test]
+    fn relay_migration_on_the_same_socket_keeps_the_identity() {
+        // #854's log alternates between three Azure host IPs inside one session. Same local
+        // socket = same game: only the address label moves.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        let outcome = state.on_window(
+            &[flow(57084, "20.199.125.251", 30777, 70, 35, 35), session_drip(1)],
+            t0 + Duration::from_secs(3),
+        );
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.199.125.251".into(),
+                session: Some((SESSION.0.into(), SESSION.1)),
+                event: GameEvent::HostMigrated {
+                    from: "20.43.56.25".into()
+                },
+            }
+        );
+    }
+
+    #[test]
+    fn a_new_socket_is_a_new_game_and_forgets_the_old_one() {
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        // A different LOCAL port clears the floor: the game opened a fresh socket, i.e. joined a
+        // new server. The old identity and its accumulation must go - and the old session flow,
+        // still visible during teardown, is quarantined so it cannot re-seed itself.
+        let outcome = state.on_window(
+            &[flow(61000, "51.103.72.36", 30200, 90, 45, 45), session_drip(2)],
+            t0 + Duration::from_secs(5),
+        );
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "51.103.72.36".into(),
+                session: None,
+                event: GameEvent::NewGame,
+            }
+        );
+        // The old session flow keeps dripping through teardown windows: quarantined, it never
+        // re-locks. A fresh coordinator resolves instead.
+        let outcome = state.on_window(
+            &[
+                flow(61000, "51.103.72.36", 30200, 85, 42, 43),
+                session_drip(4),
+                flow(61002, "145.190.66.42", 30034, 4, 2, 2),
+            ],
+            t0 + Duration::from_secs(8),
+        );
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "51.103.72.36".into(),
+                session: Some(("145.190.66.42".into(), 30034)),
+                event: GameEvent::Steady,
+            }
+        );
+    }
+
+    #[test]
+    fn menu_noise_after_a_fallback_does_not_feed_the_held_accumulator() {
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        assert_eq!(
+            state.on_window(&[], t0 + Duration::from_secs(13)),
+            WindowOutcome::FellBack
+        );
+        // A real return to the menu: sparse menu-time flows keep arriving. They must neither flip
+        // the status back nor accumulate into the held identity.
+        for i in 0..20 {
+            let outcome = state.on_window(
+                &[flow(50000, "40.1.2.3", 30500, 5, 3, 2)],
+                t0 + Duration::from_secs(15 + i),
+            );
+            assert_eq!(outcome, WindowOutcome::Menu);
+        }
+        // Back on the game socket: the identity is exactly what it was.
+        let outcome = state.on_window(&[host_window(60)], t0 + Duration::from_secs(40));
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.43.56.25".into(),
+                session: Some((SESSION.0.into(), SESSION.1)),
+                event: GameEvent::Resumed,
+            }
+        );
+    }
+
+    #[test]
+    fn socketless_cycles_hold_then_fall_back_without_forgetting() {
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        // A transient enumeration failure holds through the grace...
+        assert_eq!(
+            state.on_socketless(t0 + Duration::from_secs(5)),
+            SocketlessOutcome::Holding
+        );
+        // ...then only the status falls...
+        assert_eq!(
+            state.on_socketless(t0 + Duration::from_secs(14)),
+            SocketlessOutcome::FellBack
+        );
+        assert_eq!(
+            state.on_socketless(t0 + Duration::from_secs(15)),
+            SocketlessOutcome::Away
+        );
+        // ...and the game coming back resumes the held identity.
+        let outcome = state.on_window(&[host_window(60)], t0 + Duration::from_secs(16));
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.43.56.25".into(),
+                session: Some((SESSION.0.into(), SESSION.1)),
+                event: GameEvent::Resumed,
+            }
+        );
+    }
+
+    #[test]
+    fn closing_the_game_is_the_one_exit_that_forgets() {
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        state.on_game_closed();
+        // A fresh game entering later starts from nothing: no held identity, no stale lock.
+        let outcome = state.on_window(&[host_window(60)], t0 + Duration::from_secs(60));
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.43.56.25".into(),
+                session: None,
+                event: GameEvent::Entered,
+            }
+        );
+    }
+
 }
