@@ -105,7 +105,8 @@ back into the problem.
 - **Sign-in is the system browser + a loopback OAuth on a fixed port — on every platform.** The app
   signs in the RFC 8252 way (`webapp/src/objects/stores/BrowserAuth.ts`, formerly `LinuxAuth.ts`):
   it opens the hosted Keycloak page in the **system browser**, captures the code on a **loopback
-  server at the fixed port 47823** (`REDIRECT_PORT`, redirect `http://localhost:47823/callback`)
+  server on the first free port of a fixed short range** (`REDIRECT_PORTS` = 47823-47825; the
+  plugin binds one and the redirect URI follows it, e.g. `http://localhost:47823/callback`)
   with **PKCE**, and runs the token exchange from **Rust via `@tauri-apps/plugin-http`**. The
   `offline_access` scope yields a refresh token **persisted to localStorage**, so a session survives
   a restart and slides Keycloak's 30-day offline-idle window on every refresh. That is the fix for
@@ -115,7 +116,10 @@ back into the problem.
   (`keycloakStore.keycloak` is a plain token holder with the same shape). A refresh that fails
   because Keycloak is **unreachable** must never delete the stored token or sign the player out —
   only an actual rejection ends a session (`RefreshUnavailableError`). The realm must register
-  `http://localhost:47823/callback` as a valid redirect URI; don't reintroduce a webview-hosted
+  every port of that range as a valid redirect URI - registering only the first leaves the
+  fallback inert, and a player whose 47823 is busy then gets an invalid-redirect error. The realm
+  also requires PKCE (`pkce.code.challenge.method: S256`) and has the password grant off: the app
+  only ever uses the authorization-code flow. Don't reintroduce a webview-hosted
   login.
 
 ## Release & packaging
