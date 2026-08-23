@@ -42,10 +42,19 @@ back into the problem.
   holds. A **fullscreen-exclusive** game can still cover it (its layer outranks "above"); borderless
   / windowed-fullscreen is the workaround. The WebView2 `additionalBrowserArgs` occlusion knob is a
   no-op on WebKitGTK; the native `rodio` countdown audio already hedges the important cue.
-- **Linux UDP capture needs `CAP_NET_RAW`, isolated in the `betterfleet-netcap` helper (#726).**
-  Server detection sniffs the game's UDP flows through an `AF_PACKET` socket (`diagnostics.rs`,
-  `capture_af_packet`), shared verbatim by live detection (`fetch_informations.rs`) and the Help-tab
-  "Lancer une capture" diagnostic through `capture_flows`. Because that socket needs `CAP_NET_RAW`,
+- **Every capture backend lives in `better_fleet_netcap`, behind one entry point (#726, #732).**
+  `run_capture(ports, window)` is the seam: `AF_PACKET` on Linux (needs `CAP_NET_RAW`), a
+  promiscuous `SOCK_RAW` + `WSAIoctl(SIO_RCVALL)` on Windows (needs Administrator), a stub on macOS.
+  Everything below it - `parse_game_flow`, `FlowAggregator`, the ranking - is shared verbatim, so a
+  capture is identical whichever OS and whichever process runs it. **Both backends are blocking and
+  the crate has no async runtime** (that is what lets a service host it); the GUI wraps them in
+  `spawn_blocking` from `diagnostics.rs`. Don't reintroduce a per-OS capture in the GUI crate, and
+  don't add tokio to `netcap`. On Windows the Winsock read loop must treat `WSAEMSGSIZE` (10040) and
+  `WSAECONNRESET` (10054) as *recoverable*: a promiscuous `SOCK_RAW` raises them routinely, and
+  breaking out would silently kill capture for the rest of the window
+  (`is_recoverable_capture_error`, unit-tested). Server detection sniffs the game's UDP flows the
+  same way for live detection (`fetch_informations.rs`) and the Help-tab "Lancer une capture"
+  diagnostic, both through `capture_flows`. Because that socket needs `CAP_NET_RAW`,
   the capture runs in a **separate Tauri-free binary** (`betterfleet-netcap`, crate
   `better_fleet_netcap`) rather than the GUI: the app stays unprivileged, `capture_flows` shells out
   to the helper, and it falls back to an in-process capture when the helper is absent or uncapped.
@@ -56,6 +65,16 @@ back into the problem.
   (`deployment/aur/betterfleet-bin/betterfleet-bin.install`) setcap the helper, so end users never
   touch it. Without the capability the socket fails `EPERM`, the capture returns no flows, and
   detection degrades to "no server" instead of crashing (the Help-tab report shows zero packets).
+- **Host silence never wipes the session identity (#832).** Detection separates STATUS from
+  IDENTITY: past the 12s grace the player is shown in the menu, but the locked session and its
+  accumulated flows are held (`DetectionState`, `fetch_informations.rs`) so a false exit resumes
+  with the same server - report #854 showed a client re-rolling its identity 50 times in one
+  continuous game when the reset also wiped the accumulator. Liveness is judged on the game's
+  SOCKET (any plausible packet on the connection's local port), not on the `MIN_SERVER_PACKETS`
+  per-window floor, and a host-IP change on the same local port is an SDR reroute, not a new game.
+  Only two things forget: the game process exiting, and a NEW local socket clearing the floor (a
+  genuinely new server - the #364 lesson, with its teardown quarantine and 2x relock intact). The
+  forgetting rules are unit-tested; don't reintroduce a wipe on the silence path.
 - **Proton spreads the game's UDP sockets, so candidate ports are unioned (#725).** Under Proton the
   ~100 `sotgame.exe` "task" PIDs share one command line but only one owns the UDP sockets, and
   `wineserver` (a sibling process) can own others. Detection resolves every game task PID plus

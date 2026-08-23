@@ -39,6 +39,10 @@
         "title": "Zgłoszenie wysłane"
       }
     },
+    "macro": {
+      "title": "Nie kliknięto wypłynięcia",
+      "content": "BetterFleet nie mógł kliknąć „Wypłyń” za Ciebie. Kliknij samodzielnie, aby wyruszyć z załogą."
+    },
     "research": {
       "notInMenu": {
         "content": "Nie jesteś w menu gry",

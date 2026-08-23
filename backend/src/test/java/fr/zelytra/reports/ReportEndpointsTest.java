@@ -24,12 +24,15 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 public class ReportEndpointsTest {
 
     @Test
-    public void listAllReports_isOpenAndReturnsJson() {
+    public void listAll_isGone() {
+        // /list/all was the entire table - every report with its full log capture - to any
+        // anonymous caller, with no cap, while the paginated endpoint right next to it refuses
+        // amount=500 with a 400 (#831). Nothing has called it since the reports page paginated
+        // (#825). "all" does not parse as a page index, so the route must answer 404, not a dump.
         given()
                 .when().get("/report/list/all")
                 .then()
-                .statusCode(200)
-                .contentType(MediaType.APPLICATION_JSON);
+                .statusCode(404);
     }
 
     @Test

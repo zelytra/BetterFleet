@@ -19,6 +19,7 @@ import { useI18n } from "vue-i18n";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import { invoke } from "@tauri-apps/api/core";
+import { error } from "@tauri-apps/plugin-log";
 import { PlayerStates } from "@/objects/fleet/Player.ts";
 import { isLinux } from "@/objects/utils/platform.ts";
 import { onBeforeRouteLeave } from "vue-router";
@@ -31,6 +32,30 @@ const alerts = inject<AlertProvider>("alertProvider");
 // sits occluded behind the game, native playback is not. Rust dedups repeat calls (no-op while the
 // jingle is playing), so poking it at most every 250ms is what loops it for the whole countdown.
 let lastSoundPoke = 0;
+
+/**
+ * Fires the set-sail click and, if it did not land, says so.
+ *
+ * Deliberately not awaited by the countdown: this runs at the most latency-sensitive moment in the
+ * app, and the click happens inside the call - handling its answer must not sit in front of it.
+ *
+ * The alert names no cause. `rise_anchor` reports which stage failed and that goes to the log file
+ * a player exports with a bug report; what the player needs on screen is that the click did not
+ * happen and that they should press the button themselves.
+ */
+function autoClickSetSail() {
+  invoke<string>("rise_anchor")
+    .then((outcome) => {
+      if (outcome === "clicked") return;
+      error(`[SessionCountdown] the set-sail click did not land: ${outcome}`);
+      alerts!.sendAlert({
+        content: t("alert.macro.content"),
+        title: t("alert.macro.title"),
+        type: AlertType.WARNING,
+      });
+    })
+    .catch((e) => error(`[SessionCountdown] rise_anchor failed: ${e}`));
+}
 
 let updateTimer = setInterval(() => {
   if (UserStore.player.soundEnable && Date.now() - lastSoundPoke > 250) {
@@ -64,7 +89,7 @@ let updateTimer = setInterval(() => {
         // performs, and the first attempt pops a permission prompt that stalls the search. The
         // setting is locked and a lobby notice tells Linux players to click "Set sail" themselves.
         if (UserStore.player.macroEnable && !isLinux()) {
-          invoke("rise_anchor");
+          autoClickSetSail();
         }
         break;
       }

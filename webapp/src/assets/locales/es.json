@@ -39,6 +39,10 @@
         "title": "Informe enviado"
       }
     },
+    "macro": {
+      "title": "No se pulsó zarpar",
+      "content": "BetterFleet no ha podido pulsar «Zarpar» por ti. Púlsalo tú para salir con tu tripulación."
+    },
     "research": {
       "notInMenu": {
         "content": "No estás en el menú del juego",

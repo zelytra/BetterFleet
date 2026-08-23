@@ -39,6 +39,10 @@
         "title": "Bericht gesendet"
       }
     },
+    "macro": {
+      "title": "Auslaufen nicht geklickt",
+      "content": "BetterFleet konnte „In See stechen“ nicht für dich anklicken. Klicke es selbst, um mit deiner Crew loszusegeln."
+    },
     "research": {
       "notInMenu": {
         "content": "Du bist nicht im Spielmenü",

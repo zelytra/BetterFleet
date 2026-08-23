@@ -107,13 +107,16 @@ nine of them:
 
 `get_game_status`, `get_server_ip`, `get_server_port`, `get_last_updated_server_ip` exist but are
 bundled into `get_game_object`. Native logic lives in `api.rs` / `fetch_informations.rs` (detection),
-`diagnostics.rs` (UDP capture), and `window_interaction.rs` (focus/click, Windows), all declared as
+`diagnostics.rs` (picks a capture backend and keeps it off the async runtime), and
+`window_interaction.rs` (focus/click, Windows), all declared as
 modules in `main.rs`. The Linux port adds three more `main.rs` modules: `window_interaction_linux.rs`
 (the EWMH + XTEST set-sail click) plus `overlay_x11.rs` and the shared `x11_support.rs` (managed
 overlay stacking). `lib.rs` is a deliberately thin library face that only re-exports the capture
 crate as `better_fleet::capture`, so the GUI and the privilege-separated `betterfleet-netcap` helper
-share one copy of the `AF_PACKET` capture/ranking code; that code is the sibling `better_fleet_netcap`
-crate (`webapp/src-tauri/netcap/`). The overlay toggle is a `CommandOrControl+Shift+O` global
+share one copy of the capture/ranking code; that code is the sibling `better_fleet_netcap` crate
+(`webapp/src-tauri/netcap/`), which holds **both** backends behind one `run_capture` - `AF_PACKET`
+on Linux, promiscuous `SOCK_RAW`/`SIO_RCVALL` on Windows (#732) - and never links Tauri or an async
+runtime, so a privileged helper (or service) can host it. The overlay toggle is a `CommandOrControl+Shift+O` global
 shortcut by default, re-bindable via `set_overlay_hotkey` (#687), registered in `main.rs` `setup()`.
 
 **Overlay snapshot event bus** (Tauri `emit`/`listen`, defined in `Overlay.ts`, consumed in
