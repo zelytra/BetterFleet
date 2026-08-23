@@ -51,6 +51,12 @@ pub struct DiagnosticReport {
     /// ports" (>0 while `total_packets` is 0, which points at the port enumeration instead).
     pub raw_packets: Option<u64>,
     pub distinct_flows: usize,
+    /// True when not one captured flow carried a single outbound packet, i.e. the capture socket is
+    /// receive-only (#837: SIO_RCVALL delivers received packets but never locally sent ones on a
+    /// range of NIC/driver combinations). Detection compensates - the session flow is picked without
+    /// its return leg there - but the report says so, because a receive-only capture also explains
+    /// away every "the client sends nothing" reading of these numbers.
+    pub receive_only_capture: bool,
     /// Flows whose remote port looks like a SoT server, ranked by volume: the
     /// server should stand out here.
     pub top_candidates: Vec<FlowStat>,
@@ -319,13 +325,17 @@ pub fn pick_server_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowSta
 /// instance shares, and it is deliberately NOT the busy gameplay flow (that is
 /// [`pick_server_flow`]).
 ///
+/// The flow must be bidirectional - a real coordinator always is, a one-way probe is not - EXCEPT
+/// on a capture that recorded no outbound packet at all, which is a receive-only socket rather
+/// than a set of one-way peers (#837).
+///
 /// The busy flow is a per-client connection to an Azure game host whose IP is reused across
 /// different servers (issue #364: several distinct servers all ran on 51.103.72.36), so it
 /// cannot tell servers apart: hashing it merged different servers into one card. The session
 /// flow's ip:port instead is identical for everyone on one server (case A: four players on
 /// different ships, one server, all on 20.33.49.115:31260) and differs between servers even on
 /// a shared host (cases B/D). `min_packets` is a small floor that rejects one-off stray packets;
-/// the flow must be bidirectional, which a real coordinator always is and a one-way probe is not.
+/// bidirectionality is required except on a receive-only capture (see above).
 ///
 /// Live detection accumulates flows across capture windows (see `merge_flows`) before calling
 /// this, because the session flow is only a handful of packets spread over the whole session and
@@ -354,13 +364,21 @@ pub fn pick_session_flow_excluding(
 ) -> Option<&FlowStat> {
     // The dominant plausible flow is the game host; exclude it so we pick the coordinator.
     let host = pick_server_flow(flows, 1);
+    // A capture that saw NOT ONE outbound packet across every flow it has is receive-only, not a
+    // set of one-way peers: SIO_RCVALL delivers received packets but never the locally sent ones on
+    // a range of NIC/driver combinations (Wi-Fi especially), and the machine's owner cannot fix
+    // that (#837). Requiring a return leg there rejects every candidate forever - reports #901-#915
+    // are one player, four game launches, 16 captured flows all `outbound: 0`, and not a single
+    // `Server detected` in an hour. Where at least one flow IS bidirectional the capture is proven
+    // two-way, so the gate stays: it is what rejects one-way stray probes.
+    let capture_is_receive_only = !flows.is_empty() && flows.iter().all(|f| f.outbound == 0);
     flows
         .iter()
         .filter(|flow| {
             flow.plausible_sot_port
                 && flow.packets >= min_packets
                 && flow.inbound > 0
-                && flow.outbound > 0
+                && (flow.outbound > 0 || capture_is_receive_only)
                 && excluded_local_port != Some(flow.local_port)
                 && host.map_or(true, |h| !std::ptr::eq(*flow, h))
                 // The coordinator is sparse BY DEFINITION: a handful of packets against the
@@ -428,6 +446,10 @@ pub async fn run_diagnostic(
         .cloned()
         .collect();
 
+    // Receive-only capture (#837): nothing sent was ever looped back to us. Computed over every
+    // flow, so a single bidirectional one anywhere proves the socket is two-way.
+    let receive_only_capture = !flows.is_empty() && flows.iter().all(|f| f.outbound == 0);
+
     DiagnosticReport {
         note,
         game_status,
@@ -439,6 +461,7 @@ pub async fn run_diagnostic(
         total_packets,
         raw_packets,
         distinct_flows: flows.len(),
+        receive_only_capture,
         top_candidates,
         flows,
     }
@@ -465,6 +488,7 @@ mod tests {
             total_packets: 0,
             raw_packets: raw,
             distinct_flows: 0,
+            receive_only_capture: false,
             top_candidates: vec![],
             flows: vec![],
         };
@@ -618,6 +642,51 @@ mod tests {
             first_seen_ms: 0,
             last_seen_ms: packets as u64 * 500,
         }
+    }
+
+    // --- Receive-only captures (#837) ---------------------------------------------------------
+    //
+    // Reports #901-#915: one player, four game launches, sixteen captured flows, every one
+    // `outbound: 0` - SIO_RCVALL delivering received packets but never locally sent ones. The
+    // bidirectionality gate then rejected every candidate and the session never resolved: six
+    // "resolving the session flow", zero "Server detected", in an hour.
+
+    #[test]
+    fn a_receive_only_capture_still_resolves_the_session() {
+        // The real numbers from report #901's diagnostic.
+        let flows = [
+            flow(55616, "20.153.191.9", 30278, 599, 599, 0),
+            flow(61079, "20.33.2.31", 31065, 4, 4, 0),
+        ];
+        let picked = pick_session_flow(&flows, 3)
+            .expect("a receive-only capture must still yield the coordinator");
+        assert_eq!(picked.remote_ip, "20.33.2.31");
+        assert_eq!(picked.remote_port, 31065);
+    }
+
+    #[test]
+    fn one_bidirectional_flow_proves_the_capture_and_keeps_the_gate() {
+        // The socket is two-way, so a one-way flow is a genuinely one-way peer - a stray probe -
+        // and must still be rejected. That is what the gate is for.
+        let flows = [
+            flow(55616, "20.153.191.9", 30278, 599, 300, 299),
+            flow(61079, "20.33.2.31", 31065, 4, 4, 0), // one-way probe
+            flow(61080, "20.33.2.99", 31066, 5, 3, 2), // the real coordinator
+        ];
+        let picked = pick_session_flow(&flows, 3).unwrap();
+        assert_eq!(picked.remote_ip, "20.33.2.99");
+    }
+
+    #[test]
+    fn a_receive_only_capture_still_refuses_a_non_candidate() {
+        // Relaxing the return leg relaxes nothing else: the port range, the packet floor, the host
+        // exclusion and the 4x cap all still apply.
+        let flows = [
+            flow(55616, "20.153.191.9", 30278, 599, 599, 0),
+            flow(61079, "8.8.8.8", 53, 40, 40, 0), // implausible port
+            flow(61080, "20.33.2.31", 31065, 2, 2, 0), // plausible, under the floor
+        ];
+        assert!(pick_session_flow(&flows, 3).is_none());
     }
 
     #[test]
