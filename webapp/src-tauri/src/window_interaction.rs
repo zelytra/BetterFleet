@@ -86,6 +86,21 @@ fn post_click_to_window(window_handle: HWND, client_x: i32, client_y: i32) -> bo
     }
 }
 
+/// Whether two windows belong to the same process. The foreground guards compare processes, not
+/// handles: the game owns more than one window (render target, splash, occasional child), and
+/// GetForegroundWindow can name a different one of them than FindWindowA did. Requiring the exact
+/// handle would refuse a click the player asked for; a window of the same process is still the game.
+pub(crate) fn same_process(a: HWND, b: HWND) -> bool {
+    use winapi::um::winuser::GetWindowThreadProcessId;
+    let mut pid_a: u32 = 0;
+    let mut pid_b: u32 = 0;
+    unsafe {
+        GetWindowThreadProcessId(a, &mut pid_a);
+        GetWindowThreadProcessId(b, &mut pid_b);
+    }
+    pid_a != 0 && pid_a == pid_b
+}
+
 pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y_prop: f32) -> bool {
     unsafe {
         let mut rect = RECT { left: 0, top: 0, right: 0, bottom: 0 };
@@ -204,18 +219,27 @@ pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y
                 corner.x, corner.y, point.x, point.y, landed.x, landed.y
             );
 
-            // Mouse input goes to whatever window is foreground NOW. If something stole it during
-            // the pin-and-walk, refuse: half a second late is recoverable, a click fired into
-            // another application is not.
-            if GetForegroundWindow() != window_handle {
+            // The original absolute placement returns here as the finisher. As the SOLE
+            // positioning it never produced a click - a raw-input cursor sees no delta in it - but
+            // it is immune to the ballistics that scale every relative move, so it is what puts
+            // the VISIBLE cursor exactly on the button: the walk fed the game its journey, this
+            // corrects wherever ballistics left the OS cursor, and a game that polls the OS
+            // position gets the exact target either way.
+            let snapped = send!(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, 16);
+
+            // Mouse input goes to whatever window is foreground NOW. If another PROCESS stole it
+            // during the pin-and-walk, refuse: half a second late is recoverable, a click fired
+            // into another application is not.
+            let foreground = GetForegroundWindow();
+            if foreground != window_handle && !same_process(foreground, window_handle) {
                 warn!("[auto-click] the game lost the foreground mid-click; not clicking into another window");
                 return false;
             }
             let down = send!(MOUSEEVENTF_LEFTDOWN, 40);
             let up = send!(MOUSEEVENTF_LEFTUP, 0);
-            if pin1 == 0 || pin2 == 0 || walked == 0 || down == 0 || up == 0 {
+            if pin1 == 0 || pin2 == 0 || walked == 0 || snapped == 0 || down == 0 || up == 0 {
                 warn!(
-                    "[auto-click] relative SendInput was refused (pin={pin1}/{pin2}, walk={walked}, down={down}, up={up})"
+                    "[auto-click] relative SendInput was refused (pin={pin1}/{pin2}, walk={walked}, snap={snapped}, down={down}, up={up})"
                 );
                 return false;
             }

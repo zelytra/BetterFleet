@@ -549,11 +549,16 @@ fn rise_anchor() -> ClickOutcome {
     // SetForegroundWindow answering success is a request honoured, not a state reached: field runs
     // showed the click landing in whatever window WAS foreground when the game had not made it yet.
     // Mouse input goes to the foreground window, so verify, give it one more chance, and refuse
-    // rather than click into another application.
-    if unsafe { GetForegroundWindow() } != window_handle {
+    // rather than click into another application. Compared by PROCESS, not by handle: the game owns
+    // several windows, and the foreground one is not always the one FindWindowA named.
+    let foreground_is_game = || {
+        let foreground = unsafe { GetForegroundWindow() };
+        foreground == window_handle || window_interaction::same_process(foreground, window_handle)
+    };
+    if !foreground_is_game() {
         let _ = set_focus_to_window(window_handle);
         sleep(Duration::from_millis(150));
-        if unsafe { GetForegroundWindow() } != window_handle {
+        if !foreground_is_game() {
             warn!("[auto-click] another window holds the foreground; refusing to click into it");
             return ClickOutcome::FocusRefused;
         }
