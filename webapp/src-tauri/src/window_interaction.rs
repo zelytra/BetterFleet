@@ -28,6 +28,55 @@ pub(crate) fn set_focus_to_window(window_handle: HWND) -> bool {
 /// inserted, and it returns 0 when the injection is blocked - which is exactly what UIPI does when
 /// the target window belongs to a more privileged process. Discarding that return is why a click
 /// that stops working produces no signal at all (#815).
+/// How the click is delivered to the game. Selected at runtime by BETTERFLEET_CLICK_MODE so a
+/// player can test a path without a rebuild: the field failure (#828) is that the cursor lands on
+/// the button and the press does nothing, which means the OS accepted the injection and the game
+/// discarded it - so the question is which delivery path the game does honour.
+#[derive(PartialEq, Debug, Clone, Copy)]
+pub(crate) enum ClickMode {
+    /// SendInput: the OS input queue, what the app has always used.
+    SendInput,
+    /// WM_LBUTTONDOWN/UP posted straight to the game window, bypassing the input queue entirely.
+    PostMessage,
+    /// Both, SendInput first. For the case where neither alone lands.
+    Both,
+}
+
+pub(crate) fn click_mode() -> ClickMode {
+    match std::env::var("BETTERFLEET_CLICK_MODE").as_deref() {
+        Ok("postmessage") => ClickMode::PostMessage,
+        Ok("both") => ClickMode::Both,
+        _ => ClickMode::SendInput,
+    }
+}
+
+/// Posts the button press to the window's own message queue, at client coordinates.
+///
+/// A different path from SendInput in every way that matters here: it never enters the system input
+/// queue, so nothing can flag it as injected, and it does not depend on where the OS cursor is. Its
+/// own failure mode is the mirror image - a game that reads Raw Input rather than window messages
+/// ignores it - which is exactly why both are worth trying against a game that ignores one of them.
+#[cfg(windows)]
+fn post_click_to_window(window_handle: HWND, client_x: i32, client_y: i32) -> bool {
+    use winapi::shared::minwindef::{LPARAM, WPARAM};
+    use winapi::um::winuser::{PostMessageA, MK_LBUTTON, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE};
+
+    // lParam packs the client coordinates: low word x, high word y.
+    let lparam = ((client_y as u32) << 16 | (client_x as u32 & 0xFFFF)) as LPARAM;
+    unsafe {
+        let moved = PostMessageA(window_handle, WM_MOUSEMOVE, 0, lparam);
+        std::thread::sleep(std::time::Duration::from_millis(16));
+        let down = PostMessageA(window_handle, WM_LBUTTONDOWN, MK_LBUTTON as WPARAM, lparam);
+        std::thread::sleep(std::time::Duration::from_millis(40));
+        let up = PostMessageA(window_handle, WM_LBUTTONUP, 0, lparam);
+        if moved == 0 || down == 0 || up == 0 {
+            warn!("[auto-click] PostMessage was refused (move={moved}, down={down}, up={up})");
+            return false;
+        }
+        true
+    }
+}
+
 pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y_prop: f32) -> bool {
     unsafe {
         let mut rect = RECT { left: 0, top: 0, right: 0, bottom: 0 };
@@ -73,12 +122,25 @@ pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y
             sent
         };
 
+        let mode = click_mode();
+        warn!("[auto-click] delivering the click via {mode:?}");
+
+        if mode == ClickMode::PostMessage {
+            return post_click_to_window(window_handle, x_abs, y_abs);
+        }
+
         // Move first, alone: one frame for the game to register the cursor where the button is.
         let moved = send(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, 16);
         // Then the press, held long enough to survive a sample at 30 fps.
         let down = send(MOUSEEVENTF_LEFTDOWN, 40);
         // Then the release. dx/dy are ignored without MOUSEEVENTF_MOVE; the cursor has not moved.
         let up = send(MOUSEEVENTF_LEFTUP, 0);
+
+        if mode == ClickMode::Both {
+            std::thread::sleep(std::time::Duration::from_millis(60));
+            let posted = post_click_to_window(window_handle, x_abs, y_abs);
+            return posted && moved != 0 && down != 0 && up != 0;
+        }
 
         if moved == 0 || down == 0 || up == 0 {
             // MSDN: a zero return means the input was blocked by another thread - UIPI, or an
