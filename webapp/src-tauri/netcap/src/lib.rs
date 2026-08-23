@@ -33,6 +33,12 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use std::sync::Mutex;
 
+// The capture service's wire protocol (#816): pure frames + validation, testable on every
+// platform. The pipe transport itself only exists where named pipes do.
+pub mod service_proto;
+#[cfg(windows)]
+pub mod service_ipc;
+
 /// One observed UDP conversation between a game-owned local port and a remote peer.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct FlowStat {
