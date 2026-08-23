@@ -40,12 +40,18 @@ pub(crate) enum ClickMode {
     PostMessage,
     /// Both, SendInput first. For the case where neither alone lands.
     Both,
+    /// Relative deltas: pin the game's own cursor to the top-left corner with one huge negative
+    /// move, then walk it to the target. For a game that drives its cursor from raw input deltas
+    /// rather than from the OS cursor - the shape the field test points at, since the injected
+    /// absolute move produced no hover at all - this is the only positioning it can see.
+    Relative,
 }
 
 pub(crate) fn click_mode() -> ClickMode {
     match std::env::var("BETTERFLEET_CLICK_MODE").as_deref() {
         Ok("postmessage") => ClickMode::PostMessage,
         Ok("both") => ClickMode::Both,
+        Ok("relative") => ClickMode::Relative,
         _ => ClickMode::SendInput,
     }
 }
@@ -106,10 +112,10 @@ pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y
         // cursor lands on the button but the press never registers - the game samples input on its
         // frame, and a press that is already released by the next sample is a press it never saw.
         // A real mouse moves, then holds the button for tens of milliseconds. So does this.
-        let mut send = |flags, wait_ms: u64| {
+        let mut send_at = |flags, ev_dx: c_int, ev_dy: c_int, wait_ms: u64| {
             *mouse_input.u.mi_mut() = MOUSEINPUT {
-                dx,
-                dy,
+                dx: ev_dx,
+                dy: ev_dy,
                 mouseData: 0,
                 dwFlags: flags,
                 time: 0,
@@ -121,6 +127,12 @@ pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y
             }
             sent
         };
+        // The absolute-coordinate form every non-relative path uses.
+        macro_rules! send {
+            ($flags:expr, $wait:expr) => {
+                send_at($flags, dx, dy, $wait)
+            };
+        }
 
         let mode = click_mode();
         warn!("[auto-click] delivering the click via {mode:?}");
@@ -129,12 +141,31 @@ pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y
             return post_click_to_window(window_handle, x_abs, y_abs);
         }
 
+        if mode == ClickMode::Relative {
+            // An absolute injection carries no delta, so a raw-input cursor never moves: it stays
+            // wherever the player last left it while the OS cursor visibly lands on the button.
+            // Deltas are all such a game understands, and since we cannot ask where its cursor is,
+            // we put it somewhere known first - a move far larger than any screen clamps it into
+            // the top-left corner - and then walk it to the target in one step.
+            let pinned = send_at(MOUSEEVENTF_MOVE, -40000, -40000, 16);
+            let walked = send_at(MOUSEEVENTF_MOVE, point.x, point.y, 16);
+            let down = send!(MOUSEEVENTF_LEFTDOWN, 40);
+            let up = send!(MOUSEEVENTF_LEFTUP, 0);
+            if pinned == 0 || walked == 0 || down == 0 || up == 0 {
+                warn!(
+                    "[auto-click] relative SendInput was refused (pin={pinned}, walk={walked}, down={down}, up={up})"
+                );
+                return false;
+            }
+            return true;
+        }
+
         // Move first, alone: one frame for the game to register the cursor where the button is.
-        let moved = send(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, 16);
+        let moved = send!(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, 16);
         // Then the press, held long enough to survive a sample at 30 fps.
-        let down = send(MOUSEEVENTF_LEFTDOWN, 40);
+        let down = send!(MOUSEEVENTF_LEFTDOWN, 40);
         // Then the release. dx/dy are ignored without MOUSEEVENTF_MOVE; the cursor has not moved.
-        let up = send(MOUSEEVENTF_LEFTUP, 0);
+        let up = send!(MOUSEEVENTF_LEFTUP, 0);
 
         if mode == ClickMode::Both {
             std::thread::sleep(std::time::Duration::from_millis(60));
