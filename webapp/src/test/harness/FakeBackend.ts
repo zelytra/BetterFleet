@@ -338,9 +338,17 @@ export class FakeWebSocket {
 }
 
 export class FakeEventSource {
+  // Mirrors the real EventSource constants: the poll gate reads readyState to tell a live stream
+  // from a dead one (#839), so a fake without them would make that test meaningless.
+  static readonly CONNECTING = 0;
+  static readonly OPEN = 1;
+  static readonly CLOSED = 2;
+
   onmessage: ((event: { data: string }) => void) | null = null;
   onerror: (() => void) | null = null;
   closed = false;
+  /** Open as soon as it is constructed: the fake has no network to wait for. */
+  readyState: number = FakeEventSource.OPEN;
 
   constructor(public url: string) {
     fakeBackend.streams.push(this);
@@ -350,8 +358,15 @@ export class FakeEventSource {
     if (!this.closed) this.onmessage?.({ data });
   }
 
+  /** Models a dropped connection: still referenced by the client, no longer carrying anything. */
+  drop(): void {
+    this.readyState = FakeEventSource.CONNECTING;
+    this.onerror?.();
+  }
+
   close(): void {
     this.closed = true;
+    this.readyState = FakeEventSource.CLOSED;
     fakeBackend.streams = fakeBackend.streams.filter((s) => s !== this);
   }
 }

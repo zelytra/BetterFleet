@@ -71,3 +71,105 @@ describe("PublicSessionsStore SSE mixed-content guard", () => {
     }
   });
 });
+
+// The stream is meant to make the 5s poll idle. In production it never did: the gate skipped a tick
+// only if a frame had arrived within the last POLL_INTERVAL_MS, and the backend had no heartbeat -
+// so at steady state the "fallback" ran at full cadence and became 96% of all API traffic over 14
+// days (#839). The gate is now stream liveness (readyState + a tolerance window), and the backend
+// heartbeats every 3s to feed it.
+describe("PublicSessionsStore poll suppression (#839)", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    installFakeTransports();
+    vi.stubEnv("VITE_BACKEND_HOST", "http://127.0.0.1:8080");
+  });
+  afterEach(() => {
+    PublicSessionsStore.disconnect();
+    vi.useRealTimers();
+    vi.unstubAllEnvs();
+  });
+
+  function pollCount(): number {
+    return fakeBackend.requests.filter((u) => u.endsWith("/public-sessions"))
+      .length;
+  }
+
+  it("stays silent while the stream heartbeats", async () => {
+    const restore = forceProtocol("http:");
+    try {
+      PublicSessionsStore.connectStream();
+      const stream = fakeBackend.streams[0];
+      // Three minutes of a healthy stream: the backend beats every 3s, nothing else happens.
+      for (let i = 0; i < 60; i++) {
+        stream.push(JSON.stringify({ connectedPlayers: 0, sessions: [] }));
+        await vi.advanceTimersByTimeAsync(3000);
+      }
+      expect(pollCount()).toBe(0);
+    } finally {
+      restore();
+    }
+  });
+
+  it("takes over when the stream goes quiet without dropping", async () => {
+    // A stream wedged open by a proxy past a dead backend: readyState still OPEN, no frames. The
+    // poll must resume - this is the half that readyState alone would miss.
+    const restore = forceProtocol("http:");
+    try {
+      PublicSessionsStore.connectStream();
+      fakeBackend.streams[0].push(
+        JSON.stringify({ connectedPlayers: 0, sessions: [] }),
+      );
+      await vi.advanceTimersByTimeAsync(30_000);
+      expect(pollCount()).toBeGreaterThan(0);
+    } finally {
+      restore();
+    }
+  });
+
+  it("takes over the moment the stream drops, without waiting out the tolerance", async () => {
+    const restore = forceProtocol("http:");
+    try {
+      PublicSessionsStore.connectStream();
+      const stream = fakeBackend.streams[0];
+      stream.push(JSON.stringify({ connectedPlayers: 0, sessions: [] }));
+      stream.drop(); // connection lost; the client still holds the object
+      await vi.advanceTimersByTimeAsync(6000);
+      expect(pollCount()).toBeGreaterThan(0);
+    } finally {
+      restore();
+    }
+  });
+
+  it("does not trust a fresh frame from a stream that has since dropped", async () => {
+    // The case frame recency alone gets wrong, and the reason the gate reads readyState: the
+    // connection died a moment after its last frame, so by the old rule the stream still looked
+    // healthy for a further five seconds and the list silently froze.
+    const restore = forceProtocol("http:");
+    try {
+      PublicSessionsStore.connectStream();
+      const stream = fakeBackend.streams[0];
+      // Just before the poll tick at 5s: a frame, then the drop.
+      await vi.advanceTimersByTimeAsync(4900);
+      stream.push(JSON.stringify({ connectedPlayers: 0, sessions: [] }));
+      stream.drop();
+      // The tick lands with the last frame 100ms old - fresh by any recency rule, and useless.
+      await vi.advanceTimersByTimeAsync(200);
+      expect(pollCount()).toBeGreaterThan(0);
+    } finally {
+      restore();
+    }
+  });
+
+  it("polls when there is no stream at all", async () => {
+    // Mixed content, or a backend without SSE: the poll is the only path and must run.
+    const restore = forceProtocol("https:");
+    try {
+      PublicSessionsStore.connectStream();
+      expect(fakeBackend.streams).toHaveLength(0);
+      await vi.advanceTimersByTimeAsync(12_000);
+      expect(pollCount()).toBeGreaterThan(0);
+    } finally {
+      restore();
+    }
+  });
+});

@@ -2,6 +2,7 @@ package fr.zelytra.session;
 
 
 import fr.zelytra.session.fleet.Fleet;
+import fr.zelytra.session.fleet.PublicSessionsSnapshot;
 import fr.zelytra.session.ip.ProxyCheckAPI;
 import fr.zelytra.session.player.Player;
 import fr.zelytra.session.server.SotServer;
@@ -9,6 +10,7 @@ import fr.zelytra.session.socket.MessageType;
 import fr.zelytra.statistics.StatisticsEntity;
 import fr.zelytra.statistics.StatisticsRepository;
 import io.quarkus.test.InjectMock;
+import io.smallrye.mutiny.helpers.test.AssertSubscriber;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.oidc.server.OidcWiremockTestResource;
@@ -22,6 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -400,4 +403,23 @@ public class SessionManagerTest {
 
         assertTrue(sessionManager.isPlayerInSession(player, sessionId1), "The player is not in the session");
     }
+    /**
+     * The public-sessions stream must keep talking when nothing changes (#839).
+     * <p>
+     * Its silence was indistinguishable from a dead stream, so the client's 5s poll - meant to idle
+     * whenever the stream works - ran at full cadence and became 96% of all API traffic. The
+     * heartbeat is what closes that gate, including for every client already shipped.
+     */
+    @Test
+    public void publicSessionsStreamHeartbeatsWhileNothingChanges() {
+        AssertSubscriber<PublicSessionsSnapshot> subscriber =
+                sessionManager.streamPublicSessions()
+                        .subscribe().withSubscriber(AssertSubscriber.create(3));
+
+        // The opening snapshot, then two heartbeats: no session is created or closed here, so
+        // anything after the first item can only come from the timer.
+        subscriber.awaitItems(3, Duration.ofSeconds(15));
+        subscriber.cancel();
+    }
+
 }
