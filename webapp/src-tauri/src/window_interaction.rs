@@ -2,7 +2,7 @@ use winapi::um::winuser::{INPUT, INPUT_MOUSE, MOUSEEVENTF_ABSOLUTE, MOUSEEVENTF_
 use winapi::um::winuser::SM_CXSCREEN;
 use winapi::ctypes::c_int;
 use std::mem::size_of;
-use winapi::um::winuser::{GetSystemMetrics, SetForegroundWindow, GetForegroundWindow, GetClientRect, ClientToScreen, keybd_event};
+use winapi::um::winuser::{GetSystemMetrics, SetForegroundWindow, GetForegroundWindow, GetClientRect, ClientToScreen, GetCursorPos, SystemParametersInfoA, SPI_GETMOUSE, SPI_GETMOUSESPEED, keybd_event};
 use winapi::um::winuser::{MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP, VK_MENU, KEYEVENTF_EXTENDEDKEY, KEYEVENTF_KEYUP};
 use winapi::shared::windef::{HWND, POINT, RECT};
 use log::warn;
@@ -151,16 +151,59 @@ pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y
             // we put it somewhere known first - a move far larger than any screen clamps it into
             // the top-left corner - and then walk it to the target.
             //
+            // The pointer ballistics that scale relative OS-cursor motion, logged once per click:
+            // when the visible cursor lands somewhere else than the game's, these numbers say why.
+            // params[2] != 0 means "Enhance pointer precision" is on; speed 10 of 20 is 1:1.
+            let mut mouse_params = [0i32; 3];
+            let mut pointer_speed: i32 = 0;
+            SystemParametersInfoA(SPI_GETMOUSE, 0, mouse_params.as_mut_ptr() as *mut _, 0);
+            SystemParametersInfoA(
+                SPI_GETMOUSESPEED,
+                0,
+                &mut pointer_speed as *mut _ as *mut _,
+                0,
+            );
+            warn!(
+                "[auto-click] pointer ballistics: accel={} speed={pointer_speed}/20",
+                mouse_params[2]
+            );
+
             // Pinned TWICE, a frame apart: the game integrates deltas per frame, and the field runs
             // showed a single oversized slam landing inconsistently - presumably clamped mid-frame.
             let pin1 = send_at(MOUSEEVENTF_MOVE, -40000, -40000, 20);
             let pin2 = send_at(MOUSEEVENTF_MOVE, -40000, -40000, 20);
-            // Walk in SCREEN coordinates. Settled empirically, against the first theory: on the
-            // field machine the screen-coordinate walk lands on the button and a client-coordinate
-            // walk misses it entirely, so the space the game clamps its cursor in matches screen
-            // pixels there. If a windowed setup ever misses by exactly its window origin, this is
-            // the line to revisit.
-            let walked = send_at(MOUSEEVENTF_MOVE, point.x, point.y, 32);
+            let mut corner = POINT { x: 0, y: 0 };
+            GetCursorPos(&mut corner);
+
+            // Walk in SCREEN coordinates (settled empirically: the client-coordinate walk missed
+            // outright), and in SMALL STEPS. Raw-input consumers integrate deltas identically
+            // however they are chunked - but the OS cursor scales every packet through the
+            // ballistics above, and acceleration explodes on one huge delta: that is the
+            // bottom-right flight of field round three. Steps of at most 64px stay in the ~1:1
+            // regime, so the visible cursor and the game's travel roughly together.
+            let (mut remaining_x, mut remaining_y) = (point.x, point.y);
+            let mut walked = 1u32;
+            while remaining_x != 0 || remaining_y != 0 {
+                let step_x = remaining_x.clamp(-64, 64);
+                let step_y = remaining_y.clamp(-64, 64);
+                remaining_x -= step_x;
+                remaining_y -= step_y;
+                if send_at(MOUSEEVENTF_MOVE, step_x, step_y, 4) == 0 {
+                    walked = 0;
+                    break;
+                }
+            }
+            std::thread::sleep(std::time::Duration::from_millis(32));
+            let mut landed = POINT { x: 0, y: 0 };
+            GetCursorPos(&mut landed);
+            // The OS cursor's landing vs the target measures the effective scale end to end: on
+            // the button = ballistics tamed; short or long by a stable ratio = a scale to calibrate
+            // out; on the button while the GAME still misses = the game scales its own cursor.
+            warn!(
+                "[auto-click] relative walk: corner=({},{}) target=({},{}) os-cursor=({},{})",
+                corner.x, corner.y, point.x, point.y, landed.x, landed.y
+            );
+
             // Mouse input goes to whatever window is foreground NOW. If something stole it during
             // the pin-and-walk, refuse: half a second late is recoverable, a click fired into
             // another application is not.
