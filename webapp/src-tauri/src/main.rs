@@ -25,7 +25,7 @@ use tauri_plugin_log::fern::colors::ColoredLevelConfig;
 use tauri_plugin_log::{Target, TargetKind, RotationStrategy};
 use tokio::sync::RwLock;
 #[cfg(windows)]
-use winapi::um::winuser::FindWindowA;
+use winapi::um::winuser::{FindWindowA, GetForegroundWindow};
 use crate::api::{Api, GameStatus};
 #[cfg(windows)]
 use crate::window_interaction::{click_in_window_proportionally, set_focus_to_window};
@@ -544,7 +544,20 @@ fn rise_anchor() -> ClickOutcome {
         return ClickOutcome::FocusRefused;
     }
 
-    sleep(Duration::from_millis(50)); // Wait for the window to focus
+    sleep(Duration::from_millis(100)); // Wait for the window to actually come forward
+
+    // SetForegroundWindow answering success is a request honoured, not a state reached: field runs
+    // showed the click landing in whatever window WAS foreground when the game had not made it yet.
+    // Mouse input goes to the foreground window, so verify, give it one more chance, and refuse
+    // rather than click into another application.
+    if unsafe { GetForegroundWindow() } != window_handle {
+        let _ = set_focus_to_window(window_handle);
+        sleep(Duration::from_millis(150));
+        if unsafe { GetForegroundWindow() } != window_handle {
+            warn!("[auto-click] another window holds the foreground; refusing to click into it");
+            return ClickOutcome::FocusRefused;
+        }
+    }
 
     // Clic at 700;750 on a reference of 1920x1080
     // This corresponds to the middle of "Rise anchor" button

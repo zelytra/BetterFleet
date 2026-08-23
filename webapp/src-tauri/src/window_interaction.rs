@@ -2,7 +2,7 @@ use winapi::um::winuser::{INPUT, INPUT_MOUSE, MOUSEEVENTF_ABSOLUTE, MOUSEEVENTF_
 use winapi::um::winuser::SM_CXSCREEN;
 use winapi::ctypes::c_int;
 use std::mem::size_of;
-use winapi::um::winuser::{GetSystemMetrics, SetForegroundWindow, GetClientRect, ClientToScreen, keybd_event};
+use winapi::um::winuser::{GetSystemMetrics, SetForegroundWindow, GetForegroundWindow, GetClientRect, ClientToScreen, keybd_event};
 use winapi::um::winuser::{MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP, VK_MENU, KEYEVENTF_EXTENDEDKEY, KEYEVENTF_KEYUP};
 use winapi::shared::windef::{HWND, POINT, RECT};
 use log::warn;
@@ -51,8 +51,11 @@ pub(crate) fn click_mode() -> ClickMode {
     match std::env::var("BETTERFLEET_CLICK_MODE").as_deref() {
         Ok("postmessage") => ClickMode::PostMessage,
         Ok("both") => ClickMode::Both,
-        Ok("relative") => ClickMode::Relative,
-        _ => ClickMode::SendInput,
+        Ok("sendinput") => ClickMode::SendInput,
+        // Relative deltas are the one path the field test validated: the game drives its cursor
+        // from raw input, where absolute injections carry no delta and posted window messages are
+        // never read. See the enum doc.
+        _ => ClickMode::Relative,
     }
 }
 
@@ -146,14 +149,28 @@ pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y
             // wherever the player last left it while the OS cursor visibly lands on the button.
             // Deltas are all such a game understands, and since we cannot ask where its cursor is,
             // we put it somewhere known first - a move far larger than any screen clamps it into
-            // the top-left corner - and then walk it to the target in one step.
-            let pinned = send_at(MOUSEEVENTF_MOVE, -40000, -40000, 16);
-            let walked = send_at(MOUSEEVENTF_MOVE, point.x, point.y, 16);
+            // the top-left corner - and then walk it to the target.
+            //
+            // Pinned TWICE, a frame apart: the game integrates deltas per frame, and the field runs
+            // showed a single oversized slam landing inconsistently - presumably clamped mid-frame.
+            let pin1 = send_at(MOUSEEVENTF_MOVE, -40000, -40000, 20);
+            let pin2 = send_at(MOUSEEVENTF_MOVE, -40000, -40000, 20);
+            // Walk in CLIENT coordinates: the game's cursor is confined to its own viewport, so the
+            // corner it was pinned into is the client origin, not the screen's. Borderless
+            // fullscreen makes the two equal; a windowed game is where the difference bites.
+            let walked = send_at(MOUSEEVENTF_MOVE, x_abs, y_abs, 32);
+            // Mouse input goes to whatever window is foreground NOW. If something stole it during
+            // the pin-and-walk, refuse: half a second late is recoverable, a click fired into
+            // another application is not.
+            if GetForegroundWindow() != window_handle {
+                warn!("[auto-click] the game lost the foreground mid-click; not clicking into another window");
+                return false;
+            }
             let down = send!(MOUSEEVENTF_LEFTDOWN, 40);
             let up = send!(MOUSEEVENTF_LEFTUP, 0);
-            if pinned == 0 || walked == 0 || down == 0 || up == 0 {
+            if pin1 == 0 || pin2 == 0 || walked == 0 || down == 0 || up == 0 {
                 warn!(
-                    "[auto-click] relative SendInput was refused (pin={pinned}, walk={walked}, down={down}, up={up})"
+                    "[auto-click] relative SendInput was refused (pin={pin1}/{pin2}, walk={walked}, down={down}, up={up})"
                 );
                 return false;
             }
