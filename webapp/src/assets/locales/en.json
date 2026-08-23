@@ -234,7 +234,8 @@
       "message": "A sign-in page opened in your browser. Complete it there, then come back here.",
       "cancel": "Cancel",
       "error": "Sign-in failed. Please try again.",
-      "done": "You can close this tab and return to BetterFleet."
+      "done": "You can close this tab and return to BetterFleet.",
+      "portBusy": "Sign-in could not start: another program is using ports 47823-47825. Free one of them, or restart your computer, then try again."
     },
     "continue": "Continue",
     "description": "Welcome to BetterFleet! We are thrilled to have you figure among us. In order to access the application, please log in to your account or create one!",

@@ -128,12 +128,15 @@ export const keycloakStore = reactive({
       // A deliberate cancel from the browser-wait screen is not a failure: reset quietly, no alert.
       if (!(e instanceof BrowserAuth.LoginAbortedError)) {
         logError(`OIDC login failed: ${e}`);
-        // Port busy, the timeout, a state mismatch, denied consent, a dropped network: previously
-        // the failure was silent and the screen just fell back to the login button with no
-        // explanation.
+        // The timeout, a state mismatch, denied consent, a dropped network: previously the failure
+        // was silent and the screen just fell back to the login button with no explanation. Every
+        // loopback port being busy gets its own message - it is the one cause a player can act on.
         alertProvider.sendAlert({
           title: t("alert.error.title"),
-          content: t("login.browser.error"),
+          content:
+            e instanceof BrowserAuth.PortUnavailableError
+              ? t("login.browser.portBusy")
+              : t("login.browser.error"),
           type: AlertType.ERROR,
         });
       }

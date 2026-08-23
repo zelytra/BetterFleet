@@ -19,10 +19,17 @@ import { tsi18n } from "@/objects/i18n";
 // RFC 8252 §8.12 discourages embedded-webview logins outright. Here the `offline_access` refresh
 // token survives restarts and slides its own 30-day idle window on every refresh.
 
-// Fixed loopback port, so the redirect URI to register in Keycloak is a single exact string:
+// Fixed loopback ports, tried in order: the redirect URI has to be a string the realm registers
+// exactly, so it cannot be a random port, but one hard-coded port is a single point of failure now
+// that this is how everyone signs in. 47823 sits inside Linux's default ephemeral range
+// (32768-60999), so an unrelated program can legitimately be holding it, and on Windows a lingering
+// instance of the app can too. The plugin binds the first of these that is free and reports which.
+//
 //   Valid redirect URIs -> http://localhost:47823/callback
-const REDIRECT_PORT = 47823;
-const REDIRECT_URI = `http://localhost:${REDIRECT_PORT}/callback`;
+//                          http://localhost:47824/callback
+//                          http://localhost:47825/callback
+const REDIRECT_PORTS = [47823, 47824, 47825];
+const redirectUri = (port: number) => `http://localhost:${port}/callback`;
 const REALM = "Betterfleet";
 const CLIENT_ID = "application";
 // The refresh token is persisted so login survives a restart (the desktop equivalent of the SSO
@@ -207,16 +214,41 @@ function successPage(): string {
 // unblock a login the player walked away from. Null when no login is waiting on the browser.
 let pendingReject: ((reason: unknown) => void) | null = null;
 
+// The loopback port the current login actually bound, so abort() and the cleanup release that one.
+let boundPort: number | null = null;
+
+/**
+ * Every loopback port in the range was busy, so the browser was never opened.
+ *
+ * Its own type because it is the one sign-in failure a player can fix themselves - and the message
+ * that says so would be wrong for any other cause.
+ */
+export class PortUnavailableError extends Error {
+  constructor(cause: string) {
+    super(`no free loopback port in ${REDIRECT_PORTS.join(", ")}: ${cause}`);
+    this.name = "PortUnavailableError";
+  }
+}
+
 // Full interactive login: hosted Keycloak page in the system browser, code captured on the loopback.
 export async function login(): Promise<OidcTokens> {
   const verifier = randomString(32);
   const challenge = base64url(await sha256(verifier));
   const state = randomString(16);
 
-  const port = await start({
-    ports: [REDIRECT_PORT],
-    response: successPage(),
-  });
+  let port: number;
+  try {
+    port = await start({
+      ports: REDIRECT_PORTS,
+      response: successPage(),
+    });
+  } catch (e) {
+    // Every port in the range is taken. Distinct from the generic sign-in failure: the player can
+    // act on this one, and only on this one.
+    throw new PortUnavailableError(`${e}`);
+  }
+  boundPort = port;
+  const uri = redirectUri(port);
 
   let unlisten: (() => void) | undefined;
   let timeout: ReturnType<typeof setTimeout> | undefined;
@@ -241,7 +273,7 @@ export async function login(): Promise<OidcTokens> {
 
     const authorizeUrl = `${oidcBase()}/auth?${new URLSearchParams({
       client_id: CLIENT_ID,
-      redirect_uri: REDIRECT_URI,
+      redirect_uri: uri,
       response_type: "code",
       // offline_access yields a long-lived refresh token, so restore() keeps the player signed in
       // across restarts without reopening the browser (the desktop "stay connected").
@@ -267,7 +299,7 @@ export async function login(): Promise<OidcTokens> {
     const tokens = await tokenRequest({
       grant_type: "authorization_code",
       code,
-      redirect_uri: REDIRECT_URI,
+      redirect_uri: uri,
       client_id: CLIENT_ID,
       code_verifier: verifier,
     });
@@ -278,6 +310,7 @@ export async function login(): Promise<OidcTokens> {
     pendingReject = null;
     unlisten?.();
     await cancel(port).catch(() => undefined);
+    boundPort = null;
   }
 }
 
@@ -288,7 +321,9 @@ export async function login(): Promise<OidcTokens> {
 // the page down before that finally runs.
 export async function abort(): Promise<void> {
   pendingReject?.(new LoginAbortedError());
-  await cancel(REDIRECT_PORT).catch(() => undefined);
+  // Cancel whichever port actually bound, not the first of the range: cancelling a port the plugin
+  // never took would leave the real listener running and the next login unable to bind it.
+  if (boundPort !== null) await cancel(boundPort).catch(() => undefined);
 }
 
 // Silent restore on startup / refresh: trade the persisted refresh token for fresh ones. Returns null

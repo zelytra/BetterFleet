@@ -65,10 +65,14 @@ let capturedOnUrl: ((url: string) => void) | null = null;
 const cancelledPorts: number[] = [];
 /** The HTML the loopback server was told to serve once the redirect lands. */
 let servedPage = "";
+/** Ports the fake loopback refuses to bind, as a busy machine would. */
+const busyPorts = new Set<number>();
 vi.mock("@fabianlars/tauri-plugin-oauth", () => ({
   start: async (config: { ports: number[]; response?: string }) => {
     servedPage = config.response ?? "";
-    return config.ports[0];
+    const free = config.ports.find((port) => !busyPorts.has(port));
+    if (free === undefined) throw new Error("EADDRINUSE");
+    return free;
   },
   onUrl: async (cb: (url: string) => void) => {
     capturedOnUrl = cb;
@@ -103,6 +107,7 @@ import {
   usernameFromIdToken,
   LoginAbortedError,
   RefreshUnavailableError,
+  PortUnavailableError,
 } from "@/objects/stores/BrowserAuth.ts";
 
 const REFRESH_KEY = "kc-refresh-token";
@@ -139,6 +144,7 @@ beforeEach(() => {
   cancelledPorts.length = 0;
   capturedOnUrl = null;
   servedPage = "";
+  busyPorts.clear();
   tsi18n.global.locale.value = "en";
 });
 
@@ -309,6 +315,41 @@ describe("login", () => {
     const state = new URL(openedUrls[0]).searchParams.get("state")!;
     capturedOnUrl!(`http://localhost:47823/callback?state=${state}&code=c`);
     await pending;
+  });
+
+  it("falls back to the next port when the first is taken", async () => {
+    // 47823 sits inside Linux's ephemeral range, so an unrelated program can be holding it - and
+    // this is now the only way anyone signs in. The redirect URI must follow the port that bound,
+    // or Keycloak sends the code to a listener that does not exist.
+    busyPorts.add(47823);
+    const pending = login();
+    await vi.waitFor(() => {
+      expect(openedUrls).toHaveLength(1);
+    });
+    const authorize = new URL(openedUrls[0]);
+    expect(authorize.searchParams.get("redirect_uri")).toBe(
+      "http://localhost:47824/callback",
+    );
+
+    const state = authorize.searchParams.get("state")!;
+    capturedOnUrl!(`http://localhost:47824/callback?state=${state}&code=c`);
+    await pending;
+    // The token exchange has to repeat the same redirect_uri, or Keycloak rejects the code.
+    expect(httpCalls[0].body.get("redirect_uri")).toBe(
+      "http://localhost:47824/callback",
+    );
+    // And the listener that actually bound is the one released.
+    expect(cancelledPorts).toContain(47824);
+  });
+
+  it("reports a busy range as its own failure, not a generic one", async () => {
+    // The one sign-in failure a player can fix themselves, so the caller must be able to tell it
+    // apart and say so.
+    busyPorts.add(47823);
+    busyPorts.add(47824);
+    busyPorts.add(47825);
+    await expect(login()).rejects.toBeInstanceOf(PortUnavailableError);
+    expect(openedUrls).toHaveLength(0);
   });
 
   it("rejects a callback whose state does not match", async () => {

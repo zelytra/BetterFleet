@@ -234,7 +234,8 @@
       "message": "In deinem Browser wurde eine Anmeldeseite geöffnet. Schließe die Anmeldung dort ab und komm dann hierher zurück.",
       "cancel": "Abbrechen",
       "error": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
-      "done": "Du kannst diesen Tab schließen und zu BetterFleet zurückkehren."
+      "done": "Du kannst diesen Tab schließen und zu BetterFleet zurückkehren.",
+      "portBusy": "Die Anmeldung konnte nicht starten: ein anderes Programm belegt die Ports 47823-47825. Gib einen davon frei oder starte den Computer neu und versuche es erneut."
     },
     "continue": "Weiter",
     "description": "Willkommen bei BetterFleet! Wir freuen uns riesig, dich bei uns zu haben. Um die Anwendung zu nutzen, melde dich bitte bei deinem Konto an oder erstelle ein neues!",

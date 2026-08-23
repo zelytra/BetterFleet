@@ -234,7 +234,8 @@
       "message": "Se ha abierto una página de inicio de sesión en tu navegador. Complétala allí y luego vuelve aquí.",
       "cancel": "Cancelar",
       "error": "Error al iniciar sesión. Inténtalo de nuevo.",
-      "done": "Puedes cerrar esta pestaña y volver a BetterFleet."
+      "done": "Puedes cerrar esta pestaña y volver a BetterFleet.",
+      "portBusy": "No se ha podido iniciar sesión: otro programa está usando los puertos 47823-47825. Libera uno, o reinicia el ordenador, e inténtalo de nuevo."
     },
     "continue": "Continuar",
     "description": "¡Bienvenido a BetterFleet! Nos encanta tenerte entre nosotros. Para acceder a la aplicación, inicia sesión en tu cuenta o crea una.",
