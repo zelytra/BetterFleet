@@ -83,15 +83,17 @@ mod service {
         let status_handle = service_control_handler::register(SERVICE_NAME, |control| {
             match control {
                 ServiceControl::Stop => {
-                    STOP.store(true, Ordering::Relaxed);
-                    // A capture in flight is bounded by MAX_WINDOW_SECS; tell the SCM to wait it
-                    // out instead of declaring the service hung mid-request.
+                    // StopPending goes out BEFORE the flag: the serve loop reports Stopped the
+                    // moment it notices the flag, and Stopped must never precede StopPending. The
+                    // wait hint covers a capture in flight (bounded by MAX_WINDOW_SECS), so the
+                    // SCM waits it out instead of declaring the service hung mid-request.
                     if let Some(handle) = STATUS.get() {
                         let _ = handle.set_service_status(status(
                             ServiceState::StopPending,
                             Duration::from_secs(MAX_WINDOW_SECS + 10),
                         ));
                     }
+                    STOP.store(true, Ordering::Relaxed);
                     ServiceControlHandlerResult::NoError
                 }
                 ServiceControl::Interrogate => ServiceControlHandlerResult::NoError,

@@ -43,6 +43,12 @@ pub const MAX_PORTS_PER_REQUEST: usize = 16;
 pub const MAX_WINDOW_SECS: u64 = 120;
 
 /// One capture request: sniff the given game ports for `window_secs` and return the ranked flows.
+///
+/// An EMPTY port list is valid and deliberate: it is the Help-tab diagnostic's raw-count probe -
+/// capture, count the packets the socket receives, match no flows - which keeps its "capture
+/// blocked vs no traffic" signal even when the game has no enumerated ports. The capture is
+/// promiscuous whatever the list says (ports only filter aggregation), so an empty list grants a
+/// caller nothing that `[1]` would not.
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 pub struct CaptureRequest {
     pub version: u32,
@@ -84,7 +90,6 @@ impl CaptureResponse {
 #[derive(Debug, Clone, PartialEq)]
 pub enum RequestError {
     VersionMismatch { got: u32 },
-    NoPorts,
     TooManyPorts { got: usize },
     ZeroPort,
     ZeroWindow,
@@ -98,7 +103,6 @@ impl fmt::Display for RequestError {
                 f,
                 "protocol version mismatch: this service speaks v{PROTOCOL_VERSION}, the request carries v{got}"
             ),
-            RequestError::NoPorts => write!(f, "the request names no game ports"),
             RequestError::TooManyPorts { got } => write!(
                 f,
                 "the request names {got} ports; at most {MAX_PORTS_PER_REQUEST} are accepted"
@@ -121,9 +125,6 @@ pub fn validate_request(request: &CaptureRequest) -> Result<(), RequestError> {
         return Err(RequestError::VersionMismatch {
             got: request.version,
         });
-    }
-    if request.game_ports.is_empty() {
-        return Err(RequestError::NoPorts);
     }
     if request.game_ports.len() > MAX_PORTS_PER_REQUEST {
         return Err(RequestError::TooManyPorts {
@@ -313,10 +314,6 @@ mod tests {
         );
 
         let mut request = ok.clone();
-        request.game_ports.clear();
-        assert_eq!(validate_request(&request), Err(RequestError::NoPorts));
-
-        let mut request = ok.clone();
         request.game_ports = vec![1000; MAX_PORTS_PER_REQUEST + 1];
         assert_eq!(
             validate_request(&request),
@@ -340,6 +337,40 @@ mod tests {
             Err(RequestError::WindowTooLong {
                 got: MAX_WINDOW_SECS + 1
             })
+        );
+    }
+
+    #[test]
+    fn an_empty_port_list_is_the_diagnostic_probe_and_is_valid() {
+        let mut request = valid_request();
+        request.game_ports.clear();
+        assert_eq!(validate_request(&request), Ok(()));
+    }
+
+    /// Pins the EXACT bytes of a v1 frame. Any change to the wire shape breaks this test, which is
+    /// the point: the shape may only change together with a PROTOCOL_VERSION bump, or an updated
+    /// GUI and a not-yet-updated service would misread each other at the same declared version.
+    #[test]
+    fn the_v1_request_frame_is_frozen() {
+        let encoded = String::from_utf8(encode_request(&valid_request())).unwrap();
+        assert_eq!(
+            encoded,
+            r#"{"version":1,"game_ports":[59639,51485],"window_secs":2}"#
+        );
+    }
+
+    #[test]
+    fn the_v1_response_frame_is_frozen() {
+        let response = CaptureResponse {
+            version: PROTOCOL_VERSION,
+            error: None,
+            flows: vec![a_flow()],
+            raw_packets: Some(9),
+        };
+        let encoded = String::from_utf8(encode_response(&response)).unwrap();
+        assert_eq!(
+            encoded,
+            r#"{"version":1,"error":null,"flows":[{"local_port":59639,"remote_ip":"20.31.44.5","remote_port":30512,"packets":420,"bytes":61000,"inbound":210,"outbound":210,"plausible_sot_port":true,"first_seen_ms":10,"last_seen_ms":1990}],"raw_packets":9}"#
         );
     }
 

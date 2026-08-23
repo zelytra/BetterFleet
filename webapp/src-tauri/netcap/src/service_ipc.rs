@@ -23,7 +23,7 @@ use winapi::shared::winerror::{
     ERROR_PIPE_CONNECTED,
 };
 use winapi::um::errhandlingapi::GetLastError;
-use winapi::um::fileapi::{CreateFileW, FlushFileBuffers, ReadFile, WriteFile, OPEN_EXISTING};
+use winapi::um::fileapi::{CreateFileW, ReadFile, WriteFile, OPEN_EXISTING};
 use winapi::um::handleapi::{CloseHandle, INVALID_HANDLE_VALUE};
 use winapi::um::ioapiset::{CancelIoEx, GetOverlappedResult};
 use winapi::um::minwinbase::OVERLAPPED;
@@ -134,7 +134,17 @@ fn complete_overlapped(
                                 });
                             }
                         }
-                        _ => return Err(PipeIoError::Os(io::Error::last_os_error())),
+                        _ => {
+                            // The wait itself failed. The I/O is still in flight, and returning
+                            // here would free the OVERLAPPED and the buffer under the kernel's
+                            // pen: cancel and reap first, exactly like the timeout path.
+                            let wait_error = io::Error::last_os_error();
+                            CancelIoEx(pipe, ov);
+                            WaitForSingleObject(event.raw(), INFINITE);
+                            let mut reaped: DWORD = 0;
+                            GetOverlappedResult(pipe, ov, &mut reaped, 0);
+                            return Err(PipeIoError::Os(wait_error));
+                        }
                     }
                 },
                 // A message-mode read can fail synchronously with MORE_DATA: the chunk is full and
@@ -327,12 +337,28 @@ where
 
     let frame = encode_response(&response);
     let deadline = Instant::now() + io_deadline;
-    match write_message(pipe.0, &event, &frame, deadline, Some(stop)) {
-        Ok(()) => unsafe {
-            FlushFileBuffers(pipe.0);
-        },
-        // The client is gone or slow; nothing to salvage, the next client gets a fresh instance.
-        Err(_) => {}
+    if write_message(pipe.0, &event, &frame, deadline, Some(stop)).is_ok() {
+        // DisconnectNamedPipe discards anything the client has not read yet, and the write above
+        // only proves the response reached the pipe's buffer. FlushFileBuffers would guarantee
+        // delivery but blocks unboundedly on a client that never reads - reviewed as the one wait
+        // in this module that could hang the service and its SCM stop forever. So wait for the
+        // client to read and close, bounded and stop-aware: a well-behaved client closes right
+        // after reading, completing this read with ERROR_BROKEN_PIPE almost immediately; a
+        // misbehaving one costs at most `io_deadline`, after which it loses the response - its
+        // problem, not the service's.
+        let mut ignored = [0u8; 1];
+        let mut ov = overlapped_for(&event);
+        let immediate = unsafe {
+            ReadFile(
+                pipe.0,
+                ignored.as_mut_ptr() as *mut _,
+                1,
+                null_mut(),
+                &mut ov,
+            )
+        };
+        let close_deadline = Instant::now() + io_deadline;
+        let _ = complete_overlapped(pipe.0, &mut ov, &event, immediate, Some(close_deadline), Some(stop));
     }
     unsafe { DisconnectNamedPipe(pipe.0) };
     Ok(ServeOutcome::Served)
@@ -410,7 +436,17 @@ pub fn request_capture(
             break Handle(raw);
         }
         match unsafe { GetLastError() } {
-            ERROR_FILE_NOT_FOUND => return Err(ClientError::ServiceUnavailable),
+            ERROR_FILE_NOT_FOUND => {
+                // The serve loop closes each instance before creating the next, so between two
+                // clients the name does not exist for a moment. A running service must not be
+                // reported as absent because the connect landed in that gap: retry within the
+                // budget, and only a name still missing at the end means "service not running".
+                let remaining = connect_deadline.saturating_duration_since(Instant::now());
+                if remaining.is_zero() {
+                    return Err(ClientError::ServiceUnavailable);
+                }
+                std::thread::sleep(remaining.min(Duration::from_millis(50)));
+            }
             ERROR_PIPE_BUSY => {
                 let remaining = connect_deadline.saturating_duration_since(Instant::now());
                 if remaining.is_zero() {
@@ -418,8 +454,14 @@ pub fn request_capture(
                 }
                 // Waits until an instance frees up (or the remaining budget runs out), then the
                 // loop retries the open; a rival client can still win the freed instance, hence
-                // the loop rather than a single retry.
-                unsafe { WaitNamedPipeW(wide_name.as_ptr(), remaining.as_millis() as DWORD) };
+                // the loop rather than a single retry. The floor matters: a sub-millisecond
+                // budget truncated to 0 would mean NMPWAIT_USE_DEFAULT_WAIT, not "no time left".
+                unsafe {
+                    WaitNamedPipeW(
+                        wide_name.as_ptr(),
+                        (remaining.as_millis() as DWORD).max(1),
+                    )
+                };
             }
             code => return Err(ClientError::Io(os_error(code))),
         }
@@ -567,10 +609,10 @@ mod tests {
         };
 
         let mut request = valid_request();
-        request.game_ports.clear();
+        request.game_ports = vec![0];
         match request_with_retry(&pipe_name, &request) {
             Err(ClientError::Service(message)) => {
-                assert!(message.contains("no game ports"), "{message}")
+                assert!(message.contains("port 0"), "{message}")
             }
             other => panic!("expected an in-protocol refusal, got {other:?}"),
         }
