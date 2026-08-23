@@ -52,32 +52,40 @@ pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y
         let dx = (point.x * 65535) / GetSystemMetrics(SM_CXSCREEN);
         let dy = (point.y * 65535) / GetSystemMetrics(SM_CYSCREEN);
 
-        // Mouse button down
-        *mouse_input.u.mi_mut() = MOUSEINPUT {
-            dx,
-            dy,
-            mouseData: 0,
-            dwFlags: MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE | MOUSEEVENTF_LEFTDOWN,
-            time: 0,
-            dwExtraInfo: 0,
+        // Sent as three events with the game's own frame rate in mind, rather than one packed
+        // move+press and one packed move+release back to back. Field report (#828 testing): the
+        // cursor lands on the button but the press never registers - the game samples input on its
+        // frame, and a press that is already released by the next sample is a press it never saw.
+        // A real mouse moves, then holds the button for tens of milliseconds. So does this.
+        let mut send = |flags, wait_ms: u64| {
+            *mouse_input.u.mi_mut() = MOUSEINPUT {
+                dx,
+                dy,
+                mouseData: 0,
+                dwFlags: flags,
+                time: 0,
+                dwExtraInfo: 0,
+            };
+            let sent = SendInput(1, &mut mouse_input, size_of::<INPUT>() as c_int);
+            if wait_ms > 0 {
+                std::thread::sleep(std::time::Duration::from_millis(wait_ms));
+            }
+            sent
         };
-        let down = SendInput(1, &mut mouse_input, size_of::<INPUT>() as c_int);
 
-        // Mouse button up
-        *mouse_input.u.mi_mut() = MOUSEINPUT {
-            dx,
-            dy,
-            mouseData: 0,
-            dwFlags: MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE | MOUSEEVENTF_LEFTUP,
-            time: 0,
-            dwExtraInfo: 0,
-        };
-        let up = SendInput(1, &mut mouse_input, size_of::<INPUT>() as c_int);
+        // Move first, alone: one frame for the game to register the cursor where the button is.
+        let moved = send(MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE, 16);
+        // Then the press, held long enough to survive a sample at 30 fps.
+        let down = send(MOUSEEVENTF_LEFTDOWN, 40);
+        // Then the release. dx/dy are ignored without MOUSEEVENTF_MOVE; the cursor has not moved.
+        let up = send(MOUSEEVENTF_LEFTUP, 0);
 
-        if down == 0 || up == 0 {
+        if moved == 0 || down == 0 || up == 0 {
             // MSDN: a zero return means the input was blocked by another thread - UIPI, or an
             // input hook. Half a click is still a failure: the button may be left down.
-            warn!("[auto-click] SendInput was refused (down={down}, up={up}); the click did not land");
+            warn!(
+                "[auto-click] SendInput was refused (move={moved}, down={down}, up={up}); the click did not land"
+            );
             return false;
         }
         true
