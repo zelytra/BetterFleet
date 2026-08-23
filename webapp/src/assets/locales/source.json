@@ -39,6 +39,10 @@
         "title": "Report sent"
       }
     },
+    "macro": {
+      "title": "Set sail not clicked",
+      "content": "BetterFleet could not click “Set sail” for you. Click it yourself to leave with your crew."
+    },
     "research": {
       "notInMenu": {
         "content": "You are not in the game menu",

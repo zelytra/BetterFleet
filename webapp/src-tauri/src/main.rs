@@ -15,6 +15,9 @@ use std::thread::sleep;
 use std::time::{Duration, SystemTime};
 use lazy_static::lazy_static;
 use log::{error, info, LevelFilter};
+// The auto-click's failure paths are Windows-only; every other platform reports its own way.
+#[cfg(windows)]
+use log::warn;
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, State, WindowEvent};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
@@ -22,7 +25,7 @@ use tauri_plugin_log::fern::colors::ColoredLevelConfig;
 use tauri_plugin_log::{Target, TargetKind, RotationStrategy};
 use tokio::sync::RwLock;
 #[cfg(windows)]
-use winapi::um::winuser::FindWindowA;
+use winapi::um::winuser::{FindWindowA, GetForegroundWindow};
 use crate::api::{Api, GameStatus};
 #[cfg(windows)]
 use crate::window_interaction::{click_in_window_proportionally, set_focus_to_window};
@@ -38,6 +41,9 @@ mod fetch_informations;
 mod api;
 #[cfg(windows)]
 mod window_interaction;
+// Platform-neutral on purpose: the click's arithmetic is the same everywhere, and keeping it out of
+// the Windows-only module is what lets its tests run on both CI legs (#815).
+mod window_geometry;
 // Linux/X11 native integration (#731): the set-sail auto-click, the in-game overlay stacking fix,
 // and the shared X11 plumbing they build on. Gated to Linux - Windows/macOS keep their own paths.
 #[cfg(target_os = "linux")]
@@ -485,45 +491,165 @@ async fn get_last_updated_server_ip(api: State<'_, Arc<RwLock<Api>>>) -> Result<
     Ok(total_duration.as_secs())
 }
 
+/// How the synchronized set-sail click ended.
+///
+/// It used to be a bare `bool` that the frontend never read, and the failure paths only printed to
+/// a console a release build does not have - so a click that stopped working produced no signal
+/// anywhere: no alert, and nothing in the logs a player exports with a bug report (#815). Each
+/// variant names a distinct stage, because they need different answers - and because de-elevating
+/// the GUI (#732) can break exactly one of them, injection, through UIPI.
+#[derive(serde::Serialize, Debug, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+// One vocabulary for every platform, each constructing the subset it can distinguish: the frontend
+// then has a single contract to read, whichever OS answered.
+#[allow(dead_code)]
+enum ClickOutcome {
+    /// The click was injected into the game window.
+    Clicked,
+    /// No Sea of Thieves window belonging to the game process.
+    GameNotFound,
+    /// The window exists but refused to come to the foreground, so a click would land elsewhere.
+    FocusRefused,
+    /// Focus worked and the injection was refused - the UIPI signature.
+    InjectionRejected,
+    /// The platform reports a failure without saying which stage (Linux).
+    Failed,
+    /// No auto-click on this platform (macOS).
+    Unsupported,
+}
+
 #[cfg(windows)]
 #[tauri::command]
-fn rise_anchor() -> bool {
+fn rise_anchor() -> ClickOutcome {
     let window_name = "Sea Of Thieves";
     let window_name_cstring = CString::new(window_name).unwrap();
     let window_handle = unsafe { FindWindowA(null_mut(), window_name_cstring.as_ptr()) };
 
     if window_handle.is_null() {
-        println!("Could not find window with name: {}", window_name);
-    } else {
-        if set_focus_to_window(window_handle) {
-            sleep(Duration::from_millis(50)); // Wait for the window to focus
+        warn!("[auto-click] no window titled '{window_name}'; the game does not look open");
+        return ClickOutcome::GameNotFound;
+    }
 
-            // Clic at 700;750 on a reference of 1920x1080
-            // This corresponds to the middle of "Rise anchor" button
-            let x_prop = 700.0 / 1920.0;
-            let y_prop = 750.0 / 1080.0;
+    // A title match alone is not enough: any window can be called "Sea Of Thieves" - a browser tab,
+    // a video player, a wiki page - and focusing it would send the click into someone's browser.
+    // The Linux path already checks the owning process through _NET_WM_PID; this is its equivalent,
+    // fallback included: it refuses only on a POSITIVE mismatch.
+    if window_owner(window_handle) == WindowOwner::OtherProcess {
+        warn!("[auto-click] the window titled '{window_name}' belongs to another process; refusing to click it");
+        return ClickOutcome::GameNotFound;
+    }
 
-            click_in_window_proportionally(window_handle, x_prop, y_prop);
-            return true;
+    if !set_focus_to_window(window_handle) {
+        warn!("[auto-click] the game window refused to come to the foreground; not clicking blind");
+        return ClickOutcome::FocusRefused;
+    }
+
+    sleep(Duration::from_millis(100)); // Wait for the window to actually come forward
+
+    // SetForegroundWindow answering success is a request honoured, not a state reached: field runs
+    // showed the click landing in whatever window WAS foreground when the game had not made it yet.
+    // Mouse input goes to the foreground window, so verify, give it one more chance, and refuse
+    // rather than click into another application. Compared by PROCESS, not by handle: the game owns
+    // several windows, and the foreground one is not always the one FindWindowA named.
+    let foreground_is_game = || {
+        let foreground = unsafe { GetForegroundWindow() };
+        foreground == window_handle || window_interaction::same_process(foreground, window_handle)
+    };
+    if !foreground_is_game() {
+        let _ = set_focus_to_window(window_handle);
+        sleep(Duration::from_millis(150));
+        if !foreground_is_game() {
+            warn!("[auto-click] another window holds the foreground; refusing to click into it");
+            return ClickOutcome::FocusRefused;
         }
     }
 
-    return false;
+    // Clic at 700;750 on a reference of 1920x1080
+    // This corresponds to the middle of "Rise anchor" button
+    let x_prop = 700.0 / 1920.0;
+    let y_prop = 750.0 / 1080.0;
+
+    if click_in_window_proportionally(window_handle, x_prop, y_prop) {
+        ClickOutcome::Clicked
+    } else {
+        ClickOutcome::InjectionRejected
+    }
+}
+
+/// What owns a window, as far as we can tell.
+#[cfg(windows)]
+#[derive(PartialEq, Debug)]
+enum WindowOwner {
+    /// The owning process is `SoTGame.exe`.
+    Game,
+    /// The owning process was read and is something else.
+    OtherProcess,
+    /// The owner could not be read at all.
+    Unknown,
+}
+
+/// Who owns a window, by asking about that one process rather than listing them all.
+///
+/// `find_pid_of` builds a `System::new_all()` and refreshes everything - processes, disks, networks
+/// - which is far too heavy here: this runs at countdown zero, in front of the click, and the
+/// click's timing is the whole feature.
+///
+/// The cost of the cheap path is that it needs an openable process handle, where the full refresh
+/// tolerates a denied one and reads the name from the kernel snapshot. So `Unknown` is a real
+/// outcome, not a theoretical one - an anti-cheat that strips handle access, or the de-elevated GUI
+/// of #732, both land there while the game is plainly running. The caller must therefore refuse
+/// only on `OtherProcess`: treating `Unknown` as "not the game" would cancel a working click at
+/// countdown zero and report it as "game not found", which is worse than the browser tab this check
+/// exists to avoid. The Linux path makes the same distinction, falling back to the title when the
+/// window names no owner.
+#[cfg(windows)]
+fn window_owner(window_handle: winapi::shared::windef::HWND) -> WindowOwner {
+    use sysinfo::{Pid, ProcessRefreshKind, System};
+    use winapi::um::winuser::GetWindowThreadProcessId;
+
+    let mut pid: u32 = 0;
+    unsafe { GetWindowThreadProcessId(window_handle, &mut pid) };
+    if pid == 0 {
+        return WindowOwner::Unknown;
+    }
+
+    let pid = Pid::from_u32(pid);
+    let mut system = System::new();
+    // Just the name: no command line, no environment, no disk usage.
+    system.refresh_process_specifics(pid, ProcessRefreshKind::new());
+    match system.process(pid) {
+        Some(process) if process.name().eq_ignore_ascii_case("SoTGame.exe") => WindowOwner::Game,
+        Some(process) => {
+            warn!(
+                "[auto-click] the game window is owned by {} (pid {pid}), not SoTGame.exe",
+                process.name()
+            );
+            WindowOwner::OtherProcess
+        }
+        // Handle denied, or the process went away between the two calls: unknown, not a mismatch.
+        None => WindowOwner::Unknown,
+    }
 }
 
 // Linux/X11 port (#731): locate the Sea of Thieves window and click "raise anchor" via XTEST. The
 // command stays OS-agnostic for the frontend - `SessionCountdown.vue` just calls `rise_anchor`.
 #[cfg(target_os = "linux")]
 #[tauri::command]
-fn rise_anchor() -> bool {
-    window_interaction_linux::rise_anchor()
+fn rise_anchor() -> ClickOutcome {
+    // The X11 path already logs which stage failed; it reports one boolean, so the outcome stays
+    // unspecific rather than inventing a reason.
+    if window_interaction_linux::rise_anchor() {
+        ClickOutcome::Clicked
+    } else {
+        ClickOutcome::Failed
+    }
 }
 
 // Other platforms (macOS): no native auto-click yet - the frontend falls back to a manual set-sail.
 #[cfg(not(any(windows, target_os = "linux")))]
 #[tauri::command]
-fn rise_anchor() -> bool {
-    false
+fn rise_anchor() -> ClickOutcome {
+    ClickOutcome::Unsupported
 }
 
 #[tauri::command]
