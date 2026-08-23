@@ -155,10 +155,12 @@ pub(crate) fn click_in_window_proportionally(window_handle: HWND, x_prop: f32, y
             // showed a single oversized slam landing inconsistently - presumably clamped mid-frame.
             let pin1 = send_at(MOUSEEVENTF_MOVE, -40000, -40000, 20);
             let pin2 = send_at(MOUSEEVENTF_MOVE, -40000, -40000, 20);
-            // Walk in CLIENT coordinates: the game's cursor is confined to its own viewport, so the
-            // corner it was pinned into is the client origin, not the screen's. Borderless
-            // fullscreen makes the two equal; a windowed game is where the difference bites.
-            let walked = send_at(MOUSEEVENTF_MOVE, x_abs, y_abs, 32);
+            // Walk in SCREEN coordinates. Settled empirically, against the first theory: on the
+            // field machine the screen-coordinate walk lands on the button and a client-coordinate
+            // walk misses it entirely, so the space the game clamps its cursor in matches screen
+            // pixels there. If a windowed setup ever misses by exactly its window origin, this is
+            // the line to revisit.
+            let walked = send_at(MOUSEEVENTF_MOVE, point.x, point.y, 32);
             // Mouse input goes to whatever window is foreground NOW. If something stole it during
             // the pin-and-walk, refuse: half a second late is recoverable, a click fired into
             // another application is not.
