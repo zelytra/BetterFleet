@@ -28,6 +28,20 @@ let poll: number | undefined;
 // When the last SSE frame arrived. A stream that is working keeps this fresh and the poll idles.
 let lastFrameAt = 0;
 
+// How stale the last frame may be before the poll takes over, even with the stream still OPEN
+// (#839). The backend heartbeats every 3s, so this is five missed beats: long enough that GC, a
+// suspended machine or a slow tick never triggers a pointless poll, short enough that a stream
+// wedged open by a proxy is covered within seconds. Frame recency alone cannot be the rule - a
+// healthy idle stream and a dead one look identical under it, which is why the old gate compared
+// against POLL_INTERVAL_MS and, the backend having no heartbeat, never closed at all.
+const STREAM_SILENCE_TOLERANCE_MS = 15_000;
+
+// EventSource.OPEN, spelled as its value. The constructor itself is not always on the global (a
+// webview without SSE, or simply before it is installed), and reading `.OPEN` off `undefined`
+// inside the poll tick would throw and take the poll down with it - the one path that is supposed
+// to cover for a missing stream.
+const EVENT_SOURCE_OPEN = 1;
+
 // Slow enough to be free (the browser is only open while picking a session), fast enough that a
 // session appearing or closing does not feel missed.
 const POLL_INTERVAL_MS = 5000;
@@ -134,13 +148,28 @@ function connectStream(): void {
 }
 
 /**
+ * Whether the SSE stream is carrying the directory right now, in which case the poll has nothing
+ * to do.
+ *
+ * Both halves are needed. `readyState` alone would trust a connection a proxy is holding open past
+ * a wedged backend; frame recency alone cannot tell a healthy idle stream from a dead one, which
+ * is the bug this replaces (#839).
+ */
+function streamIsCarrying(): boolean {
+  return (
+    stream?.readyState === EVENT_SOURCE_OPEN &&
+    Date.now() - lastFrameAt < STREAM_SILENCE_TOLERANCE_MS
+  );
+}
+
+/**
  * Refreshes only while the stream is silent. A live stream keeps lastFrameAt moving, so this
  * costs one comparison per tick and no request at all.
  */
 function startPolling(): void {
   stopPolling();
   poll = setInterval(() => {
-    if (Date.now() - lastFrameAt < POLL_INTERVAL_MS) {
+    if (streamIsCarrying()) {
       return; // the stream is delivering; nothing to do
     }
     if (Date.now() < nextAttemptAt) {

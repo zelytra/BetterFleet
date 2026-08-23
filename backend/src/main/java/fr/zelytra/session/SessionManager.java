@@ -32,6 +32,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,6 +62,15 @@ public class SessionManager {
     // visibility / server), so SSE subscribers (the public sessions browser) refresh. Only
     // structural changes publish here (ready-state spikes do not), which keeps the stream quiet.
     private final BroadcastProcessor<Boolean> directoryChanges = BroadcastProcessor.create();
+    /**
+     * How often the public-sessions stream re-emits its snapshot when nothing has changed (#839).
+     * <p>
+     * Comfortably below the client's 5s poll interval, and deliberately so: a shipped client skips
+     * its poll only if a frame arrived within the last 5s, so a heartbeat at or near that boundary
+     * would leave the gate on the edge where jitter decides. Three seconds closes it for every
+     * version already in players' hands.
+     */
+    private static final Duration DIRECTORY_HEARTBEAT = Duration.ofSeconds(3);
 
     // Servers whose geolocation is being resolved right now, so a crew all reporting the same
     // server at once triggers a single lookup instead of one per player.
@@ -596,8 +606,21 @@ public class SessionManager {
     public Multi<PublicSessionsSnapshot> streamPublicSessions() {
         return Multi.createBy().concatenating().streams(
                 Multi.createFrom().item(this::getPublicSessionsSnapshot),
-                directoryChanges
-                        .onOverflow().dropPreviousItems()
+                Multi.createBy().merging().streams(
+                                directoryChanges.onOverflow().dropPreviousItems(),
+                                // The heartbeat (#839). Without it this stream is silent between
+                                // structural changes, and silence is exactly what the client cannot
+                                // tell from a dead stream: its poll skips a tick only when a frame
+                                // arrived within the last POLL_INTERVAL_MS (5s), so at steady state
+                                // the gate never closed and the "fallback" ran at full cadence -
+                                // 96% of all API traffic over 14 days of production logs. Ticking
+                                // below that interval closes the gate for every client already
+                                // shipped, without a release. A dropped tick costs nothing: the
+                                // next snapshot subsumes it.
+                                Multi.createFrom().ticks().every(DIRECTORY_HEARTBEAT)
+                                        .onOverflow().drop()
+                                        .onItem().transform(ignored -> Boolean.TRUE)
+                        )
                         // Transform after the overflow, so the snapshot is built when a subscriber
                         // actually takes it: dropped ticks cost nothing, and what is delivered is
                         // the directory as it is at that moment, not as it was when the tick fired.
