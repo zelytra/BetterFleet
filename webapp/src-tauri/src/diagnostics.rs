@@ -5,11 +5,7 @@
 // relay flows. This is purely additive instrumentation: it never touches the
 // live detection state, it only observes.
 
-use std::collections::{HashMap, HashSet};
-use std::net::{IpAddr, SocketAddr, ToSocketAddrs};
-#[cfg(windows)]
-use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, Mutex};
+use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
 use log::error;
@@ -17,17 +13,10 @@ use log::error;
 use log::info;
 use serde::Serialize;
 
-// The capture primitives now live in the Tauri-free better_fleet_netcap crate (#726), re-exported as
-// better_fleet::capture by src/lib.rs. FlowStat is used on every platform; the aggregator and the raw
-// packet parser are only needed by the Windows in-process sniff below.
+// Every capture backend lives in the Tauri-free better_fleet_netcap crate (#726, #732), re-exported
+// as better_fleet::capture by src/lib.rs: this module only decides which one to drive and how to
+// keep it off the async runtime.
 use better_fleet::capture::FlowStat;
-#[cfg(windows)]
-use better_fleet::capture::{parse_game_flow, FlowAggregator};
-
-#[cfg(windows)]
-use crate::fetch_informations::{create_raw_socket, get_hostname};
-#[cfg(windows)]
-use tokio::net::UdpSocket;
 
 /// The full result of a diagnostic capture, ready to be serialized and shared.
 #[derive(Serialize, Clone, Debug)]
@@ -51,6 +40,12 @@ pub struct DiagnosticReport {
     /// ports" (>0 while `total_packets` is 0, which points at the port enumeration instead).
     pub raw_packets: Option<u64>,
     pub distinct_flows: usize,
+    /// True when not one captured flow carried a single outbound packet, i.e. the capture socket is
+    /// receive-only (#837: SIO_RCVALL delivers received packets but never locally sent ones on a
+    /// range of NIC/driver combinations). Detection compensates - the session flow is picked without
+    /// its return leg there - but the report says so, because a receive-only capture also explains
+    /// away every "the client sends nothing" reading of these numbers.
+    pub receive_only_capture: bool,
     /// Flows whose remote port looks like a SoT server, ranked by volume: the
     /// server should stand out here.
     pub top_candidates: Vec<FlowStat>,
@@ -58,101 +53,22 @@ pub struct DiagnosticReport {
     pub flows: Vec<FlowStat>,
 }
 
-/// Sniffs a single local interface for `duration`, feeding every game-owned UDP
-/// packet into the shared aggregator.
-#[cfg(windows)]
-async fn sniff_interface(
-    addr: SocketAddr,
-    game_ports: HashSet<u16>,
-    aggregator: Arc<Mutex<FlowAggregator>>,
-    duration: Duration,
-    raw_packets: Arc<AtomicU64>,
-) {
-    let socket: UdpSocket = match create_raw_socket(addr).await {
-        Ok(socket) => socket,
-        Err(e) => {
-            error!("[diagnostic] raw socket on {} failed: {}", addr.ip(), e);
-            return;
-        }
-    };
-
-    let mut buf = [0u8; (256 * 256) - 1];
-    let start = Instant::now();
-    while start.elapsed() < duration {
-        tokio::select! {
-            received = socket.recv(&mut buf) => {
-                if let Ok(len) = received {
-                    if len == 0 {
-                        continue;
-                    }
-                    // Count every packet the socket saw, before the game-port filter: a zero here
-                    // over a full window means the capture itself received nothing (a filter driver
-                    // starving SIO_RCVALL), not that the game merely had no matching ports.
-                    raw_packets.fetch_add(1, Ordering::Relaxed);
-                    if let Some((local_port, remote_ip, remote_port, inbound)) =
-                        parse_game_flow(&buf[..len], &game_ports)
-                    {
-                        let t_ms = start.elapsed().as_millis() as u64;
-                        aggregator
-                            .lock()
-                            .unwrap()
-                            .observe(local_port, &remote_ip, remote_port, len, inbound, t_ms);
-                    }
-                }
-            }
-            _ = tokio::time::sleep(Duration::from_millis(250)) => {}
-        }
-    }
-}
-
-/// Sniffs every local interface for `window`, aggregating per-flow UDP stats for
-/// the given game ports, and returns the flows ranked by volume (desc). Shared by
-/// the diagnostic report and by live detection, so both observe traffic identically.
+/// Sniffs every local interface for `window`, aggregating per-flow UDP stats for the given game
+/// ports, and returns the flows ranked by volume (desc). The capture itself lives in the Tauri-free
+/// better_fleet_netcap crate (#732), so the same code can run inside the GUI today and inside a
+/// privileged service tomorrow; here it only gets moved off the async runtime, since the promiscuous
+/// sockets block - exactly how the Linux arm calls its in-process fallback.
 #[cfg(windows)]
 pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
-    // Live detection does not need the raw count; give it a throwaway counter.
-    capture_flows_counted(game_ports, window, Arc::new(AtomicU64::new(0))).await
-}
-
-/// The Windows capture, also incrementing `raw_packets` for every packet the socket(s) received
-/// (before the game-port filter). Both `capture_flows` (live) and the diagnostic go through here so
-/// they capture identically; only the diagnostic keeps the count.
-#[cfg(windows)]
-async fn capture_flows_counted(
-    game_ports: Vec<u16>,
-    window: Duration,
-    raw_packets: Arc<AtomicU64>,
-) -> Vec<FlowStat> {
-    let port_set: HashSet<u16> = game_ports.into_iter().collect();
-    let aggregator = Arc::new(Mutex::new(FlowAggregator::default()));
-
-    // We don't know which interface carries the game traffic, so watch them all
-    // and merge the results into one ranking.
-    let host = format!("{}:0", get_hostname().unwrap_or_else(|_| "localhost".into()));
-    let ips: Vec<IpAddr> = match host.to_socket_addrs() {
-        Ok(addrs) => addrs.map(|socket_addr| socket_addr.ip()).collect(),
+    match tokio::task::spawn_blocking(move || better_fleet::capture::run_capture(game_ports, window))
+        .await
+    {
+        Ok(flows) => flows,
         Err(e) => {
-            error!("[capture] cannot resolve local IPs: {}", e);
+            error!("[capture] promiscuous capture thread failed: {e}");
             Vec::new()
         }
-    };
-
-    let mut handles = Vec::new();
-    for ip in ips {
-        let addr = SocketAddr::new(ip, 0);
-        let aggregator = Arc::clone(&aggregator);
-        let ports = port_set.clone();
-        let raw = Arc::clone(&raw_packets);
-        handles.push(tokio::spawn(async move {
-            sniff_interface(addr, ports, aggregator, window, raw).await;
-        }));
     }
-    for handle in handles {
-        let _ = handle.await;
-    }
-
-    let flows = aggregator.lock().unwrap().take_sorted_flows();
-    flows
 }
 
 /// Captures for the diagnostic, additionally returning how many packets the capture actually
@@ -164,9 +80,17 @@ async fn capture_for_diagnostic(
     game_ports: Vec<u16>,
     window: Duration,
 ) -> (Vec<FlowStat>, Option<u64>) {
-    let raw_packets = Arc::new(AtomicU64::new(0));
-    let flows = capture_flows_counted(game_ports, window, Arc::clone(&raw_packets)).await;
-    (flows, Some(raw_packets.load(Ordering::Relaxed)))
+    match tokio::task::spawn_blocking(move || {
+        better_fleet::capture::run_capture_counted(game_ports, window)
+    })
+    .await
+    {
+        Ok(outcome) => (outcome.flows, outcome.raw_packets),
+        Err(e) => {
+            error!("[capture] promiscuous capture thread failed: {e}");
+            (Vec::new(), None)
+        }
+    }
 }
 
 #[cfg(not(windows))]
@@ -319,27 +243,61 @@ pub fn pick_server_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowSta
 /// instance shares, and it is deliberately NOT the busy gameplay flow (that is
 /// [`pick_server_flow`]).
 ///
+/// The flow must be bidirectional - a real coordinator always is, a one-way probe is not - EXCEPT
+/// on a capture that recorded no outbound packet at all, which is a receive-only socket rather
+/// than a set of one-way peers (#837).
+///
 /// The busy flow is a per-client connection to an Azure game host whose IP is reused across
 /// different servers (issue #364: several distinct servers all ran on 51.103.72.36), so it
 /// cannot tell servers apart: hashing it merged different servers into one card. The session
 /// flow's ip:port instead is identical for everyone on one server (case A: four players on
 /// different ships, one server, all on 20.33.49.115:31260) and differs between servers even on
 /// a shared host (cases B/D). `min_packets` is a small floor that rejects one-off stray packets;
-/// the flow must be bidirectional, which a real coordinator always is and a one-way probe is not.
+/// bidirectionality is required except on a receive-only capture (see above).
 ///
 /// Live detection accumulates flows across capture windows (see `merge_flows`) before calling
 /// this, because the session flow is only a handful of packets spread over the whole session and
 /// a single short window often misses it.
+// Production callers all know their game socket and use the _excluding variant; this shape is
+// kept for the capture-corpus tests, which validate the ranking without a live connection.
+#[cfg_attr(not(test), allow(dead_code))]
 pub fn pick_session_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowStat> {
+    pick_session_flow_excluding(flows, min_packets, None)
+}
+
+/// [`pick_session_flow`] with the game connection's LOCAL port barred from candidacy (#832).
+///
+/// Live detection knows which local socket carries the gameplay host, and no flow on that socket
+/// is ever the identity - the coordinator always lives on its own socket. The volume-based
+/// exclusions below cannot express that: after a Steam Datagram Relay reroute the accumulation
+/// holds TWO host-class flows on the game socket, and the freshly-migrated one (a single window's
+/// volume, dwarfed by the old host's accumulation) sails under the 4x cap and out-ranks the sparse
+/// coordinator - locking the fleet onto the per-client host endpoint this function exists to
+/// avoid. The diagnostic report has no connection to name and passes `None`, keeping its
+/// historical behaviour.
+pub fn pick_session_flow_excluding(
+    flows: &[FlowStat],
+    min_packets: u32,
+    excluded_local_port: Option<u16>,
+) -> Option<&FlowStat> {
     // The dominant plausible flow is the game host; exclude it so we pick the coordinator.
     let host = pick_server_flow(flows, 1);
+    // A capture that saw NOT ONE outbound packet across every flow it has is receive-only, not a
+    // set of one-way peers: SIO_RCVALL delivers received packets but never the locally sent ones on
+    // a range of NIC/driver combinations (Wi-Fi especially), and the machine's owner cannot fix
+    // that (#837). Requiring a return leg there rejects every candidate forever - reports #901-#915
+    // are one player, four game launches, 16 captured flows all `outbound: 0`, and not a single
+    // `Server detected` in an hour. Where at least one flow IS bidirectional the capture is proven
+    // two-way, so the gate stays: it is what rejects one-way stray probes.
+    let capture_is_receive_only = !flows.is_empty() && flows.iter().all(|f| f.outbound == 0);
     flows
         .iter()
         .filter(|flow| {
             flow.plausible_sot_port
                 && flow.packets >= min_packets
                 && flow.inbound > 0
-                && flow.outbound > 0
+                && (flow.outbound > 0 || capture_is_receive_only)
+                && excluded_local_port != Some(flow.local_port)
                 && host.map_or(true, |h| !std::ptr::eq(*flow, h))
                 // The coordinator is sparse BY DEFINITION: a handful of packets against the
                 // host's hundreds. Any flow within 4x of the host's volume is host-class traffic
@@ -406,6 +364,10 @@ pub async fn run_diagnostic(
         .cloned()
         .collect();
 
+    // Receive-only capture (#837): nothing sent was ever looped back to us. Computed over every
+    // flow, so a single bidirectional one anywhere proves the socket is two-way.
+    let receive_only_capture = !flows.is_empty() && flows.iter().all(|f| f.outbound == 0);
+
     DiagnosticReport {
         note,
         game_status,
@@ -417,6 +379,7 @@ pub async fn run_diagnostic(
         total_packets,
         raw_packets,
         distinct_flows: flows.len(),
+        receive_only_capture,
         top_candidates,
         flows,
     }
@@ -424,6 +387,7 @@ pub async fn run_diagnostic(
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
     use super::*;
     // is_plausible_sot_port moved to the capture crate with the aggregator (#726); the ranking/pick
     // tests below still use it to derive plausibility, and Deserialize backs the #364 corpus structs.
@@ -443,6 +407,7 @@ mod tests {
             total_packets: 0,
             raw_packets: raw,
             distinct_flows: 0,
+            receive_only_capture: false,
             top_candidates: vec![],
             flows: vec![],
         };
@@ -596,6 +561,51 @@ mod tests {
             first_seen_ms: 0,
             last_seen_ms: packets as u64 * 500,
         }
+    }
+
+    // --- Receive-only captures (#837) ---------------------------------------------------------
+    //
+    // Reports #901-#915: one player, four game launches, sixteen captured flows, every one
+    // `outbound: 0` - SIO_RCVALL delivering received packets but never locally sent ones. The
+    // bidirectionality gate then rejected every candidate and the session never resolved: six
+    // "resolving the session flow", zero "Server detected", in an hour.
+
+    #[test]
+    fn a_receive_only_capture_still_resolves_the_session() {
+        // The real numbers from report #901's diagnostic.
+        let flows = [
+            flow(55616, "20.153.191.9", 30278, 599, 599, 0),
+            flow(61079, "20.33.2.31", 31065, 4, 4, 0),
+        ];
+        let picked = pick_session_flow(&flows, 3)
+            .expect("a receive-only capture must still yield the coordinator");
+        assert_eq!(picked.remote_ip, "20.33.2.31");
+        assert_eq!(picked.remote_port, 31065);
+    }
+
+    #[test]
+    fn one_bidirectional_flow_proves_the_capture_and_keeps_the_gate() {
+        // The socket is two-way, so a one-way flow is a genuinely one-way peer - a stray probe -
+        // and must still be rejected. That is what the gate is for.
+        let flows = [
+            flow(55616, "20.153.191.9", 30278, 599, 300, 299),
+            flow(61079, "20.33.2.31", 31065, 4, 4, 0), // one-way probe
+            flow(61080, "20.33.2.99", 31066, 5, 3, 2), // the real coordinator
+        ];
+        let picked = pick_session_flow(&flows, 3).unwrap();
+        assert_eq!(picked.remote_ip, "20.33.2.99");
+    }
+
+    #[test]
+    fn a_receive_only_capture_still_refuses_a_non_candidate() {
+        // Relaxing the return leg relaxes nothing else: the port range, the packet floor, the host
+        // exclusion and the 4x cap all still apply.
+        let flows = [
+            flow(55616, "20.153.191.9", 30278, 599, 599, 0),
+            flow(61079, "8.8.8.8", 53, 40, 40, 0), // implausible port
+            flow(61080, "20.33.2.31", 31065, 2, 2, 0), // plausible, under the floor
+        ];
+        assert!(pick_session_flow(&flows, 3).is_none());
     }
 
     #[test]

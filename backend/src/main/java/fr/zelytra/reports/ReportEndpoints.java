@@ -35,15 +35,6 @@ public class ReportEndpoints {
     public record ApiError(String error) {
     }
 
-    @GET
-    @Path("/list/all")
-    @Transactional
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllReports() {
-        Log.info("[GET] /report/list/all");
-        return Response.ok(ReportEntity.findAll().list()).build();
-    }
-
     /**
      * One page of reports, newest first.
      * <p>
