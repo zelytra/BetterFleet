@@ -17,9 +17,21 @@ etherparse = "0.15.0"
 log = "^0.4"
 
 # socket2 backs the Linux AF_PACKET/SOCK_DGRAM capture socket; Domain::PACKET lives behind the `all`
-# feature. Linux-only: there is no AF_PACKET elsewhere, and the non-Linux run_capture is a stub.
+# feature.
 [target.'cfg(target_os = "linux")'.dependencies]
 socket2 = { version = "0.5.6", features = ["all"] }
+
+# The Windows backend (#732): the promiscuous SOCK_RAW capture moved here from the GUI crate, so the
+# privileged work can run outside the app. socket2 again for Type::RAW (behind `all`), winapi for the
+# WSAIoctl(SIO_RCVALL) call that turns the socket promiscuous, and hostname + idna to enumerate the
+# local interfaces exactly as the GUI did - punycode included, or a machine with a non-ASCII hostname
+# stops capturing. Still no Tauri and no async runtime: that is what keeps this crate hostable by a
+# service.
+[target.'cfg(windows)'.dependencies]
+socket2 = { version = "0.5.6", features = ["all"] }
+winapi = { version = "0.3.9", features = ["winsock2"] }
+hostname = "0.4.0"
+idna = "1.0.3"
 
 # The privilege-separated capture helper (#726). It holds CAP_NET_RAW so the GUI does not have to.
 [[bin]]

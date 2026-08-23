@@ -42,10 +42,19 @@ back into the problem.
   holds. A **fullscreen-exclusive** game can still cover it (its layer outranks "above"); borderless
   / windowed-fullscreen is the workaround. The WebView2 `additionalBrowserArgs` occlusion knob is a
   no-op on WebKitGTK; the native `rodio` countdown audio already hedges the important cue.
-- **Linux UDP capture needs `CAP_NET_RAW`, isolated in the `betterfleet-netcap` helper (#726).**
-  Server detection sniffs the game's UDP flows through an `AF_PACKET` socket (`diagnostics.rs`,
-  `capture_af_packet`), shared verbatim by live detection (`fetch_informations.rs`) and the Help-tab
-  "Lancer une capture" diagnostic through `capture_flows`. Because that socket needs `CAP_NET_RAW`,
+- **Every capture backend lives in `better_fleet_netcap`, behind one entry point (#726, #732).**
+  `run_capture(ports, window)` is the seam: `AF_PACKET` on Linux (needs `CAP_NET_RAW`), a
+  promiscuous `SOCK_RAW` + `WSAIoctl(SIO_RCVALL)` on Windows (needs Administrator), a stub on macOS.
+  Everything below it - `parse_game_flow`, `FlowAggregator`, the ranking - is shared verbatim, so a
+  capture is identical whichever OS and whichever process runs it. **Both backends are blocking and
+  the crate has no async runtime** (that is what lets a service host it); the GUI wraps them in
+  `spawn_blocking` from `diagnostics.rs`. Don't reintroduce a per-OS capture in the GUI crate, and
+  don't add tokio to `netcap`. On Windows the Winsock read loop must treat `WSAEMSGSIZE` (10040) and
+  `WSAECONNRESET` (10054) as *recoverable*: a promiscuous `SOCK_RAW` raises them routinely, and
+  breaking out would silently kill capture for the rest of the window
+  (`is_recoverable_capture_error`, unit-tested). Server detection sniffs the game's UDP flows the
+  same way for live detection (`fetch_informations.rs`) and the Help-tab "Lancer une capture"
+  diagnostic, both through `capture_flows`. Because that socket needs `CAP_NET_RAW`,
   the capture runs in a **separate Tauri-free binary** (`betterfleet-netcap`, crate
   `better_fleet_netcap`) rather than the GUI: the app stays unprivileged, `capture_flows` shells out
   to the helper, and it falls back to an in-process capture when the helper is absent or uncapped.

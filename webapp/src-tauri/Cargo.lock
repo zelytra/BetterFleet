@@ -190,7 +190,6 @@ dependencies = [
  "rodio",
  "serde",
  "serde_json",
- "socket2 0.5.10",
  "sysinfo",
  "tauri",
  "tauri-build",
@@ -212,10 +211,13 @@ name = "better_fleet_netcap"
 version = "2.2.2"
 dependencies = [
  "etherparse",
+ "hostname",
+ "idna 1.1.0",
  "log",
  "serde",
  "serde_json",
  "socket2 0.5.10",
+ "winapi",
 ]
 
 [[package]]

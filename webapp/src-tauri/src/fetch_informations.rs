@@ -3,32 +3,15 @@ use std::string::String;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use crate::api::Api;
-use anyhow::{Result, bail};
 use std::time::{Duration, Instant};
-#[cfg(windows)]
-use socket2::{Domain, Protocol, Socket, Type};
-use std::mem::size_of_val;
-use std::net::{IpAddr, SocketAddr};
-use std::net::UdpSocket as StdSocket;
-use tokio::net::UdpSocket;
-#[cfg(windows)]
-use std::os::windows::io::{AsRawSocket, FromRawSocket, IntoRawSocket};
 #[cfg(windows)]
 use std::os::windows::process::CommandExt;
 use std::process::{Command, Stdio};
-use std::ptr::null_mut;
 use netstat2::{get_sockets_info, AddressFamilyFlags, ProtocolFlags, ProtocolSocketInfo};
-#[cfg(windows)]
-use winapi::shared::minwindef::DWORD;
-#[cfg(windows)]
-use winapi::um::winsock2;
 use crate::api::GameStatus;
 use sysinfo::{System};
 use idna::domain_to_ascii;
 use log::{info, error};
-
-#[cfg(windows)]
-const SIO_RCVALL: DWORD = 0x98000001;
 
 /// Poll interval (in milliseconds) between detection windows, adapted to game state.
 fn dynamic_sleep_ms(status: &GameStatus) -> u64 {
@@ -939,65 +922,6 @@ pub fn find_pid_of(process_name: &str) -> Vec<String> {
     pids
 }
 
-// Puts a socket into promiscuous mode so that it can receive all packets.
-#[cfg(windows)]
-async fn enter_promiscuous(socket: &mut StdSocket) -> Result<()> {
-    let rc = unsafe {
-        let in_value: DWORD = 1;
-
-        let mut out: DWORD = 0;
-        winsock2::WSAIoctl(
-            socket.as_raw_socket() as usize,
-            SIO_RCVALL,
-            &in_value as *const _ as *mut _,
-            size_of_val(&in_value) as DWORD,
-            null_mut(), //out value
-            0, //size of out value
-            &mut out as *mut _, //byte returned
-            null_mut(), //pointer zero
-            None,
-        )
-    };
-    if rc == winsock2::SOCKET_ERROR {
-        bail!("WSAIoctl() failed: {}", unsafe { winsock2::WSAGetLastError() })
-    } else {
-        Ok(())
-    }
-}
-
-// Creates a raw socket used to capture packets (disguised as a UdpSocket)
-#[cfg(windows)]
-pub async fn create_raw_socket(socket_addr: SocketAddr) -> Result<UdpSocket> {
-    // Specify protocol
-    let protocol = Protocol::UDP; // IPPROTO_IP is typically 0
-
-    // Check if IPv4 or IPv6
-    let domain = match socket_addr.ip() {
-        IpAddr::V4(_) => Domain::IPV4,
-        IpAddr::V6(_) => Domain::IPV6,
-    };
-
-    // Create a raw socket with domain, Type::RAW, and IPPROTO_IP
-    let socket = Socket::new(domain, Type::RAW, Some(protocol))?;
-    socket.set_nonblocking(true)?;
-
-    // Convert SocketAddr to SockAddr
-    let sock_addr = socket2::SockAddr::from(socket_addr);
-
-    // Bind the socket using a reference to the parsed address
-    socket.bind(&sock_addr)?;
-
-    // Raw socket
-    let raw_socket = socket.into_raw_socket();
-    let mut socket = unsafe { StdSocket::from_raw_socket(raw_socket) };
-    enter_promiscuous(&mut socket).await?;
-
-    // Set a read timeout of 500ms
-    socket.set_read_timeout(Some(Duration::from_millis(500)))?;
-
-    let socket = UdpSocket::from_std(socket)?;
-    Ok(socket)
-}
 
 #[cfg(test)]
 mod tests {
