@@ -7,10 +7,15 @@
 //! ends in `CancelIoEx`, never in a stuck `ReadFile`. "Service stopped mid-capture" must degrade to
 //! a logged error, not a frozen detection loop.
 //!
-//! The server end creates the pipe with `FILE_FLAG_FIRST_PIPE_INSTANCE` (a squatter that grabbed
-//! the name first turns into a clean create error, not a silent split-brain) and
-//! `PIPE_REJECT_REMOTE_CLIENTS` (a named pipe is reachable over SMB by default; this one never
-//! should be). The full DACL treatment is #817's, on top of this.
+//! The server end is hardened per the #817 review of what a resident privileged endpoint exposes:
+//! `FILE_FLAG_FIRST_PIPE_INSTANCE` (a squatter that grabbed the name first turns into a clean
+//! create error, not a silent split-brain), `PIPE_REJECT_REMOTE_CLIENTS` plus an explicit deny-ACE
+//! for the NETWORK logon group (a named pipe is reachable over SMB by default; this one never, by
+//! two independent mechanisms), and an explicit DACL instead of the LocalSystem default: SYSTEM
+//! and Administrators in full, the INTERACTIVE user allowed exactly connect/read/write, everyone
+//! else implicitly denied. Each served client's process id and image path are logged - identified,
+//! not enforced: an image-path allowlist breaks on relocated installs and dev builds while a
+//! copied binary defeats it anyway, so the DACL stays the boundary and the log feeds forensics.
 
 use std::io;
 use std::ptr::null_mut;
@@ -31,13 +36,22 @@ use winapi::um::namedpipeapi::{
     ConnectNamedPipe, CreateNamedPipeW, DisconnectNamedPipe, SetNamedPipeHandleState,
     WaitNamedPipeW,
 };
+use winapi::um::processthreadsapi::OpenProcess;
+use winapi::shared::sddl::{ConvertStringSecurityDescriptorToSecurityDescriptorW, SDDL_REVISION_1};
 use winapi::um::synchapi::{CreateEventW, ResetEvent, WaitForSingleObject};
 use winapi::um::winbase::{
+    GetNamedPipeClientProcessId, LocalFree, QueryFullProcessImageNameW,
     FILE_FLAG_FIRST_PIPE_INSTANCE, FILE_FLAG_OVERLAPPED, INFINITE, PIPE_ACCESS_DUPLEX,
     PIPE_READMODE_MESSAGE, PIPE_REJECT_REMOTE_CLIENTS, PIPE_TYPE_MESSAGE, PIPE_WAIT,
     WAIT_OBJECT_0,
 };
-use winapi::um::winnt::{GENERIC_READ, GENERIC_WRITE, HANDLE};
+use winapi::um::minwinbase::SECURITY_ATTRIBUTES;
+use winapi::um::winnt::{
+    GENERIC_READ, GENERIC_WRITE, HANDLE, PROCESS_QUERY_LIMITED_INFORMATION,
+    PSECURITY_DESCRIPTOR,
+};
+
+use log::info;
 
 use crate::service_proto::{
     decode_request, decode_response, encode_request, encode_response, validate_request,
@@ -234,6 +248,95 @@ fn write_message(
     Ok(())
 }
 
+/// The pipe's DACL in SDDL, explicit instead of the creating account's default (#817). Deny ACEs
+/// first, canonical order:
+/// - `(D;;GA;;;NU)` deny the NETWORK logon group everything: with `PIPE_REJECT_REMOTE_CLIENTS`
+///   that is two independent mechanisms keeping the pipe off SMB;
+/// - `(A;;GA;;;SY)` and `(A;;GA;;;BA)` give SYSTEM (the service itself) and Administrators full
+///   control, admin tooling included;
+/// - `(A;;GRGW;;;IU)` gives the INTERACTIVE logon group - the human at the machine, elevated or
+///   not, which is the GUI before and after the #819 de-elevation - generic read+write: enough to
+///   connect and exchange frames, no WRITE_DAC, no WRITE_OWNER, no ownership tricks.
+/// `D:P` protects the DACL from inheriting anything on top.
+///
+/// Residual risk, accepted and documented: when every instance is closed (the recycle gap between
+/// two clients, or the service being down) the NAME is unowned and any local process can create a
+/// pipe by that name with its own DACL - name creation itself is not ACLed. The server's
+/// `FILE_FLAG_FIRST_PIPE_INSTANCE` turns that squat into a clean create error on our side, the
+/// version handshake keeps an impostor from speaking the protocol convincingly, and an impostor
+/// gains no capture privilege by squatting. #818's failure-restart policy shrinks the window the
+/// name sits unowned.
+pub const PIPE_SDDL: &str = "D:P(D;;GA;;;NU)(A;;GA;;;SY)(A;;GA;;;BA)(A;;GRGW;;;IU)";
+
+/// A security descriptor parsed from [`PIPE_SDDL`], freed on drop.
+struct PipeSecurity {
+    descriptor: PSECURITY_DESCRIPTOR,
+}
+
+impl PipeSecurity {
+    fn new() -> io::Result<PipeSecurity> {
+        let sddl = to_wide(PIPE_SDDL);
+        let mut descriptor: PSECURITY_DESCRIPTOR = null_mut();
+        let converted = unsafe {
+            ConvertStringSecurityDescriptorToSecurityDescriptorW(
+                sddl.as_ptr(),
+                SDDL_REVISION_1.into(),
+                &mut descriptor,
+                null_mut(),
+            )
+        };
+        if converted == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        Ok(PipeSecurity { descriptor })
+    }
+
+    fn attributes(&self) -> SECURITY_ATTRIBUTES {
+        SECURITY_ATTRIBUTES {
+            nLength: std::mem::size_of::<SECURITY_ATTRIBUTES>() as DWORD,
+            lpSecurityDescriptor: self.descriptor,
+            bInheritHandle: 0,
+        }
+    }
+}
+
+impl Drop for PipeSecurity {
+    fn drop(&mut self) {
+        unsafe { LocalFree(self.descriptor) };
+    }
+}
+
+/// Logs who is on the other end of a freshly-accepted connection: process id and, where the
+/// process grants `PROCESS_QUERY_LIMITED_INFORMATION`, its image path. Identified, NOT enforced
+/// (#817, decided): an image-path allowlist breaks on relocated installs and dev builds while a
+/// renamed copy defeats it anyway - the DACL is the boundary, this line feeds the log a support
+/// report or a forensic look actually needs.
+fn log_peer(pipe: HANDLE) {
+    let mut pid: DWORD = 0;
+    if unsafe { GetNamedPipeClientProcessId(pipe, &mut pid) } == 0 {
+        info!("[capture-service] serving a client whose pid could not be read");
+        return;
+    }
+    match peer_image_path(pid) {
+        Some(path) => info!("[capture-service] serving pid {pid} ({path})"),
+        None => info!("[capture-service] serving pid {pid} (image path unavailable)"),
+    }
+}
+
+fn peer_image_path(pid: DWORD) -> Option<String> {
+    let process = unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, pid) };
+    if process.is_null() {
+        return None;
+    }
+    let process = Handle(process);
+    let mut path = [0u16; 1024];
+    let mut len: DWORD = path.len() as DWORD;
+    if unsafe { QueryFullProcessImageNameW(process.0, 0, path.as_mut_ptr(), &mut len) } == 0 {
+        return None;
+    }
+    Some(String::from_utf16_lossy(&path[..len as usize]))
+}
+
 /// How one `serve_one_request` call ended.
 #[derive(Debug, PartialEq)]
 pub enum ServeOutcome {
@@ -260,6 +363,8 @@ where
     F: FnOnce(Vec<u16>, Duration) -> (Vec<FlowStat>, Option<u64>),
 {
     let wide_name = to_wide(pipe_name);
+    let security = PipeSecurity::new()?;
+    let mut attributes = security.attributes();
     let pipe = unsafe {
         CreateNamedPipeW(
             wide_name.as_ptr(),
@@ -269,7 +374,7 @@ where
             CHUNK_BYTES as DWORD,
             CHUNK_BYTES as DWORD,
             0,
-            null_mut(),
+            &mut attributes,
         )
     };
     if pipe == INVALID_HANDLE_VALUE {
@@ -298,7 +403,12 @@ where
         unsafe { DisconnectNamedPipe(pipe.0) };
         return Ok(ServeOutcome::Stopped);
     }
+    log_peer(pipe.0);
 
+    // Trust-boundary assertion (#817): this handler never impersonates the caller
+    // (ImpersonateNamedPipeClient is never called) and never executes anything on the caller's
+    // behalf - it validates a request, captures, and returns flows, full stop. Anything more
+    // belongs on the client's side of the pipe, running as the client.
     let deadline = Instant::now() + io_deadline;
     let response = match read_message(pipe.0, &event, MAX_REQUEST_BYTES, deadline, Some(stop)) {
         Ok(frame) => match decode_request(&frame) {
@@ -362,6 +472,17 @@ where
     }
     unsafe { DisconnectNamedPipe(pipe.0) };
     Ok(ServeOutcome::Served)
+}
+
+/// Floor between two served requests (#817): a raw promiscuous capture per request is not
+/// something an arbitrary caller should be able to spin in a tight loop. Sized well under the
+/// client's connect budget so the legitimate detection cadence (a capture every couple of
+/// seconds) never notices it.
+pub const REQUEST_COOLDOWN: Duration = Duration::from_millis(250);
+
+/// How much of [`REQUEST_COOLDOWN`] is still owed after `elapsed` since the last served request.
+pub fn remaining_cooldown(elapsed: Duration) -> Duration {
+    REQUEST_COOLDOWN.saturating_sub(elapsed)
 }
 
 /// Why a client request failed, each branch distinct so the GUI can log - and one day surface -
@@ -650,6 +771,30 @@ mod tests {
             Err(ClientError::ServiceUnavailable) => {}
             other => panic!("expected ServiceUnavailable, got {other:?}"),
         }
+    }
+
+    #[test]
+    fn the_pipe_dacl_is_the_agreed_fixed_one() {
+        // The threat model of #817 is written against this exact DACL; changing it is a security
+        // decision, not a refactor.
+        assert_eq!(PIPE_SDDL, "D:P(D;;GA;;;NU)(A;;GA;;;SY)(A;;GA;;;BA)(A;;GRGW;;;IU)");
+    }
+
+    #[test]
+    fn the_pipe_dacl_actually_parses() {
+        // A typo in the SDDL would otherwise only surface as EVERY pipe create failing at runtime.
+        assert!(PipeSecurity::new().is_ok());
+    }
+
+    #[test]
+    fn the_cooldown_is_owed_only_while_recent() {
+        assert_eq!(remaining_cooldown(Duration::ZERO), REQUEST_COOLDOWN);
+        assert_eq!(
+            remaining_cooldown(Duration::from_millis(100)),
+            Duration::from_millis(150)
+        );
+        assert_eq!(remaining_cooldown(REQUEST_COOLDOWN), Duration::ZERO);
+        assert_eq!(remaining_cooldown(Duration::from_secs(60)), Duration::ZERO);
     }
 
     #[test]
