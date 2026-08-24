@@ -113,6 +113,17 @@ installer only exists on a `v*` tag. Validate installer changes against the VM m
 (fresh install, 2.3.x migration, per-machine update, uninstall, broken-service reinstall,
 declined UAC) on a pre-release tag before any stable tag.
 
+**An installer can be built from Linux for VM testing, without a tag** (validated): stage the
+service exe where the resources map looks — `cargo xwin build --release -p better_fleet_netcap
+--target x86_64-pc-windows-msvc`, copy the exe from `target/x86_64-pc-windows-msvc/release/` to
+`target/release/` (the resources source path assumes a native build; `--target` builds need this
+copy) — then `npm run build` and `npx tauri build --runner cargo-xwin --target
+x86_64-pc-windows-msvc --bundles nsis`. The bundler generates the full NSIS project and stops only
+at the missing `makensis`; compiling `target/x86_64-pc-windows-msvc/release/nsis/x64/installer.nsi`
+with any makensis ≥ 3 (the Ubuntu package inside Docker works) yields a functional unsigned
+installer, hooks compiled and service exe packaged. The one makensis warning (`File /a` disabled
+off-Windows) is a cross-compile artifact, absent from native tag builds.
+
 ## Translations (`.github/workflows/crowdin*.yml`)
 
 `crowdin.yml` ("Crowdin") syncs strings on push/schedule/dispatch; `crowdin-seed.yml` ("Crowdin
