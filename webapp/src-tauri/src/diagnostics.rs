@@ -53,13 +53,88 @@ pub struct DiagnosticReport {
     pub flows: Vec<FlowStat>,
 }
 
+/// The opt-in gate for the Windows capture service path (#816). With the variable unset (every
+/// shipped build today) the GUI captures in-process exactly as before; setting it to `1` routes
+/// every capture through the service's named pipe instead. An env var rather than a setting on
+/// purpose: this exists so a developer with a hand-registered service (`sc create`) can prove the
+/// path end to end before the installer (#818) makes it real for users.
+#[cfg(windows)]
+fn capture_service_opted_in() -> bool {
+    std::env::var("BETTERFLEET_CAPTURE_SERVICE").is_ok_and(|v| v == "1")
+}
+
+/// One capture through the service pipe. `None` means the service path failed - each failure
+/// branch is logged distinctly, because "no service" vs "service refused" vs "no answer" is
+/// exactly the signal the repair UX of #819 will be built on. Deliberately NO fallback to the
+/// in-process capture: the opt-in exists to prove the service path, and a silent fallback would
+/// report the in-process capture's success as the service's.
+#[cfg(windows)]
+fn capture_via_service(game_ports: &[u16], window: Duration) -> Option<(Vec<FlowStat>, Option<u64>)> {
+    use better_fleet::capture::service_ipc::{request_capture, ClientError};
+    use better_fleet::capture::service_proto::{CaptureRequest, PIPE_NAME, PROTOCOL_VERSION};
+
+    let request = CaptureRequest {
+        version: PROTOCOL_VERSION,
+        game_ports: game_ports.to_vec(),
+        // Live detection asks in whole seconds (2 s windows); never round a sub-second ask to 0.
+        window_secs: window.as_secs().max(1),
+    };
+    // Connecting is local and fast or not happening; the answer takes the capture window itself,
+    // plus margin for the service to aggregate and serialize.
+    let connect_timeout = Duration::from_millis(500);
+    let io_deadline = window + Duration::from_secs(5);
+    match request_capture(PIPE_NAME, &request, connect_timeout, io_deadline) {
+        Ok(response) => Some((response.flows, response.raw_packets)),
+        Err(ClientError::ServiceUnavailable) => {
+            error!("[capture] the capture service is not running (pipe not found); no flows");
+            None
+        }
+        Err(ClientError::Busy) => {
+            error!("[capture] the capture service is busy with another request; no flows");
+            None
+        }
+        Err(ClientError::TimedOut) => {
+            error!("[capture] the capture service did not answer before the deadline; no flows");
+            None
+        }
+        Err(ClientError::Protocol(e)) => {
+            error!("[capture] capture service protocol mismatch: {e}; no flows");
+            None
+        }
+        Err(ClientError::Service(e)) => {
+            error!("[capture] the capture service refused the request: {e}; no flows");
+            None
+        }
+        Err(ClientError::Io(e)) => {
+            error!("[capture] capture service pipe I/O failed: {e}; no flows");
+            None
+        }
+    }
+}
+
 /// Sniffs every local interface for `window`, aggregating per-flow UDP stats for the given game
 /// ports, and returns the flows ranked by volume (desc). The capture itself lives in the Tauri-free
 /// better_fleet_netcap crate (#732), so the same code can run inside the GUI today and inside a
 /// privileged service tomorrow; here it only gets moved off the async runtime, since the promiscuous
-/// sockets block - exactly how the Linux arm calls its in-process fallback.
+/// sockets block - exactly how the Linux arm calls its in-process fallback. With the #816 opt-in
+/// set, "tomorrow" is now: the capture rides the service's named pipe instead.
 #[cfg(windows)]
 pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
+    if capture_service_opted_in() {
+        return match tokio::task::spawn_blocking(move || {
+            capture_via_service(&game_ports, window).map(|(flows, _raw)| flows)
+        })
+        .await
+        {
+            Ok(Some(flows)) => flows,
+            // The failure branch already logged why; detection degrades to "no server seen".
+            Ok(None) => Vec::new(),
+            Err(e) => {
+                error!("[capture] capture service client thread failed: {e}");
+                Vec::new()
+            }
+        };
+    }
     match tokio::task::spawn_blocking(move || better_fleet::capture::run_capture(game_ports, window))
         .await
     {
@@ -80,6 +155,20 @@ async fn capture_for_diagnostic(
     game_ports: Vec<u16>,
     window: Duration,
 ) -> (Vec<FlowStat>, Option<u64>) {
+    if capture_service_opted_in() {
+        // The wire carries raw_packets (#816), so the diagnostic keeps its "capture blocked"
+        // signal on the service path too.
+        return match tokio::task::spawn_blocking(move || capture_via_service(&game_ports, window))
+            .await
+        {
+            Ok(Some((flows, raw_packets))) => (flows, raw_packets),
+            Ok(None) => (Vec::new(), None),
+            Err(e) => {
+                error!("[capture] capture service client thread failed: {e}");
+                (Vec::new(), None)
+            }
+        };
+    }
     match tokio::task::spawn_blocking(move || {
         better_fleet::capture::run_capture_counted(game_ports, window)
     })

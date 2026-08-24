@@ -29,11 +29,37 @@ socket2 = { version = "0.5.6", features = ["all"] }
 # service.
 [target.'cfg(windows)'.dependencies]
 socket2 = { version = "0.5.6", features = ["all"] }
-winapi = { version = "0.3.9", features = ["winsock2"] }
+# winsock2 backs the capture socket; the rest is the capture service's named-pipe transport (#816):
+# overlapped I/O so neither end can hang, namedpipeapi/winbase for the pipe itself.
+winapi = { version = "0.3.9", features = [
+    "winsock2",
+    "winbase",
+    "namedpipeapi",
+    "fileapi",
+    "minwinbase",
+    "synchapi",
+    "ioapiset",
+    "handleapi",
+    "errhandlingapi",
+    "winerror",
+    "winnt",
+    "minwindef",
+] }
 hostname = "0.4.0"
 idna = "1.0.3"
+# SCM glue for the betterfleet-capture-service binary (#816): service entry point, status
+# reporting, stop control. Windows-only, so the Linux helper never links it.
+windows-service = "0.7.0"
 
 # The privilege-separated capture helper (#726). It holds CAP_NET_RAW so the GUI does not have to.
 [[bin]]
 name = "betterfleet-netcap"
 path = "src/bin/betterfleet_netcap.rs"
+
+# The Windows capture service (#816): the privileged host for the same capture core, registered
+# with the SCM because Windows has no per-binary capability - privilege is process context, so the
+# host must be a service. The source builds everywhere (a stub main off-Windows) so one workspace
+# build covers both CI legs.
+[[bin]]
+name = "betterfleet-capture-service"
+path = "src/bin/betterfleet_capture_service.rs"
