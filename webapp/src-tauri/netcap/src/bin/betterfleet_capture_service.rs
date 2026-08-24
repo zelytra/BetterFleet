@@ -7,11 +7,22 @@
 //! one named pipe, answers one validated capture request per connection through the exact same
 //! `run_capture_counted` the GUI calls in-process today, and reports its lifecycle to the SCM.
 //!
+//! Service account (#817, decided in writing): **LocalSystem**, not LocalService. Opening the
+//! capture socket takes `SOCK_RAW` plus `WSAIoctl(SIO_RCVALL)`, and Windows reserves raw-socket
+//! creation to administrative tokens; LocalService is deliberately not one, so a LocalService
+//! host would fail at the exact call this service exists to make. The blast radius is contained
+//! by the service doing nothing but capture-and-answer (no impersonation, no execution, no
+//! caller-controlled paths) behind the DACL in `service_ipc`. If a VM check ever proves
+//! LocalService can hold this socket, downgrade - smaller is better - but do not assume it.
+//!
 //! Install/uninstall is the installer's job (#818). For hand-testing on a VM:
 //!   sc create BetterFleetCapture binPath= "C:\path\to\betterfleet-capture-service.exe"
+//!   sc failure BetterFleetCapture reset= 86400 actions= restart/5000/restart/30000/restart/60000
 //!   sc start BetterFleetCapture
 //! or run `betterfleet-capture-service --console` from an elevated terminal for a foreground
-//! server with the same behaviour and no SCM.
+//! server with the same behaviour and no SCM. The `sc failure` line is the restart policy #818
+//! will register for real installs; it also shrinks the window in which the pipe name sits
+//! unowned (see the squatting note on `PIPE_SDDL`).
 
 #[cfg(windows)]
 fn main() {
@@ -35,7 +46,9 @@ mod service {
     use std::sync::OnceLock;
     use std::time::Duration;
 
-    use better_fleet_netcap::service_ipc::{serve_one_request, ServeOutcome};
+    use better_fleet_netcap::service_ipc::{
+        remaining_cooldown, serve_one_request, ServeOutcome,
+    };
     use better_fleet_netcap::service_proto::{MAX_WINDOW_SECS, PIPE_NAME};
     use windows_service::service::{
         ServiceControl, ServiceControlAccept, ServiceExitCode, ServiceState, ServiceStatus,
@@ -55,7 +68,31 @@ mod service {
 
     windows_service::define_windows_service!(ffi_service_main, service_entry);
 
+    /// Routes the `log` crate into the service log: the capture core's `error!` lines and the
+    /// transport's peer-identification `info!` lines (#817) would otherwise vanish - a service has
+    /// no console, and nothing else installs a logger in this process.
+    struct ServiceLogger;
+
+    impl log::Log for ServiceLogger {
+        fn enabled(&self, metadata: &log::Metadata) -> bool {
+            metadata.level() <= log::Level::Info
+        }
+
+        fn log(&self, record: &log::Record) {
+            if self.enabled(record.metadata()) {
+                log_line(&format!("{} {}", record.level(), record.args()));
+            }
+        }
+
+        fn flush(&self) {}
+    }
+
+    static LOGGER: ServiceLogger = ServiceLogger;
+
     pub fn main() {
+        if log::set_logger(&LOGGER).is_ok() {
+            log::set_max_level(log::LevelFilter::Info);
+        }
         let args: Vec<String> = std::env::args().skip(1).collect();
         if args.iter().any(|a| a == "--console") {
             log_line("running in console mode (no SCM)");
@@ -126,13 +163,25 @@ mod service {
 
     fn serve_loop() {
         log_line(&format!("listening on {PIPE_NAME}"));
+        let mut last_served: Option<std::time::Instant> = None;
         while !STOP.load(Ordering::Relaxed) {
+            // The cooldown floor (#817): a capture per request must not be spinnable in a tight
+            // loop. Slept out BEFORE the next accept, so the pipe simply does not exist during
+            // the pause - the legitimate client's connect retry rides that out.
+            if let Some(previous) = last_served {
+                let owed = remaining_cooldown(previous.elapsed());
+                if !owed.is_zero() {
+                    std::thread::sleep(owed);
+                }
+            }
             let outcome = serve_one_request(PIPE_NAME, &STOP, IO_DEADLINE, |ports, window| {
                 let outcome = better_fleet_netcap::run_capture_counted(ports, window);
                 (outcome.flows, outcome.raw_packets)
             });
             match outcome {
-                Ok(ServeOutcome::Served) => {}
+                Ok(ServeOutcome::Served) => {
+                    last_served = Some(std::time::Instant::now());
+                }
                 Ok(ServeOutcome::Stopped) => break,
                 Err(e) => {
                     // Creating or connecting the pipe failed - a squatter on the name, or a
