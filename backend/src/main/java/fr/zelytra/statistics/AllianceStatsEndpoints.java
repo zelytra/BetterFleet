@@ -53,6 +53,22 @@ public class AllianceStatsEndpoints {
         return attempt.largestGroup >= 2;
     }
 
+    /**
+     * The dashboard's one denominator rule (#846): a lone searcher has nobody to meet, so a
+     * {@code players < 2} row can never satisfy {@link #converged}. Counting such rows in any
+     * denominator turns "how often do alliances form" into "how often does someone search alone".
+     * The size bands and {@link #averageGoalCompletion} always excluded them, while the headline,
+     * the heatmap and the best hours did not - same page, same 55 conversions, 12% on one line and
+     * 18% a few lines below. Applied once, where {@link #alliance} loads its rows, so no aggregate
+     * of that payload can drift off the rule again; the static helpers keep their own guards
+     * because they are also called, and unit-tested, with raw lists. The rows themselves stay
+     * persisted: solo-search volume is still a signal, and {@code /tries} deliberately stays
+     * unfiltered - it backs a global histogram, not this dashboard.
+     */
+    private static boolean countsForAlliance(AllianceAttempt attempt) {
+        return attempt.players >= 2;
+    }
+
     @Inject
     AllianceAttemptRepository repository;
 
@@ -95,6 +111,7 @@ public class AllianceStatsEndpoints {
         List<AllianceAttempt> rows = repository.listAll().stream()
                 .filter(a -> blankOrEquals(ownerRegion, a.ownerRegion))
                 .filter(a -> blankOrEquals(serverRegion, a.serverRegion))
+                .filter(AllianceStatsEndpoints::countsForAlliance)
                 .toList();
 
         long total = rows.size();

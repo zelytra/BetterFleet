@@ -12,7 +12,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 /**
- * /stats/tries and /stats/regions against the real (H2) repository - same split as
+ * /stats/tries, /stats/regions and the /stats/alliance denominator rule against the real (H2)
+ * repository - same split as
  * {@link StatsHistoryEndpointTest}: {@link StatsEndpointsTest}'s class-wide mock would hijack the
  * repository here, and {@link AllianceStatsEndpointsTest} stays a plain unit test of the scoring.
  * The website consumes both payloads as-is, so these lock the wire contract: the tries histogram is
@@ -115,6 +116,63 @@ public class AllianceAggregatesEndpointTest {
                 .body("[0].region", equalTo("fr"))
                 .body("[0].attempts", equalTo(2))
                 .body("[1].region", equalTo("us"));
+    }
+
+    @Transactional
+    void persistSizedAttempt(int players, int largestGroup) {
+        AllianceAttempt attempt = new AllianceAttempt();
+        attempt.tsUtc = Instant.parse("2026-08-01T20:00:00Z");
+        attempt.ownerRegion = "fr";
+        attempt.serverRegion = "de";
+        attempt.players = players;
+        attempt.largestGroup = largestGroup;
+        attempt.distinctServers = Math.max(1, players - largestGroup + 1);
+        attempt.converged = largestGroup >= 2;
+        attempt.tryNumber = 1;
+        attempt.persist();
+    }
+
+    @Test
+    void allianceHeadlineAgreesWithItsOwnSizeBands() {
+        // The #846 shape: solo rows (players=1) can never converge, and the size bands drop them -
+        // so the headline, the heatmap and the bands must all answer over the same denominator or
+        // the page contradicts itself (12% vs 18% in production, same 55 conversions).
+        persistSizedAttempt(1, 1); // retrying alone: a guaranteed-failure row per countdown
+        persistSizedAttempt(1, 1);
+        persistSizedAttempt(2, 2); // a pair that met
+        persistSizedAttempt(3, 1); // a trio that scattered
+        persistSizedAttempt(4, 3); // a four-search where three grouped up
+
+        given()
+                .when().get("/stats/alliance")
+                .then()
+                .statusCode(200)
+                .body("totalAttempts", equalTo(3))
+                .body("converged", equalTo(2))
+                .body("convergenceRate", equalTo(2 / 3f))
+                // One heatmap cell (same timestamp): its attempts are the headline's, not the raw
+                // row count - the solo rows are absent from the whole payload, not just the bands.
+                .body("heatmap", hasSize(1))
+                .body("heatmap[0].attempts", equalTo(3))
+                .body("heatmap[0].converged", equalTo(2))
+                .body("bySize.attempts.sum()", equalTo(3))
+                .body("bySize.converged.sum()", equalTo(2));
+    }
+
+    @Test
+    void aDashboardOfOnlySoloSearchesIsEmptyNotZeroPercent() {
+        // Nothing but lone searchers: no denominator at all, rather than "0 of N failed".
+        persistSizedAttempt(1, 1);
+        persistSizedAttempt(1, 1);
+
+        given()
+                .when().get("/stats/alliance")
+                .then()
+                .statusCode(200)
+                .body("totalAttempts", equalTo(0))
+                .body("converged", equalTo(0))
+                .body("convergenceRate", equalTo(0f))
+                .body("heatmap", hasSize(0));
     }
 
     @Test
