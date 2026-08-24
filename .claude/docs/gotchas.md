@@ -143,6 +143,11 @@ back into the problem.
 
 ## Release & packaging
 
+- **The NSIS hooks run on every single update, not once.** `updater.windows.installMode: "passive"`
+  re-executes the installer per update, and `windows/hooks.nsh` re-runs with it. Never add
+  non-idempotent work there (a bare `sc create` fails on the second update; a `sc delete` without
+  the `$UpdateMode` guard would tear the service's config down on every upgrade). CI never builds
+  the installer (`--no-bundle`), so a broken hook only surfaces on a tagged release — VM-test first.
 - **pacman `pkgver` forbids `-`, so a pre-release asset name won't match its tag.** `publish-arch`
   maps the semver pre-release dash to a dot when it pins `pkgver` (`.github/workflows/release.yml`,
   the `pkgver` substitution step): tag `v2.3.0-rc.3` ships as
