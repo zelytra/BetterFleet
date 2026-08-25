@@ -94,10 +94,12 @@ is `passive`, the installer — hooks included — re-runs on **every update**, 
 stop-if-exists before files are copied, `sc create`-or-`config` plus `sc start` after.
 
 **UAC moves from every launch to every update.** Through 2.3.x the app manifest was
-`requireAdministrator` (`webapp/src-tauri/build.rs`), so players saw UAC at each launch. From 2.4.0
-the privilege lives in the service; once the GUI drops the admin manifest (#819), the only elevation
-left is the installer — one UAC consent per update, none at launch. Until the GUI actually drops it,
-updates stay prompt-free instead (the elevated app spawns the installer, which inherits the token).
+`requireAdministrator` (`webapp/src-tauri/build.rs`), so players saw UAC at each launch. Since #819
+the GUI is `asInvoker`: the privilege lives in the service, and the only elevation left is the
+installer — one UAC consent per update, none at launch. Capture is service-first with no opt-in;
+if the service is unreachable or version-skewed, the frontend shows a repair banner
+("re-run the installer"), and an app launched as administrator still falls back to the in-process
+capture as a stopgap.
 
 **The first per-machine update silently retires the old per-user install.** NSIS only
 auto-replaces a previous install of the *same scope*, so `NSIS_HOOK_PREINSTALL` reads the 2.3.x

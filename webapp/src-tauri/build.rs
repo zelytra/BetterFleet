@@ -57,18 +57,12 @@ fn stage_capture_service() {
 fn main() {
     stage_capture_service();
 
-    // The shipped binary must run elevated: capturing packets via raw promiscuous sockets
-    // (SIO_RCVALL) requires administrator rights. Test builds, however, only exercise pure
-    // logic and must be launchable without elevation, otherwise `cargo test` fails to spawn
-    // its harness (os error 740). Setting BETTERFLEET_TEST_BUILD=1 drops the requirement to
-    // `asInvoker`; normal and release builds are unaffected and keep requiring administrator.
-    println!("cargo:rerun-if-env-changed=BETTERFLEET_TEST_BUILD");
-    let execution_level = if std::env::var("BETTERFLEET_TEST_BUILD").is_ok() {
-        "asInvoker"
-    } else {
-        "requireAdministrator"
-    };
-
+    // De-elevated (#819, closing #732): the GUI runs asInvoker. The privileged capture lives in
+    // the BetterFleetCapture service, reached over its named pipe; nothing else in the app ever
+    // needed elevation. The old requireAdministrator manifest also made `cargo test` unable to
+    // spawn its own harness (os error 740) behind a BETTERFLEET_TEST_BUILD escape hatch - both
+    // are gone with the requirement. The manifest itself stays for the common-controls
+    // dependency.
     let manifest = format!(
         r#"
     <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
@@ -87,12 +81,13 @@ fn main() {
       <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
         <security>
             <requestedPrivileges>
-                <requestedExecutionLevel level="{execution_level}" uiAccess="false" />
+                <requestedExecutionLevel level="{level}" uiAccess="false" />
             </requestedPrivileges>
         </security>
       </trustInfo>
     </assembly>
-    "#
+    "#,
+        level = "asInvoker"
     );
 
     let mut windows = tauri_build::WindowsAttributes::new();

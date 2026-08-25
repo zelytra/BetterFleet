@@ -51,25 +51,73 @@ pub struct DiagnosticReport {
     pub top_candidates: Vec<FlowStat>,
     /// Every observed flow, ranked by volume.
     pub flows: Vec<FlowStat>,
+    /// Which capture path served these numbers (#819): the service (with its protocol version),
+    /// the elevated in-process stopgap, or nothing - a report that says "no packets" reads
+    /// completely differently depending on who failed to hear them.
+    pub capture_backend: String,
 }
 
-/// The opt-in gate for the Windows capture service path (#816). With the variable unset (every
-/// shipped build today) the GUI captures in-process exactly as before; setting it to `1` routes
-/// every capture through the service's named pipe instead. An env var rather than a setting on
-/// purpose: this exists so a developer with a hand-registered service (`sc create`) can prove the
-/// path end to end before the installer (#818) makes it real for users.
+/// How the Windows capture backend is doing, as one small state the frontend polls (#819): the
+/// GUI runs unelevated and simply cannot capture without the service, so "the service is gone"
+/// must surface as a banner with a real next step, never as silent no-detection. Kept in a static
+/// rather than threaded through the capture call chain: many callers, one reader.
 #[cfg(windows)]
-fn capture_service_opted_in() -> bool {
-    std::env::var("BETTERFLEET_CAPTURE_SERVICE").is_ok_and(|v| v == "1")
+mod capture_health_state {
+    use std::sync::atomic::{AtomicU8, Ordering};
+    pub const OK: u8 = 0;
+    pub const SERVICE_UNREACHABLE: u8 = 1;
+    pub const SERVICE_INCOMPATIBLE: u8 = 2;
+    pub const DEGRADED_ELEVATED: u8 = 3;
+    static STATE: AtomicU8 = AtomicU8::new(OK);
+    pub fn set(state: u8) {
+        STATE.store(state, Ordering::Relaxed);
+    }
+    pub fn get() -> u8 {
+        STATE.load(Ordering::Relaxed)
+    }
 }
 
-/// One capture through the service pipe. `None` means the service path failed - each failure
-/// branch is logged distinctly, because "no service" vs "service refused" vs "no answer" is
-/// exactly the signal the repair UX of #819 will be built on. Deliberately NO fallback to the
-/// in-process capture: the opt-in exists to prove the service path, and a silent fallback would
-/// report the in-process capture's success as the service's.
+/// The capture-health label `get_game_object` ships to the frontend repair banner. Stringly on
+/// purpose: it crosses the Tauri boundary, and the frontend switch is the single consumer.
+/// Non-Windows is always "ok" - the Linux helper chain has its own in-process fallback and needs
+/// no repair UX.
+pub fn capture_health_label() -> &'static str {
+    #[cfg(windows)]
+    {
+        match capture_health_state::get() {
+            capture_health_state::SERVICE_UNREACHABLE => "service-unreachable",
+            capture_health_state::SERVICE_INCOMPATIBLE => "service-incompatible",
+            capture_health_state::DEGRADED_ELEVATED => "degraded-elevated",
+            _ => "ok",
+        }
+    }
+    #[cfg(not(windows))]
+    {
+        "ok"
+    }
+}
+
+/// Why the service path did not serve a capture, folded to what the caller can act on.
 #[cfg(windows)]
-fn capture_via_service(game_ports: &[u16], window: Duration) -> Option<(Vec<FlowStat>, Option<u64>)> {
+enum ServiceFailure {
+    /// The service exists but could not take this request (busy with another capture, or slow).
+    /// Not a repair condition: the health state is left alone and this window simply has no flows.
+    Transient,
+    /// No service at the pipe: not installed, not running, or the pipe is unreachable.
+    Unreachable,
+    /// The service answered but the pair does not speak the same protocol (version skew after a
+    /// half-applied update, or a refused request that a matching build would never send).
+    Incompatible,
+}
+
+/// One capture through the service pipe - each failure branch logged distinctly, because "no
+/// service" vs "service refused" vs "no answer" is what the repair banner and the Help-tab
+/// diagnostic are built on (#819).
+#[cfg(windows)]
+fn capture_via_service(
+    game_ports: &[u16],
+    window: Duration,
+) -> Result<(Vec<FlowStat>, Option<u64>), ServiceFailure> {
     use better_fleet::capture::service_ipc::{request_capture, ClientError};
     use better_fleet::capture::service_proto::{CaptureRequest, PIPE_NAME, PROTOCOL_VERSION};
 
@@ -84,63 +132,97 @@ fn capture_via_service(game_ports: &[u16], window: Duration) -> Option<(Vec<Flow
     let connect_timeout = Duration::from_millis(500);
     let io_deadline = window + Duration::from_secs(5);
     match request_capture(PIPE_NAME, &request, connect_timeout, io_deadline) {
-        Ok(response) => Some((response.flows, response.raw_packets)),
+        Ok(response) => Ok((response.flows, response.raw_packets)),
         Err(ClientError::ServiceUnavailable) => {
             error!("[capture] the capture service is not running (pipe not found); no flows");
-            None
+            Err(ServiceFailure::Unreachable)
         }
         Err(ClientError::Busy) => {
             error!("[capture] the capture service is busy with another request; no flows");
-            None
+            Err(ServiceFailure::Transient)
         }
         Err(ClientError::TimedOut) => {
             error!("[capture] the capture service did not answer before the deadline; no flows");
-            None
+            Err(ServiceFailure::Transient)
         }
         Err(ClientError::Protocol(e)) => {
             error!("[capture] capture service protocol mismatch: {e}; no flows");
-            None
+            Err(ServiceFailure::Incompatible)
         }
         Err(ClientError::Service(e)) => {
             error!("[capture] the capture service refused the request: {e}; no flows");
-            None
+            Err(ServiceFailure::Incompatible)
         }
         Err(ClientError::Io(e)) => {
             error!("[capture] capture service pipe I/O failed: {e}; no flows");
-            None
+            Err(ServiceFailure::Unreachable)
         }
     }
 }
 
-/// Sniffs every local interface for `window`, aggregating per-flow UDP stats for the given game
-/// ports, and returns the flows ranked by volume (desc). The capture itself lives in the Tauri-free
-/// better_fleet_netcap crate (#732), so the same code can run inside the GUI today and inside a
-/// privileged service tomorrow; here it only gets moved off the async runtime, since the promiscuous
-/// sockets block - exactly how the Linux arm calls its in-process fallback. With the #816 opt-in
-/// set, "tomorrow" is now: the capture rides the service's named pipe instead.
+/// One Windows capture, service-first (#819): the GUI runs unelevated, so the service IS the
+/// capture. The one fallback is deliberate and visible: a player following the documented stopgap
+/// - launching the app "as administrator" while the service is broken - still gets the in-process
+/// capture, at degraded health, because stranding exactly the player who followed the support
+/// advice would be absurd. Unelevated with no service yields no flows and a health state the
+/// repair banner turns into a next step.
+///
+/// Returns the flows, the raw packet count, and the backend label the Help-tab diagnostic prints.
+#[cfg(windows)]
+fn capture_windows_blocking(
+    game_ports: Vec<u16>,
+    window: Duration,
+) -> (Vec<FlowStat>, Option<u64>, &'static str) {
+    use better_fleet::capture::service_proto::PROTOCOL_VERSION;
+    // The label is pinned to the protocol the golden-frame tests freeze; this breaks the build if
+    // PROTOCOL_VERSION ever moves without the string moving with it.
+    const _: () = assert!(PROTOCOL_VERSION == 1);
+    match capture_via_service(&game_ports, window) {
+        Ok((flows, raw_packets)) => {
+            capture_health_state::set(capture_health_state::OK);
+            (flows, raw_packets, "capture-service (protocol v1)")
+        }
+        Err(ServiceFailure::Transient) => {
+            // The service is alive but this window got nothing; health is left as it was.
+            (Vec::new(), None, "unavailable (capture service busy)")
+        }
+        Err(failure) => {
+            if better_fleet::capture::can_open_capture_socket() {
+                capture_health_state::set(capture_health_state::DEGRADED_ELEVATED);
+                log::info!(
+                    "[capture] service path failed but this process is elevated; capturing in-process (stopgap)"
+                );
+                let outcome = better_fleet::capture::run_capture_counted(game_ports, window);
+                (outcome.flows, outcome.raw_packets, "in-process (elevated stopgap)")
+            } else {
+                match failure {
+                    ServiceFailure::Unreachable => {
+                        capture_health_state::set(capture_health_state::SERVICE_UNREACHABLE);
+                        (Vec::new(), None, "unavailable (capture service unreachable)")
+                    }
+                    ServiceFailure::Incompatible => {
+                        capture_health_state::set(capture_health_state::SERVICE_INCOMPATIBLE);
+                        (Vec::new(), None, "unavailable (capture service incompatible)")
+                    }
+                    ServiceFailure::Transient => unreachable!("handled above"),
+                }
+            }
+        }
+    }
+}
+
+
+/// Sniffs every game UDP port for `window` and returns the flows ranked by volume (desc), through
+/// the capture service (#819): the GUI runs unelevated and the privileged socket lives in the
+/// BetterFleetCapture service, reached over its named pipe. Off the async runtime because the
+/// pipe transaction blocks for the whole capture window - exactly as the promiscuous sockets did
+/// when the capture ran in-process.
 #[cfg(windows)]
 pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
-    if capture_service_opted_in() {
-        return match tokio::task::spawn_blocking(move || {
-            capture_via_service(&game_ports, window).map(|(flows, _raw)| flows)
-        })
-        .await
-        {
-            Ok(Some(flows)) => flows,
-            // The failure branch already logged why; detection degrades to "no server seen".
-            Ok(None) => Vec::new(),
-            Err(e) => {
-                error!("[capture] capture service client thread failed: {e}");
-                Vec::new()
-            }
-        };
-    }
-    match tokio::task::spawn_blocking(move || better_fleet::capture::run_capture(game_ports, window))
-        .await
-    {
-        Ok(flows) => flows,
+    match tokio::task::spawn_blocking(move || capture_windows_blocking(game_ports, window)).await {
+        Ok((flows, _raw_packets, _backend)) => flows,
         Err(e) => {
-            error!("[capture] promiscuous capture thread failed: {e}");
+            error!("[capture] capture thread failed: {e}");
             Vec::new()
         }
     }
@@ -154,30 +236,15 @@ pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowSt
 async fn capture_for_diagnostic(
     game_ports: Vec<u16>,
     window: Duration,
-) -> (Vec<FlowStat>, Option<u64>) {
-    if capture_service_opted_in() {
-        // The wire carries raw_packets (#816), so the diagnostic keeps its "capture blocked"
-        // signal on the service path too.
-        return match tokio::task::spawn_blocking(move || capture_via_service(&game_ports, window))
-            .await
-        {
-            Ok(Some((flows, raw_packets))) => (flows, raw_packets),
-            Ok(None) => (Vec::new(), None),
-            Err(e) => {
-                error!("[capture] capture service client thread failed: {e}");
-                (Vec::new(), None)
-            }
-        };
-    }
-    match tokio::task::spawn_blocking(move || {
-        better_fleet::capture::run_capture_counted(game_ports, window)
-    })
-    .await
-    {
-        Ok(outcome) => (outcome.flows, outcome.raw_packets),
+) -> (Vec<FlowStat>, Option<u64>, &'static str) {
+    // Same service-first path as live detection; the wire carries raw_packets (#816) so the
+    // diagnostic keeps its "capture blocked" signal, and the backend label says which of the
+    // paths actually served the numbers a support report is read against (#819).
+    match tokio::task::spawn_blocking(move || capture_windows_blocking(game_ports, window)).await {
+        Ok(outcome) => outcome,
         Err(e) => {
-            error!("[capture] promiscuous capture thread failed: {e}");
-            (Vec::new(), None)
+            error!("[capture] capture thread failed: {e}");
+            (Vec::new(), None, "unavailable (capture thread failed)")
         }
     }
 }
@@ -186,8 +253,12 @@ async fn capture_for_diagnostic(
 async fn capture_for_diagnostic(
     game_ports: Vec<u16>,
     window: Duration,
-) -> (Vec<FlowStat>, Option<u64>) {
-    (capture_flows(game_ports, window).await, None)
+) -> (Vec<FlowStat>, Option<u64>, &'static str) {
+    (
+        capture_flows(game_ports, window).await,
+        None,
+        "linux helper / in-process",
+    )
 }
 
 /// Linux raw-capture backend (#725, #726). Server detection needs an `AF_PACKET` socket, which needs
@@ -445,7 +516,7 @@ pub async fn run_diagnostic(
     udp_ports_powershell: Vec<u16>,
 ) -> DiagnosticReport {
     let started = Instant::now();
-    let (flows, raw_packets) = capture_for_diagnostic(game_ports, duration).await;
+    let (flows, raw_packets, capture_backend) = capture_for_diagnostic(game_ports, duration).await;
     let total_packets: u32 = flows.iter().map(|flow| flow.packets).sum();
     let top_candidates: Vec<FlowStat> = flows
         .iter()
@@ -471,6 +542,7 @@ pub async fn run_diagnostic(
         receive_only_capture,
         top_candidates,
         flows,
+        capture_backend: capture_backend.to_string(),
     }
 }
 
@@ -499,6 +571,7 @@ mod tests {
             receive_only_capture: false,
             top_candidates: vec![],
             flows: vec![],
+            capture_backend: "capture-service (protocol v1)".into(),
         };
         // The socket saw traffic but none on the game ports: capture works, the ports are the
         // problem. total_packets (game-matched) and raw_packets (all) must be independent fields.

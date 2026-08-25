@@ -296,9 +296,4 @@ jobs:
 
       - name: Run the Rust tests
         working-directory: 'webapp/src-tauri'
-        # build.rs stamps a requireAdministrator manifest into the binary; the test harness then fails
-        # to spawn on Windows with "os error 740" (elevation required). This env drops it to asInvoker
-        # for test builds only. See webapp/src-tauri/build.rs.
-        env:
-          BETTERFLEET_TEST_BUILD: '1'
         run: cargo test

@@ -12,10 +12,6 @@ back into the problem.
 - **Updater signing env vars are the v2 names.** CI must export `TAURI_SIGNING_PRIVATE_KEY` /
   `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (the v1 `TAURI_PRIVATE_KEY` / `TAURI_KEY_PASSWORD` are silently
   ignored). With the old names the build produces no signature and every client rejects the update.
-- **`cargo test` / `cargo check` on Windows need `BETTERFLEET_TEST_BUILD=1`.** The release build
-  embeds a `requireAdministrator` manifest (`webapp/src-tauri/build.rs`); without the env var the
-  test binary fails to launch with **OS error 740** (elevation required). Set it and the manifest
-  requirement is dropped for the build.
 - **The overlay window freezes while hidden behind the game.** WebView2 throttles occluded/background
   windows: timers stall and audio mutes. The fix is `additionalBrowserArgs` in
   `webapp/src-tauri/tauri.conf.json` (the `WEBVIEW2_*` env var is **ignored by wry**, so it must be

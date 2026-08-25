@@ -30,6 +30,7 @@ import { RustSotServer } from "@/objects/fleet/SotServer.ts";
 import { syncGameState } from "@/objects/fleet/GameSync.ts";
 import { observeDetection } from "@/objects/fleet/DetectionWatchdog.ts";
 import { observeSocketless } from "@/objects/fleet/SocketlessWatchdog.ts";
+import { observeCaptureHealth } from "@/objects/fleet/CaptureRepairWatchdog.ts";
 import { observeConvergence } from "@/objects/fleet/SessionRecap.ts";
 import { Utils } from "@/objects/utils/Utils.ts";
 import router from "@/router";
@@ -58,6 +59,9 @@ const gameStatusRefresh: number = setInterval(() => {
     // Socketless watchdog (report id 801): raises the #688 diagnostic offer when the game runs
     // with no visible UDP sockets for minutes. Neutral by design: no cause is asserted.
     observeSocketless(rustSotServer, UserStore.player as Player);
+    // Capture-repair watchdog (#819): the unelevated GUI cannot capture without the service, so
+    // a missing or version-skewed service must become a banner with a next step, never silence.
+    observeCaptureHealth(response.captureHealth ?? "ok", Date.now());
     // Shareable recap (#685): and the convergence watchdog behind the "alliance formed" card.
     observeConvergence(UserStore.player as Player);
   });

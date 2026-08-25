@@ -71,7 +71,13 @@ struct GameObject {
     /// Consecutive detection cycles with the game process alive but its UDP enumeration empty
     /// (report id 801) - the raw signal behind the frontend's socketless diagnostic offer.
     #[serde(rename = "noUdpCycles")]
-    no_udp_cycles: u32
+    no_udp_cycles: u32,
+    /// Health of the capture backend (#819): "ok", "service-unreachable", "service-incompatible"
+    /// or "degraded-elevated". The frontend repair banner turns the two service states into a
+    /// next step; an unelevated GUI cannot capture without the service, so this must never fail
+    /// silently. Always "ok" off Windows.
+    #[serde(rename = "captureHealth")]
+    capture_health: &'static str
 }
 
 // Here's how to call Rust functions from frontend : https://tauri.app/v1/guides/features/command/
@@ -472,7 +478,8 @@ async fn get_game_object(api: State<'_, Arc<RwLock<Api>>>) -> Result<GameObject,
         ip: api_lock.get_server_ip().await,
         port: api_lock.get_server_port().await,
         status: api_lock.get_game_status().await,
-        no_udp_cycles: api_lock.get_no_udp_cycles().await
+        no_udp_cycles: api_lock.get_no_udp_cycles().await,
+        capture_health: crate::diagnostics::capture_health_label()
     };
 
     Ok(game_object.into())

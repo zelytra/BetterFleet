@@ -197,6 +197,10 @@
     },
     "title": "Crédits"
   },
+  "captureRepair": {
+    "incompatible": "La détection de serveur est hors service : le service de capture BetterFleet ne correspond pas à cette version de l'application. Relancez l'installeur de BetterFleet pour le mettre à jour.",
+    "unreachable": "La détection de serveur est hors service : le service de capture BetterFleet ne tourne pas. Relancez l'installeur de BetterFleet pour le réparer — ou, en dépannage, lancez BetterFleet en administrateur."
+  },
   "diagnostic": {
     "banner": "La détection de serveur semble bloquée - un enregistrement de 20s peut nous dire pourquoi.",
     "capture": {

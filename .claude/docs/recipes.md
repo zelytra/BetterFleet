@@ -47,8 +47,8 @@ Settings live in **`webapp/src/components/fleet/ConfigComponent.vue`** and persi
    (`@tauri-apps/api/core`; Tauri v2 renamed the v1 `@tauri-apps/api/tauri` specifier). Keep pure
    logic in a testable `.ts` module and mock the invoke in specs (`invokeMock()` records into
    `rustCalls`, answers from `rustResponses`).
-4. **Build/check**: on Windows, `cargo check`/`cargo test` in `webapp/src-tauri/` need
-   `BETTERFLEET_TEST_BUILD=1` (see [gotchas.md](gotchas.md)).
+4. **Build/check**: `cargo check`/`cargo test` from `webapp/src-tauri/`, no special environment
+   (the requireAdministrator manifest and its BETTERFLEET_TEST_BUILD escape hatch left with #819).
 
 ## Add an in-session action (WebSocket message)
 
