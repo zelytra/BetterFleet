@@ -81,6 +81,53 @@ resolved version back). Version numbers flow from the tag via `.github/scripts/s
 Before tagging a release, confirm the required secrets and branch protection are in place, since the
 `verify` gate now blocks publish on any test failure.
 
+## Windows install & update contract (2.4.0+)
+
+**The NSIS installer is per-machine and owns a Windows service.** `bundle.windows.nsis.installMode`
+is `perMachine`: the app installs to `C:\Program Files\BetterFleet`, uninstall metadata lives in
+HKLM, and the *installer* is what requires elevation. The capture service
+(`betterfleet-capture-service.exe`, SCM name `BetterFleetCapture`, #816) ships via the resources map
+in `webapp/src-tauri/tauri.windows.conf.json` and is registered, repaired, and started by the hooks
+in `webapp/src-tauri/windows/hooks.nsh` (`installerHooks`). Because `updater.windows.installMode`
+is `passive`, the installer — hooks included — re-runs on **every update**, exactly like the pacman
+`post_upgrade` hook re-runs `setcap` on Linux. Anything added to those hooks must be idempotent:
+stop-if-exists before files are copied, `sc create`-or-`config` plus `sc start` after.
+
+**UAC moves from every launch to every update.** Through 2.3.x the app manifest was
+`requireAdministrator` (`webapp/src-tauri/build.rs`), so players saw UAC at each launch. From 2.4.0
+the privilege lives in the service; once the GUI drops the admin manifest (#819), the only elevation
+left is the installer — one UAC consent per update, none at launch. Until the GUI actually drops it,
+updates stay prompt-free instead (the elevated app spawns the installer, which inherits the token).
+
+**The first per-machine update silently retires the old per-user install.** NSIS only
+auto-replaces a previous install of the *same scope*, so `NSIS_HOOK_PREINSTALL` reads the 2.3.x
+uninstall entry from `HKCU\...\Uninstall\BetterFleet`, runs that uninstaller with `/S _?=<dir>`
+(silent and in-place, so the wait is real), and sweeps what it cannot delete of itself. Settings
+survive by construction: they live in webview localStorage under `%LOCALAPPDATA%\fr.zelytra` and in
+`%APPDATA%\fr.zelytra` (overlay layout) — outside both install roots — and a silent uninstall never
+deletes app data (that is a GUI-only checkbox). The migration itself is prompt-free because the
+still-elevated 2.3.x app spawns it.
+
+**None of this is covered by CI.** PR builds pass `--no-bundle` (`.github/workflows/ci.yml`), so an
+installer only exists on a `v*` tag. Validate installer changes against the VM matrix in #818
+(fresh install, 2.3.x migration, per-machine update, uninstall, broken-service reinstall,
+declined UAC) on a pre-release tag before any stable tag.
+
+**The service exe is staged by `build.rs`, not by the workspace build.** `tauri_build` validates
+the resources map while the build script runs — before cargo has built anything — so a plain
+`cargo test` on Windows, `tauri dev`, `tauri build` and the cross build would all panic on the
+missing exe. `webapp/src-tauri/build.rs` therefore builds `betterfleet-capture-service` itself
+(own target dir, outer build's target triple) and copies it to the literal path the resources map
+names, on every Windows-target build. Nothing to run by hand, native or cross.
+
+**An installer can be built from Linux for VM testing, without a tag** (validated): `npm run
+build`, then `npx tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc --bundles nsis`.
+The bundler generates the full NSIS project and stops only at the missing `makensis`; compiling
+`target/x86_64-pc-windows-msvc/release/nsis/x64/installer.nsi` with any makensis ≥ 3 (the Ubuntu
+package inside Docker works) yields a functional unsigned installer, hooks compiled and service
+exe packaged. The one makensis warning (`File /a` disabled off-Windows) is a cross-compile
+artifact, absent from native tag builds.
+
 ## Translations (`.github/workflows/crowdin*.yml`)
 
 `crowdin.yml` ("Crowdin") syncs strings on push/schedule/dispatch; `crowdin-seed.yml` ("Crowdin

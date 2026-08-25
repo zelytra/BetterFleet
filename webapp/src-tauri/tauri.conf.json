@@ -76,7 +76,9 @@
       "timestampUrl": "",
       "nsis": {
         "installerIcon": "icons/installer-icon.ico",
-        "sidebarImage": "icons/installer-banner.bmp"
+        "sidebarImage": "icons/installer-banner.bmp",
+        "installMode": "perMachine",
+        "installerHooks": "./windows/hooks.nsh"
       }
     }
   },
