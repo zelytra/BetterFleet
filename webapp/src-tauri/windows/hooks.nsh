@@ -20,6 +20,9 @@
 ; nsExec (hidden console); every wait is bounded.
 
 !define BF_SERVICE "BetterFleetCapture"
+; Set to 1 by the PREINSTALL migration when a 2.3.x per-user install was actually retired this
+; run - the one case where update mode must recreate shortcuts (see NSIS_HOOK_POSTINSTALL).
+Var BF_MigratedPerUser
 !define BF_SERVICE_EXE "betterfleet-capture-service.exe"
 ; The 2.3.x per-user install's uninstall entry (currentUser installs write SHCTX = HKCU).
 ; Literal product name: the template defines ${PRODUCTNAME}/${UNINSTKEY} after this include.
@@ -70,6 +73,7 @@
 ; old uninstaller also removes its own per-user shortcuts and HKCU uninstall entry, which makes
 ; this a no-op on every later update.
 !macro BF_MIGRATE_PERUSER_INSTALL
+  StrCpy $BF_MigratedPerUser 0
   ReadRegStr $R0 HKCU "${BF_PERUSER_UNINSTKEY}" "UninstallString"
   ${If} $R0 != ""
     ; Tauri writes the value quoted; strip surrounding quotes if present.
@@ -90,13 +94,16 @@
           ; An in-place uninstaller cannot delete itself; sweep the leftovers.
           Delete "$R0"
           RMDir "$R2"
+          StrCpy $BF_MigratedPerUser 1
         ${Else}
           DetailPrint "Warning: per-user uninstall exited with $R3; old install left in place"
         ${EndIf}
       ${EndIf}
     ${Else}
-      ; Registry ghost with no uninstaller on disk: just remove the Apps & Features entry.
+      ; Registry ghost with no uninstaller on disk: just remove the Apps & Features entry. The
+      ; ghost's shortcuts, if any survive, point at a binary that is gone - recreate ours too.
       DeleteRegKey HKCU "${BF_PERUSER_UNINSTKEY}"
+      StrCpy $BF_MigratedPerUser 1
     ${EndIf}
   ${EndIf}
 !macroend
@@ -138,6 +145,38 @@
   Pop $0
   nsExec::ExecToLog '"$SYSDIR\sc.exe" start ${BF_SERVICE}'
   Pop $0 ; 1056 already-running and transient start failures are tolerated: start= auto covers the next boot
+
+  ; The one-time migration deletes the per-user install's shortcuts (its uninstaller owns them),
+  ; and an updater-driven install runs in update mode, where the template's
+  ; CreateOrUpdateDesktopShortcut / CreateOrUpdateStartMenuShortcut return without creating
+  ; anything - by design, so ordinary updates never resurrect icons a user deleted. Net effect on
+  ; the 2.3.x -> perMachine transition: no desktop icon, nothing in Start search, while Apps &
+  ; Features shows the app fine (field-caught). Recreate them through the template's own
+  ; functions - same paths, same AppUserModelId, same no-shortcut preference handling - with
+  ; update mode masked for just these two calls. Ordinary updates keep the flag at 0 and are
+  ; untouched.
+  ${If} $BF_MigratedPerUser = 1
+    DetailPrint "Recreating shortcuts after the per-user migration"
+    StrCpy $R9 $UpdateMode
+    StrCpy $UpdateMode 0
+    Call CreateOrUpdateDesktopShortcut
+    Call CreateOrUpdateStartMenuShortcut
+    StrCpy $UpdateMode $R9
+  ${Else}
+    ; Heal for installs the pre-fix migration left shortcut-less (the field window before this
+    ; hook existed): the app updates fine but has no Start Menu entry, so Windows search cannot
+    ; find it. A MISSING Start Menu shortcut on update is healed - an unfindable app is never a
+    ; user's deliberate choice - while a missing desktop icon alone stays respected as one.
+    ${IfNot} ${FileExists} "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk"
+      ${IfNot} ${FileExists} "$SMPROGRAMS\${PRODUCTNAME}.lnk"
+        DetailPrint "Start Menu entry missing; recreating it"
+        StrCpy $R9 $UpdateMode
+        StrCpy $UpdateMode 0
+        Call CreateOrUpdateStartMenuShortcut
+        StrCpy $UpdateMode $R9
+      ${EndIf}
+    ${EndIf}
+  ${EndIf}
 !macroend
 
 !macro NSIS_HOOK_PREUNINSTALL
