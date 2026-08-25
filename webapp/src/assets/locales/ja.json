@@ -40,8 +40,8 @@
       }
     },
     "macro": {
-      "title": "出航がクリックされませんでした",
-      "content": "BetterFleet が「出航」をクリックできませんでした。クルーと一緒に出航するには、ご自身でクリックしてください。"
+      "title": "Set sail not clicked",
+      "content": "BetterFleet could not click “Set sail” for you. Click it yourself to leave with your crew."
     },
     "research": {
       "notInMenu": {
@@ -239,7 +239,7 @@
       "cancel": "キャンセル",
       "error": "サインインに失敗しました。もう一度お試しください。",
       "done": "このタブを閉じて、BetterFleet に戻ってください。",
-      "portBusy": "サインインを開始できませんでした: 別のプログラムがポート 47823〜47825 を使用しています。いずれかを解放するか、パソコンを再起動してから、もう一度お試しください。"
+      "portBusy": "Sign-in could not start: another program is using ports 47823-47825. Free one of them, or restart your computer, then try again."
     },
     "continue": "続行",
     "description": "BetterFleetへようこそ！あなたを仲間に迎えられて嬉しく思います。アプリケーションを利用するには、アカウントにログインするか、新しく作成してください！",

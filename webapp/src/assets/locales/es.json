@@ -40,8 +40,8 @@
       }
     },
     "macro": {
-      "title": "No se pulsó zarpar",
-      "content": "BetterFleet no ha podido pulsar «Zarpar» por ti. Púlsalo tú para salir con tu tripulación."
+      "title": "No hacer clic en la vela",
+      "content": "BetterFlleet no pudo hacer clic en \"Establecer vela\" para ti. Haz clic en él mismo para salir con tu tripulación."
     },
     "research": {
       "notInMenu": {
@@ -239,7 +239,7 @@
       "cancel": "Cancelar",
       "error": "Error al iniciar sesión. Inténtalo de nuevo.",
       "done": "Puedes cerrar esta pestaña y volver a BetterFleet.",
-      "portBusy": "No se ha podido iniciar sesión: otro programa está usando los puertos 47823-47825. Libera uno, o reinicia el ordenador, e inténtalo de nuevo."
+      "portBusy": "No se pudo iniciar sesión: otro programa está usando los puertos 47823-47825. Libere uno de ellos, o reinicie su computadora, y vuelva a intentarlo."
     },
     "continue": "Continuar",
     "description": "¡Bienvenido a BetterFleet! Nos encanta tenerte entre nosotros. Para acceder a la aplicación, inicia sesión en tu cuenta o crea una.",

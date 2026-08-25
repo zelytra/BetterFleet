@@ -40,8 +40,8 @@
       }
     },
     "macro": {
-      "title": "Отплытие не нажато",
-      "content": "BetterFleet не смог нажать «Отплыть» за вас. Нажмите сами, чтобы выйти в море вместе с командой."
+      "title": "Set sail not clicked",
+      "content": "BetterFleet could not click “Set sail” for you. Click it yourself to leave with your crew."
     },
     "research": {
       "notInMenu": {
@@ -239,7 +239,7 @@
       "cancel": "Отмена",
       "error": "Не удалось войти. Пожалуйста, попробуйте снова.",
       "done": "Вы можете закрыть эту вкладку и вернуться в BetterFleet.",
-      "portBusy": "Не удалось начать вход: другая программа занимает порты 47823-47825. Освободите один из них или перезагрузите компьютер и попробуйте снова."
+      "portBusy": "Sign-in could not start: another program is using ports 47823-47825. Free one of them, or restart your computer, then try again."
     },
     "continue": "Продолжить",
     "description": "Добро пожаловать в BetterFleet! Мы рады видеть вас среди нас. Чтобы получить доступ к приложению, войдите в свою учётную запись или создайте новую!",
