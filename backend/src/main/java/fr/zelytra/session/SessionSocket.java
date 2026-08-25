@@ -417,17 +417,81 @@ public class SessionSocket {
      * supported release connect without enumerating each candidate in the list.
      */
     private boolean isSupportedClientVersion(String clientVersion) {
+        return isSupportedClientVersion(clientVersion, appVersion);
+    }
+
+    /**
+     * The allowlist rule, plus one asymmetry: a client whose base version is NEWER than the newest
+     * release the list knows is accepted. "Outdated" means old - the gate exists to kick clients
+     * whose release was pruned from the list, and the only source of future builds is the
+     * maintainer's own release candidates. Refusing those made every RC campaign unable to join
+     * the production backend until it was redeployed with the new list, which is exactly
+     * backwards: the backend deploy follows the release, it cannot precede it.
+     * <p>
+     * Package-private and pure so the rule is unit-tested against a literal list rather than
+     * through a socket handshake.
+     */
+    static boolean isSupportedClientVersion(String clientVersion, List<String> allowedVersions) {
         if (clientVersion == null) {
             return false;
         }
-        if (appVersion.contains(clientVersion)) {
+        if (allowedVersions.contains(clientVersion)) {
             return true;
         }
-        int suffix = clientVersion.indexOf('-');
-        if (suffix > 0) {
-            return appVersion.contains(clientVersion.substring(0, suffix));
+        // Base-to-base match: an RC and its release share a base, and so do two RCs of the same
+        // campaign - a 2.4.0-rc.2 client must connect to a backend whose list carries 2.4.0-rc.1
+        // (an rc-built backend appends its own full version) just as it does to one carrying 2.4.0.
+        String base = baseVersionOf(clientVersion);
+        for (String allowed : allowedVersions) {
+            if (baseVersionOf(allowed).equals(base)) {
+                return true;
+            }
         }
-        return false;
+        int[] client = parseBaseVersion(base);
+        if (client == null) {
+            return false;
+        }
+        int[] newest = null;
+        for (String allowed : allowedVersions) {
+            int[] parsed = parseBaseVersion(baseVersionOf(allowed));
+            if (parsed != null && (newest == null || compareVersions(parsed, newest) > 0)) {
+                newest = parsed;
+            }
+        }
+        return newest != null && compareVersions(client, newest) > 0;
+    }
+
+    /** Everything before the first {@code -}: {@code 2.4.0-rc.2} -> {@code 2.4.0}. */
+    private static String baseVersionOf(String version) {
+        int suffix = version.indexOf('-');
+        return suffix > 0 ? version.substring(0, suffix) : version;
+    }
+
+    /** {@code major.minor.patch} as three ints, or null when the string is not that shape. */
+    private static int[] parseBaseVersion(String base) {
+        String[] parts = base.split("\\.");
+        if (parts.length != 3) {
+            return null;
+        }
+        try {
+            return new int[]{
+                    Integer.parseInt(parts[0]),
+                    Integer.parseInt(parts[1]),
+                    Integer.parseInt(parts[2])
+            };
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private static int compareVersions(int[] left, int[] right) {
+        for (int i = 0; i < 3; i++) {
+            int order = Integer.compare(left[i], right[i]);
+            if (order != 0) {
+                return order;
+            }
+        }
+        return 0;
     }
 
     private void handleUpdateMessage(Player player) {
