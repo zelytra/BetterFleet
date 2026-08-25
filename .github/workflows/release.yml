@@ -220,6 +220,40 @@ jobs:
             gh release edit "${TAG}" --repo "${{ github.repository }}" --draft=false --prerelease=false --latest=true
           fi
 
+      # tauri-action generates latest.json while the release is still a DRAFT, so its platform
+      # URLs point at api.github.com/repos/.../releases/assets/<id> - the only address a draft
+      # asset has. That API is rate-limited to 60 unauthenticated requests per hour PER IP, and
+      # every installed client downloads its update through it: players behind a shared IP (CGNAT,
+      # VPN - a core audience) get 403s and "update failed" for no visible reason. Now that the
+      # release is published, every asset has a public releases/download URL served by the CDN
+      # with no rate limit: rewrite the manifest to it.
+      - name: Point latest.json at the public download URLs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.resolve-version.outputs.tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh release download "${TAG}" --repo "${REPO}" --pattern latest.json --clobber
+          gh api "repos/${REPO}/releases/tags/${TAG}" -q '.assets[] | "\(.id) \(.name)"' > assets.map
+          python3 - <<'REWRITE'
+          import json, os
+          ids_to_names = dict(
+              line.split(" ", 1)
+              for line in open("assets.map").read().strip().splitlines()
+          )
+          repo, tag = os.environ["REPO"], os.environ["TAG"]
+          manifest = json.load(open("latest.json"))
+          for platform in manifest["platforms"].values():
+              asset_id = platform["url"].rstrip("/").split("/")[-1]
+              # Already a public URL (asset name, not a numeric id): nothing to rewrite.
+              if asset_id in ids_to_names:
+                  name = ids_to_names[asset_id]
+                  platform["url"] = f"https://github.com/{repo}/releases/download/{tag}/{name}"
+          json.dump(manifest, open("latest.json", "w"), indent=2)
+          REWRITE
+          gh release upload "${TAG}" --repo "${REPO}" latest.json --clobber
+
   publish-backend:
     needs: [resolve-version, verify]
     name: Backend app
