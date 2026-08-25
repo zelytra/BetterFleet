@@ -44,14 +44,18 @@ function setTauriConfVersion(path, version) {
 
 function setCargoPackageVersion(path, version) {
   const content = readFileSync(path, "utf8");
-  const updated = content.replace(
-    /(\[package\][\s\S]*?^version = )"[^"]+"/m,
-    `$1"${version}"`,
-  );
-  if (updated === content) {
-    throw new Error(`Could not update [package].version in ${path}`);
+  const pattern = /(\[package\][\s\S]*?^version = )"([^"]+)"/m;
+  const match = content.match(pattern);
+  if (!match) {
+    throw new Error(`No [package].version found in ${path}`);
   }
-  writeFileSync(path, updated);
+  if (match[2] === version) {
+    // Already at the tag's version: a re-tag of the same release (the sync-version job wrote it
+    // back to master after a previous publish of this tag). A no-op, not a failure - erroring
+    // here killed every re-publish of a pulled tag at "Set version from tag".
+    return;
+  }
+  writeFileSync(path, content.replace(pattern, `$1"${version}"`));
 }
 
 function setAppVersionList(path, version) {
