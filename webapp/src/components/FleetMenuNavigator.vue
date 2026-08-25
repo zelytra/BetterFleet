@@ -61,7 +61,8 @@ const gameStatusRefresh: number = setInterval(() => {
     observeSocketless(rustSotServer, UserStore.player as Player);
     // Capture-repair watchdog (#819): the unelevated GUI cannot capture without the service, so
     // a missing or version-skewed service must become a banner with a next step, never silence.
-    observeCaptureHealth(response.captureHealth ?? "ok", Date.now());
+    // performance.now() because the debounce must survive wall-clock steps (NTP, DST, manual).
+    observeCaptureHealth(response.captureHealth ?? "ok", performance.now());
     // Shareable recap (#685): and the convergence watchdog behind the "alliance formed" card.
     observeConvergence(UserStore.player as Player);
   });

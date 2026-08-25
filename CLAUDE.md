@@ -103,10 +103,11 @@ images too) is `deployment/docker-compose.yml`; the app schema seed is `deployme
 - **Packet capture lives in one Tauri-free crate, `better_fleet_netcap`, with a backend per OS
   (#726, #732).** `run_capture` is the single entry point: `AF_PACKET`/`CAP_NET_RAW` on Linux,
   promiscuous `SOCK_RAW`/`SIO_RCVALL`/Administrator on Windows; both blocking, the GUI wraps them in
-  `spawn_blocking`. On Linux the privileged half already runs out-of-process in the tiny
+  `spawn_blocking`. On Linux the privileged half runs out-of-process in the tiny
   `betterfleet-netcap` binary, so the GUI stays unprivileged (it falls back to in-process capture
-  when the helper is missing or uncapped); Windows still runs it in-process behind its admin
-  manifest until the service in #732 lands. `npm run tauri:dev`
+  when the helper is missing or uncapped); on Windows it runs in the `BetterFleetCapture` service
+  reached over a named pipe (#819) - the GUI is `asInvoker`, and a missing service surfaces a
+  repair banner rather than failing silently. `npm run tauri:dev`
   builds and `setcap`s it for you; the `.deb` post-install and the pacman package's `.install` do it
   at install time, so end users never run setcap. Under Proton the game spreads its UDP sockets across ~100
   `sotgame.exe` task PIDs plus `wineserver`, so candidate ports are unioned across all of them (#725).

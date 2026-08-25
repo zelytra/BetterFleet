@@ -49,19 +49,47 @@ describe("CaptureRepairWatchdog", () => {
     ).toBeNull();
   });
 
-  it("a change of reason restarts the debounce", () => {
+  it("a change of reason does NOT restart the debounce - badness is continuous", () => {
     const watchdog = new CaptureRepairWatchdog();
     watchdog.observe("service-unreachable", t0);
-    // Just before firing, the failure changes shape (service back up but version-skewed).
+    // The failure changes shape just before firing (service back up but version-skewed): the
+    // service has been broken the whole time, so the banner fires on the original schedule,
+    // with the current reason.
     expect(
       watchdog.observe("service-incompatible", t0 + REPAIR_BANNER_AFTER_MS - 1),
     ).toBeNull();
     expect(
+      watchdog.observe("service-incompatible", t0 + REPAIR_BANNER_AFTER_MS),
+    ).toBe("service-incompatible");
+  });
+
+  it("an already-showing banner survives a reason flip, updating its text", () => {
+    const watchdog = new CaptureRepairWatchdog();
+    watchdog.observe("service-unreachable", t0);
+    expect(
+      watchdog.observe("service-unreachable", t0 + REPAIR_BANNER_AFTER_MS),
+    ).toBe("service-unreachable");
+    // The SCM brings a skewed binary back up: still broken, banner must not blink off.
+    expect(
       watchdog.observe(
         "service-incompatible",
-        t0 + REPAIR_BANNER_AFTER_MS - 1 + REPAIR_BANNER_AFTER_MS,
+        t0 + REPAIR_BANNER_AFTER_MS + 3000,
       ),
     ).toBe("service-incompatible");
+  });
+
+  it("a crash-looping service flapping between the two bad states still fires", () => {
+    const watchdog = new CaptureRepairWatchdog();
+    // Alternating reasons every ~3s, as a crash loop produces: unreachable while restarting,
+    // incompatible when up. The banner must arm on schedule regardless.
+    let result: string | null = null;
+    for (let tick = 0; tick * 3000 <= REPAIR_BANNER_AFTER_MS; tick++) {
+      result = watchdog.observe(
+        tick % 2 === 0 ? "service-unreachable" : "service-incompatible",
+        t0 + tick * 3000,
+      );
+    }
+    expect(result).not.toBeNull();
   });
 
   it("never fires for the elevated stopgap", () => {

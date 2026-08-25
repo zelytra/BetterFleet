@@ -63,17 +63,26 @@ pub struct DiagnosticReport {
 /// rather than threaded through the capture call chain: many callers, one reader.
 #[cfg(windows)]
 mod capture_health_state {
-    use std::sync::atomic::{AtomicU8, Ordering};
+    use std::sync::atomic::{AtomicU8, AtomicU32, Ordering};
     pub const OK: u8 = 0;
     pub const SERVICE_UNREACHABLE: u8 = 1;
     pub const SERVICE_INCOMPATIBLE: u8 = 2;
     pub const DEGRADED_ELEVATED: u8 = 3;
     static STATE: AtomicU8 = AtomicU8::new(OK);
+    static TRANSIENT_STREAK: AtomicU32 = AtomicU32::new(0);
     pub fn set(state: u8) {
         STATE.store(state, Ordering::Relaxed);
     }
     pub fn get() -> u8 {
         STATE.load(Ordering::Relaxed)
+    }
+    /// Counts consecutive Transient outcomes; returns the streak INCLUDING this one. A service
+    /// that is "busy" forever is not busy, it is wedged - the caller escalates past a threshold.
+    pub fn count_transient() -> u32 {
+        TRANSIENT_STREAK.fetch_add(1, Ordering::Relaxed) + 1
+    }
+    pub fn reset_transients() {
+        TRANSIENT_STREAK.store(0, Ordering::Relaxed);
     }
 }
 
@@ -117,6 +126,7 @@ enum ServiceFailure {
 fn capture_via_service(
     game_ports: &[u16],
     window: Duration,
+    connect_timeout: Duration,
 ) -> Result<(Vec<FlowStat>, Option<u64>), ServiceFailure> {
     use better_fleet::capture::service_ipc::{request_capture, ClientError};
     use better_fleet::capture::service_proto::{CaptureRequest, PIPE_NAME, PROTOCOL_VERSION};
@@ -129,7 +139,6 @@ fn capture_via_service(
     };
     // Connecting is local and fast or not happening; the answer takes the capture window itself,
     // plus margin for the service to aggregate and serialize.
-    let connect_timeout = Duration::from_millis(500);
     let io_deadline = window + Duration::from_secs(5);
     match request_capture(PIPE_NAME, &request, connect_timeout, io_deadline) {
         Ok(response) => Ok((response.flows, response.raw_packets)),
@@ -160,6 +169,58 @@ fn capture_via_service(
     }
 }
 
+/// Consecutive Transient capture outcomes tolerated before they stop being "transient": a
+/// service that answers Busy or times out on every window for this many cycles is wedged, not
+/// busy, and gets treated as unreachable so the repair banner can do its job. At the live
+/// cadence (a window every ~3s) this is ~15s of sustained failure, under the frontend's own 30s
+/// debounce - a genuinely busy service (one long diagnostic capture) never gets near it because
+/// the diagnostic pauses live detection instead of racing it.
+#[cfg(windows)]
+const TRANSIENT_ESCALATE_AFTER: u32 = 5;
+
+/// Whether this process can open the promiscuous socket itself, probed ONCE: elevation is fixed
+/// at process start, and the probe costs interface enumeration (hostname resolution included) -
+/// not something to pay on every failed 2s cycle.
+#[cfg(windows)]
+fn process_is_elevated() -> bool {
+    use std::sync::OnceLock;
+    static ELEVATED: OnceLock<bool> = OnceLock::new();
+    *ELEVATED.get_or_init(better_fleet::capture::can_open_capture_socket)
+}
+
+/// True while a Help-tab diagnostic capture holds the service pipe (#819 review): the service
+/// serves one client at a time, so live detection PAUSES instead of racing the diagnostic -
+/// otherwise every live window during a 20s diagnostic returns Busy, the silence clock runs out,
+/// and the player flaps to MainMenu fleet-wide, caused by the very tool used to debug detection.
+#[cfg(windows)]
+static DIAGNOSTIC_IN_PROGRESS: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+
+/// The detection loop polls this to hold its captures (and its silence clock) while a diagnostic
+/// owns the pipe. Always false off Windows: there the two captures use independent sockets.
+pub fn diagnostic_capture_in_progress() -> bool {
+    #[cfg(windows)]
+    {
+        DIAGNOSTIC_IN_PROGRESS.load(std::sync::atomic::Ordering::Relaxed)
+    }
+    #[cfg(not(windows))]
+    {
+        false
+    }
+}
+
+/// Resets the capture health to Ok. Called when the game closes: with no game there is nothing
+/// to capture, the banner's premise ("detection is dead") is moot, and a player who repairs the
+/// service while the game is closed must not keep a stale banner - the next in-game capture
+/// re-evaluates within seconds anyway.
+pub fn reset_capture_health() {
+    #[cfg(windows)]
+    {
+        capture_health_state::set(capture_health_state::OK);
+        capture_health_state::reset_transients();
+    }
+}
+
 /// One Windows capture, service-first (#819): the GUI runs unelevated, so the service IS the
 /// capture. The one fallback is deliberate and visible: a player following the documented stopgap
 /// - launching the app "as administrator" while the service is broken - still gets the in-process
@@ -167,27 +228,52 @@ fn capture_via_service(
 /// advice would be absurd. Unelevated with no service yields no flows and a health state the
 /// repair banner turns into a next step.
 ///
+/// `connect_timeout` differs by caller: live detection gives up fast (500ms - its next window is
+/// 2s away), the diagnostic waits out an in-flight live window (4s) since it runs once on demand.
+///
 /// Returns the flows, the raw packet count, and the backend label the Help-tab diagnostic prints.
 #[cfg(windows)]
 fn capture_windows_blocking(
     game_ports: Vec<u16>,
     window: Duration,
+    connect_timeout: Duration,
 ) -> (Vec<FlowStat>, Option<u64>, &'static str) {
     use better_fleet::capture::service_proto::PROTOCOL_VERSION;
     // The label is pinned to the protocol the golden-frame tests freeze; this breaks the build if
     // PROTOCOL_VERSION ever moves without the string moving with it.
     const _: () = assert!(PROTOCOL_VERSION == 1);
-    match capture_via_service(&game_ports, window) {
+    let outcome = capture_via_service(&game_ports, window, connect_timeout);
+    // A "transient" failure repeated every cycle is not transient (#819 review): a wedged capture
+    // thread or a pipe held hostage answers Busy/TimedOut forever, and without escalation that
+    // would mean silent no-detection with the banner never arming - the exact failure this whole
+    // health mechanism exists to prevent.
+    let outcome = match outcome {
+        Err(ServiceFailure::Transient)
+            if capture_health_state::count_transient() >= TRANSIENT_ESCALATE_AFTER =>
+        {
+            log::error!(
+                "[capture] the capture service has been busy or silent for {TRANSIENT_ESCALATE_AFTER} consecutive windows; treating it as unreachable"
+            );
+            Err(ServiceFailure::Unreachable)
+        }
+        other => {
+            if !matches!(other, Err(ServiceFailure::Transient)) {
+                capture_health_state::reset_transients();
+            }
+            other
+        }
+    };
+    match outcome {
         Ok((flows, raw_packets)) => {
             capture_health_state::set(capture_health_state::OK);
             (flows, raw_packets, "capture-service (protocol v1)")
         }
         Err(ServiceFailure::Transient) => {
             // The service is alive but this window got nothing; health is left as it was.
-            (Vec::new(), None, "unavailable (capture service busy)")
+            (Vec::new(), None, "unavailable (capture service busy or slow)")
         }
         Err(failure) => {
-            if better_fleet::capture::can_open_capture_socket() {
+            if process_is_elevated() {
                 capture_health_state::set(capture_health_state::DEGRADED_ELEVATED);
                 log::info!(
                     "[capture] service path failed but this process is elevated; capturing in-process (stopgap)"
@@ -219,7 +305,11 @@ fn capture_windows_blocking(
 /// when the capture ran in-process.
 #[cfg(windows)]
 pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
-    match tokio::task::spawn_blocking(move || capture_windows_blocking(game_ports, window)).await {
+    match tokio::task::spawn_blocking(move || {
+        capture_windows_blocking(game_ports, window, Duration::from_millis(500))
+    })
+    .await
+    {
         Ok((flows, _raw_packets, _backend)) => flows,
         Err(e) => {
             error!("[capture] capture thread failed: {e}");
@@ -240,7 +330,24 @@ async fn capture_for_diagnostic(
     // Same service-first path as live detection; the wire carries raw_packets (#816) so the
     // diagnostic keeps its "capture blocked" signal, and the backend label says which of the
     // paths actually served the numbers a support report is read against (#819).
-    match tokio::task::spawn_blocking(move || capture_windows_blocking(game_ports, window)).await {
+    //
+    // The flag pauses live detection for the whole capture: the service serves one client at a
+    // time, and the two racing turned a 20s diagnostic into a fleet-visible MainMenu flap (#819
+    // review). RAII so a panicking capture cannot leave detection paused forever. The 4s connect
+    // budget waits out one in-flight live window instead of giving up at 500ms like live does.
+    struct PauseLiveDetection;
+    impl Drop for PauseLiveDetection {
+        fn drop(&mut self) {
+            DIAGNOSTIC_IN_PROGRESS.store(false, std::sync::atomic::Ordering::Relaxed);
+        }
+    }
+    DIAGNOSTIC_IN_PROGRESS.store(true, std::sync::atomic::Ordering::Relaxed);
+    let _pause = PauseLiveDetection;
+    match tokio::task::spawn_blocking(move || {
+        capture_windows_blocking(game_ports, window, Duration::from_secs(4))
+    })
+    .await
+    {
         Ok(outcome) => outcome,
         Err(e) => {
             error!("[capture] capture thread failed: {e}");

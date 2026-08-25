@@ -37,8 +37,12 @@ export class CaptureRepairWatchdog {
 
   /**
    * Feeds one health observation; returns the repair reason to display, or null for no banner.
-   * A change of reason restarts the debounce (a skew read seconds after an unreachable read is a
-   * service coming back mid-update, not two independent failures).
+   * The debounce measures CONTINUOUS badness, not continuous same-reason badness: a service
+   * flapping between "unreachable" (restarting) and "incompatible" (up but skewed) has been
+   * broken the whole time, and restarting the clock on each flip would suppress the banner
+   * forever - or hide an already-showing one - during exactly the failure it exists for
+   * (#819 review). Only a healthy reading resets the clock; the reason label just tracks the
+   * latest bad state.
    */
   observe(health: CaptureHealth, nowMs: number): RepairReason | null {
     if (health !== "service-unreachable" && health !== "service-incompatible") {
@@ -46,15 +50,12 @@ export class CaptureRepairWatchdog {
       this.badReason = null;
       return null;
     }
-    if (this.badReason !== health) {
-      this.badReason = health;
+    this.badReason = health;
+    if (this.badSince === null) {
       this.badSince = nowMs;
     }
-    if (
-      this.badSince !== null &&
-      nowMs - this.badSince >= REPAIR_BANNER_AFTER_MS
-    ) {
-      return health;
+    if (nowMs - this.badSince >= REPAIR_BANNER_AFTER_MS) {
+      return this.badReason;
     }
     return null;
   }
