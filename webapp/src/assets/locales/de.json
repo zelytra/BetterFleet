@@ -197,6 +197,10 @@
     },
     "title": "Credits"
   },
+  "captureRepair": {
+    "incompatible": "Server detection is offline: the BetterFleet capture service does not match this version of the app. Re-run the BetterFleet installer to update it.",
+    "unreachable": "Server detection is offline: the BetterFleet capture service is not running. Re-run the BetterFleet installer to repair it — or, as a stopgap, run BetterFleet as administrator."
+  },
   "diagnostic": {
     "banner": "Die Servererkennung scheint zu hängen – eine 20-sekündige Aufzeichnung kann uns verraten, warum.",
     "capture": {

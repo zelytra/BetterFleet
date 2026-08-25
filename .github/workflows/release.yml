@@ -156,8 +156,6 @@ jobs:
 
       - name: Run Rust tests
         working-directory: webapp/src-tauri
-        env:
-          BETTERFLEET_TEST_BUILD: "1"
         run: cargo test
 
       - name: Build Tauri app (dry-run, no publish)

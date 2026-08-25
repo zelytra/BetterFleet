@@ -75,6 +75,18 @@
         </button>
       </template>
     </BannerTemplate>
+    <!-- Capture-service repair (#819): while this shows, server detection is genuinely dead -
+         the unelevated app cannot capture without the service - so it stays until the service
+         answers again, and clears itself then. No dismiss on purpose. -->
+    <div v-if="captureRepair.reason" class="detection-banner capture-repair">
+      <p>
+        {{
+          captureRepair.reason === "service-incompatible"
+            ? t("captureRepair.incompatible")
+            : t("captureRepair.unreachable")
+        }}
+      </p>
+    </div>
     <!-- Guided diagnostic (#688): shows once when detection stays silent in game. -->
     <div v-if="detectionPrompt.visible" class="detection-banner">
       <p>{{ t("diagnostic.banner") }}</p>
@@ -334,6 +346,7 @@ import {
   detectionPrompt,
   dismissDetectionPrompt,
 } from "@/objects/fleet/DetectionWatchdog.ts";
+import { captureRepair } from "@/objects/fleet/CaptureRepairWatchdog.ts";
 import {
   AllianceHint,
   computeHint,

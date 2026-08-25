@@ -387,6 +387,16 @@ impl DetectionState {
         }
     }
 
+    /// One detection cycle passed with the capture deliberately suspended (a Help-tab diagnostic
+    /// owns the capture service's single pipe, #819). Suspension is not silence: the silence
+    /// clock is refreshed so the pause never demotes the status, while status and identity stay
+    /// exactly as they were - no evidence arrived, none was expected.
+    pub(crate) fn on_capture_suspended(&mut self, now: Instant) {
+        if self.last_traffic.is_some() {
+            self.last_traffic = Some(now);
+        }
+    }
+
     /// The game process is gone: this is the one exit that is certain, so everything resets.
     pub(crate) fn on_game_closed(&mut self) {
         self.flows.clear();
@@ -422,6 +432,10 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                     api_lock.server_ip = String::new();
                     api_lock.server_port = 0;
                     state.on_game_closed();
+                    // No game, nothing to capture: a repair done while the game is closed must
+                    // not leave a stale banner (#819 review). The next in-game capture
+                    // re-evaluates the service within seconds.
+                    crate::diagnostics::reset_capture_health();
                     info!("Game is closed");
                 }
                 drop(api_lock);
@@ -494,6 +508,15 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
             // the sparse per-server session flow (issue #364): a handful of packets spread over the
             // whole session, shared by everyone on the world instance. Because a single window often
             // misses it, we accumulate windows per game and lock onto it once it appears.
+            // A Help-tab diagnostic owns the capture service's single pipe for its whole window:
+            // racing it just burns cycles on Busy and, worse, runs the silence clock out into a
+            // fleet-visible MainMenu flap (#819 review). Hold this cycle instead - suspension is
+            // not silence - and resume on the next tick.
+            if crate::diagnostics::diagnostic_capture_in_progress() {
+                state.on_capture_suspended(Instant::now());
+                tokio::time::sleep(Duration::from_millis(750)).await;
+                continue;
+            }
             let port_count = udp_ports.len();
             let window_flows = crate::diagnostics::capture_flows(
                 udp_ports,
@@ -1048,6 +1071,46 @@ mod tests {
         assert_eq!(
             update_session_lock(None, &cleared, 3, None),
             Some((55329, "145.190.66.42".to_string(), 30099))
+        );
+    }
+
+    #[test]
+    fn suspension_refreshes_the_silence_clock_without_touching_identity() {
+        let t0 = Instant::now();
+        let mut state = DetectionState::new();
+        state.on_window(&[host_window(60)], t0);
+        // 20s of suspended cycles - well past SERVER_LOST_GRACE_SECS - must not demote.
+        for i in 1..=10 {
+            state.on_capture_suspended(t0 + Duration::from_secs(2 * i));
+        }
+        let outcome = state.on_window(&[host_window(60)], t0 + Duration::from_secs(21));
+        assert!(
+            matches!(outcome, WindowOutcome::InGame { .. }),
+            "suspension counted as silence: {outcome:?}"
+        );
+    }
+
+    #[test]
+    fn silence_after_a_suspension_still_demotes_from_the_resume_point() {
+        let t0 = Instant::now();
+        let mut state = DetectionState::new();
+        state.on_window(&[host_window(60)], t0);
+        state.on_capture_suspended(t0 + Duration::from_secs(20));
+        // Real empty windows resume at t0+21: within the grace (measured from the suspension
+        // refresh at t0+20) the status HOLDS, and once the post-resume silence alone exceeds the
+        // grace, the ordinary fallback fires - suspension must delay demotion, never disable it.
+        let outcome = state.on_window(&[], t0 + Duration::from_secs(21));
+        assert!(
+            matches!(outcome, WindowOutcome::Holding { .. }),
+            "{outcome:?}"
+        );
+        let outcome = state.on_window(
+            &[],
+            t0 + Duration::from_secs(20 + SERVER_LOST_GRACE_SECS + 2),
+        );
+        assert!(
+            matches!(outcome, WindowOutcome::FellBack),
+            "post-resume silence past the grace must still demote: {outcome:?}"
         );
     }
 

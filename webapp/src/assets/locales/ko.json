@@ -197,6 +197,10 @@
     },
     "title": "제작진"
   },
+  "captureRepair": {
+    "incompatible": "Server detection is offline: the BetterFleet capture service does not match this version of the app. Re-run the BetterFleet installer to update it.",
+    "unreachable": "Server detection is offline: the BetterFleet capture service is not running. Re-run the BetterFleet installer to repair it — or, as a stopgap, run BetterFleet as administrator."
+  },
   "diagnostic": {
     "banner": "서버 감지가 멈춘 것 같습니다 — 20초간 캡처하면 원인을 알 수 있습니다.",
     "capture": {
