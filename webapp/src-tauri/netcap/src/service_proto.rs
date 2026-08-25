@@ -33,9 +33,14 @@ pub const MAX_REQUEST_BYTES: usize = 4 * 1024;
 /// trust: the client refuses anything bigger rather than allocating without bound.
 pub const MAX_RESPONSE_BYTES: usize = 4 * 1024 * 1024;
 
-/// Most ports a single request may name. The game owns a couple of UDP sockets; a request naming
-/// dozens is not the GUI talking.
-pub const MAX_PORTS_PER_REQUEST: usize = 16;
+/// Most ports a single request may name. Sized from the field, not from intuition: in a server,
+/// Sea of Thieves and its side processes legitimately own DOZENS of UDP sockets (SDR relays, EOS,
+/// voice), and the GUI unions them all - a cap of 16 had the service refusing every in-game
+/// request while the menu, with its few sockets, worked fine. The in-process capture never
+/// capped at all (ports only filter aggregation; the capture is promiscuous either way), so this
+/// bound exists purely as a tripwire for absurd callers, and must stay far above anything the
+/// game can produce.
+pub const MAX_PORTS_PER_REQUEST: usize = 128;
 
 /// Longest capture window a request may ask for, in seconds. Live detection uses 2 s windows and
 /// the diagnostic tens of seconds; anything beyond this cap is a caller trying to hold the
