@@ -32,13 +32,6 @@ pub(crate) fn same_process(a: HWND, b: HWND) -> bool {
     pid_a != 0 && pid_a == pid_b
 }
 
-/**
-* This function is kinda black magic, the goal is to click at the right coordinates proportionnaly
-* to the window size, even if the window is not fullscreen and even if it's a weird format.
-*
-* The game menu is always forced to 16/9 aspect ratio, so we can calculate the black bars size and
-* the game content size.
-*/
 /// The game drives its menu cursor from RAW INPUT deltas, not from the OS cursor: an injected
 /// absolute move lands the visible cursor on the button without producing so much as a hover, and
 /// window messages posted to its queue are never read (both established in the field, one rebuild

@@ -793,24 +793,9 @@ public class SessionManager {
     }
 
     /**
-     * Sends a message to a player within a session identified by the WebSocket ID.
-     * <p>
-     * This method sends a specified data object to a player in a session identified by the WebSocket ID. The message type
-     * and data to be broadcast are specified by the parameters. It uses {@link SessionManager} to check if the session
-     * and the corresponding WebSocket connection exist. If the session or WebSocket does not exist, it logs an info
-     * message and returns without sending any data. It constructs a {@link SocketMessage} with the messageType and data,
-     * converts it into JSON format, and then sends this JSON string to the player using their WebSocket.
-     * If any error occurs during the JSON conversion or sending, it logs an error or throws an {@link Error} respectively.
-     *
-     * @param <T>         The type of data to be sent. This allows the method to be used with various types of
-     *                    data objects.
-     * @param session     The WebSocket to which the data will be sent. This is used to identify the
-     *                    player who should receive the message.
-     * @param messageType The type of the message to be sent. This helps in identifying the purpose or action of
-     *                    the message on the client side.
-     * @param data        The data to be sent. This is the actual content of the message being sent to the player.
-     *                    The type of this data is generic, allowing for flexibility in what can be sent.
-     * @throws Error if there is an issue with converting the {@link SocketMessage} object to a JSON string.
+     * Serializes {@code data} into a {@link SocketMessage} of the given type and sends it on one
+     * WebSocket, asynchronously. No session lookup happens here - the caller supplies the socket -
+     * and a send failure is logged by the completion handler rather than thrown.
      */
     public <T> void sendDataToPlayer(Session session, MessageType messageType, T data) {
         String json = formatMessage(messageType, data);

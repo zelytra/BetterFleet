@@ -80,7 +80,7 @@ struct GameObject {
     capture_health: &'static str
 }
 
-// Here's how to call Rust functions from frontend : https://tauri.app/v1/guides/features/command/
+// Commands callable from the frontend: https://v2.tauri.app/develop/calling-rust/
 
 
 lazy_static! {
@@ -472,7 +472,6 @@ async fn get_server_port(api: State<'_, Arc<RwLock<Api>>>) -> Result<u16, String
 
 #[tauri::command]
 async fn get_game_object(api: State<'_, Arc<RwLock<Api>>>) -> Result<GameObject, String> {
-    // Let's build an array with ip, port and status
     let api_lock = api.inner().read().await;
     let game_object = GameObject {
         ip: api_lock.get_server_ip().await,
@@ -482,7 +481,7 @@ async fn get_game_object(api: State<'_, Arc<RwLock<Api>>>) -> Result<GameObject,
         capture_health: crate::diagnostics::capture_health_label()
     };
 
-    Ok(game_object.into())
+    Ok(game_object)
 }
 
 #[tauri::command]
@@ -685,7 +684,7 @@ fn collect_recent_log_lines(dir: &Path, max_lines: usize) -> io::Result<String> 
             files.push((modified, path));
         }
     }
-    files.sort_by(|a, b| b.0.cmp(&a.0));
+    files.sort_by_key(|(modified, _)| std::cmp::Reverse(*modified));
 
     // Walk newest file to oldest, keeping tails; the blocks come out newest-first, so emit them in
     // reverse to keep the export chronological.

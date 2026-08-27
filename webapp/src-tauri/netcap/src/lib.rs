@@ -58,7 +58,7 @@ pub struct FlowStat {
 /// Returns true when a remote UDP port falls in the range Sea of Thieves game servers use.
 /// Extracted as a pure function so the core detection heuristic can be unit-tested.
 pub fn is_plausible_sot_port(port: u16) -> bool {
-    port >= 30000 && port < 40000
+    (30000..40000).contains(&port)
 }
 
 /// Aggregates observed UDP packets into per-flow statistics. Deliberately free of
@@ -234,9 +234,9 @@ pub fn can_open_capture_socket() -> bool {
 
 /// Opens one promiscuous `SOCK_RAW` socket bound to `addr`, ready to read whole IP packets.
 ///
-/// `Type::RAW` + `WSAIoctl(SIO_RCVALL)` both require Administrator; that pair is the entire reason
-/// the Windows GUI still ships a `requireAdministrator` manifest, and the reason this lives in the
-/// Tauri-free crate: #732 moves it into a service so the GUI can drop the manifest.
+/// `Type::RAW` + `WSAIoctl(SIO_RCVALL)` both require Administrator; that pair is why the capture
+/// runs in the LocalSystem BetterFleetCapture service (#732) - the GUI itself ships `asInvoker`
+/// since #819 - and why this lives in the Tauri-free crate the service links.
 #[cfg(windows)]
 fn open_promiscuous_socket(addr: SocketAddr) -> std::io::Result<Socket> {
     use std::os::windows::io::AsRawSocket;

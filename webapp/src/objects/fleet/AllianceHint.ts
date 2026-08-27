@@ -54,11 +54,6 @@ export async function fetchAllianceStats(): Promise<AllianceStatsPayload | null>
   return cache.payload;
 }
 
-/** Test seam: drops the cache so specs can exercise fetch behaviour deterministically. */
-export function resetAllianceHintCache(): void {
-  cache = null;
-}
-
 function pad(hour: number): string {
   return String(hour).padStart(2, "0") + ":00";
 }

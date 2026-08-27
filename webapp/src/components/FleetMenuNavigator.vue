@@ -68,8 +68,6 @@ const gameStatusRefresh: number = setInterval(() => {
   });
 }, 400);
 
-//document.addEventListener('contextmenu', event => event.preventDefault());
-
 window.onbeforeunload = () => {
   window.localStorage.setItem(
     LocalKey.USER_STORE,

@@ -82,9 +82,12 @@ Auth model: Keycloak OIDC bearer via `@Authenticated`. **Only `POST /report/send
 | `/servers/ip` | GET | `SessionManager` | dump the `sotServers` cache |
 | `/public-sessions` | GET | `SessionDirectoryEndpoints` | sessions snapshot |
 | `/public-sessions/stream` | GET (SSE) | `SessionDirectoryEndpoints` | live snapshot stream |
-| `/report/list/all` | GET | `ReportEndpoints` | all reports |
-| `/report/list/{page}/{amount}` | GET | `ReportEndpoints` | paged reports |
+| `/report/list/{page}/{amount}` | GET | `ReportEndpoints` | paged reports (`/report/list/all` was removed in #835) |
+| `/report/{id}/position` | GET | `ReportEndpoints` | a report's page position |
 | `/report/send` | POST | `ReportEndpoints` | persist a report (**`@Authenticated`**) |
+| `/guest/register` | GET | `GuestEndpoints` | session-bound guest token (#682) |
+| `/stats/history` | GET | `StatsEndpoints` | daily stats history |
+| `/stats/tries` | GET | `AllianceStatsEndpoints` | tries histogram |
 | `/github/release/download` | GET | `GithubRest` | latest Windows installer URL |
 | `/github/release/latest` | GET | `GithubRest` | latest release: version + the release's real assets (`name`,`size`,`url`) enumerated from GitHub's `releases/latest`, cached ~5 min |
 | `/stats/online-users` | GET | `StatsEndpoints` | live user count |

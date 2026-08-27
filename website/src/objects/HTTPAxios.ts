@@ -10,7 +10,6 @@ export class HTTPAxios {
     "Access-Control-Allow-Methods": "GET, POST, DELETE",
   };
   private readonly url = import.meta.env.VITE_BACKEND_HOST + "/";
-  public isAuth = false;
 
   constructor(path: string, json?: any) {
     this.path = path;
@@ -35,17 +34,5 @@ export class HTTPAxios {
     console.debug("[POST] " + this.url + this.path);
     const urlPath = this.url + this.path;
     return await this.axios.post(urlPath, this.json, options);
-  }
-
-  async delete() {
-    console.debug("[DELETE] " + this.url + this.path);
-    const urlPath = this.url + this.path;
-    return await this.axios.delete(urlPath, this.json);
-  }
-
-  async patch() {
-    console.debug("[PATCH] " + this.url + this.path);
-    const urlPath = this.url + this.path;
-    return await this.axios.patch(urlPath, this.json);
   }
 }

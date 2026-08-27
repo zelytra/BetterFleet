@@ -16,7 +16,7 @@ import java.util.concurrent.Executors;
  * JOIN_SERVER arrives on a vert.x event-loop thread, and the proxycheck.io call regularly takes
  * seconds or times out; running it inline stalls every other socket that event loop carries. So the
  * join completes on the cached (possibly location-less) server, this resolver chases the location on
- * its own pool, and {@link SessionManager#applyServerLocation} broadcasts it once it lands.
+ * its own pool, and {@link SessionManager#applyServerGeo} broadcasts it once it lands.
  * <p>
  * It owns a small dedicated pool rather than the shared managed executor: geolocation is slow and
  * bursty (a whole crew reports the same server at the end of a countdown) and has no business

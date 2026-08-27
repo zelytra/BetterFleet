@@ -446,11 +446,4 @@ export class Fleet {
       .toLowerCase()
       .replace("_", "-");
   }
-
-  /**
-   * @return List of the players with the right master
-   */
-  public getMasters(): Player[] {
-    return this.players.filter((player) => player.isMaster);
-  }
 }

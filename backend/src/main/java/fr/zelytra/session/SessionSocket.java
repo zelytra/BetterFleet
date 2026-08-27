@@ -383,7 +383,7 @@ public class SessionSocket {
             return;
         }
 
-        session.setMaxIdleTimeout(30000); // 1h of timeout
+        session.setMaxIdleTimeout(30000); // 30s: the client keep-alive rearms it well within this
 
         SessionManager manager = sessionManager;
 
@@ -549,7 +549,4 @@ public class SessionSocket {
         }
     }
 
-    public String getProxyApiKey() {
-        return proxyApiKey;
-    }
 }

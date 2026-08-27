@@ -63,8 +63,7 @@ fn main() {
     // spawn its own harness (os error 740) behind a BETTERFLEET_TEST_BUILD escape hatch - both
     // are gone with the requirement. The manifest itself stays for the common-controls
     // dependency.
-    let manifest = format!(
-        r#"
+    let manifest = r#"
     <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
       <dependency>
         <dependentAssembly>
@@ -81,17 +80,15 @@ fn main() {
       <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
         <security>
             <requestedPrivileges>
-                <requestedExecutionLevel level="{level}" uiAccess="false" />
+                <requestedExecutionLevel level="asInvoker" uiAccess="false" />
             </requestedPrivileges>
         </security>
       </trustInfo>
     </assembly>
-    "#,
-        level = "asInvoker"
-    );
+    "#;
 
     let mut windows = tauri_build::WindowsAttributes::new();
-    windows = windows.app_manifest(&manifest);
+    windows = windows.app_manifest(manifest);
     tauri_build::try_build(
       tauri_build::Attributes::new().windows_attributes(windows)
     ).expect("failed to run build script");

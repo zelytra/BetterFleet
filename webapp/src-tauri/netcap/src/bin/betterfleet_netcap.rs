@@ -6,10 +6,10 @@
 //! game's UDP flows and prints them, ranked, as JSON for the GUI to read. It links only the pure
 //! capture core (better_fleet_netcap), std and serde_json, never Tauri.
 //!
-//! Linux drives it today. On Windows the capture backend now lives in the same crate (#732), so this
-//! binary builds and behaves identically there; what is still missing is the privileged host that
-//! runs it without a UAC prompt - the service in #816. Until then the Windows GUI keeps capturing
-//! in-process behind its `requireAdministrator` manifest.
+//! Linux drives it. On Windows the same capture core is hosted by the BetterFleetCapture service
+//! (#816), reached over a named pipe rather than argv/stdout - this binary builds there too, but
+//! nothing ships or spawns it: it exists on Windows only so one workspace build covers both CI
+//! legs.
 //!
 //! Usage: `betterfleet-netcap <comma-separated-ports> <window-secs>`
 //!   e.g. `betterfleet-netcap 59639,51485 20`
@@ -45,7 +45,7 @@ fn main() {
         #[cfg(windows)]
         eprintln!(
             "betterfleet-netcap: cannot open the promiscuous capture socket (SIO_RCVALL needs \
-             Administrator; run this from the capture service or an elevated process)"
+             Administrator; on Windows the BetterFleetCapture service is the supported host)"
         );
         #[cfg(not(windows))]
         eprintln!(

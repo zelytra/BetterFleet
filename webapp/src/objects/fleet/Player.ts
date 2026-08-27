@@ -4,7 +4,7 @@ import { SotServer } from "@/objects/fleet/SotServer.ts";
 
 export enum PlayerStates {
   CLOSED = "CLOSED", // Game is closed
-  STARTED = "STARTED", // Game detected an // Game is in first menu after launch / launching / stopping
+  STARTED = "STARTED", // Game process detected: first menu after launch, launching, or stopping
   MAIN_MENU = "MAIN_MENU", // In menu to select game mode
   IN_GAME = "IN_GAME", // Status when the remote IP and port was found and player is in game
 }

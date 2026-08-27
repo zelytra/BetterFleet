@@ -127,15 +127,7 @@ public class Fleet {
     }
 
     /**
-     * Retrieves a player by their username.
-     * <p>
-     * This method iterates through the list of players in the current context (presumably a collection
-     * of players within a class, such as a game lobby or session) and returns the player whose username
-     * matches the provided username. If no player with the specified username is found, the method returns
-     * {@code null}.
-     *
-     * @param username The username of the player to retrieve.
-     * @return The {@link Player} object with the matching username, or {@code null} if no matching player is found.
+     * The fleet member with exactly this username (case-sensitive), or {@code null} when absent.
      */
     public Player getPlayerFromUsername(String username) {
         for (Player player : this.players) {

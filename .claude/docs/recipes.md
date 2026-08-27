@@ -8,9 +8,9 @@ the bridge).
 
 1. Edit **`webapp/src/assets/locales/source.json`**: add/change the key. This is the only file you
    edit by hand.
-2. Add the **same key** to `en.json`, `fr.json`, `es.json`, `de.json`, `it.json`. Edit **in place**;
-   never reformat the whole file (it reorders integer-keyed maps). Real translations for fr; the
-   others can hold the English text until Crowdin corrects them.
+2. Add the **same key** to every other locale file (all fourteen, `en.json` through `zh.json`).
+   Edit **in place**; never reformat the whole file (it reorders integer-keyed maps). Real
+   translations for fr; the others can hold the English text until Crowdin corrects them.
 3. Use it: `t("your.key")` in a component, `tsi18n.global.t("your.key")` in a `.ts` module.
 4. Run `npm run test`: `Locales.spec.ts` fails if any locale is missing the key.
 

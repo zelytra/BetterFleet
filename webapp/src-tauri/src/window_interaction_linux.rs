@@ -194,10 +194,9 @@ fn click_in_window_proportionally(
     Ok(())
 }
 
-/// Pure letterbox math, split out so it can be unit-tested without an X server - the one part of the
-/// auto-click that CI can verify. Given the game window's pixel size and a proportional point on the
-/// forced-16:9 content, returns that point's pixel offset *inside the window*, black bars already
-/// accounted for. Identical to the Windows path's inline computation.
+/// The click point inside the window, black bars accounted for: a thin delegation to the shared
+/// [`crate::window_geometry`] module both platforms use (#815), kept as a local name so the X11
+/// click code reads in window terms.
 fn content_click_point(
     window_width: f32,
     window_height: f32,
