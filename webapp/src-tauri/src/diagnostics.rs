@@ -361,11 +361,14 @@ async fn capture_for_diagnostic(
     game_ports: Vec<u16>,
     window: Duration,
 ) -> (Vec<FlowStat>, Option<u64>, &'static str) {
-    (
-        capture_flows(game_ports, window).await,
-        None,
-        "linux helper / in-process",
-    )
+    // The label tells a support reader why the numbers are empty without the log: a capture that
+    // was skipped for want of ports (#856) reads nothing like a helper that ran and heard nothing.
+    let backend = if game_ports.is_empty() {
+        "skipped (no candidate UDP ports)"
+    } else {
+        "linux helper / in-process"
+    };
+    (capture_flows(game_ports, window).await, None, backend)
 }
 
 /// Linux raw-capture backend (#725, #726). Server detection needs an `AF_PACKET` socket, which needs
@@ -382,6 +385,16 @@ async fn capture_for_diagnostic(
 /// from the privilege-separated helper without either knowing which path served the flows.
 #[cfg(target_os = "linux")]
 pub async fn capture_flows(game_ports: Vec<u16>, window: Duration) -> Vec<FlowStat> {
+    if game_ports.is_empty() {
+        // Zero candidate ports is useless to BOTH backends: the helper's contract requires at
+        // least one (an empty argument is its exit-2 usage error), and the in-process fallback
+        // would filter every packet out anyway. Spawning either only manufactures misleading
+        // errors - the field report behind #856 carried fourteen ERROR lines pointing at setcap
+        // while the real condition, port discovery returning nothing, was never named. Name it,
+        // once, and skip.
+        info!("[capture] no candidate UDP ports this cycle; skipping capture");
+        return Vec::new();
+    }
     if let Some(flows) = capture_via_helper(&game_ports, window).await {
         return flows;
     }
@@ -444,6 +457,17 @@ async fn capture_via_helper(game_ports: &[u16], window: Duration) -> Option<Vec<
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
+        // Exit 2 is the helper's usage contract (pinned by helper_contract.rs): WE called it
+        // wrong, and the in-process fallback fed the same arguments would be equally futile.
+        // Reporting it as "unavailable" pointed a whole field report at setcap for a bug that
+        // lived here (#856). Own it loudly and serve no flows.
+        if output.status.code() == Some(2) {
+            error!(
+                "[capture] bug: betterfleet-netcap rejected its arguments (exit 2): {}",
+                stderr.trim()
+            );
+            return Some(Vec::new());
+        }
         error!(
             "[capture] betterfleet-netcap exited with {}: {}",
             output.status,
