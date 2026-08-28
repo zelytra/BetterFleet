@@ -1,6 +1,6 @@
 [package]
 name = "better_fleet"
-version = "2.4.1"
+version = "2.4.2"
 description = "A better fleet creator"
 authors = ["Zelytra <zelytra@users.noreply.github.com>", "dadodasyra"]
 license = ""

@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "BetterFleet",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "identifier": "fr.zelytra",
   "mainBinaryName": "BetterFleet",
   "build": {
