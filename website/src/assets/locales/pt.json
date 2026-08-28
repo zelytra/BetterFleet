@@ -309,6 +309,10 @@
     "download": {
       "title": "Baixar o BetterFleet",
       "description": "Baixe o BetterFleet para Windows ou Linux — escolha o instalador ou pacote que combina com o seu sistema."
+    },
+    "statistics": {
+      "title": "Sea of Thieves statistics - alliance and server data | BetterFleet",
+      "description": "Live Sea of Thieves data from BetterFleet crews: how often alliances reach the same server, the best hours to search, and how many tries it takes."
     }
   },
   "alliance": {

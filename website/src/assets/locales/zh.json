@@ -309,6 +309,10 @@
     "download": {
       "title": "下载 BetterFleet",
       "description": "下载 Windows 或 Linux 版 BetterFleet——选择适合你系统的安装程序或安装包。"
+    },
+    "statistics": {
+      "title": "Sea of Thieves statistics - alliance and server data | BetterFleet",
+      "description": "Live Sea of Thieves data from BetterFleet crews: how often alliances reach the same server, the best hours to search, and how many tries it takes."
     }
   },
   "alliance": {

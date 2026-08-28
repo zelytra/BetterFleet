@@ -2,8 +2,24 @@ import type { RouteLocationNormalized } from "vue-router";
 
 const SITE = "https://betterfleet.fr";
 
-/** The languages this site actually has copy for. */
-const SHIPPED = ["en", "fr", "de", "es", "it"];
+/** The languages this site actually has copy for - every file in assets/locales, and it must stay
+ *  that way: a language missing here is stamped as English for crawlers even though the page
+ *  renders in it (#859). */
+const SHIPPED = [
+  "en",
+  "fr",
+  "de",
+  "es",
+  "it",
+  "hi",
+  "ja",
+  "ko",
+  "pl",
+  "pt",
+  "ru",
+  "uk",
+  "zh",
+];
 
 /**
  * Per-route title, description and canonical.
@@ -55,6 +71,12 @@ const PAGES: Record<
   "/console": {
     title: "seo.console.title",
     description: "seo.console.description",
+  },
+  // The public statistics dashboard: real, indexable content. Without an entry here the guard
+  // returned early and the page wore the previous route's title and canonical (#859).
+  "/statistics": {
+    title: "seo.statistics.title",
+    description: "seo.statistics.description",
   },
   // Catch-all 404, keyed by the route pattern (matched via route.matched). Never indexed.
   "/:pathMatch(.*)*": {
