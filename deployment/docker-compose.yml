@@ -210,6 +210,56 @@ services:
           memory: 4G
     restart: unless-stopped
 
+  # Scheduled logical backups of both databases (#860). Before this, the only copy of production
+  # data was the pgdata directory itself, plus one hand-made tarball that was a month stale - and a
+  # tarball of a running pgdata is not a restorable backup anyway.
+  #
+  # A loop in a tiny container rather than a host cron: the compose file is what self-hosters
+  # deploy, so the backup has to travel with it. It needs no host tooling, it reaches both
+  # databases over the compose network, and it survives a host reboot through `restart:
+  # unless-stopped` like everything else here.
+  backup:
+    image: postgres:14-alpine
+    container_name: betterfleet-backup
+    depends_on:
+      postgres-app:
+        condition: service_healthy
+      postgres-auth:
+        condition: service_healthy
+    volumes:
+      - ./backup/backup.sh:/backup.sh:ro
+      # Bind-mounted so the dumps are visible on the host for off-site copying - which is the part
+      # this cannot do for you: a backup on the same disk as the database survives a bad command,
+      # not a dead disk. Copy ./backups off the box (rsync, provider snapshot, anything) and the
+      # story is complete.
+      - ./backups:/backups
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      # pg_dump reads the password from the environment; it never appears in an argv a `ps` shows.
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+    # Dump once at start (so a fresh deploy has a backup within seconds, not tomorrow), then every
+    # interval. `sh -c` with a sleep loop instead of cron: no crond in this image, no log plumbing
+    # to invent, and the output lands in `docker logs betterfleet-backup` like every other service.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          # Invoked through `sh` rather than executed: a bind mount that loses the executable bit
+          # (a checkout on a filesystem without exec permissions, an archive extraction) would
+          # otherwise fail every run with "permission denied" - caught in the local end-to-end test.
+          sh /backup.sh || echo "[backup] run failed; retrying at the next interval" >&2
+          sleep "$${BACKUP_INTERVAL_SECONDS}"
+        done
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    restart: unless-stopped
+
 # The histeria.fr uplink has a reduced path MTU; Docker's default 1500-byte bridge MTU makes
 # container TLS handshakes stall for several seconds. Pin the bridge MTU to 1420 to match the link.
 networks:
