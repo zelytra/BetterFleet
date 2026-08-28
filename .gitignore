@@ -1,3 +1,5 @@
 deployment/psql-data/
+# Database dumps: production data, and the Keycloak one holds every account. Never in git.
+deployment/backups/
 .idea/
 /deployment/dev/psql-data/
