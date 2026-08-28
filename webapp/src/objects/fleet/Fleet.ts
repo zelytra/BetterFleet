@@ -78,7 +78,11 @@ export class Fleet {
   }
 
   async joinSession(sessionId: string) {
-    if (this.socket && this.socket.readyState >= 2) {
+    // Close whatever previous socket is still alive (CONNECTING or OPEN): its handlers are wired
+    // to this same store, and two live sockets mean two sessions fighting over one state. The
+    // guard used to read `>= 2` - closing only sockets already CLOSING/CLOSED - and the open one
+    // survived every re-join (#859, proven by Fleet.sockets.spec.ts).
+    if (this.socket && this.socket.readyState < 2) {
       this.socket.close();
     }
 
@@ -239,13 +243,19 @@ export class Fleet {
     this.servers = new Map(Object.entries(receivedFleet.servers));
     this.stats = receivedFleet.stats;
     UserStore.player.sessionId = receivedFleet.sessionId;
-    const player: Player = receivedFleet.players.filter(
+    // An UPDATE can race a kick: the broadcast no longer carries the local player while the
+    // departure message is still in flight. The local flags then simply keep their last value -
+    // departure is the kick path's business - instead of the handler throwing on the missing
+    // entry and dropping the rest of the update (#859).
+    const player: Player | undefined = receivedFleet.players.find(
       (x) => x.username == UserStore.player.username,
-    )[0];
-    UserStore.player.isMaster = player.isMaster;
-    UserStore.player.isReady = player.isReady;
-    UserStore.player.device = player.device;
-    UserStore.player.boatSize = player.boatSize;
+    );
+    if (player) {
+      UserStore.player.isMaster = player.isMaster;
+      UserStore.player.isReady = player.isReady;
+      UserStore.player.device = player.device;
+      UserStore.player.boatSize = player.boatSize;
+    }
     // Every readiness / master change flows through here, so this is the single
     // place that reacts to "all players ready" regardless of the mounted view.
     this.evaluateAutoSetSail();
