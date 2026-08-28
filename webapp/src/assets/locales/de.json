@@ -40,8 +40,8 @@
       }
     },
     "macro": {
-      "title": "Auslaufen nicht geklickt",
-      "content": "BetterFleet konnte „In See stechen“ nicht für dich anklicken. Klicke es selbst, um mit deiner Crew loszusegeln."
+      "title": "Segel setzen nicht angeklickt",
+      "content": "BetterFleet konnte für dich nicht auf „Segel setzen“ klicken. Klicke es selbst, um mit deiner Crew zu verlassen."
     },
     "research": {
       "notInMenu": {
@@ -198,8 +198,8 @@
     "title": "Credits"
   },
   "captureRepair": {
-    "incompatible": "Server detection is offline: the BetterFleet capture service does not match this version of the app. Re-run the BetterFleet installer to update it.",
-    "unreachable": "Server detection is offline: the BetterFleet capture service is not running. Re-run the BetterFleet installer to repair it — or, as a stopgap, run BetterFleet as administrator."
+    "incompatible": "Server-Erkennung ist offline: Der BetterFleet Capture-Service stimmt nicht mit dieser Version der App überein. Führen Sie den BetterFleet Installer neu, um ihn zu aktualisieren.",
+    "unreachable": "Servererkennung ist offline: Der BetterFleet Capture-Dienst wird nicht ausgeführt. Führen Sie den BetterFleet Installer neu, um ihn zu reparieren — oder führen Sie BetterFleet als Administrator aus."
   },
   "diagnostic": {
     "banner": "Die Servererkennung scheint zu hängen – eine 20-sekündige Aufzeichnung kann uns verraten, warum.",
@@ -239,7 +239,7 @@
       "cancel": "Abbrechen",
       "error": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
       "done": "Du kannst diesen Tab schließen und zu BetterFleet zurückkehren.",
-      "portBusy": "Die Anmeldung konnte nicht starten: ein anderes Programm belegt die Ports 47823-47825. Gib einen davon frei oder starte den Computer neu und versuche es erneut."
+      "portBusy": "Anmeldung konnte nicht gestartet werden: Ein anderes Programm benutzt die Ports 47823-47825. Kostenlos eine von ihnen oder starten Sie Ihren Computer neu, dann versuchen Sie es erneut."
     },
     "continue": "Weiter",
     "description": "Willkommen bei BetterFleet! Wir freuen uns riesig, dich bei uns zu haben. Um die Anwendung zu nutzen, melde dich bitte bei deinem Konto an oder erstelle ein neues!",

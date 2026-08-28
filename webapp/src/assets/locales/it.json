@@ -40,8 +40,8 @@
       }
     },
     "macro": {
-      "title": "Salpa non cliccato",
-      "content": "BetterFleet non è riuscito a cliccare «Salpa» al posto tuo. Cliccalo tu per partire con la ciurma."
+      "title": "Set sail not clicked",
+      "content": "BetterFleet could not click “Set sail” for you. Click it yourself to leave with your crew."
     },
     "research": {
       "notInMenu": {
@@ -239,7 +239,7 @@
       "cancel": "Annulla",
       "error": "Accesso non riuscito. Riprova.",
       "done": "Puoi chiudere questa scheda e tornare a BetterFleet.",
-      "portBusy": "Impossibile avviare l'accesso: un altro programma sta usando le porte 47823-47825. Liberane una, o riavvia il computer, poi riprova."
+      "portBusy": "Sign-in could not start: another program is using ports 47823-47825. Free one of them, or restart your computer, then try again."
     },
     "continue": "Continua",
     "description": "Benvenuto su BetterFleet! Siamo entusiasti di averti tra noi. Per accedere all'applicazione, accedi al tuo account o creane uno!",
