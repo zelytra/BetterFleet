@@ -6,6 +6,14 @@ import de from "@/assets/locales/de.json";
 import es from "@/assets/locales/es.json";
 // Aliased: vitest's it() owns that name here.
 import italian from "@/assets/locales/it.json";
+import hi from "@/assets/locales/hi.json";
+import ja from "@/assets/locales/ja.json";
+import ko from "@/assets/locales/ko.json";
+import pl from "@/assets/locales/pl.json";
+import pt from "@/assets/locales/pt.json";
+import ru from "@/assets/locales/ru.json";
+import uk from "@/assets/locales/uk.json";
+import zh from "@/assets/locales/zh.json";
 
 /**
  * Guards the locale files against the way i18n actually breaks here: silently.
@@ -27,10 +35,24 @@ const sources = import.meta.glob("@/**/*.{vue,ts}", {
   eager: true,
 }) as Record<string, string>;
 
-const locales = { source, en, fr, de, es, it: italian } as unknown as Record<
-  string,
-  Record<string, unknown>
->;
+// Every shipped file, not the historical six: parity for the #778 languages was unguarded until
+// #859, so a key missed there rendered as its raw path with no failing test.
+const locales = {
+  source,
+  en,
+  fr,
+  de,
+  es,
+  it: italian,
+  hi,
+  ja,
+  ko,
+  pl,
+  pt,
+  ru,
+  uk,
+  zh,
+} as unknown as Record<string, Record<string, unknown>>;
 const LOCALE_NAMES = Object.keys(locales);
 
 function flatten(
