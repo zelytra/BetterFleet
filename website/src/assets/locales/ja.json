@@ -311,8 +311,8 @@
       "description": "WindowsまたはLinux版のBetterFleetをダウンロード。お使いのシステムに合ったインストーラーまたはパッケージを選べます。"
     },
     "statistics": {
-      "title": "Sea of Thieves statistics - alliance and server data | BetterFleet",
-      "description": "Live Sea of Thieves data from BetterFleet crews: how often alliances reach the same server, the best hours to search, and how many tries it takes."
+      "title": "Sea of Thieves統計 — アライアンスとサーバーのデータ | BetterFleet",
+      "description": "BetterFleetのクルーによるSea of Thievesのライブデータ：アライアンスが同じサーバーに集まる頻度、検索に最適な時間帯、そして何回の試行が必要かを確認できます。"
     }
   },
   "alliance": {

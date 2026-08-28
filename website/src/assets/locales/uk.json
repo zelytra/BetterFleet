@@ -311,8 +311,8 @@
       "description": "Завантажте BetterFleet для Windows або Linux — оберіть інсталятор чи пакунок, що підходить вашій системі."
     },
     "statistics": {
-      "title": "Sea of Thieves statistics - alliance and server data | BetterFleet",
-      "description": "Live Sea of Thieves data from BetterFleet crews: how often alliances reach the same server, the best hours to search, and how many tries it takes."
+      "title": "Статистика Sea of Thieves — дані про альянси та сервери | BetterFleet",
+      "description": "Живі дані Sea of Thieves від екіпажів BetterFleet: як часто альянси збираються на одному сервері, найкращі години для пошуку та скільки спроб це займає."
     }
   },
   "alliance": {
