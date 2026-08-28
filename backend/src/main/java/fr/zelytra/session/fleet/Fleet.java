@@ -127,11 +127,12 @@ public class Fleet {
     }
 
     /**
-     * The fleet member with exactly this username (case-sensitive), or {@code null} when absent.
+     * The fleet member with this username, or {@code null} when absent. Case-insensitive, like
+     * every other username lookup in the session code - the split was a real bug (#859).
      */
     public Player getPlayerFromUsername(String username) {
         for (Player player : this.players) {
-            if (player.getUsername().equals(username)) return player;
+            if (player.getUsername().equalsIgnoreCase(username)) return player;
         }
         return null;
     }
