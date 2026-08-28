@@ -867,17 +867,15 @@ public class SessionManager {
         return json;
     }
 
+    // No @Transactional here any more: the repository owns one transaction per counter, so a
+    // statistic can never roll back the session work that triggered it (#868).
     @ActivateRequestContext
-    @Transactional
     public void incrementSession() {
-        StatisticsEntity entity = statisticsRepository.getEntity();
-        entity.setSessionsOpen(entity.getSessionsOpen() + 1);
+        statisticsRepository.incrementSessionsOpen();
     }
 
     @ActivateRequestContext
-    @Transactional
     public void incrementTry() {
-        StatisticsEntity entity = statisticsRepository.getEntity();
-        entity.setSessionTry(entity.getSessionTry() + 1);
+        statisticsRepository.incrementSessionTry();
     }
 }

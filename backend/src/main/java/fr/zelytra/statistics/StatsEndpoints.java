@@ -61,11 +61,9 @@ public class StatsEndpoints {
 
     @POST
     @Path("/download")
-    @Transactional
     public Response addDownloadCount() {
         Log.info("[POST] /stats/download");
-        StatisticsEntity foundStat = statisticsRepository.getEntity();
-        foundStat.setDownload(foundStat.getDownload() + 1);
+        statisticsRepository.incrementDownload();
         return Response.ok().build();
     }
 }

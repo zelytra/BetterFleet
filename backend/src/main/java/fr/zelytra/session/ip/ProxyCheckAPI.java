@@ -1,6 +1,6 @@
 package fr.zelytra.session.ip;
 
-import fr.zelytra.session.SessionSocket;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.json.JSONObject;
@@ -27,6 +27,9 @@ public class ProxyCheckAPI {
     private static final String requestPathParam = "asn=1";
     private static final String tokenParam = "key=";
 
+    @ConfigProperty(name = "proxy.check.api.key", defaultValue = "")
+    String apiKey;
+
     /**
      * Geolocation of an IP: the human-readable location string and the ISO 3166-1 alpha-2 country
      * code (lowercase). {@link #EMPTY} is returned when nothing could be resolved.
@@ -42,7 +45,7 @@ public class ProxyCheckAPI {
      */
     public Geo resolveGeo(String ip) {
         try {
-            URL url = new URL(buildUrl(ip));
+            URL url = new URL(requestUrlFor(ip));
 
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -79,11 +82,19 @@ public class ProxyCheckAPI {
     }
 
 
-    private static String buildUrl(String ip) {
+    /**
+     * The proxycheck.io URL for one IP, token included when one is configured.
+     * <p>
+     * The token is injected here rather than read from a mutable public static that the websocket
+     * endpoint had to keep refreshing (#868): configuration belongs to the client that uses it, and
+     * the old detour meant any lookup before the first JOIN_SERVER of the process went out without
+     * a token. Package-visible so a test can assert what gets built without a network call.
+     */
+    String requestUrlFor(String ip) {
         StringBuilder finalUrl = new StringBuilder();
         finalUrl.append(apiURL).append(ip).append("?").append(requestPathParam);
-        if (!SessionSocket.PROXY_API_KEY.isEmpty()) {
-            finalUrl.append("&").append(tokenParam).append(SessionSocket.PROXY_API_KEY);
+        if (!apiKey.isEmpty()) {
+            finalUrl.append("&").append(tokenParam).append(apiKey);
         }
         return finalUrl.toString();
     }

@@ -59,13 +59,9 @@ public class SessionSocket {
     }
     public static final ConcurrentMap<String, Future<?>> sessionTimeoutTasks = new ConcurrentHashMap<>();
     private static final int RISE_ANCHOR_TIMER = 3; // in seconds
-    public static String PROXY_API_KEY = "";
 
     @ConfigProperty(name = "app.version")
     List<String> appVersion;
-
-    @ConfigProperty(name = "proxy.check.api.key")
-    String proxyApiKey;
 
     // How long after a countdown to snapshot the fleet and record the alliance-formation outcome
     // (issue #673), long enough for detection to settle. Configurable so tests can shorten it.
@@ -147,7 +143,6 @@ public class SessionSocket {
             case KEEP_ALIVE -> {
             }
             case JOIN_SERVER -> {
-                PROXY_API_KEY = proxyApiKey;
                 SotServer sotServer = objectMapper.convertValue(socketMessage.data(), SotServer.class);
                 handleJoinServerMessage(session, sotServer);
             }
