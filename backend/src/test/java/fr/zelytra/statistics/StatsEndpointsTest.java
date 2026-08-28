@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,13 +77,13 @@ public class StatsEndpointsTest {
 
     @Test
     public void addDownloadCountTest() {
-        StatisticsEntity stat = new StatisticsEntity();
-        stat.setDownload(0);
-        when(statisticsRepository.getEntity()).thenReturn(stat);
-
+        // The counter is the repository's business now (#868): the endpoint asks for an atomic
+        // increment instead of reading an entity and writing it back, which lost concurrent
+        // writes. What this asserts is the delegation; the arithmetic is proven under real
+        // concurrency in StatisticsConcurrencyTest.
         Response response = statsEndpoints.addDownloadCount();
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertEquals(1, stat.getDownload());
+        Mockito.verify(statisticsRepository).incrementDownload();
     }
 }
