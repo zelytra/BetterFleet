@@ -40,8 +40,8 @@
       }
     },
     "macro": {
-      "title": "सेट सेल क्लिक नहीं हुआ",
-      "content": "BetterFleet आपके लिए “Set Sail” क्लिक नहीं कर सका। अपने दल के साथ निकलने के लिए इसे स्वयं क्लिक करें।"
+      "title": "Set sail not clicked",
+      "content": "BetterFleet could not click “Set sail” for you. Click it yourself to leave with your crew."
     },
     "research": {
       "notInMenu": {
@@ -239,7 +239,7 @@
       "cancel": "रद्द करें",
       "error": "साइन-इन विफल रहा। कृपया दोबारा प्रयास करें।",
       "done": "आप इस टैब को बंद करके BetterFleet पर वापस आ सकते हैं।",
-      "portBusy": "साइन-इन शुरू नहीं हो सका: कोई अन्य प्रोग्राम पोर्ट 47823-47825 का उपयोग कर रहा है। इनमें से एक खाली करें, या कंप्यूटर पुनः प्रारंभ करें, फिर पुनः प्रयास करें।"
+      "portBusy": "Sign-in could not start: another program is using ports 47823-47825. Free one of them, or restart your computer, then try again."
     },
     "continue": "जारी रखें",
     "description": "BetterFleet में आपका स्वागत है! आपको अपने बीच पाकर हम रोमांचित हैं। एप्लिकेशन का उपयोग करने के लिए, कृपया अपने खाते में लॉग इन करें या एक नया बनाएँ!",
