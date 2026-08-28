@@ -96,12 +96,6 @@ public class SessionManager {
     @ConfigProperty(name = "geo.lookup.retry-delay-ms", defaultValue = "2000")
     long geoRetryDelayMs;
 
-    @GET
-    @Path("ip")
-    public Response getIp() {
-        return Response.ok(sotServers).build();
-    }
-
     /**
      * Creates a new session with a unique ID and adds it to the sessions map.
      *
@@ -339,7 +333,10 @@ public class SessionManager {
         for (Map.Entry<String, Fleet> sessionEntry : sessions.entrySet()) {
             Fleet fleet = sessionEntry.getValue();
             for (Player player : fleet.getPlayers()) {
-                if (player.getUsername().equals(username)) {
+                // Case-INSENSITIVE, like leaveSession and isPlayerInSession: matching one way here
+                // and the other there let a case variant walk past the duplicate-join guard and
+                // then match on the way out, taking both entries with it (#859).
+                if (player.getUsername().equalsIgnoreCase(username)) {
                     return fleet; // Return the Fleet containing the player
                 }
             }
@@ -842,13 +839,25 @@ public class SessionManager {
         });
     }
 
+    /**
+     * One shared, pre-configured mapper for every outbound frame. ObjectMapper is thread-safe once
+     * configured; building one per frame put three configuration calls on the broadcast hot path,
+     * where a busy session sends one frame per member per update (#859).
+     */
+    private static final ObjectMapper OUTBOUND_MAPPER = buildOutboundMapper();
+
+    private static ObjectMapper buildOutboundMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // ISO-8601 strings, not epochs
+        mapper.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return mapper;
+    }
+
     public <T> String formatMessage(MessageType messageType, T data) {
         SocketMessage<T> message = new SocketMessage<>(messageType, data);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // To serialize as ISO-8601 strings
-        objectMapper.setTimeZone(TimeZone.getTimeZone("UTC"));
+        ObjectMapper objectMapper = OUTBOUND_MAPPER;
         String json;
         try {
             json = objectMapper.writeValueAsString(message);

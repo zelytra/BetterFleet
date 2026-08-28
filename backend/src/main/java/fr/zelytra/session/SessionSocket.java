@@ -29,9 +29,34 @@ import java.util.concurrent.*;
 @ServerEndpoint(value = "/sessions/{token}/{sessionId}")
 public class SessionSocket {
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    // STATIC, like sessionTimeoutTasks and for the same reason: JSR-356 builds one endpoint
+    // instance PER CONNECTION, so an instance-field executor is one thread per connection that
+    // nothing ever shuts down - a leak that only shows up as a slowly dying process (#859).
+    // Daemon threads on top, so a stuck task can never hold JVM shutdown open.
+    private static final ExecutorService executor =
+            Executors.newSingleThreadExecutor(SessionSocket::daemonThread);
     // Fires a while after each countdown to record the alliance-formation outcome (issue #673).
-    private final ScheduledExecutorService attemptRecorder = Executors.newSingleThreadScheduledExecutor();
+    private static final ScheduledExecutorService attemptRecorder =
+            Executors.newSingleThreadScheduledExecutor(SessionSocket::daemonThread);
+
+    /**
+     * One shared, pre-configured mapper for every inbound frame - thread-safe once configured, so
+     * building one per message only put configuration calls on the receive path (#859).
+     */
+    private static final ObjectMapper INBOUND_MAPPER = buildInboundMapper();
+
+    private static ObjectMapper buildInboundMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper;
+    }
+
+    private static Thread daemonThread(Runnable task) {
+        Thread thread = new Thread(task, "betterfleet-socket-worker");
+        thread.setDaemon(true);
+        return thread;
+    }
     public static final ConcurrentMap<String, Future<?>> sessionTimeoutTasks = new ConcurrentHashMap<>();
     private static final int RISE_ANCHOR_TIMER = 3; // in seconds
     public static String PROXY_API_KEY = "";
@@ -78,9 +103,7 @@ public class SessionSocket {
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId, @PathParam("token") String token) throws IOException {
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper objectMapper = INBOUND_MAPPER;
         objectMapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
 
         // Deserialize the incoming message to SocketMessage<?>

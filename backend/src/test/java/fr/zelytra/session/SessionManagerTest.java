@@ -96,6 +96,53 @@ public class SessionManagerTest {
     }
 
     @Test
+    public void joinSession_SameUsernameInAnotherCase_DuplicateJoinIsStillRefused() {
+        // Username matching was split-brained (#859): the duplicate-join guard looked the player up
+        // case-SENSITIVELY (getFleetByPlayerName, Fleet.getPlayerFromUsername) while departure and
+        // membership checks were case-INSENSITIVE. A case variant therefore walked past the guard
+        // and joined twice, then matched on the way out and took both entries with it.
+        Session first = Mockito.mock();
+        when(first.getId()).thenReturn("sock-1");
+        when(first.isOpen()).thenReturn(true);
+        Session second = Mockito.mock();
+        when(second.getId()).thenReturn("sock-2");
+        when(second.isOpen()).thenReturn(true);
+
+        String sessionId = sessionManager.createSession();
+        Player player = new Player();
+        player.setUsername("Zelytra");
+        player.setSocket(first);
+        sessionManager.joinSession(sessionId, player);
+
+        Player caseVariant = new Player();
+        caseVariant.setUsername("ZELYTRA");
+        caseVariant.setSocket(second);
+        sessionManager.joinSession(sessionId, caseVariant);
+
+        Fleet fleet = sessionManager.getFleetFromId(sessionId);
+        assertNotNull(fleet, "Fleet should exist");
+        assertEquals(1, fleet.getPlayers().size(),
+                "a case variant of a connected username must not join the same session twice");
+    }
+
+    @Test
+    public void getPlayerFromUsername_IsCaseInsensitive_LikeEveryOtherUsernameLookup() {
+        String sessionId = sessionManager.createSession();
+        Session session = Mockito.mock();
+        when(session.getId()).thenReturn("sock-1");
+        Player player = new Player();
+        player.setUsername("Zelytra");
+        player.setSocket(session);
+        sessionManager.joinSession(sessionId, player);
+
+        Fleet fleet = sessionManager.getFleetFromId(sessionId);
+        assertNotNull(fleet.getPlayerFromUsername("ZELYTRA"),
+                "lookup must match the same way leaveSession and isPlayerInSession do");
+        assertNotNull(sessionManager.getFleetByPlayerName("zelytra"),
+                "the fleet lookup must match the same way too");
+    }
+
+    @Test
     public void joinSession_PlayerConnectedToTwoSessionWithDifferentSocket_PlayerLeaveFirstSession() {
         Session session1 = Mockito.mock();
         when(session1.getId()).thenReturn("1");
