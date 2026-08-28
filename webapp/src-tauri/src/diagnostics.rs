@@ -107,9 +107,11 @@ pub fn capture_health_label() -> &'static str {
     }
 }
 
-/// Why the service path did not serve a capture, folded to what the caller can act on.
-#[cfg(windows)]
-enum ServiceFailure {
+/// Why the service path did not serve a capture, folded to what the caller can act on. Not
+/// cfg-gated: `decide_health` reasons about these on every platform so the policy is testable on
+/// both CI legs.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ServiceFailure {
     /// The service exists but could not take this request (busy with another capture, or slow).
     /// Not a repair condition: the health state is left alone and this window simply has no flows.
     Transient,
@@ -170,13 +172,62 @@ fn capture_via_service(
     }
 }
 
+/// What a capture cycle's outcome means for the health state and the fallback, decided in one
+/// pure place (#859): the policy is the only thing standing between a broken service and silent
+/// no-detection, and it was previously inlined in a Windows-only function no test could reach.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum HealthDecision {
+    /// The capture served flows: healthy, streak cleared.
+    Healthy,
+    /// A transient failure inside the tolerated streak: no flows this window, health untouched.
+    HoldTransient,
+    /// Fall back to the in-process capture, at degraded health (an elevated stopgap user).
+    FallBackElevated,
+    /// No capture and no fallback: the repair banner's business.
+    Unreachable,
+    Incompatible,
+}
+
+/// Maps one capture outcome to its decision.
+///
+/// `transient_streak` counts consecutive transient outcomes INCLUDING this one; past
+/// [`TRANSIENT_ESCALATE_AFTER`] a "transient" failure is not transient any more - a wedged
+/// capture thread answers Busy or times out forever, and without escalation the banner never
+/// arms. `elevated` is whether this process could capture in-process itself.
+pub(crate) fn decide_health(
+    outcome: Result<(), ServiceFailure>,
+    transient_streak: u32,
+    elevated: bool,
+) -> HealthDecision {
+    let failure = match outcome {
+        Ok(()) => return HealthDecision::Healthy,
+        Err(kind) => kind,
+    };
+    let failure = match failure {
+        ServiceFailure::Transient if transient_streak < TRANSIENT_ESCALATE_AFTER => {
+            return HealthDecision::HoldTransient
+        }
+        // A permanently "busy" service is a wedged one: treat it as unreachable so the repair
+        // path can act.
+        ServiceFailure::Transient => ServiceFailure::Unreachable,
+        other => other,
+    };
+    if elevated {
+        return HealthDecision::FallBackElevated;
+    }
+    match failure {
+        ServiceFailure::Unreachable => HealthDecision::Unreachable,
+        ServiceFailure::Incompatible => HealthDecision::Incompatible,
+        ServiceFailure::Transient => unreachable!("mapped to Unreachable above"),
+    }
+}
+
 /// Consecutive Transient capture outcomes tolerated before they stop being "transient": a
 /// service that answers Busy or times out on every window for this many cycles is wedged, not
 /// busy, and gets treated as unreachable so the repair banner can do its job. At the live
 /// cadence (a window every ~3s) this is ~15s of sustained failure, under the frontend's own 30s
 /// debounce - a genuinely busy service (one long diagnostic capture) never gets near it because
 /// the diagnostic pauses live detection instead of racing it.
-#[cfg(windows)]
 const TRANSIENT_ESCALATE_AFTER: u32 = 5;
 
 /// Whether this process can open the promiscuous socket itself, probed ONCE: elevation is fixed
@@ -243,57 +294,49 @@ fn capture_windows_blocking(
     // The label is pinned to the protocol the golden-frame tests freeze; this breaks the build if
     // PROTOCOL_VERSION ever moves without the string moving with it.
     const _: () = assert!(PROTOCOL_VERSION == 1);
-    let outcome = capture_via_service(&game_ports, window, connect_timeout);
-    // A "transient" failure repeated every cycle is not transient (#819 review): a wedged capture
-    // thread or a pipe held hostage answers Busy/TimedOut forever, and without escalation that
-    // would mean silent no-detection with the banner never arming - the exact failure this whole
-    // health mechanism exists to prevent.
-    let outcome = match outcome {
-        Err(ServiceFailure::Transient)
-            if capture_health_state::count_transient() >= TRANSIENT_ESCALATE_AFTER =>
-        {
-            log::error!(
-                "[capture] the capture service has been busy or silent for {TRANSIENT_ESCALATE_AFTER} consecutive windows; treating it as unreachable"
-            );
-            Err(ServiceFailure::Unreachable)
-        }
-        other => {
-            if !matches!(other, Err(ServiceFailure::Transient)) {
-                capture_health_state::reset_transients();
-            }
-            other
+    let served = capture_via_service(&game_ports, window, connect_timeout);
+    let streak = match served {
+        Err(ServiceFailure::Transient) => capture_health_state::count_transient(),
+        _ => {
+            capture_health_state::reset_transients();
+            0
         }
     };
-    match outcome {
-        Ok((flows, raw_packets)) => {
+    let decision = decide_health(
+        served.as_ref().map(|_| ()).map_err(|failure| *failure),
+        streak,
+        process_is_elevated(),
+    );
+    match decision {
+        HealthDecision::Healthy => {
             capture_health_state::set(capture_health_state::OK);
+            let (flows, raw_packets) = served.expect("Healthy implies a served capture");
             (flows, raw_packets, "capture-service (protocol v1)")
         }
-        Err(ServiceFailure::Transient) => {
+        HealthDecision::HoldTransient => {
             // The service is alive but this window got nothing; health is left as it was.
             (Vec::new(), None, "unavailable (capture service busy or slow)")
         }
-        Err(failure) => {
-            if process_is_elevated() {
-                capture_health_state::set(capture_health_state::DEGRADED_ELEVATED);
-                log::info!(
-                    "[capture] service path failed but this process is elevated; capturing in-process (stopgap)"
+        HealthDecision::FallBackElevated => {
+            capture_health_state::set(capture_health_state::DEGRADED_ELEVATED);
+            log::info!(
+                "[capture] service path failed but this process is elevated; capturing in-process (stopgap)"
+            );
+            let outcome = better_fleet::capture::run_capture_counted(game_ports, window);
+            (outcome.flows, outcome.raw_packets, "in-process (elevated stopgap)")
+        }
+        HealthDecision::Unreachable => {
+            if streak >= TRANSIENT_ESCALATE_AFTER {
+                log::error!(
+                    "[capture] the capture service has been busy or silent for {TRANSIENT_ESCALATE_AFTER} consecutive windows; treating it as unreachable"
                 );
-                let outcome = better_fleet::capture::run_capture_counted(game_ports, window);
-                (outcome.flows, outcome.raw_packets, "in-process (elevated stopgap)")
-            } else {
-                match failure {
-                    ServiceFailure::Unreachable => {
-                        capture_health_state::set(capture_health_state::SERVICE_UNREACHABLE);
-                        (Vec::new(), None, "unavailable (capture service unreachable)")
-                    }
-                    ServiceFailure::Incompatible => {
-                        capture_health_state::set(capture_health_state::SERVICE_INCOMPATIBLE);
-                        (Vec::new(), None, "unavailable (capture service incompatible)")
-                    }
-                    ServiceFailure::Transient => unreachable!("handled above"),
-                }
             }
+            capture_health_state::set(capture_health_state::SERVICE_UNREACHABLE);
+            (Vec::new(), None, "unavailable (capture service unreachable)")
+        }
+        HealthDecision::Incompatible => {
+            capture_health_state::set(capture_health_state::SERVICE_INCOMPATIBLE);
+            (Vec::new(), None, "unavailable (capture service incompatible)")
         }
     }
 }
@@ -691,6 +734,99 @@ mod tests {
     // tests below still use it to derive plausibility, and Deserialize backs the #364 corpus structs.
     use better_fleet::capture::is_plausible_sot_port;
     use serde::Deserialize;
+
+    // The capture-health policy (#819) decides whether a broken service becomes a repair banner
+    // or silent no-detection. It had no tests until #859 - the whole point of the mechanism is
+    // that it cannot fail quietly, so every branch is pinned here.
+
+    #[test]
+    fn a_served_capture_is_healthy_whatever_the_streak_was() {
+        assert_eq!(decide_health(Ok(()), 0, false), HealthDecision::Healthy);
+        assert_eq!(decide_health(Ok(()), 99, true), HealthDecision::Healthy);
+    }
+
+    #[test]
+    fn transient_failures_hold_until_the_escalation_threshold() {
+        for streak in 1..TRANSIENT_ESCALATE_AFTER {
+            assert_eq!(
+                decide_health(Err(ServiceFailure::Transient), streak, false),
+                HealthDecision::HoldTransient,
+                "streak {streak} should still be tolerated"
+            );
+        }
+    }
+
+    #[test]
+    fn a_permanently_busy_service_escalates_to_unreachable() {
+        // The #819 review's finding: a wedged capture thread answers Busy or times out forever,
+        // and without escalation health stays wherever it was - banner never arms, no detection,
+        // no signal. At the threshold it must become a repair condition.
+        assert_eq!(
+            decide_health(
+                Err(ServiceFailure::Transient),
+                TRANSIENT_ESCALATE_AFTER,
+                false
+            ),
+            HealthDecision::Unreachable
+        );
+        assert_eq!(
+            decide_health(
+                Err(ServiceFailure::Transient),
+                TRANSIENT_ESCALATE_AFTER * 3,
+                false
+            ),
+            HealthDecision::Unreachable
+        );
+    }
+
+    #[test]
+    fn an_escalated_transient_still_takes_the_elevated_stopgap() {
+        // A player who followed the "run as administrator" advice keeps capturing even once the
+        // service is declared wedged.
+        assert_eq!(
+            decide_health(
+                Err(ServiceFailure::Transient),
+                TRANSIENT_ESCALATE_AFTER,
+                true
+            ),
+            HealthDecision::FallBackElevated
+        );
+    }
+
+    #[test]
+    fn a_transient_below_the_threshold_never_falls_back_even_when_elevated() {
+        // Falling back on the first slow window would abandon a service that is merely busy with
+        // a diagnostic capture, and would report degraded health for a working setup.
+        assert_eq!(
+            decide_health(Err(ServiceFailure::Transient), 1, true),
+            HealthDecision::HoldTransient
+        );
+    }
+
+    #[test]
+    fn hard_failures_are_repair_conditions_when_unelevated() {
+        assert_eq!(
+            decide_health(Err(ServiceFailure::Unreachable), 0, false),
+            HealthDecision::Unreachable
+        );
+        assert_eq!(
+            decide_health(Err(ServiceFailure::Incompatible), 0, false),
+            HealthDecision::Incompatible
+        );
+    }
+
+    #[test]
+    fn hard_failures_prefer_the_stopgap_when_the_process_is_elevated() {
+        // Stranding exactly the player who followed the support advice would be absurd, so the
+        // in-process capture wins over the banner - at degraded health, without a banner.
+        for failure in [ServiceFailure::Unreachable, ServiceFailure::Incompatible] {
+            assert_eq!(
+                decide_health(Err(failure), 0, true),
+                HealthDecision::FallBackElevated,
+                "{failure:?} should fall back when elevated"
+            );
+        }
+    }
 
     #[test]
     fn raw_packets_is_reported_and_distinct_from_game_packets() {
