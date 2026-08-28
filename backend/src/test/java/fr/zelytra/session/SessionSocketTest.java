@@ -67,7 +67,6 @@ class SessionSocketTest {
         Mockito.doReturn(null).when(executorService).submit(any(Runnable.class));
         // Keep the JOIN_SERVER path offline: no proxycheck.io call, deterministic geo.
         Mockito.when(proxyCheckAPI.resolveGeo(any())).thenReturn(new ProxyCheckAPI.Geo("Test Land", "xx"));
-        Mockito.when(proxyCheckAPI.resolveLocation(any())).thenReturn("Test Land");
         SocketSecurityEntity socketSecurity = new SocketSecurityEntity();
         this.uri = new URI("ws://" + websocketEndpoint.getHost() + ":" + websocketEndpoint.getPort() + "/sessions/" + socketSecurity.getKey() + "/");
         betterFleetClient = new BetterFleetClient();

@@ -22,9 +22,9 @@ function parse(hex: string): [number, number, number] | null {
 /**
  * The title bar's fill for a server colour.
  *
- * Mixed here rather than with CSS `color-mix` or an rgba() overlay: the app ships in a Tauri v1
- * webview, and computing it means the result is one flat hex that renders the same everywhere and can
- * be asserted in a test. Falls back to the raw string when the colour is not a hex the backend sent:
+ * Mixed here rather than with CSS `color-mix` or an rgba() overlay: computing it means the result
+ * is one flat hex that renders the same in every webview the app ships in and can be asserted in a
+ * test. Falls back to the raw string when the colour is not a hex the backend sent:
  * it arrives over the socket, so it is whatever a client chose to send.
  */
 export function serverBarColor(color: string): string {

@@ -1,9 +1,10 @@
-// Passive diagnostic capture for issue #364 (bad server detection since the
-// Steam Datagram Relay change). Sniffs the game's UDP flows over a fixed window
-// and reports per-flow packet volume, so the real game-server flow (sustained
-// traffic, remote port 30000-40000) can be told apart from the many sparse SDR
-// relay flows. This is purely additive instrumentation: it never touches the
-// live detection state, it only observes.
+// The capture layer: every packet capture the app runs goes through here, live detection and the
+// Help-tab diagnostic alike. Born as passive instrumentation for issue #364 (per-flow UDP volume,
+// so the real game-server flow stands out from the sparse SDR relays), it grew into the capture
+// path itself: on Windows it drives the BetterFleetCapture service over its named pipe and owns
+// the capture-health state the repair banner polls (#819); on Linux it drives the privileged
+// betterfleet-netcap helper with an in-process fallback (#726). The diagnostic remains additive -
+// it pauses live detection while it holds the service pipe, but never mutates detection state.
 
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
@@ -566,6 +567,18 @@ pub fn pick_session_flow(flows: &[FlowStat], min_packets: u32) -> Option<&FlowSt
 /// coordinator - locking the fleet onto the per-client host endpoint this function exists to
 /// avoid. The diagnostic report has no connection to name and passes `None`, keeping its
 /// historical behaviour.
+/// A capture that saw NOT ONE outbound packet across every flow it has is receive-only, not a set
+/// of one-way peers: SIO_RCVALL delivers received packets but never the locally sent ones on a
+/// range of NIC/driver combinations (Wi-Fi especially), and the machine's owner cannot fix that
+/// (#837). Requiring a return leg there rejects every candidate forever - reports #901-#915 are
+/// one player, four game launches, 16 captured flows all `outbound: 0`, and not a single `Server
+/// detected` in an hour. Where at least one flow IS bidirectional the capture is proven two-way.
+/// One predicate for both consumers - the session-flow gate relaxation and the report's
+/// `receive_only_capture` flag - so the two can never drift apart.
+fn capture_is_receive_only(flows: &[FlowStat]) -> bool {
+    !flows.is_empty() && flows.iter().all(|f| f.outbound == 0)
+}
+
 pub fn pick_session_flow_excluding(
     flows: &[FlowStat],
     min_packets: u32,
@@ -573,14 +586,7 @@ pub fn pick_session_flow_excluding(
 ) -> Option<&FlowStat> {
     // The dominant plausible flow is the game host; exclude it so we pick the coordinator.
     let host = pick_server_flow(flows, 1);
-    // A capture that saw NOT ONE outbound packet across every flow it has is receive-only, not a
-    // set of one-way peers: SIO_RCVALL delivers received packets but never the locally sent ones on
-    // a range of NIC/driver combinations (Wi-Fi especially), and the machine's owner cannot fix
-    // that (#837). Requiring a return leg there rejects every candidate forever - reports #901-#915
-    // are one player, four game launches, 16 captured flows all `outbound: 0`, and not a single
-    // `Server detected` in an hour. Where at least one flow IS bidirectional the capture is proven
-    // two-way, so the gate stays: it is what rejects one-way stray probes.
-    let capture_is_receive_only = !flows.is_empty() && flows.iter().all(|f| f.outbound == 0);
+    let capture_is_receive_only = capture_is_receive_only(flows);
     flows
         .iter()
         .filter(|flow| {
@@ -655,9 +661,9 @@ pub async fn run_diagnostic(
         .cloned()
         .collect();
 
-    // Receive-only capture (#837): nothing sent was ever looped back to us. Computed over every
-    // flow, so a single bidirectional one anywhere proves the socket is two-way.
-    let receive_only_capture = !flows.is_empty() && flows.iter().all(|f| f.outbound == 0);
+    // Receive-only capture (#837): one shared predicate with the session-flow gate, see
+    // capture_is_receive_only.
+    let receive_only_capture = capture_is_receive_only(&flows);
 
     DiagnosticReport {
         note,

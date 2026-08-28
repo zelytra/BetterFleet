@@ -1,9 +1,10 @@
 //! The `betterfleet-netcap` process contract, exercised as a real child process.
 //!
-//! The GUI drives the helper across a process boundary: argv in, JSON on stdout, exit code as the
-//! "fall back to in-process capture" signal (`diagnostics::capture_via_helper`). Nothing else pins
-//! that contract, and #732 makes it load-bearing on a second platform - the Windows capture service
-//! has to reproduce it exactly. These tests run identically on both CI legs.
+//! The Linux GUI drives the helper across a process boundary: argv in, JSON on stdout, exit code
+//! as the signal - 2 "you called me wrong" (a caller bug, #856), 1 "could not capture" (fall back
+//! in-process). Nothing else pins that contract. The Windows capture service speaks its own
+//! versioned pipe protocol instead (`service_proto`); these tests still run on both CI legs
+//! because the binary builds everywhere.
 //!
 //! Deliberately never asserts that a capture SUCCEEDED: on a CI runner there is no privilege
 //! guarantee and no game traffic, so the only honest assertions are about the shape of the output

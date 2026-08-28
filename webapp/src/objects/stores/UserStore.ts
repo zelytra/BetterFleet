@@ -58,11 +58,7 @@ export const UserStore = reactive({
       (this.player.lang as "fr" | "en" | "es" | "de") || "en";
     tsi18n.global.locale.value =
       (this.player.lang as "fr" | "en" | "es" | "de") || "en";
-    this.player.fleet = new Fleet();
     info("[UserStore.ts] UserStore loaded");
-  },
-  setUser(user: Player) {
-    this.player = user;
   },
   setLang(lang: string) {
     this.player.lang = lang;

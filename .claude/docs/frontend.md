@@ -167,7 +167,7 @@ Env hosts: `VITE_BACKEND_HOST` (REST), `VITE_SOCKET_HOST` (WS), `VITE_KEYCLOAK_H
 
 ## i18n
 
-Two `createI18n` instances (both `legacy:false`, locale `fr`, fallback `en`, same six messages): the
+Two `createI18n` instances (both `legacy:false`, fallback `en`, same fourteen message sets): the
 component-facing `i18n` in `main.ts` and `tsi18n` in `objects/i18n/index.ts` (for non-component `.ts`
 like `Fleet.ts`). `UserStore.setLang()` updates both. Components use `const { t } = useI18n()`; `.ts`
 modules use `tsi18n.global.t`. Dynamic keys are built by concatenation, e.g.

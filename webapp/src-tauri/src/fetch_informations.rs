@@ -640,17 +640,16 @@ pub(crate) fn get_udp_connections(target_pid: usize) -> Vec<u16> {
 
     let ports: Vec<u16> = sockets_info.iter().filter_map(|si| {
         if let ProtocolSocketInfo::Udp(udp_si) = &si.protocol_socket_info {
-            // Check if any of the associated PIDs match the target PID
-            if si.associated_pids.iter().any(|&pid| pid == (target_pid as u32)) {
+            if si.associated_pids.contains(&(target_pid as u32)) {
                 Some(udp_si.local_port)
             } else { None }
         } else {
-            None // This line is technically unnecessary due to the UDP filter applied earlier
+            None
         }
     }).collect();
 
-    //Filter out duplicates
-    return ports.into_iter().collect::<std::collections::HashSet<u16>>().into_iter().collect();
+    // Deduplicated through a set: the same local port shows up once per socket-table row.
+    ports.into_iter().collect::<std::collections::HashSet<u16>>().into_iter().collect()
 }
 
 /// Locates the running Sea of Thieves game process(es), returning their PIDs as strings - the same

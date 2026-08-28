@@ -55,17 +55,6 @@ export class HTTPAxios {
     return response;
   }
 
-  /*
-      async delete() {
-        const urlPath = this.url + this.path;
-        return await this.axios.delete(urlPath);
-      }
-
-      async patch() {
-        const urlPath = this.url + this.path;
-        return await this.axios.patch(urlPath, this.json);
-      }*/
-
   /**
    * Refreshes the access token and (re)arms the shared Authorization header. Never rejects: a
    * failed refresh (an expired Keycloak session, or an unreachable one) clears the

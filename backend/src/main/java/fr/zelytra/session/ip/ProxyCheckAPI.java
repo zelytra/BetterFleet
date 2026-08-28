@@ -78,13 +78,6 @@ public class ProxyCheckAPI {
         return Geo.EMPTY;
     }
 
-    /**
-     * Convenience wrapper returning only the human-readable location string, for callers (and
-     * tests) that don't need the country code.
-     */
-    public String resolveLocation(String ip) {
-        return resolveGeo(ip).location();
-    }
 
     private static String buildUrl(String ip) {
         StringBuilder finalUrl = new StringBuilder();

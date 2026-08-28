@@ -28,19 +28,20 @@ neighbouring component) before calling it done. Layout regressions are the failu
 
 ## i18n: the one rule that matters
 
-Locale files live in `webapp/src/assets/locales/` (and the website has its own set). There are six:
+Locale files live in `webapp/src/assets/locales/` (and the website has its own set). There are
+fourteen since #778:
 
 | File | Origin: **do not** hand-edit unless noted |
 |---|---|
 | `source.json` | English original: **this is the only file you edit by hand** |
 | `en.json` | CI-regenerated copy of `source.json`: never touch |
 | `fr.json` | Human-translated (never machine-translated) |
-| `de.json`, `es.json`, `it.json` | Machine-translated, then corrected in Crowdin |
+| `de.json`, `es.json`, `it.json`, `hi.json`, `ja.json`, `ko.json`, `pl.json`, `pt.json`, `ru.json`, `uk.json`, `zh.json` | Machine-translated, then corrected in Crowdin |
 
 - **Edit strings in place.** Never `JSON.parse` → `stringify` a whole locale file or run a formatter
   that rewrites it: the integer-keyed maps get reordered and the diff explodes.
-- **`Locales.spec.ts` enforces key parity** across all six files (keys, not values). Add a key to
-  every file or the test fails.
+- **`Locales.spec.ts` enforces key parity** (keys, not values). Add a key to every file or the
+  test fails.
 - After merging changes that touch strings, the French seed workflow may be needed so Crowdin doesn't
   serve English for strings it never received. Sync lives in `.github/workflows/crowdin.yml`.
 - **No em-dashes in comments or documentation** (#749): use a colon, a comma, or parentheses
