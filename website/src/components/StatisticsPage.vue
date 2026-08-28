@@ -36,7 +36,9 @@ const ownerRegion = ref<string>("");
 const loading = ref(true);
 const showLoader = useDelayedLoading(loading);
 
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+// Keys, not labels: this page renders in fourteen languages and every other visible string on it
+// is a translation key - the heatmap's rows and tooltips were the last English left (#859).
+const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 const HOURS = Array.from({ length: 24 }, (_, h) => h);
 
 async function load() {
@@ -90,9 +92,15 @@ function cellStyle(day: number, hour: number) {
 
 function cellTitle(day: number, hour: number) {
   const cell = cellMap.value.get(`${day}-${hour}`);
-  const label = `${DAYS[day - 1]} ${String(hour).padStart(2, "0")}:00 UTC`;
-  if (!cell || cell.attempts === 0) return `${label} — no data`;
-  return `${label} — ${Math.round(cell.rate * 100)}% converged (${cell.attempts} attempts)`;
+  const weekday = t(`alliance.day.${DAY_KEYS[day - 1]}`);
+  const label = `${weekday} ${String(hour).padStart(2, "0")}:00 UTC`;
+  if (!cell || cell.attempts === 0) {
+    return `${label} — ${t("alliance.heat.noData")}`;
+  }
+  return `${label} — ${t("alliance.heat.converged", {
+    rate: Math.round(cell.rate * 100),
+    attempts: cell.attempts,
+  })}`;
 }
 
 const percentRate = computed(() =>
@@ -243,8 +251,8 @@ const hasData = computed(() => (stats.value?.totalAttempts ?? 0) > 0);
                   {{ h % 3 === 0 ? h : "" }}
                 </span>
               </div>
-              <div v-for="(day, di) in DAYS" :key="day" class="heat-row">
-                <span class="day-label">{{ day }}</span>
+              <div v-for="(day, di) in DAY_KEYS" :key="day" class="heat-row">
+                <span class="day-label">{{ t(`alliance.day.${day}`) }}</span>
                 <span
                   v-for="h in HOURS"
                   :key="h"

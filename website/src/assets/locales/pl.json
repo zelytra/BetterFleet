@@ -355,6 +355,19 @@
     "serverRegions": {
       "title": "Gdzie lądują sojusze",
       "note": "Kraj serwera, na którym zebrała się największa grupa — centra danych gry, a nie miejsce zamieszkania graczy."
+    },
+    "day": {
+      "mon": "Pon",
+      "tue": "Wt",
+      "wed": "Śr",
+      "thu": "Czw",
+      "fri": "Pt",
+      "sat": "Sob",
+      "sun": "Nd"
+    },
+    "heat": {
+      "noData": "brak danych",
+      "converged": "{rate}% połączonych ({attempts} prób)"
     }
   },
   "loading": {

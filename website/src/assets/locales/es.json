@@ -355,6 +355,19 @@
     "serverRegions": {
       "title": "Dónde acaban las alianzas",
       "note": "País del servidor que reunió al grupo más grande: los centros de datos del juego, no el lugar donde viven los jugadores."
+    },
+    "day": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mié",
+      "thu": "Jue",
+      "fri": "Vie",
+      "sat": "Sáb",
+      "sun": "Dom"
+    },
+    "heat": {
+      "noData": "sin datos",
+      "converged": "{rate}% reunidos ({attempts} intentos)"
     }
   },
   "loading": {
