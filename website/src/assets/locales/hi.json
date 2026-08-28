@@ -309,6 +309,10 @@
     "download": {
       "title": "BetterFleet डाउनलोड करें",
       "description": "Windows या Linux के लिए BetterFleet डाउनलोड करें — अपने सिस्टम के अनुसार इंस्टॉलर या पैकेज चुनें।"
+    },
+    "statistics": {
+      "title": "Sea of Thieves आँकड़े — अलायंस और सर्वर डेटा | BetterFleet",
+      "description": "BetterFleet क्रू से Sea of Thieves का लाइव डेटा: अलायंस कितनी बार एक ही सर्वर पर पहुँचते हैं, खोजने के लिए सबसे अच्छे समय, और कितने प्रयास लगते हैं।"
     }
   },
   "alliance": {

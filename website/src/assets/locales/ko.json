@@ -309,6 +309,10 @@
     "download": {
       "title": "BetterFleet 다운로드",
       "description": "Windows 또는 Linux용 BetterFleet 다운로드 — 시스템에 맞는 설치 파일이나 패키지를 선택하세요."
+    },
+    "statistics": {
+      "title": "Sea of Thieves 통계 — 얼라이언스 및 서버 데이터 | BetterFleet",
+      "description": "BetterFleet 크루의 Sea of Thieves 실시간 데이터: 얼라이언스가 같은 서버에 모이는 빈도, 검색하기 좋은 시간대, 그리고 몇 번의 시도가 필요한지 확인하세요."
     }
   },
   "alliance": {
