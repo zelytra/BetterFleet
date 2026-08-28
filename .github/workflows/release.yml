@@ -97,13 +97,23 @@ jobs:
         with:
           node-version: 20
 
-      - name: Webapp build
+      # Build AND test: the gate is named "before publishing", but it only compiled the two
+      # frontends, so their unit suites never blocked a tag - a green release could ship a webapp
+      # whose specs were red (#859). `npm run build` is the type-check gate, `npm run test` the
+      # behavioural one; a tag needs both.
+      - name: Webapp build and tests
         working-directory: webapp
-        run: npm ci && npm run build
+        run: |
+          npm ci
+          npm run build
+          npm run test
 
-      - name: Website build
+      - name: Website build and tests
         working-directory: website
-        run: npm ci && npm run build
+        run: |
+          npm ci
+          npm run build
+          npm run test
 
   publish-tauri:
     needs: [resolve-version, verify]

@@ -897,10 +897,22 @@ pub(crate) fn get_udp_connections_powershell(pid: usize) -> Vec<u16> {
 
     command.creation_flags(CREATE_NO_WINDOW);
 
-    let output = command.spawn()
-        .expect("Failed to start PowerShell command")
-        .stdout
-        .expect("Failed to open stdout");
+    // Degrade to an empty list rather than panicking (#859): this runs inside the Help-tab
+    // diagnostic, i.e. on exactly the broken machines where PowerShell may be locked down,
+    // missing from PATH or refused by policy - and a panic there takes the whole report with it,
+    // right when the report is the thing being asked for. Every sibling enumeration path already
+    // logs and returns nothing; this one now matches.
+    let mut child = match command.spawn() {
+        Ok(child) => child,
+        Err(e) => {
+            error!("[diagnostic] could not run PowerShell for the UDP port list: {e}");
+            return Vec::new();
+        }
+    };
+    let Some(output) = child.stdout.take() else {
+        error!("[diagnostic] PowerShell started but exposed no stdout; no port list");
+        return Vec::new();
+    };
 
     let reader = BufReader::new(output);
     let mut ports = Vec::new();

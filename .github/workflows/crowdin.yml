@@ -114,12 +114,18 @@ jobs:
       # writes by hand, and a machine draft sitting in Crowdin marked "translated" is worse than an
       # empty string: it hides the work still to do.
       #
+      # Every machine-translated target, i.e. every shipped locale except English (the source) and
+      # French. The list stood at de/es/it long after #778 added eight more languages, so the day
+      # CROWDIN_MT_ENGINE_ID is set, hi/ja/ko/pl/pt/ru/uk/zh would have been silently skipped and
+      # left in English while the workflow reported success (#859).
+      #
       # These are Crowdin LANGUAGE IDS, not the two-letter codes the locale files are named after.
-      # They match for de and it; Spanish does NOT: the project holds it as a regional variant
+      # They match for most; Spanish does NOT: the project holds it as a regional variant
       # (es-ES / es-MX / …), so `--language=es` is rejected with "Language 'es' doesn't exist in the
-      # project", which the seed workflow hit for real. This step is skipped today (no
-      # CROWDIN_MT_ENGINE_ID set), so the wrong id is inert: correct the `es` line below before
-      # setting that variable, or the first machine-translation run fails here.
+      # project", which the seed workflow hit for real. Chinese is the same shape (zh-CN / zh-TW).
+      # This step is skipped today (no CROWDIN_MT_ENGINE_ID set), so the wrong ids are inert:
+      # correct the `es` and `zh` lines below before setting that variable, or the first
+      # machine-translation run fails here.
       - name: Machine-translate everything except French
         if: vars.CROWDIN_MT_ENGINE_ID != ''
         uses: crowdin/github-action@v2
@@ -131,6 +137,14 @@ jobs:
             --language=de
             --language=es
             --language=it
+            --language=hi
+            --language=ja
+            --language=ko
+            --language=pl
+            --language=pt
+            --language=ru
+            --language=uk
+            --language=zh
             --no-progress
           project_id: ${{ secrets.CROWDIN_PROJECT_ID }}
           token: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}

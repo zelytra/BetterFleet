@@ -610,8 +610,8 @@ pub fn request_capture(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::service_proto::PIPE_NAME;
-    use std::sync::atomic::AtomicBool;
+    use crate::service_proto::{encode_response, PIPE_NAME};
+    use std::sync::atomic::{AtomicBool, Ordering};
     use std::sync::Arc;
 
     /// A unique pipe name per test, so tests neither collide with each other nor with a real
@@ -687,6 +687,147 @@ mod tests {
         assert_eq!(response.flows, vec![a_flow()]);
         // The raw counter must cross the wire intact - it backs the "capture blocked" diagnostic.
         assert_eq!(response.raw_packets, Some(777));
+        assert_eq!(server.join().unwrap().unwrap(), ServeOutcome::Served);
+    }
+
+    #[test]
+    fn a_response_larger_than_one_chunk_is_reassembled_intact() {
+        // MAX_RESPONSE_BYTES is 4 MiB against a 64 KiB chunk, so a busy capture with a few
+        // hundred flows genuinely spans several reads: the ERROR_MORE_DATA continuation in
+        // read_message ran for the first time in production until #859.
+        let pipe_name = test_pipe("multichunk");
+        let stop = Arc::new(AtomicBool::new(false));
+        // 900 flows: ~170 KB serialized, so the frame spans about three 64 KiB chunks (the CI run
+        // that first caught this proved 300 was not enough - 57 KB, just under one chunk - which
+        // is precisely what the assertion below exists to catch). Still far under the 4 MiB cap.
+        let many: Vec<FlowStat> = (0..900)
+            .map(|i| FlowStat {
+                local_port: 50000 + (i as u16 % 5000),
+                remote_ip: format!("20.31.44.{}", i % 250),
+                remote_port: 30000 + (i as u16 % 9000),
+                packets: i,
+                bytes: i as u64 * 1500,
+                inbound: i / 2,
+                outbound: i / 2,
+                plausible_sot_port: true,
+                first_seen_ms: 10,
+                last_seen_ms: 1990,
+            })
+            .collect();
+        let expected = many.clone();
+        let server = {
+            let pipe_name = pipe_name.clone();
+            let stop = Arc::clone(&stop);
+            std::thread::spawn(move || {
+                serve_one_request(&pipe_name, &stop, Duration::from_secs(10), move |_, _| {
+                    (many, Some(4242))
+                })
+            })
+        };
+
+        let response = request_with_retry(&pipe_name, &valid_request()).unwrap();
+        assert!(
+            encode_response(&CaptureResponse {
+                version: PROTOCOL_VERSION,
+                error: None,
+                flows: expected.clone(),
+                raw_packets: Some(4242),
+            })
+            .len()
+                > CHUNK_BYTES,
+            "the fixture must actually exceed one chunk or this proves nothing"
+        );
+        assert_eq!(response.flows, expected, "a multi-chunk frame was mangled");
+        assert_eq!(response.raw_packets, Some(4242));
+        assert_eq!(server.join().unwrap().unwrap(), ServeOutcome::Served);
+    }
+
+    #[test]
+    fn a_client_that_connects_and_never_speaks_frees_the_service() {
+        // The server-side io_deadline and its CancelIoEx-then-reap path: a peer that connects and
+        // goes silent must not hold the single pipe instance, or the next capture never runs.
+        let pipe_name = test_pipe("silent-client");
+        let stop = Arc::new(AtomicBool::new(false));
+        let server = {
+            let pipe_name = pipe_name.clone();
+            let stop = Arc::clone(&stop);
+            std::thread::spawn(move || {
+                serve_one_request(&pipe_name, &stop, Duration::from_millis(400), |_, _| {
+                    panic!("a silent client must never reach the capture")
+                })
+            })
+        };
+
+        // Connect with the raw API and then just sit there, holding the instance.
+        let wide = to_wide(&pipe_name);
+        let deadline = Instant::now() + Duration::from_secs(5);
+        let handle = loop {
+            let raw = unsafe {
+                CreateFileW(
+                    wide.as_ptr(),
+                    GENERIC_READ | GENERIC_WRITE,
+                    0,
+                    null_mut(),
+                    OPEN_EXISTING,
+                    FILE_FLAG_OVERLAPPED,
+                    null_mut(),
+                )
+            };
+            if raw != INVALID_HANDLE_VALUE {
+                break Handle(raw);
+            }
+            assert!(Instant::now() < deadline, "the server never created its pipe");
+            std::thread::sleep(Duration::from_millis(20));
+        };
+
+        // The serve call must return on its own deadline rather than waiting on this client.
+        let outcome = server.join().unwrap().unwrap();
+        assert_eq!(outcome, ServeOutcome::Served);
+        drop(handle);
+    }
+
+    #[test]
+    fn a_second_client_is_told_busy_rather_than_served_concurrently() {
+        // One instance by construction (nMaxInstances=1): a rival client must get a clean Busy
+        // within its connect budget, not a silent hang or a second concurrent capture.
+        let pipe_name = test_pipe("busy");
+        let stop = Arc::new(AtomicBool::new(false));
+        let captures = Arc::new(AtomicBool::new(false));
+        let server = {
+            let pipe_name = pipe_name.clone();
+            let stop = Arc::clone(&stop);
+            let captures = Arc::clone(&captures);
+            std::thread::spawn(move || {
+                serve_one_request(&pipe_name, &stop, Duration::from_secs(5), move |_, _| {
+                    captures.store(true, Ordering::Relaxed);
+                    // Hold the instance while the rival tries to connect.
+                    std::thread::sleep(Duration::from_millis(400));
+                    (Vec::new(), Some(0))
+                })
+            })
+        };
+
+        // First client occupies the instance...
+        let pipe_for_first = pipe_name.clone();
+        let first = std::thread::spawn(move || request_with_retry(&pipe_for_first, &valid_request()));
+        // ...wait until the capture is actually running, then race a second client.
+        let deadline = Instant::now() + Duration::from_secs(5);
+        while !captures.load(Ordering::Relaxed) {
+            assert!(Instant::now() < deadline, "the first capture never started");
+            std::thread::sleep(Duration::from_millis(10));
+        }
+        let rival = request_capture(
+            &pipe_name,
+            &valid_request(),
+            Duration::from_millis(100),
+            Duration::from_secs(1),
+        );
+        match rival {
+            Err(ClientError::Busy) | Err(ClientError::ServiceUnavailable) => {}
+            other => panic!("a rival client must be refused cleanly, got {other:?}"),
+        }
+
+        assert!(first.join().unwrap().is_ok(), "the first client must still be served");
         assert_eq!(server.join().unwrap().unwrap(), ServeOutcome::Served);
     }
 
