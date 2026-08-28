@@ -355,6 +355,19 @@
     "serverRegions": {
       "title": "Dove approdano le alleanze",
       "note": "Paese del server che ha riunito il gruppo più numeroso — i data center del gioco, non dove vivono i giocatori."
+    },
+    "day": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Gio",
+      "fri": "Ven",
+      "sat": "Sab",
+      "sun": "Dom"
+    },
+    "heat": {
+      "noData": "nessun dato",
+      "converged": "{rate}% riuniti ({attempts} tentativi)"
     }
   },
   "loading": {

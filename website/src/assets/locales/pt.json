@@ -355,6 +355,19 @@
     "serverRegions": {
       "title": "Onde as alianças se formam",
       "note": "País do servidor que reuniu o maior grupo — os data centers do jogo, não onde os jogadores moram."
+    },
+    "day": {
+      "mon": "Seg",
+      "tue": "Ter",
+      "wed": "Qua",
+      "thu": "Qui",
+      "fri": "Sex",
+      "sat": "Sáb",
+      "sun": "Dom"
+    },
+    "heat": {
+      "noData": "sem dados",
+      "converged": "{rate}% reunidos ({attempts} tentativas)"
     }
   },
   "loading": {

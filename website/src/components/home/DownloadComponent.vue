@@ -7,8 +7,10 @@
       <PirateButton :label="t('button.downloadHere')" />
     </router-link>
     <!-- Phone (#670): a phone cannot run the installer, but hiding the section threw the intent
-         away with it. Copying the link lets the visit finish on a PC later. -->
-    <div v-if="AppStore.githubRelease.url" class="pc-card">
+         away with it. Copying the link lets the visit finish on a PC later.
+         Not gated on the release API any more: copyLink copies a static betterfleet.fr URL since
+         #730/#738, so a slow or down release proxy was hiding a card that works without it (#859). -->
+    <div class="pc-card">
       <h2>⚓ {{ t("download.pc.title") }}</h2>
       <p>{{ t("download.pc.content") }}</p>
       <button type="button" @click="copyLink">
@@ -20,7 +22,6 @@
 
 <script setup lang="ts">
 import PirateButton from "@/vue/PirateButton.vue";
-import { AppStore } from "@/objects/stores/appStore.ts";
 import { useI18n } from "vue-i18n";
 import { ref } from "vue";
 

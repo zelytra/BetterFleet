@@ -355,6 +355,19 @@
     "serverRegions": {
       "title": "Wo Allianzen landen",
       "note": "Land des Servers, auf dem die größte Gruppe zusammenkam — die Rechenzentren des Spiels, nicht der Wohnort der Spieler."
+    },
+    "day": {
+      "mon": "Mo",
+      "tue": "Di",
+      "wed": "Mi",
+      "thu": "Do",
+      "fri": "Fr",
+      "sat": "Sa",
+      "sun": "So"
+    },
+    "heat": {
+      "noData": "keine Daten",
+      "converged": "{rate}% zusammengeführt ({attempts} Versuche)"
     }
   },
   "loading": {

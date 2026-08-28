@@ -355,6 +355,19 @@
     "serverRegions": {
       "title": "Where alliances land",
       "note": "Country of the server that hosted the biggest group — the game's datacenters, not where players live."
+    },
+    "day": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "heat": {
+      "noData": "no data",
+      "converged": "{rate}% converged ({attempts} attempts)"
     }
   },
   "loading": {

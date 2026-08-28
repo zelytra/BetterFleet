@@ -39,6 +39,19 @@
     "serverRegions": {
       "title": "Où les alliances accostent",
       "note": "Pays du serveur qui a réuni le plus grand groupe — les centres de données du jeu, pas le domicile des joueurs."
+    },
+    "day": {
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven",
+      "sat": "Sam",
+      "sun": "Dim"
+    },
+    "heat": {
+      "noData": "aucune donnée",
+      "converged": "{rate}% de réunions ({attempts} tentatives)"
     }
   },
   "button": {

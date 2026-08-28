@@ -12,11 +12,10 @@ import pt from "@assets/locales/pt.json";
 import ru from "@assets/locales/ru.json";
 import uk from "@assets/locales/uk.json";
 import zh from "@assets/locales/zh.json";
-import source from "@assets/locales/source.json";
 
 export const tsi18n = createI18n({
   legacy: false, // you must set `false`, to use Composition API
   locale: "en", // set locale
   fallbackLocale: "en", // set fallback locale
-  messages: { fr, en, es, de, it, hi, ja, ko, pl, pt, ru, uk, zh, source },
+  messages: { fr, en, es, de, it, hi, ja, ko, pl, pt, ru, uk, zh },
 });

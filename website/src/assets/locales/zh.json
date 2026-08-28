@@ -355,6 +355,19 @@
     "serverRegions": {
       "title": "联盟最终落在哪里",
       "note": "汇聚人数最多的服务器所在国家——那是游戏数据中心的位置，而非玩家的居住地。"
+    },
+    "day": {
+      "mon": "周一",
+      "tue": "周二",
+      "wed": "周三",
+      "thu": "周四",
+      "fri": "周五",
+      "sat": "周六",
+      "sun": "周日"
+    },
+    "heat": {
+      "noData": "暂无数据",
+      "converged": "{rate}% 成功（{attempts} 次尝试）"
     }
   },
   "loading": {
