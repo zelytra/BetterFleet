@@ -697,12 +697,14 @@ mod tests {
         // read_message ran for the first time in production until #859.
         let pipe_name = test_pipe("multichunk");
         let stop = Arc::new(AtomicBool::new(false));
-        // ~300 flows: comfortably past one chunk once serialized, well under the cap.
-        let many: Vec<FlowStat> = (0..300)
+        // 900 flows: ~170 KB serialized, so the frame spans about three 64 KiB chunks (the CI run
+        // that first caught this proved 300 was not enough - 57 KB, just under one chunk - which
+        // is precisely what the assertion below exists to catch). Still far under the 4 MiB cap.
+        let many: Vec<FlowStat> = (0..900)
             .map(|i| FlowStat {
-                local_port: 50000 + (i as u16),
+                local_port: 50000 + (i as u16 % 5000),
                 remote_ip: format!("20.31.44.{}", i % 250),
-                remote_port: 30000 + (i as u16 % 5000),
+                remote_port: 30000 + (i as u16 % 9000),
                 packets: i,
                 bytes: i as u64 * 1500,
                 inbound: i / 2,
