@@ -305,15 +305,30 @@ impl DetectionState {
                             GameEvent::Steady
                         }
                     }
-                    Some(_) => {
+                    Some((_, old_local_port)) => {
                         // A different local socket clearing the floor: a genuinely new game.
-                        // Everything accumulated belongs to the previous one; quarantine those
-                        // exact keys so the window that reveals the switch (captured while the old
-                        // socket still tears down) cannot re-seed them into the fresh accumulator.
-                        self.quarantine = self.flows.keys().cloned().collect();
+                        // Quarantine the DANGEROUS keys of the previous game - everything on its
+                        // dead game socket (the old host among them) and its locked identity on
+                        // the persistent coordinator socket - so their teardown stragglers cannot
+                        // re-seed the fresh accumulator (#832). Deliberately NOT the whole
+                        // accumulator: the client talks to the NEXT server's coordinator on that
+                        // same persistent socket BEFORE the switch, so the new game's own identity
+                        // is often already sitting in the old flows - sweeping it into quarantine
+                        // blocked the new lock for the full TTL, 90+ seconds of "resolving the
+                        // session flow" in the field while the one eligible candidate passed
+                        // every gate (#873).
+                        let old_local_port = *old_local_port;
+                        self.quarantine = self
+                            .flows
+                            .keys()
+                            .filter(|(local, _, _)| *local == old_local_port)
+                            .cloned()
+                            .collect();
+                        if let Some(locked) = self.locked_session.take() {
+                            self.quarantine.insert(locked);
+                        }
                         self.quarantine_born = Some(now);
                         self.flows.clear();
-                        self.locked_session = None;
                         self.connection = Some((host.remote_ip.clone(), host.local_port));
                         GameEvent::NewGame {
                             local_port: host.local_port,
@@ -322,6 +337,12 @@ impl DetectionState {
                 };
                 self.fallen_back = false;
                 self.last_traffic = Some(now);
+                // Re-filter with the quarantine as it stands NOW: on NewGame it was just rebuilt,
+                // and accumulating the switch window through the OLD filter let the previous
+                // game's teardown re-lock instantly - the exact storm the quarantine exists to
+                // stop, proven by the #873 regression tests. Every other event leaves the
+                // quarantine untouched, making this a no-op there.
+                let clean_window = drop_quarantined(&clean_window, &self.quarantine);
                 self.accumulate(&clean_window);
                 WindowOutcome::InGame {
                     host_ip: host.remote_ip.clone(),
@@ -1082,6 +1103,90 @@ mod tests {
         assert_eq!(
             update_session_lock(None, &cleared, 3, None),
             Some((55329, "145.190.66.42".to_string(), 30099))
+        );
+    }
+
+    #[test]
+    fn a_next_games_coordinator_seen_before_the_switch_still_locks_quickly() {
+        // The production stall of #873: the client talks to the NEXT server's session
+        // coordinator on the persistent matchmaking socket (3074) BEFORE the game socket
+        // switches, so that flow key is already sitting in the old game's accumulator when
+        // NewGame fires. Sweeping the whole accumulator into quarantine then blocks the new
+        // game's own identity for the full TTL - 92s of "resolving the session flow" in the
+        // field while the only eligible candidate passed every documented gate.
+        let t0 = Instant::now();
+        let mut state = DetectionState::new();
+
+        // Game A, resolved: busy host + locked coordinator on 3074.
+        let host_a = flow(58000, "20.153.228.32", 30124, 200, 100, 100);
+        let coord_a = flow(3074, "145.190.66.52", 30760, 6, 3, 3);
+        state.on_window(&[host_a.clone(), coord_a.clone()], t0);
+        assert!(state.locked_endpoint().is_some(), "game A must resolve first");
+
+        // Still in game A: matchmaking reaches the NEXT server's coordinator on the same 3074
+        // socket. Sparse, bidirectional, plausible - and entirely innocent.
+        let coord_b_early = flow(3074, "20.157.212.110", 30526, 2, 1, 1);
+        state.on_window(&[host_a.clone(), coord_a, coord_b_early], t0 + Duration::from_secs(2));
+
+        // The switch: a new game socket clears the floor. The new coordinator is still under the
+        // session floor in this very window - in the field the switch window rarely carries the
+        // drip - so the immediate lock is impossible and everything depends on the NEXT windows.
+        let host_b = flow(57672, "20.153.191.9", 30148, 300, 150, 150);
+        let coord_b_quiet = flow(3074, "20.157.212.110", 30526, 2, 1, 1);
+        let outcome =
+            state.on_window(&[host_b.clone(), coord_b_quiet], t0 + Duration::from_secs(4));
+        assert!(
+            matches!(outcome, WindowOutcome::InGame { event: GameEvent::NewGame { .. }, .. }),
+            "{outcome:?}"
+        );
+
+        // The following windows carry the new coordinator's full drip, well within the TTL.
+        let coord_b = flow(3074, "20.157.212.110", 30526, 8, 4, 4);
+        state.on_window(&[host_b.clone(), coord_b.clone()], t0 + Duration::from_secs(7));
+        let outcome = state.on_window(&[host_b.clone(), coord_b.clone()], t0 + Duration::from_secs(10));
+        let locked = match outcome {
+            WindowOutcome::InGame { session, .. } => session,
+            other => panic!("still in game, got {other:?}"),
+        };
+        assert_eq!(
+            locked,
+            Some(("20.157.212.110".to_string(), 30526)),
+            "the new game's coordinator passed every gate and must lock without waiting out a TTL"
+        );
+    }
+
+    #[test]
+    fn the_old_games_identities_still_cannot_relock_after_the_switch() {
+        // The quarantine's actual job (#832), pinned so narrowing it cannot reopen the storm:
+        // after NewGame, neither the old host nor the OLD locked coordinator may re-seed the
+        // fresh accumulator, however loud their teardown stragglers are.
+        let t0 = Instant::now();
+        let mut state = DetectionState::new();
+
+        let host_a = flow(58000, "20.153.228.32", 30124, 200, 100, 100);
+        let coord_a = flow(3074, "145.190.66.52", 30760, 6, 3, 3);
+        state.on_window(&[host_a.clone(), coord_a.clone()], t0);
+        assert_eq!(state.locked_endpoint(), Some(("145.190.66.52".to_string(), 30760)));
+
+        // The switch window still carries the old game's teardown loudly.
+        let host_b = flow(57672, "20.153.191.9", 30148, 300, 150, 150);
+        let coord_a_straggler = flow(3074, "145.190.66.52", 30760, 8, 4, 4);
+        state.on_window(
+            &[host_b.clone(), coord_a_straggler.clone(), host_a.clone()],
+            t0 + Duration::from_secs(2),
+        );
+        let outcome = state.on_window(
+            &[host_b.clone(), coord_a_straggler],
+            t0 + Duration::from_secs(4),
+        );
+        let locked = match outcome {
+            WindowOutcome::InGame { session, .. } => session,
+            other => panic!("still in game, got {other:?}"),
+        };
+        assert_ne!(
+            locked,
+            Some(("145.190.66.52".to_string(), 30760)),
+            "the previous game's coordinator must stay quarantined"
         );
     }
 
