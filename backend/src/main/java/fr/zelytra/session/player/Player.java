@@ -100,6 +100,21 @@ public class Player {
         this.sessionId = sessionId;
     }
 
+    /**
+     * When this player's socket last proved a peer is behind it, in epoch millis: stamped on join
+     * and on every inbound frame (the client keep-alives every 30s). Non-bean naming on purpose -
+     * this is server-side liveness bookkeeping (#872), never part of the JSON players exchange.
+     */
+    private transient long lastSeenMillis;
+
+    public void touch(long nowMillis) {
+        this.lastSeenMillis = nowMillis;
+    }
+
+    public long lastSeenMillis() {
+        return lastSeenMillis;
+    }
+
     public String getClientVersion() {
         return clientVersion;
     }

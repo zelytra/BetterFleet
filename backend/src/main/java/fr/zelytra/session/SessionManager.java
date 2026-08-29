@@ -132,6 +132,17 @@ public class SessionManager {
      * @param player    The player attempting to join the session.
      * @return the Fleet where the player was added or null
      */
+    /**
+     * How long a member may send NOTHING before their open-looking socket stops counting as
+     * alive: two and a half client keep-alive windows (30s each). `isOpen()` reports the local
+     * endpoint, not the peer - a half-open connection stays "open" indefinitely while broadcasts
+     * keep rearming the idle timeout - so silence is the only honest liveness signal (#872).
+     */
+    public static final long GHOST_AFTER_MILLIS = 75_000;
+
+    // Clock seam so ghost detection is testable by driving time, not by sleeping.
+    java.util.function.LongSupplier clock = System::currentTimeMillis;
+
     @Lock(value = Lock.Type.WRITE, time = 200)
     public Fleet joinSession(String sessionId, Player player) {
 
@@ -140,15 +151,40 @@ public class SessionManager {
             // The account is already a member of the very session it is trying to join
             // (e.g. the same account connected from a second device/socket). Refuse the
             // duplicate join and leave the existing members untouched instead of tearing
-            // the fleet down (see issue #436). A lingering ghost (already-closed socket)
-            // is not a real duplicate, so in that case we fall through and replace it.
+            // the fleet down (see issue #436). A lingering ghost is not a real duplicate,
+            // so in that case we fall through and replace it - and "ghost" cannot be read
+            // from isOpen() alone: that reports the LOCAL endpoint, so a half-open socket
+            // (Wi-Fi flap, VPN reconnect) stays "open" forever while broadcasts keep its
+            // idle timeout rearmed, locking the player out of their own session until a
+            // human kicked the corpse (#872, twice in production). A member that has SENT
+            // nothing for GHOST_AFTER_MILLIS is dead no matter what the socket claims.
             Player existing = currentFleet.getPlayerFromUsername(player.getUsername());
-            if (existing != null && existing.getSocket() != null && existing.getSocket().isOpen()) {
+            boolean existingIsAlive = existing != null
+                    && existing.getSocket() != null
+                    && existing.getSocket().isOpen()
+                    && (clock.getAsLong() - existing.lastSeenMillis()) < GHOST_AFTER_MILLIS;
+            if (existingIsAlive) {
                 Log.warn("[" + sessionId + "] " + player.getUsername() + " is already connected to this session, duplicate join refused");
                 sendThenClose(player.getSocket(), MessageType.CONNECTION_REFUSED, null);
                 return null;
             }
-            leaveSession(existing != null ? existing : player);
+            if (existing != null) {
+                // Reconnect over a ghost: the member keeps their seat - master flag, ready state,
+                // server - and only the transport is replaced. Leaving-then-rejoining instead
+                // would delete the session under a SOLO ghost (leaveSession reaps empty fleets),
+                // which is precisely the "alone and locked out with no way back" case of #872.
+                try {
+                    existing.getSocket().close();
+                } catch (Exception ignored) {
+                    // A half-open corpse may refuse to close; it no longer matters to anyone.
+                }
+                existing.setSocket(player.getSocket());
+                existing.touch(clock.getAsLong());
+                Log.info("[" + sessionId + "] " + player.getUsername() + " reconnected over a stale socket");
+                publishDirectoryChange();
+                return currentFleet;
+            }
+            leaveSession(player);
         } else if (currentFleet != null) {
             // The account is in a different session. Joining a new one means leaving the old one,
             // but a player must not lose the session they are in over a code that leads nowhere.
@@ -164,6 +200,7 @@ public class SessionManager {
         if (fleet == null) {
             return rejectMissingSession(player, sessionId);
         }
+        player.touch(clock.getAsLong()); // joining is the first sign of life (#872)
         fleet.getPlayers().add(player);
         Log.info("[" + sessionId + "] " + player.getUsername() + " Join the session !");
         publishDirectoryChange();
