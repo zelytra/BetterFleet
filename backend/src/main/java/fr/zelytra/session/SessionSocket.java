@@ -106,6 +106,13 @@ public class SessionSocket {
         SocketMessage<?> socketMessage = objectMapper.readValue(message, new TypeReference<>() {
         });
 
+        // Any inbound frame proves a live peer behind this socket: stamp it before dispatching,
+        // KEEP_ALIVE included - that is the whole job of the 30s client keep-alive (#872).
+        Player sender = sessionManager.getPlayerFromSessionId(session.getId());
+        if (sender != null) {
+            sender.touch(System.currentTimeMillis());
+        }
+
         // Handle the message based on its type
         switch (socketMessage.messageType()) {
             case CONNECT -> {
