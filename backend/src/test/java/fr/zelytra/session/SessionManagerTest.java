@@ -55,12 +55,26 @@ public class SessionManagerTest {
         when(sessionManager.proxyCheckAPI.resolveGeo(any())).thenReturn(new ProxyCheckAPI.Geo("", ""));
     }
 
+    /**
+     * A throwaway creator for tests that only need a session to exist: since #876 a session is
+     * created around its first player, so there is no such thing as an empty one.
+     */
+    private Player hostPlayer() {
+        Session socket = Mockito.mock();
+        when(socket.getId()).thenReturn("sock-host-" + java.util.UUID.randomUUID());
+        when(socket.isOpen()).thenReturn(true);
+        Player host = new Player();
+        host.setUsername("Host-" + java.util.UUID.randomUUID());
+        host.setSocket(socket);
+        return host;
+    }
+
     @Test
     public void testCreateSession() {
         StatisticsEntity mockStatisticsEntity = new StatisticsEntity();
         when(statisticsRepository.getEntity()).thenReturn(mockStatisticsEntity);
 
-        String sessionId = sessionManager.createSession();
+        String sessionId = sessionManager.createSession(hostPlayer()).getSessionId();
 
         assertNotNull(sessionId, "The session is null");
         assertNotNull(sessionManager.getSessions().get(sessionId), "The session has not been pushed in the Map");
@@ -69,7 +83,7 @@ public class SessionManagerTest {
 
     @Test
     public void isSessionExist_SessionExist_True() {
-        String sessionId = sessionManager.createSession();
+        String sessionId = sessionManager.createSession(hostPlayer()).getSessionId();
         assertTrue(sessionManager.isSessionExist(sessionId), "This sessions should exist");
     }
 
@@ -83,12 +97,11 @@ public class SessionManagerTest {
         Session session = Mockito.mock();
         when(session.getId()).thenReturn("123");
 
-        String sessionId = sessionManager.createSession();
         Player player = new Player();
         player.setUsername("Player 1");
         player.setSocket(session);
 
-        sessionManager.joinSession(sessionId, player);
+        String sessionId = sessionManager.createSession(player).getSessionId();
 
         Fleet fleet = sessionManager.getFleetFromId(sessionId);
         assertNotNull(fleet, "Fleet should exist");
@@ -108,11 +121,10 @@ public class SessionManagerTest {
         when(second.getId()).thenReturn("sock-2");
         when(second.isOpen()).thenReturn(true);
 
-        String sessionId = sessionManager.createSession();
         Player player = new Player();
         player.setUsername("Zelytra");
         player.setSocket(first);
-        sessionManager.joinSession(sessionId, player);
+        String sessionId = sessionManager.createSession(player).getSessionId();
 
         Player caseVariant = new Player();
         caseVariant.setUsername("ZELYTRA");
@@ -127,13 +139,12 @@ public class SessionManagerTest {
 
     @Test
     public void getPlayerFromUsername_IsCaseInsensitive_LikeEveryOtherUsernameLookup() {
-        String sessionId = sessionManager.createSession();
         Session session = Mockito.mock();
         when(session.getId()).thenReturn("sock-1");
         Player player = new Player();
         player.setUsername("Zelytra");
         player.setSocket(session);
-        sessionManager.joinSession(sessionId, player);
+        String sessionId = sessionManager.createSession(player).getSessionId();
 
         Fleet fleet = sessionManager.getFleetFromId(sessionId);
         assertNotNull(fleet.getPlayerFromUsername("ZELYTRA"),
@@ -150,9 +161,6 @@ public class SessionManagerTest {
         Session session2 = Mockito.mock();
         when(session2.getId()).thenReturn("2");
 
-        String sessionId1 = sessionManager.createSession();
-        String sessionId2 = sessionManager.createSession();
-
         // Player1 with Socket1
         Player playerSocket1 = new Player();
         playerSocket1.setUsername("Player 1");
@@ -163,7 +171,8 @@ public class SessionManagerTest {
         playerSocket2.setUsername("Player 1");
         playerSocket2.setSocket(session2);
 
-        sessionManager.joinSession(sessionId1, playerSocket1);
+        String sessionId1 = sessionManager.createSession(playerSocket1).getSessionId();
+        String sessionId2 = sessionManager.createSession(hostPlayer()).getSessionId();
         sessionManager.joinSession(sessionId2, playerSocket2);
 
         Fleet fleet1 = sessionManager.getFleetFromId(sessionId1);
@@ -202,10 +211,9 @@ public class SessionManagerTest {
             fakePlayers.add(player);
         }
 
-        String sessionId1 = sessionManager.createSession();
-        String sessionId2 = sessionManager.createSession();
+        String sessionId1 = sessionManager.createSession(fakePlayers.get(0)).getSessionId();
+        String sessionId2 = sessionManager.createSession(hostPlayer()).getSessionId();
 
-        sessionManager.joinSession(sessionId1, fakePlayers.get(0));
         sessionManager.joinSession(sessionId2, fakePlayers.get(0));
 
         assertNull(sessionManager.getSessions().get(sessionId1), "The sessions should be disbanded");
@@ -227,13 +235,11 @@ public class SessionManagerTest {
             fakePlayers.add(player);
         }
 
-        String sessionId1 = sessionManager.createSession();
-        String sessionId2 = sessionManager.createSession();
+        String sessionId1 = sessionManager.createSession(fakePlayers.get(0)).getSessionId();
+        String sessionId2 = sessionManager.createSession(fakePlayers.get(2)).getSessionId();
 
-        sessionManager.joinSession(sessionId1, fakePlayers.get(0));
         sessionManager.joinSession(sessionId1, fakePlayers.get(1));
         sessionManager.joinSession(sessionId2, fakePlayers.get(0));
-        sessionManager.joinSession(sessionId2, fakePlayers.get(2));
 
         sessionManager.leaveSession(fakePlayers.get(0));
 
@@ -258,9 +264,8 @@ public class SessionManagerTest {
             fakePlayers.add(player);
         }
 
-        String sessionId1 = sessionManager.createSession();
+        String sessionId1 = sessionManager.createSession(fakePlayers.get(0)).getSessionId();
 
-        sessionManager.joinSession(sessionId1, fakePlayers.get(0));
         sessionManager.joinSession(sessionId1, fakePlayers.get(1));
 
         sessionManager.leaveSession(fakePlayers.get(0));
@@ -277,8 +282,7 @@ public class SessionManagerTest {
         player.setUsername("Player 1");
         player.setSocket(session);
 
-        String sessionId1 = sessionManager.createSession();
-        sessionManager.joinSession(sessionId1, player);
+        String sessionId1 = sessionManager.createSession(player).getSessionId();
         SotServer server = new SotServer("1.1.1.1", 8080);
 
         sessionManager.playerJoinSotServer(player, sessionManager.resolveSotServer(server));
@@ -296,8 +300,7 @@ public class SessionManagerTest {
         player.setUsername("Player 1");
         player.setSocket(session);
 
-        String sessionId1 = sessionManager.createSession();
-        sessionManager.joinSession(sessionId1, player);
+        String sessionId1 = sessionManager.createSession(player).getSessionId();
         SotServer server = new SotServer("1.1.1.1", 8080);
         String serverHash = server.getHash();
 
@@ -316,8 +319,7 @@ public class SessionManagerTest {
         player.setUsername("Player 1");
         player.setSocket(session);
 
-        String sessionId1 = sessionManager.createSession();
-        sessionManager.joinSession(sessionId1, player);
+        String sessionId1 = sessionManager.createSession(player).getSessionId();
         SotServer server = new SotServer("1.1.1.1", 8080);
         String serverHash = server.getHash();
 
@@ -335,8 +337,7 @@ public class SessionManagerTest {
         player.setUsername("Player 1");
         player.setSocket(session);
 
-        String sessionId1 = sessionManager.createSession();
-        sessionManager.joinSession(sessionId1, player);
+        String sessionId1 = sessionManager.createSession(player).getSessionId();
         SotServer server = new SotServer("1.1.1.1", 8080);
         String serverHash = server.getHash();
 
@@ -359,12 +360,10 @@ public class SessionManagerTest {
         when(socket2.getId()).thenReturn("2");
         when(socket2.getAsyncRemote()).thenReturn(null); // refusal frame is sent here; null -> handled gracefully
 
-        String sessionId = sessionManager.createSession();
-
         Player first = new Player();
         first.setUsername("Dupe");
         first.setSocket(socket1);
-        sessionManager.joinSession(sessionId, first);
+        String sessionId = sessionManager.createSession(first).getSessionId();
 
         Player duplicate = new Player();
         duplicate.setUsername("Dupe");
@@ -392,8 +391,7 @@ public class SessionManagerTest {
         player.setUsername("Sailor");
         player.setSocket(socket);
 
-        String sessionId = sessionManager.createSession();
-        sessionManager.joinSession(sessionId, player);
+        String sessionId = sessionManager.createSession(player).getSessionId();
         assertTrue(sessionManager.isPlayerInSession(player, sessionId), "Precondition: the player is in a session");
 
         // The same account mistypes a code: the target session does not exist.
@@ -444,8 +442,7 @@ public class SessionManagerTest {
         player.setUsername("Player 1");
         player.setSocket(session);
 
-        String sessionId1 = sessionManager.createSession();
-        sessionManager.joinSession(sessionId1, player);
+        String sessionId1 = sessionManager.createSession(player).getSessionId();
 
         assertTrue(sessionManager.isPlayerInSession(player, sessionId1), "The player is not in the session");
     }

@@ -1,6 +1,7 @@
 package fr.zelytra.session.socket.security;
 
 import fr.zelytra.session.SessionManager;
+import fr.zelytra.session.player.Player;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
@@ -56,7 +57,9 @@ public class GuestSocketEndpointsTest {
 
     @Test
     void existingSessionMintsAToken() {
-        String code = sessionManager.createSession();
+        Player host = new Player();
+        host.setUsername("Host");
+        String code = sessionManager.createSession(host).getSessionId();
         RestAssured.given()
                 .when()
                 .get("/guest/register?sessionId=" + code)

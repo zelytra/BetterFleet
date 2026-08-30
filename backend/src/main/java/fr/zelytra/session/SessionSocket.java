@@ -416,15 +416,11 @@ public class SessionSocket {
 
         //Create session if no id provided
         if (sessionId == null || sessionId.isEmpty()) {
-            String newSessionId = manager.createSession();
-            Fleet fleet = manager.joinSession(newSessionId, player);
-            player.setMaster(true);
+            // The socket goes on the player BEFORE creation: one locked operation attaches them to
+            // the fleet it publishes (#876), so nothing may be missing from the player by then.
             player.setSocket(session);
-            if (fleet != null) {
-                // The creator is the host: seed the session banner from their preference.
-                fleet.setBanner(player.getBanner());
-                sessionManager.broadcastDataToSession(newSessionId, MessageType.UPDATE, fleet);
-            }
+            Fleet fleet = manager.createSession(player);
+            sessionManager.broadcastDataToSession(fleet.getSessionId(), MessageType.UPDATE, fleet);
         } else {
             player.setSocket(session);
             Fleet fleet = manager.joinSession(sessionId, player);
