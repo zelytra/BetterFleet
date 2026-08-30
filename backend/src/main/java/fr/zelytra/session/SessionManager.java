@@ -97,20 +97,54 @@ public class SessionManager {
     long geoRetryDelayMs;
 
     /**
-     * Creates a new session with a unique ID and adds it to the sessions map.
+     * Creates a session around the player who asked for it, and returns the fleet they are already
+     * in.
+     * <p>
+     * Creation and attachment are ONE write-locked operation on purpose (#876). They used to be
+     * two: an empty fleet went into the map, its id came back, and the creator arrived through a
+     * separate {@code joinSession} - a second lock acquisition that, during the reconnect storm
+     * every backend restart triggers, routinely blew its 200 ms budget and threw. The fleet was
+     * then already published, with nobody inside, and nothing reaped it: disband only runs when
+     * the last player LEAVES, so a fleet that never received one had no path out of the directory.
+     * Production carried exactly that for ~98 s after the v2.4.3 deploy (report 1051).
+     * <p>
+     * Publishing only a fleet that carries its creator removes the window rather than sweeping up
+     * after it: there is no instant at which an empty session is visible to anyone.
      *
-     * @return UUID of the created session
+     * @param creator the player opening the session; becomes its master
+     * @return the fleet, with the creator already a member
      */
     @Lock(value = Lock.Type.WRITE, time = 200)
-    public String createSession() {
+    public Fleet createSession(Player creator) {
+        // Opening a session means leaving the one you were in - the two-step path got this from
+        // joinSession's "already in another session" branch, and dropping it would strand the
+        // previous fleet exactly as #876 describes (caught by SessionSocketTest).
+        //
+        // The departure is made by the PREVIOUS membership, not by the incoming creator: when the
+        // old fleet disbands, leaveSession closes the socket of whoever it was handed, and the
+        // creator is already holding the brand-new one. The two-step path escaped that by
+        // accident - it left before the socket was attached - which is precisely the kind of
+        // ordering luck this atomic path exists to remove.
+        Fleet previous = getFleetByPlayerName(creator.getUsername());
+        if (previous != null) {
+            Player previousMembership = previous.getPlayerFromUsername(creator.getUsername());
+            leaveSession(previousMembership != null ? previousMembership : creator);
+        }
         Fleet fleet = new Fleet();
+        creator.setMaster(true);
+        creator.touch(clock.getAsLong()); // creating is a sign of life, like joining (#872)
+        fleet.getPlayers().add(creator);
+        // Seed the banner from the creator's preference: they are the host.
+        fleet.setBanner(creator.getBanner());
+        // Published last, and only now that it carries someone.
         sessions.put(fleet.getSessionId(), fleet);
         if (executor != null) {
             executor.submit(this::incrementSession);
         }
         Log.info("[" + fleet.getSessionId() + "] Session created !");
+        Log.info("[" + fleet.getSessionId() + "] " + creator.getUsername() + " Join the session !");
         publishDirectoryChange();
-        return fleet.getSessionId();
+        return fleet;
     }
 
     /**

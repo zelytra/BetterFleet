@@ -77,9 +77,9 @@ public class GhostSocketRejoinTest {
 
     @Test
     public void aSilentGhostIsReplacedByTheOwnersOwnRejoin() {
-        String sessionId = sessionManager.createSession();
         Session ghostSocket = openSocket("sock-ghost");
-        sessionManager.joinSession(sessionId, playerNamed("shiiro", ghostSocket));
+        String sessionId = sessionManager.createSession(playerNamed("shiiro", ghostSocket))
+                .getSessionId();
 
         // The connection half-opens: the socket stays isOpen() == true but the peer is gone, so
         // nothing arrives from it. Two and a half keep-alive windows pass.
@@ -98,9 +98,9 @@ public class GhostSocketRejoinTest {
     public void aRecentlySeenDuplicateIsStillRefused() {
         // The #436 protection stays intact: a SECOND device of a connected account - whose first
         // device is alive and talking - keeps being refused instead of tearing anything down.
-        String sessionId = sessionManager.createSession();
         Session first = openSocket("sock-first");
-        sessionManager.joinSession(sessionId, playerNamed("Zelytra", first));
+        String sessionId = sessionManager.createSession(playerNamed("Zelytra", first))
+                .getSessionId();
 
         now.addAndGet(1_000); // well within the liveness window
 
@@ -117,9 +117,8 @@ public class GhostSocketRejoinTest {
     public void joiningStampsTheLivenessClock() {
         // The join itself is the first sign of life; without this stamp every fresh member would
         // start out looking like a ghost.
-        String sessionId = sessionManager.createSession();
         Player player = playerNamed("tazz", openSocket("sock-1"));
-        sessionManager.joinSession(sessionId, player);
+        sessionManager.createSession(player);
 
         assertEquals(now.get(), player.lastSeenMillis(),
                 "joining must count as being seen");
