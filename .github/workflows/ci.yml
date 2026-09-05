@@ -19,6 +19,7 @@ jobs:
       backend: ${{ steps.filter.outputs.backend }}
       webapp: ${{ steps.filter.outputs.webapp }}
       website: ${{ steps.filter.outputs.website }}
+      deployment: ${{ steps.filter.outputs.deployment }}
     steps:
       - uses: actions/checkout@v7
 
@@ -36,6 +37,26 @@ jobs:
             website:
               - 'website/**'
               - '.github/workflows/ci.yml'
+            deployment:
+              - 'deployment/**'
+              - '.github/workflows/ci.yml'
+
+  backup-script:
+    name: Backup Script Tests
+    runs-on: ubuntu-latest
+    needs: paths
+    if: ${{ needs.paths.outputs.deployment == 'true' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # Run inside the very image the backup service uses: the script's guarantees are shell
+      # behaviour, and the shell that matters is busybox ash, not the runner's bash. `find` comes
+      # from findutils because the retention prune uses -mtime with -print -delete, which busybox
+      # find does not implement the same way.
+      - name: Run the backup contract tests (busybox ash, as in production)
+        run: |
+          docker run --rm -v "$PWD/deployment/backup:/backup:ro" postgres:14-alpine \
+            sh -c 'apk add --no-cache findutils >/dev/null && sh /backup/backup.test.sh'
 
   backend-build:
     name: Backend Build
