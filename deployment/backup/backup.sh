@@ -17,20 +17,58 @@ set -eu
 BACKUP_DIR="${BACKUP_DIR:-/backups}"
 RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-14}"
 STAMP="$(date -u +%Y%m%d-%H%M%S)"
+# How long to wait for a database to accept connections before giving up on this run.
+WAIT_ATTEMPTS="${BACKUP_WAIT_ATTEMPTS:-30}"
+WAIT_SECONDS="${BACKUP_WAIT_SECONDS:-2}"
+
+# `depends_on: condition: service_healthy` only guards `docker compose up`. After a host reboot
+# dockerd restarts every container independently through `restart: unless-stopped`, so this
+# container can - and did - reach pg_dump before Postgres had opened its socket. Waiting here is
+# what makes the ordering real on that path; without it the run failed and the next attempt was a
+# whole BACKUP_INTERVAL_SECONDS away (24h).
+wait_for() {
+    host="$1"
+    attempt=1
+    while [ "$attempt" -le "$WAIT_ATTEMPTS" ]; do
+        if pg_isready --host="$host" --username="$POSTGRES_USER" >/dev/null 2>&1; then
+            return 0
+        fi
+        [ "$WAIT_SECONDS" -gt 0 ] && sleep "$WAIT_SECONDS"
+        attempt=$((attempt + 1))
+    done
+    echo "[backup] $host did not accept connections after ${WAIT_ATTEMPTS} attempts" >&2
+    return 1
+}
 
 dump() {
     host="$1"
     database="$2"
     target="${BACKUP_DIR}/${database}-${STAMP}.sql.gz"
+    # One error file per database: when both dumps fail in the same run, a single shared path kept
+    # only the second message, losing the first failure a human would need to read.
+    errfile="/tmp/dump-err-${database}"
+    failed="/tmp/dump-failed-${database}"
+    wait_for "$host" || return 1
+    rm -f "$failed"
     # Dump to a .part file and rename only on success: an interrupted run (container stopped, disk
     # full) must never leave a truncated file that looks like a usable backup.
-    if pg_dump --host="$host" --username="$POSTGRES_USER" --dbname="$database" --format=plain \
-        --no-owner --no-privileges 2>/tmp/dump-err | gzip -9 >"${target}.part"; then
+    #
+    # pg_dump's own exit status is recorded on DISK rather than read from the pipeline, because a
+    # pipeline reports only its LAST command: `if pg_dump | gzip` tested gzip, and gzip fed an
+    # empty stdin - pg_dump having died on "connection refused" - exits 0 and writes a valid
+    # 20-byte stream. The rename fired and a corrupt file landed under a perfectly normal name,
+    # which is what production did after the 2026-09-01 host reboot (#878); a dump dying PARTWAY
+    # was worse still - renamed, past the content check, exit 0, a backup reported as good.
+    # `set -o pipefail` would fix it too, but it is not POSIX (dash has no such option), and a
+    # backup script must not owe its central guarantee to which shell happens to run it.
+    { pg_dump --host="$host" --username="$POSTGRES_USER" --dbname="$database" --format=plain \
+        --no-owner --no-privileges 2>"$errfile" || echo failed >"$failed"; } | gzip -9 >"${target}.part"
+    if [ ! -f "$failed" ]; then
         mv "${target}.part" "$target"
         echo "[backup] $database -> $(basename "$target") ($(wc -c <"$target") bytes)"
     else
-        rm -f "${target}.part"
-        echo "[backup] FAILED to dump $database from $host: $(cat /tmp/dump-err)" >&2
+        rm -f "${target}.part" "$failed"
+        echo "[backup] FAILED to dump $database from $host: $(cat "$errfile")" >&2
         return 1
     fi
 }
