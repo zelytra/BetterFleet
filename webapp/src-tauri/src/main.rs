@@ -14,10 +14,9 @@ use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::{Duration, SystemTime};
 use lazy_static::lazy_static;
-use log::{error, info, LevelFilter};
-// The auto-click's failure paths are Windows-only; every other platform reports its own way.
-#[cfg(windows)]
-use log::warn;
+// warn is no longer Windows-only: the panic hook uses it on every platform to report the known
+// upstream shutdown race without the crash framing (#838).
+use log::{error, info, warn, LevelFilter};
 use serde::{Deserialize, Serialize};
 use tauri::{Manager, State, WindowEvent};
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
@@ -323,6 +322,33 @@ fn clear_presence() {
         let _ = tx.send(PresenceCommand::Clear);
     }
 }
+/// A panic payload as readable text.
+///
+/// Rust boxes it as `&'static str` for a literal `panic!("...")` and as `String` for a formatted
+/// one - which is most real panics. Reading only `&str` turned every formatted message into
+/// "Unknown panic": precisely the line a support report is opened to read (#838).
+fn panic_payload_text(payload: &dyn std::any::Any) -> String {
+    if let Some(text) = payload.downcast_ref::<&str>() {
+        return (*text).to_string();
+    }
+    if let Some(text) = payload.downcast_ref::<String>() {
+        return text.clone();
+    }
+    String::from("Unknown panic")
+}
+
+/// Whether a panic is the known tao shutdown race (#838) rather than a fault of ours.
+///
+/// tao's Windows event loop panics when it is driven after the window has been destroyed, on exit.
+/// The fix exists upstream (tao 0.37) but no released tauri depends on it - the maintainers sync it
+/// with tauri 2.12 - so until then the app can exit through this panic even though everything went
+/// fine. Matching is deliberately narrow: BOTH the tao event-loop location AND that exact message.
+/// Same message from our own code, or any other tao failure, stays a crash.
+fn is_known_shutdown_race(location: &str, payload: &str) -> bool {
+    let in_tao_event_loop = location.contains("tao-") && location.contains("event_loop");
+    in_tao_event_loop && payload.contains("cannot move state from Destroyed")
+}
+
 #[tokio::main]
 async fn main() {
     // Force the X11 backend (XWayland on a Wayland session). The always-on-top in-game overlay relies
@@ -352,9 +378,21 @@ async fn main() {
     }
 
     panic::set_hook(Box::new(move |panic_info| {
-        error!("Crashed, gathering informations");
-        let payload = panic_info.payload().downcast_ref::<&str>().unwrap_or(&"Unknown panic");
+        let payload = panic_payload_text(panic_info.payload());
         let location = panic_info.location().map(|l| l.to_string()).unwrap_or_else(|| String::from("Unknown location"));
+        if is_known_shutdown_race(&location, &payload) {
+            // Not our crash, and not a crash at all from the player's side: the window is already
+            // gone and the process is on its way out. Logged plainly, without the crash framing
+            // that made an ordinary quit read as a failure in support reports (#838).
+            warn!(
+                "Known upstream shutdown race in the windowing layer at {} ({}). The app had \
+                 already exited; nothing was lost. Fixed in tao 0.37, which reaches us with \
+                 tauri 2.12 - see issue #838.",
+                location, payload
+            );
+            return;
+        }
+        error!("Crashed, gathering informations");
         error!("Panic occurred at {}: {}", location, payload);
     }));
 
@@ -1106,5 +1144,62 @@ mod log_export_tests {
         let dir = write_logs("empty", &[]);
         assert_eq!(collect_recent_log_lines(&dir, 5000).unwrap(), "");
         fs::remove_dir_all(&dir).unwrap();
+    }
+}
+
+#[cfg(test)]
+mod panic_hook_tests {
+    use super::*;
+
+    // A panic payload is `&str` only when the message is a literal; every formatted panic! - which
+    // is most of them, including the tao shutdown race of #838 - carries a String. The hook read
+    // only &str, so those arrived in the log as "Unknown panic": the one line a support report
+    // needs, thrown away.
+    #[test]
+    fn a_formatted_panic_message_is_not_lost() {
+        let literal: Box<dyn std::any::Any + Send> = Box::new("cannot move state from Destroyed");
+        assert_eq!(
+            panic_payload_text(literal.as_ref()),
+            "cannot move state from Destroyed"
+        );
+
+        let formatted: Box<dyn std::any::Any + Send> =
+            Box::new(String::from("cannot move state from Destroyed"));
+        assert_eq!(
+            panic_payload_text(formatted.as_ref()),
+            "cannot move state from Destroyed"
+        );
+    }
+
+    #[test]
+    fn an_unknown_payload_type_still_says_something() {
+        let odd: Box<dyn std::any::Any + Send> = Box::new(42u32);
+        assert_eq!(panic_payload_text(odd.as_ref()), "Unknown panic");
+    }
+
+    // The tao event loop panics on shutdown after the window is destroyed (#838, fixed upstream in
+    // tao 0.37 but unreachable until tauri 2.12 syncs it). It is an exit-time race in a dependency,
+    // not a BetterFleet crash, and logging it as one made an ordinary quit look like a crash in
+    // every support report it landed in.
+    #[test]
+    fn the_known_shutdown_race_is_recognised() {
+        assert!(is_known_shutdown_race(
+            "tao-0.35.3\\src\\platform_impl\\windows\\event_loop\\runner.rs:371:25",
+            "cannot move state from Destroyed"
+        ));
+    }
+
+    #[test]
+    fn a_real_crash_is_never_mistaken_for_it() {
+        // Same message, our own code: still a crash.
+        assert!(!is_known_shutdown_race(
+            "src/fetch_informations.rs:412:9",
+            "cannot move state from Destroyed"
+        ));
+        // tao, but a different failure: still a crash.
+        assert!(!is_known_shutdown_race(
+            "tao-0.35.3\\src\\platform_impl\\windows\\event_loop\\runner.rs:120:5",
+            "index out of bounds"
+        ));
     }
 }
