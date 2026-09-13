@@ -164,6 +164,37 @@ check "the run recovers once Postgres accepts connections" "$rc" "0"
 check "both databases were dumped after the wait" "$(dumps_in_backup_dir)" "2"
 teardown
 
+echo "== the readiness probe names a database that exists"
+setup
+# Without --dbname, libpq defaults the target database to the USERNAME - a generated credential
+# here, not a database - so every probe opened a startup packet against a database that does not
+# exist and Postgres logged "FATAL: database ... does not exist" on every daily cycle (#884).
+# pg_isready still answered "accepting connections" (it needs a response, not a login), which is
+# why the backups were fine and the noise went unexplained for weeks.
+cat > "$WORK/bin/pg_isready" <<'EOF'
+#!/bin/sh
+printf '%s\n' "$@" >> "$WORK_STATE/isready-args"
+exit 0
+EOF
+chmod +x "$WORK/bin/pg_isready"
+mkdir -p "$WORK/state"
+WORK_STATE="$WORK/state"
+export WORK_STATE
+cat > "$WORK/bin/pg_dump" <<'EOF'
+#!/bin/sh
+echo "CREATE TABLE public.session (id integer);"
+echo "COPY public.session (id) FROM stdin;"
+exit 0
+EOF
+chmod +x "$WORK/bin/pg_dump"
+sh "$BACKUP_SH" >"$WORK/out" 2>"$WORK/err" && rc=0 || rc=$?
+check "the run still succeeds" "$rc" "0"
+grep -q -- '--dbname=postgres' "$WORK_STATE/isready-args" && named=yes || named=no
+check "pg_isready is pointed at the maintenance database, not at the username" "$named" "yes"
+grep -q -- "--dbname=$POSTGRES_USER" "$WORK_STATE/isready-args" && asuser=yes || asuser=no
+check "pg_isready never targets the username as a database" "$asuser" "no"
+teardown
+
 echo
 if [ "$failures" -eq 0 ]; then
     echo "backup.sh: $checks checks passed"
