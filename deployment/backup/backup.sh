@@ -30,7 +30,13 @@ wait_for() {
     host="$1"
     attempt=1
     while [ "$attempt" -le "$WAIT_ATTEMPTS" ]; do
-        if pg_isready --host="$host" --username="$POSTGRES_USER" >/dev/null 2>&1; then
+        # --dbname is not optional: without it libpq targets a database named after the USER -
+        # a generated credential here, not a database - and Postgres logged
+        # "FATAL: database ... does not exist" on every daily cycle while pg_isready still said
+        # "accepting connections" (it needs a response, not a login). The backups were fine and
+        # the logs were lying about it (#884). `postgres` is the maintenance database every
+        # instance has, so the probe is honest on both containers.
+        if pg_isready --host="$host" --username="$POSTGRES_USER" --dbname=postgres >/dev/null 2>&1; then
             return 0
         fi
         [ "$WAIT_SECONDS" -gt 0 ] && sleep "$WAIT_SECONDS"
