@@ -33,6 +33,7 @@ import {
 import { fakeBackend, settle } from "@/test/harness/FakeBackend.ts";
 import {
   installFakeTransports,
+  rustCalls,
   rustResponses,
   sentAlerts,
 } from "@/test/harness/tauri.ts";
@@ -99,6 +100,13 @@ describe("the bug report carries the diagnostic capture", () => {
     for (const key of Object.keys(routeQuery)) delete routeQuery[key];
     rustResponses.set("get_logs", "log line 1\nlog line 2");
     rustResponses.set("get_system_info", "=> System: test rig");
+    // The guided flow now asks where the player is before capturing (#883); in game by default,
+    // so the tests about the capture itself keep exercising a capture.
+    rustResponses.set("get_game_object", {
+      status: "InGame",
+      ip: "1.2.3.4",
+      port: 30000,
+    });
   });
 
   it("attaches the guided capture to the POSTed message", async () => {
@@ -161,6 +169,97 @@ describe("the bug report carries the diagnostic capture", () => {
     await settle();
     expect(fakeBackend.reports).toHaveLength(1);
     expect(fakeBackend.reports[0].message).toContain(JSON.stringify(capture));
+  });
+
+  it("impatient clicks during the capture send ONE report, not one per click", async () => {
+    // Reports #1101-#1103 (#883): three byte-identical rows from one player in the same burst.
+    // Not a plain triple-click - the send AWAITS the in-flight capture, so every click during
+    // the 20s window queued a whole send behind the same promise, and they all fired the second
+    // the capture resolved.
+    let finishCapture!: (value: unknown) => void;
+    rustResponses.set(
+      "run_server_diagnostic",
+      new Promise((resolve) => (finishCapture = resolve)),
+    );
+    routeQuery.diagnostic = "auto";
+    const wrapper = mountReports();
+    await settle();
+
+    await send(wrapper);
+    await send(wrapper);
+    await send(wrapper);
+    await settle();
+    expect(fakeBackend.reports).toHaveLength(0);
+
+    finishCapture(capture);
+    await settle();
+    expect(fakeBackend.reports).toHaveLength(1);
+  });
+
+  it("the send button is disabled while a send is in flight", async () => {
+    let finishCapture!: (value: unknown) => void;
+    rustResponses.set(
+      "run_server_diagnostic",
+      new Promise((resolve) => (finishCapture = resolve)),
+    );
+    routeQuery.diagnostic = "auto";
+    const wrapper = mountReports();
+    await settle();
+
+    await send(wrapper);
+    await settle();
+    expect(
+      button(wrapper, fr.report.bug.button).attributes("disabled"),
+    ).toBeDefined();
+
+    finishCapture(capture);
+    await settle();
+    expect(
+      button(wrapper, fr.report.bug.button).attributes("disabled"),
+    ).toBeUndefined();
+  });
+
+  it("does not capture at all when the player has already left the game", async () => {
+    // Reports #1101-#1103 (#883): the banner was clicked in the same second as "Left the game",
+    // so the 20s capture ran against the main menu, saw nothing, and the pre-filled message
+    // still claimed detection had "stayed silent in game". Nothing to diagnose: say so instead.
+    rustResponses.set("get_game_object", {
+      status: "MainMenu",
+      ip: "",
+      port: 0,
+    });
+    routeQuery.diagnostic = "auto";
+    const wrapper = mountReports();
+    await settle();
+
+    const captures = rustCalls.filter(
+      (c) => c.command === "run_server_diagnostic",
+    );
+    expect(captures).toHaveLength(0);
+    const message = wrapper.find("textarea").element as HTMLTextAreaElement;
+    expect(message.value).toBe(fr.diagnostic.leftBeforeCapture);
+    expect(message.value).not.toBe(fr.diagnostic.prefill);
+  });
+
+  it("says so when the game ended while the capture was running", async () => {
+    // In game at arrival, out of it by the time the capture finished: the capture is still
+    // worth attaching, but the message must not claim the player was in game throughout.
+    rustResponses.set("run_server_diagnostic", {
+      ...capture,
+      game_status: "InGame",
+      game_status_end: "MainMenu",
+    });
+    routeQuery.diagnostic = "auto";
+    const wrapper = mountReports();
+    await settle();
+
+    const message = wrapper.find("textarea").element as HTMLTextAreaElement;
+    expect(message.value).toBe(fr.diagnostic.leftDuringCapture);
+    await send(wrapper);
+    await settle();
+    expect(fakeBackend.reports[0].message).toContain(
+      '"game_status_end":"MainMenu"',
+    );
   });
 
   it("reports the failure line when the capture could not run", async () => {

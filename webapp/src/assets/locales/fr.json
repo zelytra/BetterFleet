@@ -215,6 +215,8 @@
     },
     "dismiss": "Pas maintenant",
     "prefill": "La détection de serveur est restée silencieuse en jeu - le diagnostic automatique est attaché dans les logs.",
+    "leftBeforeCapture": "Vous avez quitté la partie avant que le diagnostic ne puisse démarrer : rien n'a été capturé. Rouvrez cette page depuis la bannière du salon pendant que vous êtes sur un serveur.",
+    "leftDuringCapture": "Vous avez quitté le serveur pendant le diagnostic : la capture jointe ci-dessous est partielle et ne couvre que le temps passé sur le serveur.",
     "run": "Exécuter le diagnostic"
   },
   "firstLogin": {
