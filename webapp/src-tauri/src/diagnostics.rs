@@ -25,6 +25,12 @@ pub struct DiagnosticReport {
     /// Free-text label supplied by the tester, e.g. "main menu" or "in game".
     pub note: String,
     pub game_status: String,
+    /// The game status once the capture ENDED, when the caller recorded it. A guided capture can
+    /// start on a server and finish in the main menu (#883): triage reads a capture that ends
+    /// off-server completely differently, and the frontend relabels the report from this. Absent
+    /// - never a null-as-menu - when nobody recorded it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub game_status_end: Option<String>,
     pub pid: Option<u32>,
     pub duration_ms: u64,
     pub main_menu_port: u16,
@@ -711,6 +717,7 @@ pub async fn run_diagnostic(
     DiagnosticReport {
         note,
         game_status,
+        game_status_end: None,
         pid,
         duration_ms: started.elapsed().as_millis() as u64,
         main_menu_port,
@@ -829,10 +836,48 @@ mod tests {
     }
 
     #[test]
+    fn the_report_says_where_the_game_ended_up() {
+        // A guided capture can start on a server and end in the main menu (#883): the frontend
+        // relabels the report from that, so the end state has to be on the wire, distinct from the
+        // start state, and absent (not null-as-"MainMenu") when the backend did not record it.
+        let mut report = sample_report();
+        report.game_status = "InGame".into();
+        report.game_status_end = Some("MainMenu".into());
+        let json = serde_json::to_string(&report).unwrap();
+        assert!(json.contains("\"game_status\":\"InGame\""), "{json}");
+        assert!(json.contains("\"game_status_end\":\"MainMenu\""), "{json}");
+
+        report.game_status_end = None;
+        let json = serde_json::to_string(&report).unwrap();
+        assert!(!json.contains("game_status_end"), "an unrecorded end state must not appear: {json}");
+    }
+
+    fn sample_report() -> DiagnosticReport {
+        DiagnosticReport {
+            note: "in game".into(),
+            game_status: "Started".into(),
+            game_status_end: None,
+            pid: Some(7976),
+            duration_ms: 20000,
+            main_menu_port: 0,
+            udp_ports_netstat2: vec![],
+            udp_ports_powershell: vec![],
+            total_packets: 0,
+            raw_packets: None,
+            distinct_flows: 0,
+            receive_only_capture: false,
+            top_candidates: vec![],
+            flows: vec![],
+            capture_backend: "capture-service (protocol v1)".into(),
+        }
+    }
+
+    #[test]
     fn raw_packets_is_reported_and_distinct_from_game_packets() {
         let report = |raw: Option<u64>| DiagnosticReport {
             note: "in game".into(),
             game_status: "Started".into(),
+            game_status_end: None,
             pid: Some(7976),
             duration_ms: 20000,
             main_menu_port: 0,

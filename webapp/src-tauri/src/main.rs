@@ -863,6 +863,13 @@ async fn run_server_diagnostic(
     )
     .await;
 
+    // Where the game ended up once the capture was over. The detection loop kept running for
+    // the whole window, so this is the same live state the lobby shows - and a capture that
+    // started on a server and ended in the menu (#883) is labelled as such rather than as
+    // "in game" throughout.
+    let mut report = report;
+    report.game_status_end = Some(format!("{:?}", api.inner().read().await.game_status));
+
     match serde_json::to_string(&report) {
         Ok(json) => info!("[diagnostic] report: {}", json),
         Err(e) => error!("[diagnostic] failed to serialize report: {}", e),
@@ -916,6 +923,13 @@ async fn run_server_diagnostic(
         Vec::new(), // no PowerShell source on Linux
     )
     .await;
+
+    // Where the game ended up once the capture was over. The detection loop kept running for
+    // the whole window, so this is the same live state the lobby shows - and a capture that
+    // started on a server and ended in the menu (#883) is labelled as such rather than as
+    // "in game" throughout.
+    let mut report = report;
+    report.game_status_end = Some(format!("{:?}", api.inner().read().await.game_status));
 
     match serde_json::to_string(&report) {
         Ok(json) => info!("[diagnostic] report: {}", json),

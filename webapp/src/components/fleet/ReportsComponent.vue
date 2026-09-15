@@ -25,6 +25,7 @@
         </div>
         <PirateButton
           :label="t('report.bug.button')"
+          :disabled="sending"
           @on-button-click="sendReport()"
         />
       </div>
@@ -79,12 +80,18 @@ import { AlertProvider, AlertType } from "@/vue/alert/Alert.ts";
 import { invoke } from "@tauri-apps/api/core";
 import { copyText } from "@/objects/utils/Clipboard.ts";
 import { UserStore } from "@/objects/stores/UserStore.ts";
+import { Utils } from "@/objects/utils/Utils.ts";
+import { PlayerStates } from "@/objects/fleet/Player.ts";
 
 const { t } = useI18n();
 
 const reportMessage = ref("");
 const alerts = inject<AlertProvider>("alertProvider");
 const diagRunning = ref(false);
+// One send at a time. The send below AWAITS an in-flight capture, so without this every click
+// during the 20s window queued a whole send behind the same promise - and they all fired the
+// second the capture resolved: three byte-identical reports from one player (#883).
+const sending = ref(false);
 const diagOutput = ref("");
 // What sendReport() attaches: the last capture in compact JSON (or its failure line). Kept apart
 // from diagOutput, whose pretty print is for the panel and the copy button.
@@ -96,16 +103,47 @@ const route = useRoute();
 // Guided diagnostic (#688): arriving from the lobby banner runs the capture immediately and
 // pre-fills the message. sendReport() waits for the capture and attaches it to the message, so the
 // report carries the scan even when the player hits send before the capture is done.
-onMounted(() => {
-  if (route.query.diagnostic === "auto") {
+//
+// But only if there is a game to capture (#883): the banner was clicked in the same second as
+// "Left the game", the 20s capture ran against the main menu and saw nothing, and the pre-filled
+// message still claimed detection had "stayed silent in game" - three times over. A guided
+// capture outside a server has nothing to diagnose, so it is not run, and the message says why.
+onMounted(async () => {
+  if (route.query.diagnostic !== "auto") return;
+  if (!(await inGameNow())) {
     if (!reportMessage.value) {
-      reportMessage.value = t("diagnostic.prefill");
+      reportMessage.value = t("diagnostic.leftBeforeCapture");
     }
-    runDiagnostic("in game (guided)");
+    return;
   }
+  if (!reportMessage.value) {
+    reportMessage.value = t("diagnostic.prefill");
+  }
+  runDiagnostic("in game (guided)", { guided: true });
 });
 
-function runDiagnostic(note: string) {
+async function inGameNow(): Promise<boolean> {
+  try {
+    const game: any = await invoke("get_game_object");
+    return (
+      Utils.parseRustPlayerStatus(game?.status ?? "") === PlayerStates.IN_GAME
+    );
+  } catch {
+    // If the game state cannot be read, capturing is still the more useful default.
+    return true;
+  }
+}
+
+/** A capture that started on a server but ended off it: what Rust reports as game_status_end. */
+function endedOffServer(report: any): boolean {
+  const end = report?.game_status_end;
+  return (
+    typeof end === "string" &&
+    Utils.parseRustPlayerStatus(end) !== PlayerStates.IN_GAME
+  );
+}
+
+function runDiagnostic(note: string, options: { guided?: boolean } = {}) {
   if (diagRunning.value) return;
   diagRunning.value = true;
   diagOutput.value = "";
@@ -120,6 +158,16 @@ function runDiagnostic(note: string) {
       // Compact on purpose: the same capture fits in roughly a third of its pretty-printed size,
       // so it rarely has to be truncated to stay under MESSAGE_MAX_LENGTH.
       diagAttachment = JSON.stringify(report);
+      // The game ended mid-capture: the scan is still worth attaching, but the pre-filled message
+      // must not claim the player was on a server throughout (#883). Only the untouched prefill is
+      // replaced - words the player typed are theirs.
+      if (
+        options.guided &&
+        endedOffServer(report) &&
+        reportMessage.value === t("diagnostic.prefill")
+      ) {
+        reportMessage.value = t("diagnostic.leftDuringCapture");
+      }
     } catch (error) {
       diagOutput.value = t("diagnostic.capture.error", {
         error: String(error),
@@ -145,6 +193,7 @@ async function copyDiag() {
 }
 
 async function sendReport() {
+  if (sending.value) return;
   if (reportMessage.value.length == 0) {
     alerts?.sendAlert({
       title: t("alert.report.emptyMessage.title"),
@@ -153,35 +202,40 @@ async function sendReport() {
     });
     return;
   }
+  // Locked BEFORE the wait below, which is where the duplicates queued up.
+  sending.value = true;
+  try {
+    // A capture may still be sniffing (the guided flow starts one on arrival and the player can
+    // reach Send well inside its 20 seconds): wait for it, the scan is the point of that report.
+    if (diagCapture) await diagCapture;
 
-  // A capture may still be sniffing (the guided flow starts one on arrival and the player can
-  // reach Send well inside its 20 seconds): wait for it, the scan is the point of that report.
-  if (diagCapture) await diagCapture;
+    const report: ReportInterface = {
+      device: "",
+      logs: "",
+      message: attachDiagnostic(reportMessage.value, diagAttachment),
+      // The build's own version, so triage knows which release the report describes.
+      version: String(import.meta.env.VITE_VERSION ?? ""),
+      // Who filed it, so triage can follow up in-app; "" when the player is not signed in.
+      username: UserStore.player.username ?? "",
+    };
+    await invoke("get_logs", { maxLines: 5000 }).then((logs) => {
+      report.logs = logs as string;
+    });
 
-  const report: ReportInterface = {
-    device: "",
-    logs: "",
-    message: attachDiagnostic(reportMessage.value, diagAttachment),
-    // The build's own version, so triage knows which release the report describes.
-    version: String(import.meta.env.VITE_VERSION ?? ""),
-    // Who filed it, so triage can follow up in-app; "" when the player is not signed in.
-    username: UserStore.player.username ?? "",
-  };
-  await invoke("get_logs", { maxLines: 5000 }).then((logs) => {
-    report.logs = logs as string;
-  });
+    await invoke("get_system_info").then((system) => {
+      report.device = system as string;
+    });
 
-  await invoke("get_system_info").then((system) => {
-    report.device = system as string;
-  });
-
-  new BugReport(report).sendReport();
-  alerts?.sendAlert({
-    title: t("alert.report.send.title"),
-    content: "",
-    type: AlertType.VALID,
-  });
-  reportMessage.value = "";
+    new BugReport(report).sendReport();
+    alerts?.sendAlert({
+      title: t("alert.report.send.title"),
+      content: "",
+      type: AlertType.VALID,
+    });
+    reportMessage.value = "";
+  } finally {
+    sending.value = false;
+  }
 }
 </script>
 

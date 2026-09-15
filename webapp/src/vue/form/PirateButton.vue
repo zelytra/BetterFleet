@@ -21,5 +21,12 @@ button {
   height: 74px;
   cursor: pointer;
   text-align: center;
+
+  // A disabled button must LOOK disabled: the report form locks it while a send is in flight
+  // (#883), and a full-strength button that ignores clicks reads as broken.
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
 }
 </style>
