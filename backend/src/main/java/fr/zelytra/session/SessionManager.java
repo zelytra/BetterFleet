@@ -155,7 +155,32 @@ public class SessionManager {
      */
     @Lock(value = Lock.Type.READ, time = 200)
     public boolean isSessionExist(String sessionId) {
-        return sessions.containsKey(sessionId);
+        return sessions.containsKey(normalizeSessionId(sessionId));
+    }
+
+    /**
+     * A session id as a client may have mangled it, brought back to the form the map is keyed on.
+     * <p>
+     * Ids are seven uppercase hex characters, so decoding, trimming and upper-casing can never turn
+     * one valid id into another - normalising has no false positives, only rescued lookups. The
+     * decode matters as much as the trim: a client that cached a join code with a leading space
+     * had the browser percent-encode it into the socket path, and the path parameter arrived here
+     * as the LITERAL {@code %20DE41082}. The exact lookup then answered SESSION_NOT_FOUND six times
+     * in a row for a session that was alive the whole time, until another member happened to open
+     * a different way in (#888).
+     */
+    public static String normalizeSessionId(String sessionId) {
+        if (sessionId == null) {
+            return null;
+        }
+        String decoded;
+        try {
+            decoded = java.net.URLDecoder.decode(sessionId, java.nio.charset.StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException malformedEscape) {
+            // A lone '%' that is not an escape: not an id we know, but not worth throwing over.
+            decoded = sessionId;
+        }
+        return decoded.trim().toUpperCase();
     }
 
     /**
@@ -371,7 +396,7 @@ public class SessionManager {
     @Lock(value = Lock.Type.READ, time = 200)
     public Fleet getFleetFromId(String sessionId) {
         if (sessionId == null) return null;
-        return sessions.getOrDefault(sessionId, null);
+        return sessions.getOrDefault(normalizeSessionId(sessionId), null);
     }
 
     /**

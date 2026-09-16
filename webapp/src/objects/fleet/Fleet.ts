@@ -78,6 +78,12 @@ export class Fleet {
   }
 
   async joinSession(sessionId: string) {
+    // The one choke point every join goes through - both code modals, the public directory and
+    // the auto-reconnect - so the id is cleaned here rather than at each caller. A code pasted
+    // with a stray space was percent-encoded into the socket path, refused by the backend for a
+    // session that was alive, then cached and replayed on every reconnect (#888). Ids are seven
+    // uppercase hex characters, so trimming and upper-casing cannot mangle a valid one.
+    sessionId = sessionId.trim().toUpperCase();
     // Close whatever previous socket is still alive (CONNECTING or OPEN): its handlers are wired
     // to this same store, and two live sockets mean two sessions fighting over one state. The
     // guard used to read `>= 2` - closing only sockets already CLOSING/CLOSED - and the open one

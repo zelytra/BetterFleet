@@ -98,6 +98,11 @@ public class SessionSocket {
 
     @OnMessage
     public void onMessage(String message, Session session, @PathParam("sessionId") String sessionId, @PathParam("token") String token) throws IOException {
+        // Path parameters arrive UNDECODED, so a join code the client mangled reaches here as e.g.
+        // the literal "%20DE41082". Normalised once at the door: everything downstream - the
+        // duplicate-join guard, the guest-token comparison, the log lines - then sees the id the
+        // session map is actually keyed on (#888).
+        sessionId = SessionManager.normalizeSessionId(sessionId);
 
         ObjectMapper objectMapper = INBOUND_MAPPER;
         objectMapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);

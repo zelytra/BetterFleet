@@ -51,6 +51,20 @@ describe("Fleet socket lifecycle, against the fake backend", () => {
     expect(first.readyState).toBe(FakeWebSocket.CLOSED);
   });
 
+  it("a join code pasted with stray whitespace reaches the socket path clean", async () => {
+    // #888: a code cached with a leading space had the browser percent-encode it into the
+    // socket path, and the backend answered SESSION_NOT_FOUND for a live session - six times,
+    // because the client kept replaying the same mangled id on every reconnect.
+    const fleet = UserStore.player.fleet as Fleet;
+    await fleet.joinSession("  de41082 ");
+    await settle();
+    const socket = fakeBackend.sockets[fakeBackend.sockets.length - 1];
+
+    expect(socket.url.endsWith("/DE41082")).toBe(true);
+    expect(socket.url).not.toContain(" ");
+    expect(socket.url).not.toContain("%20");
+  });
+
   it("an UPDATE that no longer carries the local player is absorbed, not thrown", async () => {
     const fleet = UserStore.player.fleet as Fleet;
     await fleet.joinSession("");
