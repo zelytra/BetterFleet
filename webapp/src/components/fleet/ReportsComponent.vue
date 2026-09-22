@@ -108,29 +108,43 @@ const route = useRoute();
 // "Left the game", the 20s capture ran against the main menu and saw nothing, and the pre-filled
 // message still claimed detection had "stayed silent in game" - three times over. A guided
 // capture outside a server has nothing to diagnose, so it is not run, and the message says why.
+//
+// And if detection has already resolved a server by the time the page opens (#893: report #1151
+// ran the guided capture fifteen minutes after a slow join had resolved), the capture is still
+// worth taking - it documents the healthy state - but the message must not claim silence.
 onMounted(async () => {
   if (route.query.diagnostic !== "auto") return;
-  if (!(await inGameNow())) {
+  const game = await gameNow();
+  if (!game.inGame) {
     if (!reportMessage.value) {
       reportMessage.value = t("diagnostic.leftBeforeCapture");
     }
     return;
   }
   if (!reportMessage.value) {
-    reportMessage.value = t("diagnostic.prefill");
+    reportMessage.value = game.serverResolved
+      ? t("diagnostic.resolvedBeforeCapture")
+      : t("diagnostic.prefill");
   }
   runDiagnostic("in game (guided)", { guided: true });
 });
 
-async function inGameNow(): Promise<boolean> {
+/** The live detection state the guided flow arrives on: on a server, and with an identity or not. */
+async function gameNow(): Promise<{
+  inGame: boolean;
+  serverResolved: boolean;
+}> {
   try {
     const game: any = await invoke("get_game_object");
-    return (
-      Utils.parseRustPlayerStatus(game?.status ?? "") === PlayerStates.IN_GAME
-    );
+    return {
+      inGame:
+        Utils.parseRustPlayerStatus(game?.status ?? "") ===
+        PlayerStates.IN_GAME,
+      serverResolved: typeof game?.ip === "string" && game.ip.length > 0,
+    };
   } catch {
     // If the game state cannot be read, capturing is still the more useful default.
-    return true;
+    return { inGame: true, serverResolved: false };
   }
 }
 

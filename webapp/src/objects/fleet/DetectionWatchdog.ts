@@ -50,8 +50,26 @@ export class DetectionWatchdog {
   }
 }
 
-/** What the lobby renders: prompt flips true when the watchdog fires, and false on dismiss. */
+/**
+ * What the lobby renders: prompt flips true when a watchdog fires, and false on dismiss - or on
+ * its own, as soon as the offer no longer applies (see `offerStillStands`).
+ */
 export const detectionPrompt = reactive({ visible: false });
+
+/**
+ * Whether a raised offer is still worth showing. Detection resolving makes it moot, whichever
+ * watchdog raised it, and so does the game closing. Report #1151 (#893) was filed off a banner
+ * that had fired during a slow join and then stayed up for the rest of the game: the capture ran
+ * fifteen minutes after the server had resolved, and the pre-filled message still said detection
+ * had stayed silent. NOT keyed on leaving the server: the socketless watchdog raises the same
+ * banner while the game is merely STARTED (report id 801), and that offer must survive these ticks.
+ */
+export function offerStillStands(
+  status: PlayerStates,
+  hasServer: boolean,
+): boolean {
+  return !hasServer && status !== PlayerStates.CLOSED;
+}
 
 const watchdog = new DetectionWatchdog();
 
@@ -76,6 +94,8 @@ export function observeDetection(player: Player): void {
   );
   if (fired) {
     detectionPrompt.visible = true;
+  } else if (detectionPrompt.visible && !offerStillStands(status, hasServer)) {
+    detectionPrompt.visible = false;
   }
 }
 

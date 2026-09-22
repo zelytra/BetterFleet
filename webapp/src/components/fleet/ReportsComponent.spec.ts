@@ -101,11 +101,12 @@ describe("the bug report carries the diagnostic capture", () => {
     rustResponses.set("get_logs", "log line 1\nlog line 2");
     rustResponses.set("get_system_info", "=> System: test rig");
     // The guided flow now asks where the player is before capturing (#883); in game by default,
-    // so the tests about the capture itself keep exercising a capture.
+    // so the tests about the capture itself keep exercising a capture - and with NO server, which
+    // is the premise of the guided flow (detection silent), since a resolved one relabels it (#893).
     rustResponses.set("get_game_object", {
       status: "InGame",
-      ip: "1.2.3.4",
-      port: 30000,
+      ip: "",
+      port: 0,
     });
   });
 
@@ -259,6 +260,35 @@ describe("the bug report carries the diagnostic capture", () => {
     await settle();
     expect(fakeBackend.reports[0].message).toContain(
       '"game_status_end":"MainMenu"',
+    );
+  });
+
+  it("says so when a server was already detected when the capture ran", async () => {
+    // Report #1151 (#893): the banner fired during a slow join, stayed up, and the player ran
+    // the guided capture fifteen minutes after the server had resolved. The capture is still
+    // attached (it documents the healthy state) but the message must not claim silence.
+    rustResponses.set("get_game_object", {
+      status: "InGame",
+      ip: "20.33.41.156",
+      port: 30636,
+    });
+    rustResponses.set("run_server_diagnostic", capture);
+    routeQuery.diagnostic = "auto";
+    const wrapper = mountReports();
+    await settle();
+
+    const captures = rustCalls.filter(
+      (c) => c.command === "run_server_diagnostic",
+    );
+    expect(captures).toHaveLength(1);
+    const message = wrapper.find("textarea").element as HTMLTextAreaElement;
+    expect(message.value).toBe(fr.diagnostic.resolvedBeforeCapture);
+    await send(wrapper);
+    await settle();
+    expect(fakeBackend.reports[0].message).toBe(
+      fr.diagnostic.resolvedBeforeCapture +
+        DIAGNOSTIC_HEADER +
+        JSON.stringify(capture),
     );
   });
 

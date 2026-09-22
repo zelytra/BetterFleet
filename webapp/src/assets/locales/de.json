@@ -217,6 +217,7 @@
     "prefill": "Die Servererkennung blieb im Spiel stumm – automatische Diagnose in den Logs angehängt.",
     "leftBeforeCapture": "You left the game before the diagnostic could run, so nothing was captured. Open this page again from the lobby banner while you are on a server.",
     "leftDuringCapture": "You left the server while the diagnostic was running: the capture attached below is partial and covers only the time spent on the server.",
+    "resolvedBeforeCapture": "Server detection had already found your server when this diagnostic ran — the capture is attached for reference.",
     "run": "Diagnose ausführen"
   },
   "firstLogin": {
