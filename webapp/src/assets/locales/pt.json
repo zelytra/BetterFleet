@@ -198,8 +198,8 @@
     "title": "Créditos"
   },
   "captureRepair": {
-    "incompatible": "Server detection is offline: the BetterFleet capture service does not match this version of the app. Re-run the BetterFleet installer to update it.",
-    "unreachable": "Server detection is offline: the BetterFleet capture service is not running. Re-run the BetterFleet installer to repair it — or, as a stopgap, run BetterFleet as administrator."
+    "incompatible": "A detecção de servidor está fora do ar: o serviço de captura do BetterFleet não corresponde a esta versão do app. Execute novamente o instalador do BetterFleet para atualizá-lo.",
+    "unreachable": "A detecção de servidor está fora do ar: o serviço de captura do BetterFleet não está em execução. Execute novamente o instalador do BetterFleet para repará-lo — ou, como solução provisória, execute o BetterFleet como administrador."
   },
   "diagnostic": {
     "banner": "A detecção de servidor parece travada — uma captura de 20s pode nos dizer o porquê.",
@@ -215,9 +215,9 @@
     },
     "dismiss": "Agora não",
     "prefill": "A detecção de servidor ficou em silêncio em jogo — diagnóstico automático anexado nos logs.",
-    "leftBeforeCapture": "You left the game before the diagnostic could run, so nothing was captured. Open this page again from the lobby banner while you are on a server.",
-    "leftDuringCapture": "You left the server while the diagnostic was running: the capture attached below is partial and covers only the time spent on the server.",
-    "resolvedBeforeCapture": "Server detection had already found your server when this diagnostic ran — the capture is attached for reference.",
+    "leftBeforeCapture": "Você saiu do jogo antes que o diagnóstico pudesse ser executado, então nada foi capturado. Abra esta página novamente pelo aviso do saguão enquanto estiver em um servidor.",
+    "leftDuringCapture": "Você saiu do servidor enquanto o diagnóstico estava em execução: a captura anexada abaixo é parcial e cobre apenas o tempo passado no servidor.",
+    "resolvedBeforeCapture": "A detecção de servidor já tinha encontrado o seu servidor quando este diagnóstico foi executado — a captura está anexada apenas para referência.",
     "run": "Executar o diagnóstico"
   },
   "firstLogin": {

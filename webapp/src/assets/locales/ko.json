@@ -198,8 +198,8 @@
     "title": "제작진"
   },
   "captureRepair": {
-    "incompatible": "Server detection is offline: the BetterFleet capture service does not match this version of the app. Re-run the BetterFleet installer to update it.",
-    "unreachable": "Server detection is offline: the BetterFleet capture service is not running. Re-run the BetterFleet installer to repair it — or, as a stopgap, run BetterFleet as administrator."
+    "incompatible": "서버 감지가 작동하지 않습니다: BetterFleet 캡처 서비스가 이 버전의 앱과 맞지 않습니다. BetterFleet 설치 프로그램을 다시 실행해 업데이트하세요.",
+    "unreachable": "서버 감지가 작동하지 않습니다: BetterFleet 캡처 서비스가 실행되고 있지 않습니다. BetterFleet 설치 프로그램을 다시 실행해 복구하거나, 임시 방편으로 BetterFleet를 관리자 권한으로 실행하세요."
   },
   "diagnostic": {
     "banner": "서버 감지가 멈춘 것 같습니다 — 20초간 캡처하면 원인을 알 수 있습니다.",
@@ -215,9 +215,9 @@
     },
     "dismiss": "나중에",
     "prefill": "게임 내에서 서버 감지가 아무 반응이 없었습니다 — 자동 진단이 로그에 첨부되었습니다.",
-    "leftBeforeCapture": "You left the game before the diagnostic could run, so nothing was captured. Open this page again from the lobby banner while you are on a server.",
-    "leftDuringCapture": "You left the server while the diagnostic was running: the capture attached below is partial and covers only the time spent on the server.",
-    "resolvedBeforeCapture": "Server detection had already found your server when this diagnostic ran — the capture is attached for reference.",
+    "leftBeforeCapture": "진단이 실행되기 전에 게임을 떠나 아무것도 캡처되지 않았습니다. 서버에 접속해 있는 동안 로비의 알림에서 이 페이지를 다시 여세요.",
+    "leftDuringCapture": "진단이 실행되는 동안 서버를 떠났습니다: 아래에 첨부된 캡처는 일부분이며 서버에 머문 시간만 포함합니다.",
+    "resolvedBeforeCapture": "이 진단이 실행됐을 때 서버 감지는 이미 당신의 서버를 찾은 상태였습니다 — 캡처는 참고용으로 첨부되었습니다.",
     "run": "진단 실행"
   },
   "firstLogin": {

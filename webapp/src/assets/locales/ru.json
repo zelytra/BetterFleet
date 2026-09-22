@@ -198,8 +198,8 @@
     "title": "Авторы"
   },
   "captureRepair": {
-    "incompatible": "Server detection is offline: the BetterFleet capture service does not match this version of the app. Re-run the BetterFleet installer to update it.",
-    "unreachable": "Server detection is offline: the BetterFleet capture service is not running. Re-run the BetterFleet installer to repair it — or, as a stopgap, run BetterFleet as administrator."
+    "incompatible": "Определение сервера не работает: служба записи BetterFleet не соответствует этой версии приложения. Запустите установщик BetterFleet ещё раз, чтобы обновить её.",
+    "unreachable": "Определение сервера не работает: служба записи BetterFleet не запущена. Запустите установщик BetterFleet ещё раз, чтобы восстановить её, — или, как временное решение, запустите BetterFleet от имени администратора."
   },
   "diagnostic": {
     "banner": "Похоже, определение сервера застряло — запись на 20 с поможет понять почему.",
@@ -215,9 +215,9 @@
     },
     "dismiss": "Не сейчас",
     "prefill": "Определение сервера молчало в игре — автоматическая диагностика приложена в логах.",
-    "leftBeforeCapture": "You left the game before the diagnostic could run, so nothing was captured. Open this page again from the lobby banner while you are on a server.",
-    "leftDuringCapture": "You left the server while the diagnostic was running: the capture attached below is partial and covers only the time spent on the server.",
-    "resolvedBeforeCapture": "Server detection had already found your server when this diagnostic ran — the capture is attached for reference.",
+    "leftBeforeCapture": "Вы вышли из игры до того, как диагностика успела запуститься, поэтому ничего не записано. Откройте эту страницу снова через уведомление в лобби, пока вы находитесь на сервере.",
+    "leftDuringCapture": "Вы покинули сервер во время диагностики: приложенная ниже запись неполная и охватывает только время, проведённое на сервере.",
+    "resolvedBeforeCapture": "Определение сервера уже нашло ваш сервер к моменту запуска этой диагностики — запись приложена для справки.",
     "run": "Запустить диагностику"
   },
   "firstLogin": {

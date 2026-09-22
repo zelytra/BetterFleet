@@ -198,8 +198,8 @@
     "title": "Подяки"
   },
   "captureRepair": {
-    "incompatible": "Server detection is offline: the BetterFleet capture service does not match this version of the app. Re-run the BetterFleet installer to update it.",
-    "unreachable": "Server detection is offline: the BetterFleet capture service is not running. Re-run the BetterFleet installer to repair it — or, as a stopgap, run BetterFleet as administrator."
+    "incompatible": "Виявлення сервера не працює: служба запису BetterFleet не відповідає цій версії застосунку. Запустіть інсталятор BetterFleet ще раз, щоб оновити її.",
+    "unreachable": "Виявлення сервера не працює: служба запису BetterFleet не запущена. Запустіть інсталятор BetterFleet ще раз, щоб відновити її, — або, як тимчасове рішення, запустіть BetterFleet від імені адміністратора."
   },
   "diagnostic": {
     "banner": "Здається, виявлення сервера зависло — 20-секундний запис може підказати чому.",
@@ -215,9 +215,9 @@
     },
     "dismiss": "Не зараз",
     "prefill": "Виявлення сервера мовчало у грі — автоматичну діагностику додано до логів.",
-    "leftBeforeCapture": "You left the game before the diagnostic could run, so nothing was captured. Open this page again from the lobby banner while you are on a server.",
-    "leftDuringCapture": "You left the server while the diagnostic was running: the capture attached below is partial and covers only the time spent on the server.",
-    "resolvedBeforeCapture": "Server detection had already found your server when this diagnostic ran — the capture is attached for reference.",
+    "leftBeforeCapture": "Ви вийшли з гри до того, як діагностика встигла запуститися, тому нічого не записано. Відкрийте цю сторінку знову через повідомлення в лобі, поки ви перебуваєте на сервері.",
+    "leftDuringCapture": "Ви покинули сервер під час діагностики: доданий нижче запис неповний і охоплює лише час, проведений на сервері.",
+    "resolvedBeforeCapture": "Виявлення сервера вже знайшло ваш сервер на момент запуску цієї діагностики — запис додано для довідки.",
     "run": "Запустити діагностику"
   },
   "firstLogin": {
