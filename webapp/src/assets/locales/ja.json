@@ -198,8 +198,8 @@
     "title": "クレジット"
   },
   "captureRepair": {
-    "incompatible": "Server detection is offline: the BetterFleet capture service does not match this version of the app. Re-run the BetterFleet installer to update it.",
-    "unreachable": "Server detection is offline: the BetterFleet capture service is not running. Re-run the BetterFleet installer to repair it — or, as a stopgap, run BetterFleet as administrator."
+    "incompatible": "サーバー検出が停止しています。BetterFleetのキャプチャサービスがこのバージョンのアプリと一致しません。BetterFleetのインストーラーをもう一度実行して更新してください。",
+    "unreachable": "サーバー検出が停止しています。BetterFleetのキャプチャサービスが動作していません。BetterFleetのインストーラーをもう一度実行して修復してください。応急処置として、BetterFleetを管理者として実行する方法もあります。"
   },
   "diagnostic": {
     "banner": "サーバー検出が停止しているようです。20秒間のキャプチャで、その原因が分かるかもしれません。",
@@ -215,9 +215,9 @@
     },
     "dismiss": "今はしない",
     "prefill": "ゲーム中にサーバー検出が反応しませんでした。自動診断をログに添付しています。",
-    "leftBeforeCapture": "You left the game before the diagnostic could run, so nothing was captured. Open this page again from the lobby banner while you are on a server.",
-    "leftDuringCapture": "You left the server while the diagnostic was running: the capture attached below is partial and covers only the time spent on the server.",
-    "resolvedBeforeCapture": "Server detection had already found your server when this diagnostic ran — the capture is attached for reference.",
+    "leftBeforeCapture": "診断を実行する前にゲームを離れたため、何もキャプチャされませんでした。サーバーにいる間に、ロビーの通知からこのページをもう一度開いてください。",
+    "leftDuringCapture": "診断の実行中にサーバーを離れました。下に添付されたキャプチャは不完全で、サーバーにいた時間のみを含んでいます。",
+    "resolvedBeforeCapture": "この診断を実行した時点で、サーバー検出はすでにあなたのサーバーを見つけていました。キャプチャは参考として添付しています。",
     "run": "診断を実行する"
   },
   "firstLogin": {
