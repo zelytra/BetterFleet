@@ -32,11 +32,13 @@ const CAPTURE_WINDOW_MS: u64 = 2000;
 /// Minimum packets a plausible-SoT flow must carry within a window to be accepted as the busy
 /// gameplay host: our "in a game" signal AND the guard on the connection identity. The host
 /// pushes ~50-90 packets per second (corpus-weakest: 941 pkts/20s ≈ 94 per 2s window) while the
-/// session coordinator peaks around 5-6 packets per window, so 25 sits far above any sparse
-/// burst and far below any real host. It must stay well above the coordinator's burst rate:
-/// were a coordinator burst ever taken as "the host", its (ip, local port) would fake a
-/// connection change and wipe the whole accumulated identity. A genuinely stalling host that
-/// drops under this floor is simply treated as absent, which the 12s grace absorbs.
+/// session coordinator drips 5-6 packets per window in steady state, so 25 sits far above the
+/// drip and far below any real host. It is NOT above the coordinator's join-time burst, though:
+/// report #1154 (#892) saw the coordinator clear it and out-rank the host within seconds of a
+/// join, twice in a day. So the floor alone never decides a socket change any more - see
+/// `DetectionState::pick_game_socket` - it keeps its two jobs of asserting "in a game" and telling
+/// host-class traffic from a drip. A genuinely stalling host that drops under this floor is simply
+/// treated as absent, which the 12s grace absorbs.
 const MIN_SERVER_PACKETS: u32 = 25;
 /// Minimum ACCUMULATED packets for the sparse per-server session flow to be trusted as the server
 /// identity. Unlike the busy host, this flow is only a handful of packets spread across the whole
@@ -155,6 +157,10 @@ pub(crate) enum WindowOutcome {
     FellBack,
     /// Nothing to hold: plain main menu (no connection remembered, or already fallen back).
     Menu,
+    /// A floor-clearing flow on a socket that is not the connection's. One window of that is not
+    /// a socket change (#892: the coordinator bursts past the floor at join): it becomes one if
+    /// the same socket clears the floor again next window. Status and identity are untouched.
+    HostPending { host_ip: String, local_port: u16 },
 }
 
 /// What just happened to the game connection, for the loop's log lines.
@@ -207,6 +213,14 @@ pub(crate) enum SocketlessOutcome {
 ///   IPs inside one session): same local port = same game, only the label moves. A new LOCAL port
 ///   is what a new game looks like - the game opens a fresh socket per server (the #364 lesson,
 ///   unchanged, as is the 2x session-relock rule and the teardown quarantine).
+/// - A new local port is only BELIEVED on the second consecutive window it clears the floor, the
+///   current socket keeps the connection for as long as it clears the floor itself, and the
+///   socket the locked identity lives on is never a candidate (#892). Report #1154's log showed
+///   the session coordinator bursting past the floor within seconds of a join, twice in a day:
+///   each burst read as a fresh socket, fired NewGame, and the quarantine then hid the real host
+///   and, on the rebound, the identity, for a TTL each - and with the sparse coordinator as the
+///   "game socket", the grace ran out into a false exit. A socket change destroys the identity,
+///   so it costs a window of confirmation; a burst is one window, a host sustains.
 pub(crate) struct DetectionState {
     /// Accumulated flows for the current game (see `merge_flows`): the sparse session flow is only
     /// caught across many windows.
@@ -223,6 +237,27 @@ pub(crate) struct DetectionState {
     last_traffic: Option<Instant>,
     /// The status fell back to the menu past the grace; the identity above is being held.
     fallen_back: bool,
+    /// A local port other than the connection's that cleared the host floor last window: the
+    /// candidate for a socket change, adopted only if it clears the floor again (#892).
+    pending_socket: Option<u16>,
+}
+
+/// The verdict of `DetectionState::pick_game_socket` for one window.
+enum SocketPick {
+    /// The game socket's host flow: the connection's own, or a confirmed new one.
+    Host(better_fleet::capture::FlowStat),
+    /// A floor-clearing flow on another socket, seen once: not a socket change yet.
+    Pending(better_fleet::capture::FlowStat),
+    /// No floor-clearing flow.
+    None,
+}
+
+/// Liveness is the socket's call, not the floor's: any plausible packet on the game's local port
+/// proves the game alive (#832).
+fn socket_alive(window: &[better_fleet::capture::FlowStat], local_port: u16) -> bool {
+    window
+        .iter()
+        .any(|f| f.local_port == local_port && f.plausible_sot_port && f.packets > 0)
 }
 
 impl DetectionState {
@@ -235,6 +270,7 @@ impl DetectionState {
             quarantine_born: None,
             last_traffic: None,
             fallen_back: false,
+            pending_socket: None,
         }
     }
 
@@ -266,6 +302,64 @@ impl DetectionState {
         );
     }
 
+    /// Which floor-clearing flow, if any, is the game socket this window - and whether a socket
+    /// other than the connection's has earned that yet (#892). Three rules, in order:
+    /// 1. the socket the locked identity lives on is never a candidate: the coordinator socket
+    ///    persists across servers and its bursts are the identity talking, not a new game;
+    /// 2. the current game socket keeps the connection while it clears the floor itself, however
+    ///    much louder another socket is in the window (the join handshake, a straddling switch);
+    /// 3. any other floor-clearing socket is pending until it clears the floor in the next window
+    ///    too - a genuine switch sustains, a burst does not. There is nothing to protect before
+    ///    the first connection, so the first socket ever is adopted on sight.
+    fn pick_game_socket(
+        &mut self,
+        clean_window: &[better_fleet::capture::FlowStat],
+    ) -> SocketPick {
+        let connection_port = self.connection.as_ref().map(|(_, port)| *port);
+        let identity_port = self
+            .locked_session
+            .as_ref()
+            .map(|(port, _, _)| *port)
+            .filter(|port| Some(*port) != connection_port);
+        let candidates: Vec<better_fleet::capture::FlowStat> = clean_window
+            .iter()
+            .filter(|f| Some(f.local_port) != identity_port)
+            .cloned()
+            .collect();
+        let Some(loudest) =
+            crate::diagnostics::pick_server_flow(&candidates, MIN_SERVER_PACKETS).cloned()
+        else {
+            self.pending_socket = None;
+            return SocketPick::None;
+        };
+        let Some(connection_port) = connection_port else {
+            self.pending_socket = None;
+            return SocketPick::Host(loudest);
+        };
+        if loudest.local_port == connection_port {
+            self.pending_socket = None;
+            return SocketPick::Host(loudest);
+        }
+        let on_current_socket: Vec<better_fleet::capture::FlowStat> = candidates
+            .iter()
+            .filter(|f| f.local_port == connection_port)
+            .cloned()
+            .collect();
+        if let Some(current) =
+            crate::diagnostics::pick_server_flow(&on_current_socket, MIN_SERVER_PACKETS)
+        {
+            self.pending_socket = None;
+            return SocketPick::Host(current.clone());
+        }
+        if self.pending_socket == Some(loudest.local_port) {
+            self.pending_socket = None;
+            SocketPick::Host(loudest)
+        } else {
+            self.pending_socket = Some(loudest.local_port);
+            SocketPick::Pending(loudest)
+        }
+    }
+
     /// Feeds one capture window at `now` and decides what it means.
     pub(crate) fn on_window(
         &mut self,
@@ -284,7 +378,25 @@ impl DetectionState {
         // the teardown after it) can still carry the OLD host louder than the new one, and picking
         // it would flip the connection back and forth, re-quarantining each time (#832).
         let clean_window = drop_quarantined(window, &self.quarantine);
-        match crate::diagnostics::pick_server_flow(&clean_window, MIN_SERVER_PACKETS) {
+        let host = match self.pick_game_socket(&clean_window) {
+            SocketPick::Host(host) => Some(host),
+            SocketPick::None => None,
+            SocketPick::Pending(host) => {
+                // Not a socket change yet (#892). The current socket's whisper still proves the
+                // game alive; nothing else is learnt from this window - merging it could lock the
+                // next game's coordinator as THIS game's identity and quarantine it on the switch.
+                if let Some((_, local_port)) = &self.connection {
+                    if socket_alive(&clean_window, *local_port) {
+                        self.last_traffic = Some(now);
+                    }
+                }
+                return WindowOutcome::HostPending {
+                    host_ip: host.remote_ip,
+                    local_port: host.local_port,
+                };
+            }
+        };
+        match host {
             Some(host) => {
                 let event = match &self.connection {
                     None => {
@@ -361,10 +473,7 @@ impl DetectionState {
                 }
                 // The floor said "no host", but liveness is the socket's call: any plausible
                 // packet on the game's local port proves the game alive (#832).
-                let socket_alive = clean_window.iter().any(|f| {
-                    f.local_port == *local_port && f.plausible_sot_port && f.packets > 0
-                });
-                if socket_alive {
+                if socket_alive(&clean_window, *local_port) {
                     self.last_traffic = Some(now);
                 }
                 let silent_for = self
@@ -427,6 +536,7 @@ impl DetectionState {
         self.quarantine_born = None;
         self.last_traffic = None;
         self.fallen_back = false;
+        self.pending_socket = None;
     }
 }
 
@@ -632,6 +742,17 @@ pub async fn init() -> std::result::Result<Arc<RwLock<Api>>, anyhow::Error> {
                         api_lock.game_status = GameStatus::MainMenu;
                         info!("In main menu (no host flow on {} game ports)", port_count);
                     }
+                }
+                WindowOutcome::HostPending {
+                    host_ip,
+                    local_port,
+                } => {
+                    // One window is a burst until proven otherwise (#892): status and identity
+                    // stay exactly as they are, the next window decides.
+                    info!(
+                        "Host-class traffic on another socket (local port {}) to {}: waiting for the next window before switching games",
+                        local_port, host_ip
+                    );
                 }
             }
 
@@ -1128,13 +1249,17 @@ mod tests {
         let coord_b_early = flow(3074, "20.157.212.110", 30526, 2, 1, 1);
         state.on_window(&[host_a.clone(), coord_a, coord_b_early], t0 + Duration::from_secs(2));
 
-        // The switch: a new game socket clears the floor. The new coordinator is still under the
-        // session floor in this very window - in the field the switch window rarely carries the
-        // drip - so the immediate lock is impossible and everything depends on the NEXT windows.
+        // The switch: a new game socket clears the floor (twice - #892). The new coordinator is
+        // still under the session floor in these windows - in the field the switch window rarely
+        // carries the drip - so the immediate lock is impossible and everything depends on the
+        // NEXT windows.
         let host_b = flow(57672, "20.153.191.9", 30148, 300, 150, 150);
         let coord_b_quiet = flow(3074, "20.157.212.110", 30526, 2, 1, 1);
-        let outcome =
-            state.on_window(&[host_b.clone(), coord_b_quiet], t0 + Duration::from_secs(4));
+        let outcome = switch_socket(
+            &mut state,
+            &[host_b.clone(), coord_b_quiet],
+            t0 + Duration::from_secs(4),
+        );
         assert!(
             matches!(outcome, WindowOutcome::InGame { event: GameEvent::NewGame { .. }, .. }),
             "{outcome:?}"
@@ -1142,8 +1267,8 @@ mod tests {
 
         // The following windows carry the new coordinator's full drip, well within the TTL.
         let coord_b = flow(3074, "20.157.212.110", 30526, 8, 4, 4);
-        state.on_window(&[host_b.clone(), coord_b.clone()], t0 + Duration::from_secs(7));
-        let outcome = state.on_window(&[host_b.clone(), coord_b.clone()], t0 + Duration::from_secs(10));
+        state.on_window(&[host_b.clone(), coord_b.clone()], t0 + Duration::from_secs(9));
+        let outcome = state.on_window(&[host_b.clone(), coord_b.clone()], t0 + Duration::from_secs(12));
         let locked = match outcome {
             WindowOutcome::InGame { session, .. } => session,
             other => panic!("still in game, got {other:?}"),
@@ -1168,14 +1293,21 @@ mod tests {
         state.on_window(&[host_a.clone(), coord_a.clone()], t0);
         assert_eq!(state.locked_endpoint(), Some(("145.190.66.52".to_string(), 30760)));
 
-        // The switch window still carries the old game's teardown loudly.
+        // The straddling window still carries the old game's teardown loudly: the old socket
+        // clears the floor itself, so it keeps the connection for that window (#892), and the
+        // switch is the next two windows' business.
         let host_b = flow(57672, "20.153.191.9", 30148, 300, 150, 150);
         let coord_a_straggler = flow(3074, "145.190.66.52", 30760, 8, 4, 4);
-        state.on_window(
+        let straddle = state.on_window(
             &[host_b.clone(), coord_a_straggler.clone(), host_a.clone()],
             t0 + Duration::from_secs(2),
         );
-        let outcome = state.on_window(
+        assert!(
+            matches!(straddle, WindowOutcome::InGame { event: GameEvent::Steady, .. }),
+            "{straddle:?}"
+        );
+        let outcome = switch_socket(
+            &mut state,
             &[host_b.clone(), coord_a_straggler],
             t0 + Duration::from_secs(4),
         );
@@ -1489,6 +1621,18 @@ mod tests {
         state
     }
 
+    /// A socket change takes two consecutive floor-clearing windows (#892): the first sighting
+    /// of a new socket is pending, the second is the switch. Feeds `window` at `at` and again one
+    /// window later, returning the verdict that fires the change.
+    fn switch_socket(state: &mut DetectionState, window: &[FlowStat], at: Instant) -> WindowOutcome {
+        let first = state.on_window(window, at);
+        assert!(
+            matches!(first, WindowOutcome::HostPending { .. }),
+            "the first sighting of a new socket is pending, got {first:?}"
+        );
+        state.on_window(window, at + Duration::from_secs(2))
+    }
+
     #[test]
     fn a_continuous_game_with_sub_floor_windows_never_changes_identity() {
         // The regression test the issue asks for: a dominant flow that keeps dipping under the
@@ -1610,10 +1754,11 @@ mod tests {
     fn a_new_socket_is_a_new_game_and_forgets_the_old_one() {
         let t0 = Instant::now();
         let mut state = locked_state(t0);
-        // A different LOCAL port clears the floor: the game opened a fresh socket, i.e. joined a
-        // new server. The old identity and its accumulation must go - and the old session flow,
-        // still visible during teardown, is quarantined so it cannot re-seed itself.
-        let outcome = state.on_window(
+        // A different LOCAL port clears the floor twice over: the game opened a fresh socket, i.e.
+        // joined a new server. The old identity and its accumulation must go - and the old session
+        // flow, still visible during teardown, is quarantined so it cannot re-seed itself.
+        let outcome = switch_socket(
+            &mut state,
             &[flow(61000, "51.103.72.36", 30200, 90, 45, 45), session_drip(2)],
             t0 + Duration::from_secs(5),
         );
@@ -1633,7 +1778,7 @@ mod tests {
                 session_drip(4),
                 flow(61002, "145.190.66.42", 30034, 4, 2, 2),
             ],
-            t0 + Duration::from_secs(8),
+            t0 + Duration::from_secs(10),
         );
         assert_eq!(
             outcome,
@@ -1830,9 +1975,10 @@ mod tests {
         // flip the connection back to the old socket, re-quarantining everything each time.
         let t0 = Instant::now();
         let mut state = locked_state(t0);
-        // New game: a fresh socket clears the floor.
+        // New game: a fresh socket clears the floor, twice.
         assert!(matches!(
-            state.on_window(
+            switch_socket(
+                &mut state,
                 &[flow(61000, "51.103.72.36", 30200, 90, 45, 45)],
                 t0 + Duration::from_secs(5),
             ),
@@ -1848,7 +1994,7 @@ mod tests {
                 host_window(120), // the old game's host, still draining
                 flow(61000, "51.103.72.36", 30200, 70, 35, 35),
             ],
-            t0 + Duration::from_secs(8),
+            t0 + Duration::from_secs(10),
         );
         assert_eq!(
             outcome,
@@ -1900,7 +2046,8 @@ mod tests {
         // The gameplay socket re-opens: NewGame, everything quarantined - including the
         // coordinator's key, which in this scenario is still the right identity.
         assert!(matches!(
-            state.on_window(
+            switch_socket(
+                &mut state,
                 &[flow(61000, "20.43.56.25", 30777, 90, 45, 45)],
                 t0 + Duration::from_secs(5),
             ),
@@ -1978,7 +2125,8 @@ mod tests {
         let mut state = locked_state(t0);
         // Populate the quarantine via a real switch...
         assert!(matches!(
-            state.on_window(
+            switch_socket(
+                &mut state,
                 &[flow(61000, "51.103.72.36", 30200, 90, 45, 45)],
                 t0 + Duration::from_secs(5),
             ),
@@ -2000,4 +2148,289 @@ mod tests {
         );
     }
 
+    // --- A coordinator burst is not a socket change (#892) --------------------------------------
+    //
+    // Report #1154's log, 2026-09-20: twice in one day the session coordinator cleared the host
+    // floor within one window of a join and out-ranked the gameplay host. Read as "a different
+    // local socket clearing the floor", each burst fired NewGame, wiped the accumulator and
+    // quarantined the real host's key; sixty seconds later the host resurfaced, fired a second
+    // NewGame and quarantined the coordinator - the identity itself - for another sixty. A join
+    // that resolves in 15 s took 2 min 09 s, and with the coordinator as the "game socket" the
+    // grace ran out into a false "left the game".
+
+    /// The real host of report #1151: local socket 55549 to an Azure gameplay host.
+    fn join_host(pkts: u32) -> FlowStat {
+        flow(55549, "40.117.156.235", 31310, pkts, pkts / 2, pkts - pkts / 2)
+    }
+
+    /// The coordinator of report #1151: 8 packets per 20 s in steady state, host-class at join.
+    fn join_coordinator(pkts: u32) -> FlowStat {
+        flow(50332, "20.33.41.156", 30636, pkts, pkts / 2, pkts - pkts / 2)
+    }
+
+    const JOIN_SESSION: (&str, u16) = ("20.33.41.156", 30636);
+
+    fn event_of(outcome: &WindowOutcome) -> Option<&GameEvent> {
+        match outcome {
+            WindowOutcome::InGame { event, .. } => Some(event),
+            _ => None,
+        }
+    }
+
+    #[test]
+    fn a_coordinator_burst_over_a_streaming_host_is_not_a_new_game() {
+        // Occurrence 1, 03:23:37: the host on 55549 had cleared the floor six seconds earlier
+        // and kept streaming; the coordinator on 50332 out-ranked it for one window.
+        let t0 = Instant::now();
+        let mut state = DetectionState::new();
+        state.on_window(&[join_host(90)], t0);
+        state.on_window(&[join_host(90), join_coordinator(2)], t0 + Duration::from_secs(2));
+
+        let outcome = state.on_window(
+            &[join_host(90), join_coordinator(120)],
+            t0 + Duration::from_secs(4),
+        );
+        assert!(
+            !matches!(event_of(&outcome), Some(GameEvent::NewGame { .. })),
+            "a burst on the coordinator socket must not fake a connection change: {outcome:?}"
+        );
+        assert!(
+            matches!(&outcome, WindowOutcome::InGame { host_ip, .. } if host_ip == "40.117.156.235"),
+            "the game socket is still the streaming host: {outcome:?}"
+        );
+
+        // Back to the usual drip: the coordinator locks as the identity, on the socket that was
+        // never a game socket - nothing was wiped, nothing was quarantined.
+        let mut locked = None;
+        for i in 3..8 {
+            let outcome = state.on_window(
+                &[join_host(90), join_coordinator(2)],
+                t0 + Duration::from_secs(2 * i),
+            );
+            assert!(
+                !matches!(event_of(&outcome), Some(GameEvent::NewGame { .. })),
+                "window {i}: {outcome:?}"
+            );
+            if let WindowOutcome::InGame { session: Some(s), .. } = outcome {
+                locked = Some(s);
+            }
+        }
+        assert_eq!(
+            locked,
+            Some((JOIN_SESSION.0.to_string(), JOIN_SESSION.1)),
+            "the identity must resolve on the coordinator within seconds, not after a TTL"
+        );
+    }
+
+    #[test]
+    fn a_coordinator_burst_in_a_host_gap_needs_a_second_window_before_it_is_a_switch() {
+        // The same burst while the host dips under the floor for a window (a loading hitch):
+        // nothing in that single window tells it from a genuine socket change, so it is not
+        // one yet. The host coming straight back settles it.
+        let t0 = Instant::now();
+        let mut state = DetectionState::new();
+        state.on_window(&[join_host(90)], t0);
+        state.on_window(&[join_host(90), join_coordinator(2)], t0 + Duration::from_secs(2));
+
+        let outcome = state.on_window(&[join_coordinator(40)], t0 + Duration::from_secs(4));
+        assert!(
+            !matches!(event_of(&outcome), Some(GameEvent::NewGame { .. })),
+            "one window of host-class traffic on another socket is not a switch: {outcome:?}"
+        );
+
+        let outcome = state.on_window(
+            &[join_host(90), join_coordinator(2)],
+            t0 + Duration::from_secs(6),
+        );
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "40.117.156.235".into(),
+                session: Some((JOIN_SESSION.0.into(), JOIN_SESSION.1)),
+                event: GameEvent::Steady,
+            },
+            "the host is back on the same socket: same game, identity resolved from the drips"
+        );
+    }
+
+    #[test]
+    fn the_locked_coordinators_socket_is_never_a_game_socket() {
+        // Occurrence 2, 19:32:43: the coordinator had been locked three seconds earlier, then
+        // cleared the floor while the host was under it - and became the "game socket", whose
+        // silence by nature ran the grace out into a false exit. The socket the identity lives on
+        // is not a candidate, however long it bursts.
+        let t0 = Instant::now();
+        let mut state = DetectionState::new();
+        let outcome = state.on_window(&[join_host(90), join_coordinator(3)], t0);
+        assert!(
+            matches!(&outcome, WindowOutcome::InGame { session: Some(s), .. } if *s == (JOIN_SESSION.0.to_string(), JOIN_SESSION.1)),
+            "{outcome:?}"
+        );
+
+        for i in 1..=2 {
+            let outcome = state.on_window(
+                &[join_host(10), join_coordinator(60)],
+                t0 + Duration::from_secs(2 * i),
+            );
+            assert!(
+                !matches!(event_of(&outcome), Some(GameEvent::NewGame { .. })),
+                "window {i}: the locked coordinator's socket became the game socket: {outcome:?}"
+            );
+            assert_ne!(outcome, WindowOutcome::FellBack, "window {i}");
+            assert_eq!(
+                state.locked_endpoint(),
+                Some((JOIN_SESSION.0.to_string(), JOIN_SESSION.1)),
+                "window {i}: the identity must survive its own burst"
+            );
+        }
+
+        let outcome = state.on_window(&[join_host(90), join_coordinator(2)], t0 + Duration::from_secs(6));
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "40.117.156.235".into(),
+                session: Some((JOIN_SESSION.0.into(), JOIN_SESSION.1)),
+                event: GameEvent::Steady,
+            }
+        );
+    }
+
+    #[test]
+    fn a_real_switch_is_confirmed_by_the_next_window() {
+        // The price of #892, paid by every genuine socket change: one window. The first sighting
+        // of a floor-clearing flow on another socket is pending - status and identity untouched -
+        // and the same socket clearing the floor again is the switch.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        let host_b = flow(61000, "51.103.72.36", 30200, 90, 45, 45);
+        assert_eq!(
+            state.on_window(std::slice::from_ref(&host_b), t0 + Duration::from_secs(5)),
+            WindowOutcome::HostPending {
+                host_ip: "51.103.72.36".into(),
+                local_port: 61000,
+            }
+        );
+        assert_eq!(
+            state.locked_endpoint(),
+            Some((SESSION.0.into(), SESSION.1)),
+            "a pending switch destroys nothing"
+        );
+        assert_eq!(
+            state.on_window(&[host_b], t0 + Duration::from_secs(7)),
+            WindowOutcome::InGame {
+                host_ip: "51.103.72.36".into(),
+                session: None,
+                event: GameEvent::NewGame { local_port: 61000 },
+            }
+        );
+    }
+
+    #[test]
+    fn a_switch_after_a_fallback_takes_the_same_two_windows() {
+        // Most real switches happen behind a loading screen longer than the grace, i.e. from
+        // the fallen-back state. The join handshake can burst there too, before the host streams,
+        // so the confirmation holds: one more window in the menu, never a socket taken on sight.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        assert_eq!(
+            state.on_window(&[], t0 + Duration::from_secs(15)),
+            WindowOutcome::FellBack
+        );
+        let host_b = flow(61000, "51.103.72.36", 30200, 90, 45, 45);
+        assert!(matches!(
+            state.on_window(std::slice::from_ref(&host_b), t0 + Duration::from_secs(17)),
+            WindowOutcome::HostPending { local_port: 61000, .. }
+        ));
+        assert!(matches!(
+            state.on_window(&[host_b], t0 + Duration::from_secs(19)),
+            WindowOutcome::InGame {
+                event: GameEvent::NewGame { local_port: 61000 },
+                ..
+            }
+        ));
+    }
+
+    #[test]
+    fn a_pending_switch_is_cancelled_when_the_streak_breaks() {
+        // "Two consecutive windows" means consecutive: the current socket clearing the floor in
+        // between, or the newcomer falling under it, starts the count over.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        let host_b = flow(61000, "51.103.72.36", 30200, 90, 45, 45);
+        assert!(matches!(
+            state.on_window(std::slice::from_ref(&host_b), t0 + Duration::from_secs(2)),
+            WindowOutcome::HostPending { .. }
+        ));
+        assert!(matches!(
+            state.on_window(&[host_window(60)], t0 + Duration::from_secs(4)),
+            WindowOutcome::InGame {
+                event: GameEvent::Steady,
+                ..
+            }
+        ));
+        assert!(matches!(
+            state.on_window(std::slice::from_ref(&host_b), t0 + Duration::from_secs(6)),
+            WindowOutcome::HostPending { .. }
+        ), "the streak was broken: the newcomer starts over");
+        assert!(matches!(
+            state.on_window(&[host_b], t0 + Duration::from_secs(8)),
+            WindowOutcome::InGame {
+                event: GameEvent::NewGame { local_port: 61000 },
+                ..
+            }
+        ));
+    }
+
+    #[test]
+    fn a_pending_window_merges_no_evidence() {
+        // What the pending window must NOT do: feed the old game's accumulator. In a genuine
+        // switch it already carries the next game's coordinator, which would lock as the OLD
+        // game's identity and get quarantined on the switch - the #873 stall by another road.
+        let t0 = Instant::now();
+        let mut state = DetectionState::new();
+        state.on_window(&[host_window(60)], t0); // game A, identity never resolved
+        let host_b = flow(61000, "51.103.72.36", 30200, 90, 45, 45);
+        let coord_b = flow(3074, "20.157.212.110", 30526, 3, 2, 1);
+        assert!(matches!(
+            state.on_window(&[host_b.clone(), coord_b.clone()], t0 + Duration::from_secs(2)),
+            WindowOutcome::HostPending { .. }
+        ));
+        assert_eq!(state.locked_endpoint(), None, "nothing locks off a pending window");
+        let outcome = state.on_window(&[host_b, coord_b], t0 + Duration::from_secs(4));
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "51.103.72.36".into(),
+                session: Some(("20.157.212.110".into(), 30526)),
+                event: GameEvent::NewGame { local_port: 61000 },
+            },
+            "the new game's coordinator locks on the switch window, unquarantined"
+        );
+        assert_eq!(
+            state.session_packets(),
+            3,
+            "only the confirming window was merged - the pending one was not"
+        );
+    }
+
+    #[test]
+    fn a_pending_window_still_counts_the_current_sockets_whisper() {
+        // Liveness stays the socket's call while a switch is pending: a whisper on the current
+        // socket in that window refreshes the grace, so a cancelled switch does not land on a
+        // silence clock that was never fed.
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        let host_b = flow(61000, "51.103.72.36", 30200, 90, 45, 45);
+        assert!(matches!(
+            state.on_window(&[host_window(2), host_b], t0 + Duration::from_secs(11)),
+            WindowOutcome::HostPending { .. }
+        ));
+        // 3 s after that whisper, nothing at all: within the grace, holding - not fallen back.
+        assert_eq!(
+            state.on_window(&[], t0 + Duration::from_secs(14)),
+            WindowOutcome::Holding {
+                session: Some((SESSION.0.into(), SESSION.1)),
+            }
+        );
+    }
 }
