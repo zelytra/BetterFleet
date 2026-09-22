@@ -31,6 +31,13 @@ pub struct DiagnosticReport {
     /// - never a null-as-menu - when nobody recorded it.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub game_status_end: Option<String>,
+    /// The server identity live detection held when the capture STARTED, as `ip:port`, when the
+    /// caller recorded one. A guided capture is meant for a silent detection, but the banner can
+    /// be acted on long after the silence ended (#893: report #1151 captured a perfectly resolved
+    /// game fifteen minutes after the fact) - this is what tells that capture apart from a real
+    /// silence. Absent when detection held no identity, which is the silence itself.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub server_at_start: Option<String>,
     pub pid: Option<u32>,
     pub duration_ms: u64,
     pub main_menu_port: u16,
@@ -689,6 +696,17 @@ pub fn merge_flows(acc: &mut HashMap<(u16, String, u16), FlowStat>, window: &[Fl
     }
 }
 
+/// The `server_at_start` label for a report: the identity live detection holds, or nothing. The
+/// api keeps an EMPTY ip while the session flow is still resolving, and that state is exactly what
+/// the field must read as absent - never as a `":0"` that looks like a server.
+pub fn resolved_server_label(ip: &str, port: u16) -> Option<String> {
+    if ip.is_empty() {
+        None
+    } else {
+        Some(format!("{ip}:{port}"))
+    }
+}
+
 /// Runs a diagnostic capture and wraps the ranked flows in a shareable report.
 #[allow(clippy::too_many_arguments)]
 pub async fn run_diagnostic(
@@ -718,6 +736,7 @@ pub async fn run_diagnostic(
         note,
         game_status,
         game_status_end: None,
+        server_at_start: None,
         pid,
         duration_ms: started.elapsed().as_millis() as u64,
         main_menu_port,
@@ -852,11 +871,40 @@ mod tests {
         assert!(!json.contains("game_status_end"), "an unrecorded end state must not appear: {json}");
     }
 
+    #[test]
+    fn the_report_names_the_server_detection_had_already_resolved() {
+        // Report #1151 (#893): a guided capture taken fifteen minutes after the server had
+        // resolved read as "detection stayed silent" - nothing in the JSON said otherwise. The
+        // identity detection holds when the capture starts goes on the wire, and is absent (not
+        // an empty string) when there was none: that absence is the actual "silent" signal.
+        let mut report = sample_report();
+        report.server_at_start = resolved_server_label("20.33.41.156", 30636);
+        let json = serde_json::to_string(&report).unwrap();
+        assert!(json.contains("\"server_at_start\":\"20.33.41.156:30636\""), "{json}");
+
+        report.server_at_start = resolved_server_label("", 0);
+        let json = serde_json::to_string(&report).unwrap();
+        assert!(!json.contains("server_at_start"), "an unresolved identity must not appear: {json}");
+    }
+
+    #[test]
+    fn an_empty_identity_is_no_label_at_all() {
+        // The api keeps an empty ip while the session flow resolves: that is "no server", never
+        // the string ":0".
+        assert_eq!(resolved_server_label("", 0), None);
+        assert_eq!(resolved_server_label("", 30636), None);
+        assert_eq!(
+            resolved_server_label("145.190.16.30", 30286).as_deref(),
+            Some("145.190.16.30:30286")
+        );
+    }
+
     fn sample_report() -> DiagnosticReport {
         DiagnosticReport {
             note: "in game".into(),
             game_status: "Started".into(),
             game_status_end: None,
+            server_at_start: None,
             pid: Some(7976),
             duration_ms: 20000,
             main_menu_port: 0,
@@ -878,6 +926,7 @@ mod tests {
             note: "in game".into(),
             game_status: "Started".into(),
             game_status_end: None,
+            server_at_start: None,
             pid: Some(7976),
             duration_ms: 20000,
             main_menu_port: 0,

@@ -827,11 +827,12 @@ async fn run_server_diagnostic(
     let ports_netstat2 = fetch_informations::get_udp_connections(pid);
     let ports_powershell = fetch_informations::get_udp_connections_powershell(pid);
 
-    let (game_status, main_menu_port) = {
+    let (game_status, main_menu_port, server_at_start) = {
         let api_lock = api.inner().read().await;
         (
             format!("{:?}", api_lock.game_status),
             api_lock.main_menu_port,
+            diagnostics::resolved_server_label(&api_lock.server_ip, api_lock.server_port),
         )
     };
 
@@ -869,6 +870,9 @@ async fn run_server_diagnostic(
     // "in game" throughout.
     let mut report = report;
     report.game_status_end = Some(format!("{:?}", api.inner().read().await.game_status));
+    // And the identity it held when the capture started (#893): a guided capture with a resolved
+    // server is not evidence of silence, and the report must say so by itself.
+    report.server_at_start = server_at_start;
 
     match serde_json::to_string(&report) {
         Ok(json) => info!("[diagnostic] report: {}", json),
@@ -901,7 +905,13 @@ async fn run_server_diagnostic(
     // fetch_informations, #725).
     let ports = fetch_informations::game_udp_candidate_ports(&game_pids);
 
-    let game_status = format!("{:?}", api.inner().read().await.game_status);
+    let (game_status, server_at_start) = {
+        let api_lock = api.inner().read().await;
+        (
+            format!("{:?}", api_lock.game_status),
+            diagnostics::resolved_server_label(&api_lock.server_ip, api_lock.server_port),
+        )
+    };
 
     let duration = Duration::from_secs(duration_secs.clamp(3, 60));
     info!(
@@ -930,6 +940,9 @@ async fn run_server_diagnostic(
     // "in game" throughout.
     let mut report = report;
     report.game_status_end = Some(format!("{:?}", api.inner().read().await.game_status));
+    // And the identity it held when the capture started (#893): a guided capture with a resolved
+    // server is not evidence of silence, and the report must say so by itself.
+    report.server_at_start = server_at_start;
 
     match serde_json::to_string(&report) {
         Ok(json) => info!("[diagnostic] report: {}", json),
