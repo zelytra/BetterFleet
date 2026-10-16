@@ -18,7 +18,7 @@
     "axios": "^1.20.0",
     "globe.gl": "^2.46.1",
     "topojson-client": "^3.1.0",
-    "vue": "^3.5.39",
+    "vue": "^3.5.44",
     "vue-i18n": "^11.4.6",
     "vue-kinesis": "^2.0.5",
     "world-atlas": "^2.0.2"
