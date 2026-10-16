@@ -60,6 +60,12 @@ export interface OverlaySnapshot {
    */
   unassigned: OverlayPlayer[];
   /**
+   * Set-sail attempts recorded for this session (`FleetStats.tryAmount`, bumped server-side on every
+   * countdown start). The number a crew actually talks about while re-rolling servers, and the one
+   * piece of session information the overlay used to drop - it was lobby-only (#900).
+   */
+  tries: number;
+  /**
    * ISO time-of-day at which the launch countdown ends (player.countDown.clickTime), or null when no
    * countdown is running. The overlay ticks its own local timer from this so the display stays smooth
    * without the main window streaming every frame. Unlike the app, it plays no sound.
@@ -112,6 +118,9 @@ export function computeSnapshot(): OverlaySnapshot {
       isSelf: true,
     },
     hotkeyLabel: hotkeyLabel(player.overlayHotkey),
+    // Clamped like the recap's: the overlay renders this straight into its header, so a session
+    // whose stats have not arrived yet shows 0 rather than a hole.
+    tries: Math.max(0, fleet?.stats?.tryAmount ?? 0),
     countdownEndsAt: player.countDown?.clickTime
       ? player.countDown.clickTime.toString()
       : null,

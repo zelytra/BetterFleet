@@ -219,6 +219,29 @@ describe("Overlay snapshot + bridge (#671)", () => {
       expect(snap.me.username).toBe("Me");
     });
 
+    it("carries the session's attempt count, and 0 when there is nothing to count", () => {
+      const fleet = fleetWith();
+      fleet.stats.tryAmount = 3;
+      UserStore.player = makePlayer({ fleet });
+      expect(computeSnapshot().tries).toBe(3);
+
+      // The overlay prints this number straight into its header, so every degenerate shape the
+      // state can be in - stats that never arrived, a negative from a desynced counter, no fleet
+      // at all - must read 0 rather than `undefined`.
+      const statless = fleetWith();
+      (statless as unknown as { stats: unknown }).stats = undefined;
+      UserStore.player = makePlayer({ fleet: statless });
+      expect(computeSnapshot().tries).toBe(0);
+
+      const negative = fleetWith();
+      negative.stats.tryAmount = -2;
+      UserStore.player = makePlayer({ fleet: negative });
+      expect(computeSnapshot().tries).toBe(0);
+
+      UserStore.player = makePlayer({ fleet: undefined });
+      expect(computeSnapshot().tries).toBe(0);
+    });
+
     it("surfaces the countdown end time as an ISO string, or null", () => {
       UserStore.player = makePlayer({
         fleet: fleetWith(),

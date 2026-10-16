@@ -33,6 +33,7 @@ const i18n = createI18n({
 });
 const WAIT = (fr as any).overlay.empty;
 const COUNTDOWN = (fr as any).session.countdown;
+const TRIES = (fr as any).session.recap.tries;
 
 let wrapper: VueWrapper | null = null;
 
@@ -50,6 +51,7 @@ function snapshot(overrides: Partial<OverlaySnapshot> = {}): OverlaySnapshot {
     servers: [],
     unassigned: [],
     countdownEndsAt: null,
+    tries: 0,
     ...overrides,
   };
 }
@@ -120,6 +122,35 @@ describe("OverlayView (#671)", () => {
     );
     expect(w.find(".countdown").exists()).toBe(true);
     expect(w.text()).toContain(COUNTDOWN);
+  });
+
+  it("shows the session's attempt count in the header", async () => {
+    const w = mountOverlay();
+    await feed(snapshot({ tries: 4 }));
+    const chip = w.find(".bar .tries");
+    expect(chip.exists()).toBe(true);
+    expect(chip.text()).toContain(TRIES);
+    expect(chip.text()).toContain("4");
+  });
+
+  it("keeps the attempt count visible through the countdown takeover", async () => {
+    // The countdown owns the body, and the count moves precisely when a countdown starts: the
+    // header is what keeps it on screen at the one moment it changes.
+    const w = mountOverlay();
+    await feed(
+      snapshot({
+        tries: 2,
+        countdownEndsAt: LocalTime.now().plusSeconds(9).toString(),
+      }),
+    );
+    expect(w.find(".countdown").exists()).toBe(true);
+    expect(w.find(".bar .tries").text()).toContain("2");
+  });
+
+  it("hides the attempt count out of a session", async () => {
+    const w = mountOverlay();
+    await feed(snapshot({ inSession: false }));
+    expect(w.find(".bar .tries").exists()).toBe(false);
   });
 
   it("relays the local player's ready click to the main window", async () => {
