@@ -103,6 +103,17 @@ onUnmounted(() => {
     <header class="bar" data-tauri-drag-region>
       <img class="logo" src="@/assets/icons/logo.svg" alt="BetterFleet" />
       <span class="brand">BetterFleet</span>
+      <!-- Attempt count (#900): in the header, not the body, so it survives the countdown takeover
+           below - a countdown start is the one moment it changes. Nothing to count out of a
+           session, so the chip goes rather than showing a bare 0. -->
+      <span
+        v-if="snapshot?.inSession"
+        class="tries"
+        :title="t('session.informations.tryNumber')"
+      >
+        <span class="label">{{ t("session.recap.tries") }}</span>
+        <strong>{{ snapshot?.tries ?? 0 }}</strong>
+      </span>
       <span class="hotkey">{{ snapshot?.hotkeyLabel ?? hotkeyLabel() }}</span>
     </header>
 
@@ -216,6 +227,33 @@ onUnmounted(() => {
 .bar .brand {
   font-weight: 700;
   letter-spacing: 0.02em;
+  /* The window resizes down to 220px (tauri.conf.json): the brand is what yields, so both chips
+     keep their numbers on one line instead of wrapping the header. */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bar .tries {
+  font-size: 10px;
+  opacity: 0.85;
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  /* Tabular figures: the snapshot lands once a second and the header must not shift on 9 -> 10. */
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.bar .tries strong {
+  font-weight: 700;
+}
+/* The overlay IS its window, so the viewport width is the card's. Squeezed towards the 220px
+   minimum, the count drops its word and keeps its number (the tooltip still spells it out) rather
+   than eating the brand: a label is restorable by widening, a truncated identity just looks broken. */
+@media (max-width: 279px) {
+  .bar .tries .label {
+    display: none;
+  }
 }
 .bar .hotkey {
   margin-left: auto;
