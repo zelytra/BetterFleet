@@ -129,8 +129,10 @@ describe("OverlayView (#671)", () => {
     await feed(snapshot({ tries: 4 }));
     const chip = w.find(".bar .tries");
     expect(chip.exists()).toBe(true);
-    expect(chip.text()).toContain(TRIES);
-    expect(chip.text()).toContain("4");
+    // Label and number are two nodes: Vue's whitespace condensing drops the newline between
+    // them, so the separator has to be in the markup, not in the indentation (it rendered
+    // "Tentatives4" in game).
+    expect(chip.text()).toMatch(new RegExp("^" + TRIES + "\\s\\S*4$"));
   });
 
   it("keeps the attempt count visible through the countdown takeover", async () => {

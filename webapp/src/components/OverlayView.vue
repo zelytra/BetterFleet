@@ -105,13 +105,16 @@ onUnmounted(() => {
       <span class="brand">BetterFleet</span>
       <!-- Attempt count (#900): in the header, not the body, so it survives the countdown takeover
            below - a countdown start is the one moment it changes. Nothing to count out of a
-           session, so the chip goes rather than showing a bare 0. -->
+           session, so the chip goes rather than showing a bare 0. The separator is a non-breaking
+           space carried BY THE LABEL: Vue condenses away any whitespace that spans a newline
+           between two elements (it shipped as "Tries4"), and hanging it on the label means it
+           leaves with the label when the chip narrows to its number. -->
       <span
         v-if="snapshot?.inSession"
         class="tries"
         :title="t('session.informations.tryNumber')"
       >
-        <span class="label">{{ t("session.recap.tries") }}</span>
+        <span class="label">{{ t("session.recap.tries") + "\u00a0" }}</span>
         <strong>{{ snapshot?.tries ?? 0 }}</strong>
       </span>
       <span class="hotkey">{{ snapshot?.hotkeyLabel ?? hotkeyLabel() }}</span>
