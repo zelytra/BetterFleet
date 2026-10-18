@@ -56,6 +56,15 @@ const SERVER_LOST_GRACE_SECS: u64 = 12;
 /// pre-#832 loop cleared the quarantine on every grace expiry by accident; this is the same escape
 /// hatch, deterministic.)
 const QUARANTINE_TTL_SECS: u64 = 60;
+/// How long the PREVIOUS game's identity stays barred after a socket change before its own
+/// traffic can clear it (#906). The quarantine exists to stop a dead server's teardown from
+/// re-seeding the fresh accumulator, and teardown dies within seconds - but the key alone cannot
+/// tell that apart from the game putting the player back on the SAME session server, where the
+/// new game's identity legitimately carries the old key. Persistence can: past this mark the
+/// stragglers are gone, so a flow still dripping on that key is the identity talking, not an
+/// echo. Report #1301: three such rejoins took 68-80s to resolve against 3-12s for every other
+/// join in the same log, all of them waiting out the full TTL above. Sized at ~3 capture windows.
+const IDENTITY_PROBATION_SECS: u64 = 6;
 
 /// Decides which session endpoint `(local_port, remote_ip, remote_port)` to report for the CURRENT
 /// game connection, given the flows accumulated so far. Once an endpoint is locked it is sticky:
@@ -221,6 +230,11 @@ pub(crate) enum SocketlessOutcome {
 ///   and, on the rebound, the identity, for a TTL each - and with the sparse coordinator as the
 ///   "game socket", the grace ran out into a false exit. A socket change destroys the identity,
 ///   so it costs a window of confirmation; a burst is one window, a host sustains.
+/// - The quarantine the switch builds is about teardown, not about keys: the previous game's
+///   identity is let back in as soon as it proves it outlived the teardown (#906), because the
+///   game regularly puts the player back on the SAME session server and the new identity then
+///   carries the old key. Everything on the dead game socket keeps the full TTL - that socket is
+///   gone, anything still on it is an echo by definition.
 pub(crate) struct DetectionState {
     /// Accumulated flows for the current game (see `merge_flows`): the sparse session flow is only
     /// caught across many windows.
@@ -233,6 +247,9 @@ pub(crate) struct DetectionState {
     quarantine: std::collections::HashSet<(u16, String, u16)>,
     /// When the quarantine was set, so it can expire (see QUARANTINE_TTL_SECS).
     quarantine_born: Option<Instant>,
+    /// The previous game's locked identity, quarantined with the rest but released early the
+    /// moment it proves it outlived the teardown (see IDENTITY_PROBATION_SECS).
+    identity_probation: Option<(u16, String, u16)>,
     /// Last instant the connection's socket showed any plausible traffic.
     last_traffic: Option<Instant>,
     /// The status fell back to the menu past the grace; the identity above is being held.
@@ -268,6 +285,7 @@ impl DetectionState {
             locked_session: None,
             quarantine: std::collections::HashSet::new(),
             quarantine_born: None,
+            identity_probation: None,
             last_traffic: None,
             fallen_back: false,
             pending_socket: None,
@@ -372,6 +390,25 @@ impl DetectionState {
             if now.saturating_duration_since(born) > Duration::from_secs(QUARANTINE_TTL_SECS) {
                 self.quarantine.clear();
                 self.quarantine_born = None;
+                self.identity_probation = None;
+            }
+        }
+        // The previous game's identity gets out early if it is still talking once the teardown
+        // would be over: same key, but live traffic, which means the game put the player back on
+        // the same session server (#906). Checked against the RAW window - the key is in the
+        // quarantine, so the filtered one cannot carry it - and cleared before the filtering
+        // below, so the very window that proves it is alive is also the one that counts.
+        if let (Some(key), Some(born)) = (self.identity_probation.clone(), self.quarantine_born) {
+            let settled =
+                now.saturating_duration_since(born) >= Duration::from_secs(IDENTITY_PROBATION_SECS);
+            let still_talking = window.iter().any(|f| {
+                f.packets > 0
+                    && (f.local_port, f.remote_ip.as_str(), f.remote_port)
+                        == (key.0, key.1.as_str(), key.2)
+            });
+            if settled && still_talking {
+                self.quarantine.remove(&key);
+                self.identity_probation = None;
             }
         }
         // The host pick ignores quarantined flows: the window that reveals a server switch (and
@@ -437,7 +474,10 @@ impl DetectionState {
                             .cloned()
                             .collect();
                         if let Some(locked) = self.locked_session.take() {
-                            self.quarantine.insert(locked);
+                            self.quarantine.insert(locked.clone());
+                            // Barred like the rest, but on probation rather than for the full
+                            // TTL: it is the one key the next game may legitimately reuse (#906).
+                            self.identity_probation = Some(locked);
                         }
                         self.quarantine_born = Some(now);
                         self.flows.clear();
@@ -534,6 +574,7 @@ impl DetectionState {
         self.locked_session = None;
         self.quarantine.clear();
         self.quarantine_born = None;
+        self.identity_probation = None;
         self.last_traffic = None;
         self.fallen_back = false;
         self.pending_socket = None;
@@ -2036,11 +2077,14 @@ mod tests {
     }
 
     #[test]
-    fn the_quarantine_expires_so_a_surviving_coordinator_can_relock() {
-        // The coordinator's local socket persists across servers. If the game re-opens only its
-        // gameplay socket, the old quarantine holds the surviving coordinator's exact key - kept
-        // forever, it would bar the identity for the rest of the game. Teardown stragglers die in
-        // seconds; past the TTL the quarantine must lift.
+    fn a_surviving_identity_relocks_once_it_outlives_the_teardown() {
+        // Report #1301 (#906): the game puts the player back on the SAME session server, so the
+        // new game's identity flow carries the exact key the switch just quarantined. Barred for
+        // the whole TTL, three joins in that log took 68-80s to resolve what the eighteen others
+        // resolved in 3-12s. What separates a dead server's teardown from a rejoined one is not
+        // the key, it is persistence: stragglers stop within seconds, a live coordinator keeps
+        // dripping. So the old identity is barred only until the stragglers would have died, and
+        // talking past that mark is its proof of life.
         let t0 = Instant::now();
         let mut state = locked_state(t0);
         // The gameplay socket re-opens: NewGame, everything quarantined - including the
@@ -2056,10 +2100,10 @@ mod tests {
                 ..
             }
         ));
-        // Within the TTL the surviving coordinator drips on: quarantined, it cannot lock.
+        // Two seconds after the switch this could still be the old server's teardown: barred.
         let outcome = state.on_window(
-            &[flow(61000, "20.43.56.25", 30777, 80, 40, 40), session_drip(4)],
-            t0 + Duration::from_secs(30),
+            &[flow(61000, "20.43.56.25", 30777, 80, 40, 40), session_drip(2)],
+            t0 + Duration::from_secs(9),
         );
         assert_eq!(
             outcome,
@@ -2069,16 +2113,71 @@ mod tests {
                 event: GameEvent::Steady,
             }
         );
-        // Past the TTL it accumulates again and the identity re-resolves.
+        // Still dripping once the stragglers would have died: it is the identity again, and the
+        // window that proves it also counts - no second wait for packets already on the wire.
         let outcome = state.on_window(
             &[flow(61000, "20.43.56.25", 30777, 80, 40, 40), session_drip(4)],
-            t0 + Duration::from_secs(70),
+            t0 + Duration::from_secs(14),
         );
         assert_eq!(
             outcome,
             WindowOutcome::InGame {
                 host_ip: "20.43.56.25".into(),
                 session: Some((SESSION.0.into(), SESSION.1)),
+                event: GameEvent::Steady,
+            }
+        );
+    }
+
+    #[test]
+    fn a_dead_identitys_stragglers_still_cannot_relock_it() {
+        // The other half of #906: the key is the same, the traffic is not. A server the player
+        // really left emits a last burst on the persistent coordinator socket and then stops, so
+        // it never reaches the proof-of-life mark - and the new game resolves to its own
+        // coordinator instead of being pinned to the server it just left (#832's whole point).
+        let t0 = Instant::now();
+        let mut state = locked_state(t0);
+        assert!(matches!(
+            switch_socket(
+                &mut state,
+                &[flow(61000, "20.43.56.25", 30777, 90, 45, 45)],
+                t0 + Duration::from_secs(5),
+            ),
+            WindowOutcome::InGame {
+                event: GameEvent::NewGame { .. },
+                ..
+            }
+        ));
+        // Teardown: two windows of stragglers on the old identity's key, right after the switch.
+        for (at, pkts) in [(8u64, 3u32), (9, 2)] {
+            let outcome = state.on_window(
+                &[flow(61000, "20.43.56.25", 30777, 80, 40, 40), session_drip(pkts)],
+                t0 + Duration::from_secs(at),
+            );
+            assert_eq!(
+                outcome,
+                WindowOutcome::InGame {
+                    host_ip: "20.43.56.25".into(),
+                    session: None,
+                    event: GameEvent::Steady,
+                },
+                "a straggler burst must not relock the server the player left"
+            );
+        }
+        // Then it is gone for good, and the new server's coordinator - same persistent socket,
+        // different remote - takes the identity.
+        let outcome = state.on_window(
+            &[
+                flow(61000, "20.43.56.25", 30777, 80, 40, 40),
+                flow(53728, "20.157.97.115", 30876, 4, 2, 2),
+            ],
+            t0 + Duration::from_secs(14),
+        );
+        assert_eq!(
+            outcome,
+            WindowOutcome::InGame {
+                host_ip: "20.43.56.25".into(),
+                session: Some(("20.157.97.115".into(), 30876)),
                 event: GameEvent::Steady,
             }
         );
