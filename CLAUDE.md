@@ -84,7 +84,9 @@ images too) is `deployment/docker-compose.yml`; the app schema seed is `deployme
 - **Verify UI changes visually before merging.** CI type-checks and unit-tests but never catches a
   layout regression: render the component and confirm the change with your own eyes.
 - **Commits and PRs are authored in the maintainer's voice** and match the existing git history: no
-  tool/generator attribution in commit messages, trailers, or PR descriptions.
+  tool/generator attribution in commit messages, trailers, or PR descriptions. PR descriptions
+  follow a fixed shape (`Closes #N.`, then "Red first" / fix / "Verification" sections, no issue
+  number in the title): see [conventions.md](.claude/docs/conventions.md#pr-descriptions).
 - **i18n: never hand-edit anything but `source.json`.** See `webapp/src/assets/locales/`:
   `source.json` is the English original you edit; `en.json` is a CI-regenerated copy; `fr.json` is
   human-translated; the other eleven (`de`, `es`, `it`, `hi`, `ja`, `ko`, `pl`, `pt`, `ru`, `uk`,
