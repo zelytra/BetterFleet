@@ -54,7 +54,8 @@ loop (#436).
 
 > **Concurrency rule: read before editing `SessionManager`.** Reads are `@Lock(READ)`, mutations
 > `@Lock(WRITE)`, and I/O helpers `@Lock(NONE)`. **No blocking I/O may run while holding a WRITE
-> lock, and nothing blocking may run on the vert.x event loop.** Geolocation is pushed off-thread
+> lock, and nothing blocking may run on the vert.x event loop.** The public directory reads are the
+> exception to `@Lock(READ)`: they are `@Lock(NONE)` so a long write can't 500 them (#908). Geolocation is pushed off-thread
 > (`GeoLocationResolver`) and re-applied under WRITE via `applyServerGeo`. Violating this has caused
 > real incidents (players kicked at countdown end). See [gotchas.md](gotchas.md).
 

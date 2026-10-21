@@ -87,9 +87,10 @@ images too) is `deployment/docker-compose.yml`; the app schema seed is `deployme
   tool/generator attribution in commit messages, trailers, or PR descriptions.
 - **i18n: never hand-edit anything but `source.json`.** See `webapp/src/assets/locales/`:
   `source.json` is the English original you edit; `en.json` is a CI-regenerated copy; `fr.json` is
-  human-translated; `de/es/it.json` are machine-translated then corrected in Crowdin. Edit strings
+  human-translated; the other eleven (`de`, `es`, `it`, `hi`, `ja`, `ko`, `pl`, `pt`, `ru`, `uk`,
+  `zh`) are machine-translated then corrected in Crowdin. Edit strings
   **in place**: don't reformat a whole locale file (it reorders integer-keyed maps and blows up the
-  diff). `Locales.spec.ts` enforces key parity across all six. Sync flow: `.github/workflows/crowdin.yml`.
+  diff). `Locales.spec.ts` enforces key parity across all fourteen. Sync flow: `.github/workflows/crowdin.yml`.
 
 ## Gotchas (the non-obvious ones)
 

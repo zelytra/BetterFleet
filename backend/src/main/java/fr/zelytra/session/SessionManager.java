@@ -653,8 +653,10 @@ public class SessionManager {
     /**
      * The current directory, mapped to the browser's PublicSession DTO. Private sessions are
      * listed too (see {@link #toPublicSession} for what "private" withholds).
+     * <p>
+     * Lock-free for the same reason as {@link #getPublicSessionsSnapshot()} (#908).
      */
-    @Lock(value = Lock.Type.READ, time = 200)
+    @Lock(Lock.Type.NONE)
     public List<PublicSession> getPublicSessions() {
         List<PublicSession> result = new ArrayList<>();
         for (Fleet fleet : sessions.values()) {
@@ -667,8 +669,15 @@ public class SessionManager {
      * What the browser renders: every session plus the global connected-player count, built in one
      * pass so both ride the same REST response and the same SSE frame: the counter has to move
      * live as players come and go, not only when Refresh is pressed.
+     * <p>
+     * Deliberately takes no lock (#908). Under a READ lock, {@code GET /public-sessions} answered
+     * 500 whenever a write held the bean for more than 200 ms, which the first session created on
+     * a fresh JVM does (class loading and JIT on the publish path). The read only walks a
+     * {@link ConcurrentHashMap} of fleets whose players live in a {@code CopyOnWriteArrayList}, so
+     * it cannot fail mid-write; at worst it misses a change in flight, which the next frame (the
+     * change itself or the 3s heartbeat) carries anyway.
      */
-    @Lock(value = Lock.Type.READ, time = 200)
+    @Lock(Lock.Type.NONE)
     public PublicSessionsSnapshot getPublicSessionsSnapshot() {
         List<PublicSession> publicSessions = new ArrayList<>();
         int connectedPlayers = 0;

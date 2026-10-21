@@ -63,9 +63,28 @@ when Keycloak isn't authenticated; `meta.displayInNav` drives the nav bar.
   fires once after detection stays silent in game past `DETECTION_PROMPT_AFTER_MS`; `observeDetection`
   is fed by the 400ms poll, `detectionPrompt` is the reactive banner state. (Dev builds expose
   `betterfleet.detection.offer()` / `.simulateStuck()` on the console.)
+- **`SocketlessWatchdog.ts`**. A second feeder for the same #688 offer: fires when the game runs
+  with zero enumerable UDP sockets for `SOCKETLESS_PROMPT_AFTER_MS` (3 min). Neutral by design: the
+  cause (VPN, proxy, enumeration failure) is never asserted.
+- **`CaptureRepairWatchdog.ts`**. The Windows repair banner (#819): turns the `captureHealth` the Rust
+  side reports with each game poll into a persistent, debounced "re-run the installer" banner when the
+  `BetterFleetCapture` service is missing, stopped or version-skewed. No dismiss on purpose: it clears
+  itself once the service answers again.
+- **`GamePoll.ts`**. `pollGameTick()`, one tick of the 400ms game poll (#859): reads `get_game_object`,
+  runs `syncGameState` and feeds every watchdog. Never rejects (the interval fires it
+  fire-and-forget), and throttles its failure log.
+- **`SessionRecap.ts`**. The shareable alliance recap card (#685): pure `convergedServer()` (biggest
+  group of two or more, mirroring the backend's `largestGroup >= 2`) plus the once-per-convergence,
+  `RECAP_DEBOUNCE_MS`-debounced, not-mid-countdown rules.
+- **`Contributor.ts`**. `ContributorProvider.getPlayerContrib(username)`: maps a username to its
+  contributor badge from `assets/contributors/contributors.json`.
 - **`WhatsNew.ts`** + `components/WhatsNewModal.vue`. The after-update changelog modal (#686): fetches
   the installed tag's release notes from the GitHub API (through the Tauri http plugin) and shows them
   once per new version (last-seen tracked in `LocalStore`).
+- **`objects/Updater.ts`** + `components/UpdateModal.vue`. The in-app updater, restored after the v2
+  migration (#735) left clients without updates: checks once at startup, surfaces an "update
+  available" button in the header (`UpdateStore`), installs on demand. The updater/process plugins are
+  imported dynamically so the module no-ops outside the shell (vitest, a browser).
 - **`PublicSessionsStore.ts`**: the public-session **browser** store (reactive singleton).
   `refresh()` = REST `GET public-sessions`; `connectStream()` = SSE `EventSource` on
   `/public-sessions/stream` with a **mixed-content guard** and a 5s **poll backstop**. This is what
@@ -87,6 +106,13 @@ when Keycloak isn't authenticated; `meta.displayInNav` drives the nav bar.
   `fetch`; Tauri v2 renamed the v1 `@tauri-apps/api/http` specifier), base url `VITE_BACKEND_HOST`,
   static `Authorization` header + `updateToken()`. This is the guaranteed REST path (goes through
   Rust).
+- **`utils/Clipboard.ts`**: `copyText()` tries the Tauri clipboard plugin first (WebKitGTK's async
+  Clipboard API rejects on Linux), then the webview APIs. Returns whether it worked: show "copied"
+  only on `true`.
+- **`utils/platform.ts`**: `isLinux()`, the gate that keeps the raise-anchor auto-click off on Linux
+  (Wayland compositors block the XTEST click).
+- **`utils/localeNames.ts`**: `LOCALE_NAMES`, each language's native name for the language selector.
+  Kept out of `source.json` on purpose, so Crowdin can't "translate" them.
 - `utils/Utils.ts` (`parseRustPlayerStatus`), `utils/BrowserCountry.ts` (#672), `utils/LangIcons.ts`.
 
 ## The Tauri bridge (JS `invoke` ↔ Rust)
@@ -141,7 +167,8 @@ Env hosts: `VITE_BACKEND_HOST` (REST), `VITE_SOCKET_HOST` (WS), `VITE_KEYCLOAK_H
 
 `webapp/src/components/` (routes/features):
 - **`FleetMenuNavigator.vue`**: the `/fleet` shell. Runs the two core loops: token refresh (1s) and
-  `get_game_object` detection → `syncGameState` (400ms). Clears intervals + leaves session on unmount.
+  the 400ms game poll (`pollGameTick` in `GamePoll.ts`: `get_game_object` → `syncGameState` +
+  watchdogs). Clears intervals + leaves session on unmount.
 - **`fleet/ConfigComponent.vue`**: the settings form (language, device, boat size, banner+shuffle,
   sound, macro, shareStats, Discord presence, overlay show/hide, backend host). `SaveBar` +
   `isConfigDifferent()`; persists into `UserStore.player`. Dense: many conventions converge here.
