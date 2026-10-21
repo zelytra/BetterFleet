@@ -94,3 +94,11 @@ handled by git; don't fight the CRLF/LF warnings, just don't reformat files you 
   repository. If one lands in a public issue anyway, don't discuss the details there: ask the
   reporter to file it privately and let the maintainer hide the issue. Fixes follow the advisory:
   only the latest stable release is supported, so a security fix ships as a new release.
+
+## Community files
+
+`CONTRIBUTING.md` (repo root) is the human-facing summary of this file and of
+[workflows.md](workflows.md): setup, checks, branching, PR expectations, the rules worth knowing
+first. `CODE_OF_CONDUCT.md` is the Contributor Covenant 2.1, unmodified apart from a BetterFleet
+scope paragraph and the enforcement contact. When a convention here changes, update
+`CONTRIBUTING.md` in the same PR so the two never disagree.
