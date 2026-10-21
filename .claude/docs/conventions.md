@@ -26,6 +26,34 @@ neighbouring component) before calling it done. Layout regressions are the failu
 - Conventional-commit style subjects (`feat(scope): …`, `fix(scope): …`, `docs: …`) with a body that
   explains the *why*, not a diff restatement.
 
+## PR descriptions
+
+Match the maintainer's merged PRs (#901, #904, #905, #907 are good models). The shape:
+
+- **Title**: the conventional-commit subject, **without** an issue number. Squash-merge appends the
+  PR number (`… (#907)`), so a `(#906)` in the title would end up doubled in `master`'s history.
+- **First line**: `Closes #N.` (or `Follow-up to #N: <one-line symptom>.` for a fix to a merged PR).
+  Not `Fixes`, not a heading.
+- **`##` sections with narrative headings**, prose first, bullets only for genuinely parallel points.
+  Pick the ones that apply, in roughly this order:
+  - the cause: `## The bug, in one line` / `## Why …`, with the evidence (report id, log line,
+    numbers from the field);
+  - `## Red first`: the new test's **actual failing output on `master`**, in a code block, plus why
+    the old tests let it through;
+  - the change: `## Fix` / `## The rule` / `## Decisions` (each decision bolded, then its reason);
+  - `## What must not change, and is tested`: the regression the fix could cause and the test
+    pinning it;
+  - `## Verification`: the exact commands and their counts (`npm run test` 312 passed, `cargo test`
+    138 pass, build/lint/prettier clean), visual checks for UI, and any known environment-only
+    failure named as such;
+  - `## Also in …` / `## What stays open`: incidental lockfile churn, follow-ups, calls left to the
+    maintainer.
+- **Never claim a check that did not run.** If something could not be run where the branch was
+  prepared, say so plainly under `## Verification` and name the CI job that is the gate.
+- **Labels mirror the issue**: a type (`bug`, `enhancement`, `dependencies`, `documentation`) plus
+  the areas touched (`backend`, `java`, `webapp`, `website`, `rust`, `client-backend`, `ui-ux`,
+  `i18n`). No assignee, not a draft.
+
 ## i18n: the one rule that matters
 
 Locale files live in `webapp/src/assets/locales/` (and the website has its own set). There are

@@ -167,6 +167,11 @@ back into the problem.
   inline under the lock has caused a real incident: players kicked at countdown end and the server
   hidden from the list. If you add anything that touches the network or disk in this class, push it
   off-thread the same way.
+- **The directory reads take no lock (#908).** `getPublicSessionsSnapshot()` / `getPublicSessions()`
+  are `@Lock(NONE)`: as `READ` with a 200 ms budget, `GET /public-sessions` answered 500
+  (`LockException`) whenever a write held the bean longer, e.g. the first `createSession` on a cold
+  JVM. They only walk concurrent collections, so a stale-by-one-change snapshot is the worst case,
+  and the next SSE frame or heartbeat corrects it. Don't put them back under the lock.
 - **The public-sessions SSE stream must keep `.onOverflow().dropPreviousItems()`.** In
   `SessionManager.streamPublicSessions()`, the `BroadcastProcessor` feeding each SSE subscriber will
   terminate a slow subscriber with a `BackPressureFailure` if overflow isn't handled; their session
