@@ -1,0 +1,99 @@
+name: Bug report
+description: Something in BetterFleet does not work as it should.
+labels: ["bug"]
+assignees:
+  - dadodasyra
+  - zelytra
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this.
+
+        **Is it a security issue?** Do not open a public issue: report it privately instead, see the [security policy](https://github.com/zelytra/BetterFleet/security/policy).
+
+        **Server detection not working?** The fastest path is in the app: on the report page, run *Capture (in game)* while on a server, then *Submit report*. It attaches the logs and the network scan we need, and you can mention it below.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What goes wrong, in a sentence or two.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where does it happen?
+      options:
+        - Desktop app (Windows)
+        - Desktop app (Linux)
+        - In-game overlay
+        - Website / statistics
+        - Backend / self-hosting
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: BetterFleet version
+      description: Shown in the app header, or the release you deployed.
+      placeholder: "2.4.10"
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: System
+      description: OS and version; on Linux, the distro, the desktop (X11 or Wayland) and whether the game runs through Proton.
+      placeholder: "Windows 11 23H2 / Fedora 41, KDE Wayland, Proton 9"
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How one can make it happen again. This is the most useful part.
+      placeholder: |
+        1. Create a session
+        2. Join a server in game
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happens
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should happen instead
+    validations:
+      required: true
+
+  - type: input
+    id: in-app-report
+    attributes:
+      label: In-app report
+      description: If you also sent a report from the app, when (date, time and timezone) and under which username, so we can match it to this issue.
+      placeholder: "2026-10-18 around 16:55 CEST, as SaltyDog"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs and screenshots
+      description: Paste logs as text (they are formatted automatically). Drag screenshots or videos into the field below the logs.
+      render: text
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: A possible cause, the code you suspect, when it started happening.
