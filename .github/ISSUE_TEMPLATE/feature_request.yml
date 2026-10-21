@@ -1,0 +1,44 @@
+name: Feature request
+description: Suggest an idea for BetterFleet.
+labels: ["enhancement"]
+assignees:
+  - dadodasyra
+  - zelytra
+body:
+  - type: textarea
+    id: needs
+    attributes:
+      label: Description of needs
+      description: The problem you want solved, and who has it. Start from the need, not the solution.
+    validations:
+      required: true
+
+  - type: textarea
+    id: drafts
+    attributes:
+      label: Drafts or UI templates
+      description: Sketches, mockups or screenshots, if the idea is visual.
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria (done when...)
+      description: |
+        A checkboxed list of present-tense sentences describing the desired state, each one verifiable.
+        Good: "The page shows a button only to logged in users". Too vague: "Logout button".
+      value: |
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: scenarios
+    attributes:
+      label: Validation scenarios
+      description: Gherkin syntax works well. A scenario title is a complete sentence, e.g. "Administrator logs into back-office", not "Backoffice login".
+      render: gherkin
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes

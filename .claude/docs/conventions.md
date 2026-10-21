@@ -53,3 +53,16 @@ fourteen since #778:
 Run `npm run prettier:check` and `npm run lint:check` (or the `:fix`/`:write` variants) before
 committing frontend changes: CI's "analysis" jobs fail otherwise. The repo's line endings are
 handled by git; don't fight the CRLF/LF warnings, just don't reformat files you didn't change.
+
+## Issues, PR template and security reports
+
+- **Issue forms** live in `.github/ISSUE_TEMPLATE/` (`bug_report.yml`, `feature_request.yml`) with
+  `config.yml` adding two contact links: private vulnerability reporting and the Discord. Blank
+  issues stay enabled for the maintainer's own write-ups (health-check reports like #908).
+- **`.github/pull_request_template.md`** pre-fills the PR description shape (`Closes #`, Red first,
+  Fix, Verification). Delete the sections that don't apply rather than leaving them empty.
+- **Security reports never go in public issues.** `SECURITY.md` (repo root, so GitHub shows it as the
+  security policy) routes them to GitHub's private vulnerability reporting, which is enabled on the
+  repository. If one lands in a public issue anyway, don't discuss the details there: ask the
+  reporter to file it privately and let the maintainer hide the issue. Fixes follow the advisory:
+  only the latest stable release is supported, so a security fix ships as a new release.

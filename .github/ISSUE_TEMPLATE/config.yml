@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/zelytra/BetterFleet/security/advisories/new
+    about: Please do not open a public issue for security problems. Report them privately here; see SECURITY.md.
+  - name: Questions and help
+    url: https://discord.gg/sHPp5CPxf2
+    about: Setup questions, "is this normal?", or just talking to the crew behind BetterFleet.
