@@ -100,5 +100,5 @@ layout: render what you changed and check it with your own eyes before asking fo
 
 ## License
 
-By contributing, you agree that your contributions are licensed under the same license as the
-project: see [LICENSE](LICENSE).
+BetterFleet is licensed under the [Apache License 2.0](LICENSE). By contributing, you agree that
+your contributions are licensed under it too (section 5 of the license).
