@@ -161,23 +161,30 @@
             :player-count="server.connectedPlayers.length"
             :address="server.ip ? server.ip + ':' + server.port : ''"
           >
-            <PlayerFleet
-              v-for="player in server.connectedPlayers.sort((a, b) => {
-                return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
-              })"
-              :key="player.username"
-              :player="player"
-              @click.right.prevent="openContextMenu($event, player)"
-            />
+            <TransitionGroup name="player" @before-leave="leaveInPlace">
+              <PlayerFleet
+                v-for="player in server.connectedPlayers.sort((a, b) => {
+                  return a.isMaster === b.isMaster ? 0 : a.isMaster ? -1 : 1;
+                })"
+                :key="player.username"
+                :player="player"
+                @click.right.prevent="openContextMenu($event, player)"
+              />
+            </TransitionGroup>
           </ServerContainer>
         </div>
-        <PlayerFleet
-          v-for="player in getFilteredPlayerList()"
-          :key="player.username"
-          :player="player"
-          class="player-fleet-card"
-          @click.right.prevent="openContextMenu($event, player)"
-        />
+        <!-- No wrapper tag: the rows stay direct children of .player-table, so its gap still
+             spaces them. Keyed by username, and an UPDATE snapshot keeps the names, so only real
+             arrivals and departures animate, never a resync. -->
+        <TransitionGroup name="player" @before-leave="leaveInPlace">
+          <PlayerFleet
+            v-for="player in getFilteredPlayerList()"
+            :key="player.username"
+            :player="player"
+            class="player-fleet-card"
+            @click.right.prevent="openContextMenu($event, player)"
+          />
+        </TransitionGroup>
       </div>
       <div class="lobby-details">
         <button
@@ -326,6 +333,7 @@ import {
 } from "vue";
 import { Fleet } from "@/objects/fleet/Fleet.ts";
 import PlayerFleet from "@/vue/fleet/PlayerFleet.vue";
+import { leaveInPlace } from "@/objects/utils/LeaveInPlace.ts";
 import { useI18n } from "vue-i18n";
 import BannerTemplate from "@/vue/templates/BannerTemplate.vue";
 import { UserStore } from "@/objects/stores/UserStore.ts";
@@ -992,6 +1000,9 @@ function onContextAction(action: string) {
       flex-direction: column;
       gap: 10px;
       width: 100%;
+      // The offsetParent leaveInPlace pins a departing row against: inside the scrolled box, so the
+      // row stays put even when the list is scrolled.
+      position: relative;
 
       // The servers live in this wrapper, so the player-table's own gap sits *around* the group,
       // not between the cards inside it - without this they stacked flush and touched.
@@ -1003,6 +1014,47 @@ function onContextAction(action: string) {
 
       .player-fleet-card {
         margin: 0 8px;
+      }
+
+      // A crewmate joining or leaving the session (or landing on a server, which moves their row
+      // from the free list into the server's). The leaving row is pinned where it stood by
+      // leaveInPlace, so the rows below glide up through `-move` instead of jumping.
+      //
+      // `-move` comes first on purpose. Vue gives the leaving row the move class too, and with the
+      // same specificity the later rule wins: declared after `-leave-active`, its
+      // `transition: transform` replaced the fade and the row blinked out instead of fading.
+      .player-move {
+        transition: transform 260ms ease;
+      }
+
+      .player-enter-active {
+        transition:
+          opacity 240ms ease,
+          transform 240ms ease;
+      }
+
+      .player-enter-from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+
+      .player-leave-active {
+        transition:
+          opacity 200ms ease,
+          transform 200ms ease;
+      }
+
+      .player-leave-to {
+        opacity: 0;
+        transform: translateX(12px);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .player-enter-active,
+        .player-leave-active,
+        .player-move {
+          transition: none;
+        }
       }
     }
 
