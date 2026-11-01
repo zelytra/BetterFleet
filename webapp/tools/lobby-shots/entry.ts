@@ -3,6 +3,7 @@
 //
 //   ?shot=session|ready|countdown|grouped   which moment
 //   ?lang=fr|en|es|de|it                    which locale
+//   ?banner=0|1|2|3                         which banner template behind the header
 //
 // Nothing here fakes UI: the components, styles and translations are the app's own. Only the state
 // they render is fabricated, because reaching it for real needs four accounts, a backend and luck.
@@ -28,11 +29,15 @@ import { SotServer } from "@/objects/fleet/SotServer.ts";
 import { sessionRecap } from "@/objects/fleet/SessionRecap.ts";
 import { LocalTime } from "@js-joda/core";
 import { Utils } from "@/objects/utils/Utils.ts";
+import { clampBanner } from "@/objects/fleet/Banners.ts";
 import router from "@/router";
 
 const params = new URLSearchParams(location.search);
 const shot = params.get("shot") ?? "session";
 const lang = params.get("lang") ?? "fr";
+// The shots are taken on one template, but the header's text has to hold on all four: see
+// BannerScrim.ts. Overridable so each can be looked at without editing this file.
+const banner = clampBanner(params.get("banner") ?? 2);
 
 // The avatar colour is Math.random() per render in the real app, which would give every shot a
 // different palette. Keyed by name instead, so a pirate keeps their colour across the four pictures.
@@ -71,7 +76,7 @@ fleet.sessionId = "k7x2qm";
 fleet.customName = "";
 fleet.sessionName = "The Kraken's Crew";
 fleet.isPrivate = false;
-fleet.banner = 2;
+fleet.banner = banner;
 fleet.autoSetSail = false;
 
 const zelytra = player("Zelytra", { isMaster: true });

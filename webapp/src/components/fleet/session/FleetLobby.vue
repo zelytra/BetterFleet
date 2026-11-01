@@ -736,6 +736,10 @@ function onContextAction(action: string) {
     .title-content {
       // Lets the name shrink instead of pushing the header wider than the banner.
       min-width: 0;
+      // And stops it running the banner's whole width: uncapped, a 40-char name ellipsises at
+      // 97.5% of it, past where the scrim has lifted (BannerScrim.ts), so its tail would fade back
+      // into the artwork. Capped here instead of veiling the entire strip to cover it.
+      max-width: 62%;
     }
 
     .name-wrapper {
