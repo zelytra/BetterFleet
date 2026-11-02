@@ -28,7 +28,7 @@
     "@tauri-apps/plugin-log": "^2.10.1",
     "@tauri-apps/plugin-process": "^2.4.0",
     "@tauri-apps/plugin-shell": "^2.5.0",
-    "@tauri-apps/plugin-updater": "^2.14.0",
+    "@tauri-apps/plugin-updater": "^2.14.1",
     "vue": "^3.5.44",
     "vue-i18n": "^11.4.14"
   },
@@ -51,5 +51,8 @@
     "vitest": "^4.1.12",
     "vue-router": "^5.1.0",
     "vue-tsc": "^3.3.7"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
   }
 }

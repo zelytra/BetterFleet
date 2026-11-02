@@ -1,0 +1,25 @@
+# Dependabot is used for SECURITY updates only (#924): `open-pull-requests-limit: 0` turns version
+# updates off, while security updates keep their own limit and still follow the rules below.
+#
+# The rules exist because Dependabot batches each ecosystem's security fixes into one grouped
+# update, and the whole group fails when a single member cannot move. That is how `glib` kept the
+# critical `zip` advisory from ever getting a fix PR (#903, #924).
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /webapp/src-tauri
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    ignore:
+      # Pinned by the gtk 0.18 / webkit2gtk stack Tauri v2 sits on: only an upstream Tauri bump
+      # can move it (alert #31). Left in, it fails every grouped cargo security update.
+      - dependency-name: glib
+
+  - package-ecosystem: npm
+    directories:
+      - /webapp
+      - /website
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0

@@ -43,5 +43,8 @@
     "vitest": "^4.1.12",
     "vue-router": "^5.1.0",
     "vue-tsc": "^3.3.7"
+  },
+  "overrides": {
+    "minimatch": "^11.0.1"
   }
 }
