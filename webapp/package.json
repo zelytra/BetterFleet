@@ -30,7 +30,7 @@
     "@tauri-apps/plugin-shell": "^2.5.0",
     "@tauri-apps/plugin-updater": "^2.14.0",
     "vue": "^3.5.44",
-    "vue-i18n": "^11.4.6"
+    "vue-i18n": "^11.4.14"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
