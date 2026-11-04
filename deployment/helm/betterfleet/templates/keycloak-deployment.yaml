@@ -58,10 +58,12 @@ spec:
               value: "false"
             - name: KC_HTTP_RELATIVE_PATH
               value: /auth
-            - name: PROXY_ADDRESS_FORWARDING
+            # Replace `KC_PROXY=edge`, removed in Keycloak 26: plain HTTP behind the ingress,
+            # X-Forwarded-* headers trusted.
+            - name: KC_PROXY_HEADERS
+              value: xforwarded
+            - name: KC_HTTP_ENABLED
               value: "true"
-            - name: KC_PROXY
-              value: edge
             # --- Database ---
             - name: KC_DB
               value: postgres
@@ -79,13 +81,14 @@ spec:
                 secretKeyRef:
                   name: {{ include "betterfleet.secretName" . }}
                   key: POSTGRES_PASSWORD
-            # --- Bootstrap admin ---
-            - name: KEYCLOAK_ADMIN
+            # --- Bootstrap admin (only used while the database has no admin user) ---
+            # The Secret keys keep their old names so existing Secrets keep working.
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: {{ include "betterfleet.secretName" . }}
                   key: KEYCLOAK_ADMIN
-            - name: KEYCLOAK_ADMIN_PASSWORD
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "betterfleet.secretName" . }}

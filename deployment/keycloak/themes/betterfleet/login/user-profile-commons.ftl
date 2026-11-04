@@ -3,6 +3,14 @@
 
     <#list profile.attributes as attribute>
 
+        <#-- Keycloak 26 lists the user's locale among the profile attributes when the realm is
+             internationalized. Like the base theme, carry the current language as a hidden field
+             instead of rendering it as a free-text "locale" input on the register page. -->
+        <#if attribute.name=='locale' && realm.internationalizationEnabled && locale.currentLanguageTag?has_content>
+            <input type="hidden" id="${attribute.name}" name="${attribute.name}" value="${locale.currentLanguageTag}"/>
+            <#continue>
+        </#if>
+
         <#assign groupName = attribute.group!"">
         <#if groupName != currentGroup>
             <#assign currentGroup=groupName>

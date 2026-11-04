@@ -33,7 +33,7 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:24.0
+    image: quay.io/keycloak/keycloak:26.8
     container_name: betterfleet-keycloak
     depends_on:
       - postgres-auth
@@ -49,15 +49,18 @@ services:
       KC_HTTP_RELATIVE_PATH: /auth
       KC_DB: postgres
       KC_DB_URL_HOST: postgres-auth
-      PROXY_ADDRESS_FORWARDING: "true"
-      KC_PROXY: edge
+      # Replace `KC_PROXY: edge` (removed in Keycloak 26): plain HTTP, X-Forwarded-* trusted.
+      KC_PROXY_HEADERS: xforwarded
+      KC_HTTP_ENABLED: "true"
+      # Single node: in-process caches, no JGroups cluster over the database.
+      KC_CACHE: local
       MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID}
       MICROSOFT_CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET}
       KC_DB_URL_DATABASE: Keycloak
       KC_VAULT_FILE: /var/keycloak/vault
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
-      KEYCLOAK_ADMIN: ${KEYCLOAK_USER}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
       KC_OVERRIDE: "false"
     restart: unless-stopped

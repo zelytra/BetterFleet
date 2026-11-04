@@ -14,6 +14,6 @@ data:
   # NOTE: text only. The custom login theme referenced by this realm
   # ("loginTheme": "betterfleet") ships binary TTF fonts that do NOT belong in a
   # ConfigMap - build a derived Keycloak image instead (see README).
-  betterfleet-realm.json: |-
-{{ .Files.Get "files/betterfleet-realm.json" | indent 4 }}
+  Betterfleet-realm.json: |-
+{{ .Files.Get "files/Betterfleet-realm.json" | indent 4 }}
 {{- end }}

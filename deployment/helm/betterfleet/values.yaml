@@ -288,7 +288,7 @@ postgresAuth:
   affinity: {}
 
 # =============================================================================
-# keycloak - identity provider (quay.io/keycloak/keycloak:24.0)
+# keycloak - identity provider (quay.io/keycloak/keycloak:26.8)
 # =============================================================================
 keycloak:
   replicaCount: 1
@@ -296,7 +296,7 @@ keycloak:
     # To ship the custom "betterfleet" login theme, build a derived image
     # (see README "Custom login theme") and point repository/tag at it.
     repository: quay.io/keycloak/keycloak
-    tag: "24.0"
+    tag: "26.8"
     pullPolicy: IfNotPresent
   # Startup command. Mirrors compose `command: start --import-realm`.
   command: ["start", "--import-realm"]
@@ -304,7 +304,7 @@ keycloak:
     # -- In-cluster host override. Empty => the bundled postgres-auth Service.
     host: ""
     name: "Keycloak"
-  # Import the realm from files/betterfleet-realm.json via a generated ConfigMap.
+  # Import the realm from files/Betterfleet-realm.json via a generated ConfigMap.
   realmImport:
     enabled: true
   service:
@@ -322,7 +322,9 @@ keycloak:
       memory: 1Gi
   # Keycloak health endpoints are disabled by default (KC_HEALTH_ENABLED unset),
   # so probes use a TCP check on the HTTP port. Set keycloak.health.enabled=true
-  # to expose /health and switch to httpGet probes on the management port.
+  # to expose them on the management port, then switch the probes to httpGet
+  # on port: management, path: /auth/health/ready (or /auth/health/live): the
+  # management interface inherits the /auth relative path.
   health:
     enabled: false
     port: 9000
