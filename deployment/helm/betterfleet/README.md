@@ -15,7 +15,7 @@ replaces `deployment/nginx.conf` with a Kubernetes Ingress.
 | `website`      | `zelytra/better-fleet-website`     | Deployment    | `<release>-website:80`           | Static SPA (nginx)                        |
 | `postgres-app` | `postgres:14.2-alpine`             | StatefulSet   | `<release>-postgres-app:5432`    | App database `BetterFleet` (+ PVC)        |
 | `postgres-auth`| `postgres:14.2-alpine`             | StatefulSet   | `<release>-postgres-auth:5432`   | Keycloak database `Keycloak` (+ PVC)      |
-| `keycloak`     | `quay.io/keycloak/keycloak:24.0`   | Deployment    | `<release>-keycloak:8080`        | Identity provider (`start --import-realm`)|
+| `keycloak`     | `quay.io/keycloak/keycloak:26.8`   | Deployment    | `<release>-keycloak:8080`        | Identity provider (`start --import-realm`)|
 
 ### Request routing (replaces `nginx.conf`)
 
@@ -78,8 +78,8 @@ Either way the Secret must expose these keys:
 | -------------------------- | --------------------------------------------------- |
 | `POSTGRES_USER`            | both DBs `POSTGRES_USER`; backend `DB_USER`; keycloak `KC_DB_USERNAME` |
 | `POSTGRES_PASSWORD`        | both DBs `POSTGRES_PASSWORD`; backend `DB_PASSWORD`; keycloak `KC_DB_PASSWORD` |
-| `KEYCLOAK_ADMIN`           | keycloak `KEYCLOAK_ADMIN`                            |
-| `KEYCLOAK_ADMIN_PASSWORD`  | keycloak `KEYCLOAK_ADMIN_PASSWORD`                  |
+| `KEYCLOAK_ADMIN`           | keycloak `KC_BOOTSTRAP_ADMIN_USERNAME` (fresh database only) |
+| `KEYCLOAK_ADMIN_PASSWORD`  | keycloak `KC_BOOTSTRAP_ADMIN_PASSWORD` (fresh database only) |
 | `MICROSOFT_CLIENT_ID`      | keycloak (`${MICROSOFT_CLIENT_ID}` in realm JSON)   |
 | `MICROSOFT_CLIENT_SECRET`  | keycloak (`${MICROSOFT_CLIENT_SECRET}` in realm JSON)|
 | `PROXY_CHECK_API_KEY`      | backend `PROXY_CHECK_API_KEY`                       |
@@ -179,11 +179,16 @@ was terminated by an external/host proxy. To enable it:
 
 ### Realm import (works via ConfigMap)
 
-`files/betterfleet-realm.json` is rendered into a ConfigMap and mounted at
+`files/Betterfleet-realm.json` is rendered into a ConfigMap and mounted at
 `/opt/keycloak/data/import`; `start --import-realm` applies it on boot. The
 `${MICROSOFT_CLIENT_ID}` / `${MICROSOFT_CLIENT_SECRET}` placeholders inside are
 substituted by Keycloak from the container environment (sourced from the Secret)
 at import time, exactly as in docker-compose.
+
+Keep the `Betterfleet-realm.json` file name: since Keycloak 26.2 an import file
+named `<name>-realm.json` must carry the realm's exact, case-sensitive name, or
+the server refuses to start (even when the realm already exists and the import
+would be skipped).
 
 ### Custom login theme (NOT shipped by default): build a derived image
 
@@ -197,20 +202,20 @@ do not belong in a ConfigMap, so this chart does **not** mount it. Two consequen
 
 ```dockerfile
 # deployment/keycloak/Dockerfile  (build context = deployment/keycloak)
-FROM quay.io/keycloak/keycloak:24.0
+FROM quay.io/keycloak/keycloak:26.8
 COPY themes/betterfleet /opt/keycloak/themes/betterfleet
 ```
 
 ```bash
-docker build -t your-registry/betterfleet-keycloak:24.0 deployment/keycloak
-docker push your-registry/betterfleet-keycloak:24.0
+docker build -t your-registry/betterfleet-keycloak:26.8 deployment/keycloak
+docker push your-registry/betterfleet-keycloak:26.8
 ```
 
 ```yaml
 keycloak:
   image:
     repository: your-registry/betterfleet-keycloak
-    tag: "24.0"
+    tag: "26.8"
 ```
 
 (Optionally add `--set keycloak.command[0]=start` etc. only if you change the
@@ -254,7 +259,7 @@ Credentials still come from the Secret (`POSTGRES_USER` / `POSTGRES_PASSWORD`).
 | `website.*` | see values | Website equivalents. |
 | `postgresApp.enabled` / `.persistence.{enabled,size,storageClass}` | `true` / `true,5Gi,null` | App DB toggle + storage. |
 | `postgresAuth.enabled` / `.persistence.*` | `true` / `true,2Gi,null` | Auth DB toggle + storage. |
-| `keycloak.image.{repository,tag}` | `quay.io/keycloak/keycloak`,`24.0` | Keycloak image (override to ship the theme). |
+| `keycloak.image.{repository,tag}` | `quay.io/keycloak/keycloak`,`26.8` | Keycloak image (override to ship the theme). |
 | `keycloak.command` | `["start","--import-realm"]` | Startup args. |
 | `keycloak.realmImport.enabled` | `true` | Mount + import the realm ConfigMap. |
 | `keycloak.health.enabled` | `false` | Expose `/health` on a management port. |

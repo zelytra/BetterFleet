@@ -139,7 +139,10 @@ services:
     restart: unless-stopped
 
   keycloak:
-    image: quay.io/keycloak/keycloak:24.0
+    # The minor tag, not a patch pin, so a plain `pull` picks up the 26.8.x security releases.
+    # Moving to another minor (26.9, 27.0) is a deliberate change: read Keycloak's upgrading guide
+    # and back up the postgres-auth database first, because the first boot migrates its schema.
+    image: quay.io/keycloak/keycloak:26.8
     container_name: betterfleet-keycloak
     depends_on:
       - postgres-auth
@@ -150,8 +153,9 @@ services:
     #
     # Written against /dev/tcp because this image ships no curl, no wget and no nc: verified, along
     # with /bin/sh being a symlink to bash, which is what makes /dev/tcp available to CMD-SHELL at
-    # all. Enabling KC_HEALTH_ENABLED would be the other route; it would need extra config and would
-    # only tell us Keycloak is up, not that the realm is there.
+    # all (re-checked on 26.8). Enabling KC_HEALTH_ENABLED would be the other route; it would need
+    # extra config (since Keycloak 25 it answers on the separate management port 9000, not 8080) and
+    # would only tell us Keycloak is up, not that the realm is there.
     healthcheck:
       test:
         - CMD-SHELL
@@ -174,20 +178,32 @@ services:
       - /etc/localtime:/etc/localtime:ro
     command: start --import-realm
     environment:
+      # No fixed hostname: URLs and the token issuer follow the request as the edge nginx forwards
+      # it (Host + X-Forwarded-Proto), so the issuer stays https://<host>/auth/realms/Betterfleet.
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_RELATIVE_PATH: /auth
+      # These two replace `KC_PROXY: edge`, which Keycloak 26 removed: it only warns about the old
+      # option, then refuses to boot without TLS. nginx terminates TLS and speaks plain HTTP to this
+      # container, and its X-Forwarded-* headers are trusted. That is safe only because 8080 is
+      # published on the host loopback alone (see ports): nginx is the one client that can set them.
+      KC_PROXY_HEADERS: xforwarded
+      KC_HTTP_ENABLED: "true"
+      # One Keycloak, never a cluster: keep its caches in-process. Keycloak 26 otherwise forms a
+      # JGroups cluster through the database (JDBC_PING) and, after any unclean stop, spends ~20s at
+      # boot trying to join the dead instance it left registered there.
+      KC_CACHE: local
       KC_DB: postgres
       KC_DB_URL_HOST: postgres-auth
-      PROXY_ADDRESS_FORWARDING: "true"
-      KC_PROXY: edge
       MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID}
       MICROSOFT_CLIENT_SECRET: ${MICROSOFT_CLIENT_SECRET}
       KC_DB_URL_DATABASE: Keycloak
       KC_VAULT_FILE: /var/keycloak/vault
       KC_DB_USERNAME: ${POSTGRES_USER}
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
-      KEYCLOAK_ADMIN: ${KEYCLOAK_USER}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
+      # Renamed from KEYCLOAK_ADMIN / KEYCLOAK_ADMIN_PASSWORD in Keycloak 26. Only read when the
+      # database has no admin user yet (a fresh install): an existing deployment keeps its account.
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
       KC_OVERRIDE: "false"
       # Pin the heap in absolute terms (issue #711). The image sizes it as a percentage of "available
       # memory", which the JVM reads from the cgroup limit when there is one and from /proc/meminfo
