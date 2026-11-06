@@ -114,6 +114,14 @@ back into the problem.
 
 ## Auth
 
+- **The `application` client has `fullScopeAllowed: false`, and a realm file change does not reach
+  production (#929).** The realm files are a seed: Keycloak imports them only when the realm does
+  not exist yet, so a client setting has to be changed in the running realm too (admin console or
+  `kcadm.sh`). Nothing reads roles from the token (no `@RolesAllowed`, no `aud` check on the
+  backend), so the only role the client needs is `offline_access`, and it gets it from the
+  `offline_access` client scope's own mapping (`scopeMappings` in the realm). Don't remove that
+  mapping: without it the app's sign-in loses its persistent session. If a feature ever starts
+  reading roles or `aud`, add them to the client's scope, as access tokens no longer carry them.
 - **Login is a self-registered Keycloak account.** The realm also has a Microsoft/Xbox identity
   provider configured, but it has never worked, so don't treat it as the sign-in path or document it as
   one. Keycloak realm `Betterfleet`, OIDC client `application`.
