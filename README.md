@@ -4,8 +4,7 @@
 [![Tauri](https://img.shields.io/badge/tauri-%2324C8DB.svg?style=for-the-badge&logo=tauri&logoColor=%23FFFFFF)](https://tauri.app/)
 [![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/zelytra)
 [![Crowdin](https://img.shields.io/badge/Crowdin-2E3340.svg?style=for-the-badge&logo=Crowdin&logoColor=white)](https://translate.betterfleet.fr)
-
-[![Translation](https://badges.crowdin.net/betterfleet/localized.svg)](https://translate.betterfleet.fr)
+[![Translation](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fbadges.crowdin.net%2Fbetterfleet%2Flocalized.svg&query=%28%2F%2F*%5Blocal-name%28%29%3D%27text%27%5D%29%5Blast%28%29%5D&label=Translated&style=for-the-badge&logo=crowdin&logoColor=white&color=2E3340)](https://translate.betterfleet.fr)
 
 # BetterFleet
 
